@@ -34,4 +34,7 @@ public class Semana {
     // Relación con Días
     @OneToMany(mappedBy = "semana", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Dia> dias;
+
+    @Column(name = "estado", nullable = false)
+    private Boolean estado = true;
 }

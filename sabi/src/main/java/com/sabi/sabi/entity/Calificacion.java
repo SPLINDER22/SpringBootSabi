@@ -32,4 +32,7 @@ public class Calificacion {
     @ManyToOne
     @JoinColumn(name = "entrenador_id", nullable = false)
     private Entrenador entrenador;
+
+    @Column(name = "estado", nullable = false)
+    private Boolean estado = true;
 }

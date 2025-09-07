@@ -37,7 +37,7 @@ public class Rutina {
 
     @NotNull
     @Enumerated(EnumType.STRING)
-    private EstadoRutina estado; // ACTIVA o FINALIZADA
+    private EstadoRutina estadoRutina; // ACTIVA o FINALIZADA
 
     @NotNull(message = "Debe especificar el número de semanas")
     private Integer numeroSemanas;
@@ -55,4 +55,7 @@ public class Rutina {
     // Relación con Semanas
     @OneToMany(mappedBy = "rutina", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Semana> semanas;
+
+    @Column(name = "estado", nullable = false)
+    private Boolean estado = true;
 }

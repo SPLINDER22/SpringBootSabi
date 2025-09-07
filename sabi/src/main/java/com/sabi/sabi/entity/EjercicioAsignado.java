@@ -43,4 +43,7 @@ public class EjercicioAsignado {
     // URL opcional del video subido por el cliente
     @Size(max = 500, message = "La URL del video no puede superar 500 caracteres")
     private String urlVideoCliente;
+
+    @Column(name = "estado", nullable = false)
+    private Boolean estado = true;
 }

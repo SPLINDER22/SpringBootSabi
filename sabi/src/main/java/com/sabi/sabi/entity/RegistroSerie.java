@@ -43,4 +43,7 @@ public class RegistroSerie {
     // Comentarios del cliente sobre esa serie
     @Size(max = 255, message = "El comentario no puede superar 255 caracteres")
     private String comentariosCliente;
+
+    @Column(name = "estado", nullable = false)
+    private Boolean estado = true;
 }

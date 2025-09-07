@@ -34,4 +34,7 @@ public class Dia {
     // Relación con Ejercicios Asignados
     @OneToMany(mappedBy = "dia", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<EjercicioAsignado> ejerciciosAsignados;
+
+    @Column(name = "estado", nullable = false)
+    private Boolean estado = true;
 }

@@ -43,4 +43,7 @@ public class Ejercicio {
     @ManyToOne
     @JoinColumn(name = "entrenador_id")
     private Entrenador entrenador;
+
+    @Column(name = "estado", nullable = false)
+    private Boolean estado = true;
 }

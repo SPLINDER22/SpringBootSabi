@@ -38,4 +38,7 @@ public class Notificacion {
 
     @Column(nullable = false)
     private boolean leida = false;
+
+    @Column(name = "estado", nullable = false)
+    private Boolean estado = true;
 }

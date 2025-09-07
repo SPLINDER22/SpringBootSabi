@@ -23,7 +23,7 @@ public class Suscripcion {
     private LocalDate fechaFin;
 
     @Enumerated(EnumType.STRING)
-    private EstadoSuscripcion estado;
+    private EstadoSuscripcion estadoSuscripcion;
 
     // Relación con Cliente
     @ManyToOne
@@ -34,4 +34,7 @@ public class Suscripcion {
     @ManyToOne
     @JoinColumn(name = "entrenador_id", nullable = false)
     private Entrenador entrenador;
+
+    @Column(name = "estado", nullable = false)
+    private Boolean estado = true;
 }
