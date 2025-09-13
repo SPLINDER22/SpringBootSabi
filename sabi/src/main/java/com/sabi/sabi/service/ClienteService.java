@@ -15,6 +15,4 @@ public interface ClienteService {
     ClienteDTO updateCliente(long id, ClienteDTO clienteDTO);
 
     boolean deleteCliente(long id);
-
-    boolean desactivateCliente(long id);
 }

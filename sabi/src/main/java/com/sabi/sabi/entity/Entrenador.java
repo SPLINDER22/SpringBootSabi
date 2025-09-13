@@ -37,7 +37,4 @@ public class Entrenador extends Usuario {
 
     @OneToMany(mappedBy = "entrenador", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Calificacion> calificaciones;
-
-    @Column(name = "estado", nullable = false)
-    private Boolean estado = true;
 }

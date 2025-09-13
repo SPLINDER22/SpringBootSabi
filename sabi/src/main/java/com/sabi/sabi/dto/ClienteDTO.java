@@ -10,8 +10,7 @@ import java.util.List;
 @NoArgsConstructor
 @Getter
 @Setter
-public class ClienteDTO {
-    private Long idUsuario;
+public class ClienteDTO extends UsuarioDTO {
 
     private String objetivos;
 
@@ -26,6 +25,4 @@ public class ClienteDTO {
     private List<Long> idRutinas;
     private List<Long> idSuscripciones;
     private List<Long> idCalificaciones;
-
-    private Boolean estado = true;
 }

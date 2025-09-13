@@ -9,7 +9,7 @@ import java.util.List;
 @NoArgsConstructor
 @Getter
 @Setter
-public class EntrenadorDTO {
+public class EntrenadorDTO extends UsuarioDTO{
     private Long idUsuario;
 
     private String especialidades;
@@ -27,6 +27,4 @@ public class EntrenadorDTO {
     private List<Long> idEjercicios;
 
     private List<Long> idCalificaciones;
-
-    private Boolean estado = true;
 }
