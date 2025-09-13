@@ -14,5 +14,5 @@ public interface EntrenadorService {
 
     EntrenadorDTO updateEntrenador(long id, EntrenadorDTO entrenadorDTO);
 
-    boolean deleteEntrenador(long id);
+    void deleteEntrenador(long id);
 }
