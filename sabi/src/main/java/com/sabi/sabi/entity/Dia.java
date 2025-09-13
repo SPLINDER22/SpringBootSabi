@@ -21,7 +21,7 @@ public class Dia {
 
     @NotNull(message = "El número de día es obligatorio")
     @Min(value = 1, message = "El número de día debe ser al menos 1")
-    private Integer numeroDia; // Ej: 1, 2, 3...
+    private Long numeroDia; // Ej: 1, 2, 3...
 
     @Size(max = 255, message = "La descripción no puede superar 255 caracteres")
     private String descripcion; // notas opcionales (ej. "Cardio + tren inferior")

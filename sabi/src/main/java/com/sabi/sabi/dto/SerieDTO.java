@@ -12,16 +12,16 @@ public class SerieDTO {
     private Long id;
 
     // Orden dentro del ejercicio
-    private Integer orden;
+    private Long orden;
 
     // Repeticiones (opcional)
-    private Integer repeticiones;
+    private Long repeticiones;
 
     // Peso en kg (opcional)
     private Double peso;
 
     // Descanso en segundos (opcional)
-    private Integer descanso;
+    private Long descanso;
 
     // Intensidad estandarizada
     private Intensidad intensidad;

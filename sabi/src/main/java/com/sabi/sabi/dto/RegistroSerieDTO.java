@@ -16,13 +16,13 @@ public class RegistroSerieDTO {
     private Long idSerie;
 
     // Reps reales hechas (puede ser menor o mayor a lo planificado)
-    private Integer repeticionesReales;
+    private Long repeticionesReales;
 
     // Peso real usado (kg)
     private Double pesoReal;
 
     // Descanso real en segundos
-    private Integer descansoReal;
+    private Long descansoReal;
 
     // Fecha y hora en que el cliente realizó la serie
     private LocalDateTime fechaEjecucion;

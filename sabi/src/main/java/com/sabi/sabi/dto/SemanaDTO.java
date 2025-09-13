@@ -12,7 +12,7 @@ import java.util.List;
 public class SemanaDTO {
     private Long idSemana;
 
-    private Integer numeroSemana; // Ej: 1, 2, 3...
+    private Long numeroSemana; // Ej: 1, 2, 3...
 
     private String descripcion; // notas opcionales del entrenador
 

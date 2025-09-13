@@ -21,7 +21,7 @@ public class EjercicioAsignado {
 
     @NotNull(message = "El orden del ejercicio es obligatorio")
     @Min(value = 1, message = "El orden debe ser mayor o igual a 1")
-    private Integer orden; // para organizar el día
+    private Long orden; // para organizar el día
 
     @Size(max = 255, message = "El comentario no puede superar 255 caracteres")
     private String comentarios; // notas adicionales del entrenador

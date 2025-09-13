@@ -12,7 +12,7 @@ import java.util.List;
 public class EjercicioAsignadoDTO {
     private Long idEjercicioAsignado;
 
-    private Integer orden; // para organizar el día
+    private Long orden; // para organizar el día
 
     private String comentarios; // notas adicionales del entrenador
 

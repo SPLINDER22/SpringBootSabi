@@ -24,7 +24,7 @@ public class RutinaDTO {
 
     private EstadoRutina estadoRutina; // ACTIVA o FINALIZADA
 
-    private Integer numeroSemanas;
+    private Long numeroSemanas;
 
     // Relación con Cliente
     private Long idCliente;

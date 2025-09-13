@@ -22,11 +22,11 @@ public class Serie {
     // Orden dentro del ejercicio
     @NotNull(message = "El orden de la serie es obligatorio")
     @Min(value = 1, message = "El orden debe ser mayor o igual a 1")
-    private Integer orden;
+    private Long orden;
 
     // Repeticiones (opcional)
     @Min(value = 1, message = "Las repeticiones deben ser al menos 1")
-    private Integer repeticiones;
+    private Long repeticiones;
 
     // Peso en kg (opcional)
     @Min(value = 0, message = "El peso no puede ser negativo")
@@ -34,7 +34,7 @@ public class Serie {
 
     // Descanso en segundos (opcional)
     @Min(value = 0, message = "El descanso no puede ser negativo")
-    private Integer descanso;
+    private Long descanso;
 
     // Intensidad estandarizada
     @Enumerated(EnumType.STRING)

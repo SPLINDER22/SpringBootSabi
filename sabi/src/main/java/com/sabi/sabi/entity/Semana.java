@@ -21,7 +21,7 @@ public class Semana {
 
     @NotNull(message = "El número de semana es obligatorio")
     @Min(value = 1, message = "El número de semana debe ser al menos 1")
-    private Integer numeroSemana; // Ej: 1, 2, 3...
+    private Long numeroSemana; // Ej: 1, 2, 3...
 
     @Size(max = 255, message = "La descripción no puede superar 255 caracteres")
     private String descripcion; // notas opcionales del entrenador

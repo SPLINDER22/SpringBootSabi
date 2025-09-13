@@ -12,7 +12,7 @@ import java.util.List;
 public class DiaDTO {
     private Long idDia;
 
-    private Integer numeroDia; // Ej: 1, 2, 3...
+    private Long numeroDia; // Ej: 1, 2, 3...
 
     private String descripcion; // notas opcionales (ej. "Cardio + tren inferior")
 

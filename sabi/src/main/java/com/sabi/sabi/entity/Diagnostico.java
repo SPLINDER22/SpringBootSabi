@@ -48,9 +48,9 @@ public class Diagnostico {
     private Double circunferenciaCadera;
     private Double circunferenciaBrazo;
     private Double circunferenciaPierna;
-    private Integer frecuenciaCardiacaReposo; // bpm
+    private Long frecuenciaCardiacaReposo; // bpm
     private String presionArterial;           // ej. "120/80"
-    private Integer horasSueno;               // horas promedio
+    private Long horasSueno;               // horas promedio
     private String habitosAlimenticios;       // descripción libre
 
     @Column(name = "estado", nullable = false)

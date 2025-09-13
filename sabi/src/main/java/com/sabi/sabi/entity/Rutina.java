@@ -40,7 +40,7 @@ public class Rutina {
     private EstadoRutina estadoRutina; // ACTIVA o FINALIZADA
 
     @NotNull(message = "Debe especificar el número de semanas")
-    private Integer numeroSemanas;
+    private Long numeroSemanas;
 
     // Relación con Cliente
     @ManyToOne

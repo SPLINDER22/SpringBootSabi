@@ -26,7 +26,7 @@ public class RegistroSerie {
 
     // Reps reales hechas (puede ser menor o mayor a lo planificado)
     @Min(value = 0, message = "Las repeticiones no pueden ser negativas")
-    private Integer repeticionesReales;
+    private Long repeticionesReales;
 
     // Peso real usado (kg)
     @Min(value = 0, message = "El peso no puede ser negativo")
@@ -34,7 +34,7 @@ public class RegistroSerie {
 
     // Descanso real en segundos
     @Min(value = 0, message = "El descanso no puede ser negativo")
-    private Integer descansoReal;
+    private Long descansoReal;
 
     // Fecha y hora en que el cliente realizó la serie
     @NotNull(message = "La fecha de ejecución es obligatoria")
