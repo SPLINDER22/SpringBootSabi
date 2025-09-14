@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:fragment="layout(pageTitle, bodyFragment)"
+      lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${pageTitle}">SABI</title>
+    <link href="/vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
+    <link href="/css/sb-admin-2.min.css" rel="stylesheet">
+</head>
+
+<body id="page-top">
+
+<!-- Definimos todo el layout como fragmento -->
+<div id="wrapper" th:fragment="layout(content)">
+
+    <!-- Sidebar -->
+    <div th:replace="fragments/header :: sidebar"></div>
+
+    <!-- Content Wrapper -->
+    <div id="content-wrapper" class="d-flex flex-column">
+
+        <!-- Main Content -->
+        <div id="content">
+
+            <!-- Navbar -->
+            <div th:replace="fragments/header :: navbar"></div>
+
+            <!-- Contenido dinámico -->
+            <div class="container-fluid">
+                <div th:insert="${bodyFragment}"></div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div th:replace="fragments/footer :: footer"></div>
+    </div>
+</div>
+
+<!-- Scripts -->
+<script src="/vendor/jquery/jquery.min.js"></script>
+<script src="/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+<script src="/vendor/jquery-easing/jquery.easing.min.js"></script>
+<script src="/js/sb-admin-2.min.js"></script>
+
+</body>
+</html>
