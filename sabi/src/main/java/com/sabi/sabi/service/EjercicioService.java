@@ -5,8 +5,8 @@ import com.sabi.sabi.dto.EjercicioDTO;
 import java.util.List;
 
 public interface EjercicioService {
-    List<EjercicioDTO> getAllEjercicios();
-    List<EjercicioDTO> getAllActiveEjercicios();
+
+    List<EjercicioDTO> getEjerciciosPorEntrenador(Long entrenadorId);
 
     EjercicioDTO getEjercicioById(long id);
 

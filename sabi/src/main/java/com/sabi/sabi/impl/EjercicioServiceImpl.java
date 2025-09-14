@@ -22,20 +22,15 @@ public class EjercicioServiceImpl implements EjercicioService {
     private EntrenadorRepository entrenadorRepository;
 
     @Override
-    public List<EjercicioDTO> getAllEjercicios() {
-        List<Ejercicio> ejercicios = List.of();
-        return ejercicios.stream()
-                .map(ejercicio -> new EjercicioDTO())
-                .toList();
-    }
+    public List<EjercicioDTO> getEjerciciosPorEntrenador(Long entrenadorId) {
+        List<Ejercicio> ejercicios =
+                ejercicioRepository.findActivosByEntrenadorOrGlobal(entrenadorId);
 
-    @Override
-    public List<EjercicioDTO> getAllActiveEjercicios() {
-        List<Ejercicio> ejercicios = ejercicioRepository.findByEstadoTrue();
         return ejercicios.stream()
                 .map(ejercicio -> modelMapper.map(ejercicio, EjercicioDTO.class))
                 .toList();
     }
+
 
     @Override
     public EjercicioDTO getEjercicioById(long id) {
