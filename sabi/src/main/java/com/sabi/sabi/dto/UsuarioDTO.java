@@ -1,5 +1,6 @@
 package com.sabi.sabi.dto;
 
+import com.sabi.sabi.entity.enums.Rol;
 import lombok.*;
 
 @Data
@@ -12,6 +13,6 @@ public class UsuarioDTO {
     private String nombre;
     private String email;
     private String contraseña;
-    private String rol;
+    private Rol rol;
     private Boolean estado = true;
 }

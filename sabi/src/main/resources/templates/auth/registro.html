@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>Registro</title>
+</head>
+<body th:replace="layout/layout :: layout('Registro', ~{::section})">
+<section th:fragment="section">
+    <div class="container">
+        <h2>Registro</h2>
+        <form th:action="@{/auth/registro}" th:object="${registroDTO}" method="post">
+            <div>
+                <label for="nombre">Nombre:</label>
+                <input type="text" id="nombre" th:field="*{nombre}" required/>
+            </div>
+            <div>
+                <label for="email">Email:</label>
+                <input type="email" id="email" th:field="*{email}" required/>
+            </div>
+            <div>
+                <label for="contraseña">Contraseña:</label>
+                <input type="password" id="contraseña" th:field="*{contraseña}" required/>
+            </div>
+            <div>
+                <button type="submit">Registrarse</button>
+            </div>
+        </form>
+        <p>¿Ya tienes cuenta? <a th:href="@{/auth/login}">Iniciar sesión</a></p>
+    </div>
+</section>
+</body>
+</html>

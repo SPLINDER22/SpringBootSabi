@@ -34,6 +34,13 @@ public class UsuarioServiceImpl implements UsuarioService {
     }
 
     @Override
+    public Usuario obtenerPorEmail(String email) {
+        return usuarioRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+    }
+
+
+    @Override
     public UsuarioDTO getUsuarioById(long id) {
         Usuario usuario = usuarioRepository.findById(id)
                 .stream()
@@ -62,6 +69,11 @@ public class UsuarioServiceImpl implements UsuarioService {
         existingUsuario = usuarioRepository.save(existingUsuario);
         return modelMapper.map(existingUsuario, UsuarioDTO.class);
     }
+    @Override
+    public void actualizarUsuario(Usuario usuario) {
+        usuarioRepository.save(usuario);
+    }
+
 
     @Override
     public boolean deleteUsuario(long id) {

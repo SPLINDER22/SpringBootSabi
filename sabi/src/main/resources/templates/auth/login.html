@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>Login</title>
+</head>
+<body th:replace="layout/layout :: layout('Iniciar sesión', ~{::section})">
+<section th:fragment="section">
+    <div class="container">
+        <h2>Iniciar sesión</h2>
+        <form th:action="@{/auth/login}" method="post">
+            <div>
+                <label for="username">Email:</label>
+                <input type="email" id="username" name="username" required/>
+            </div>
+            <div>
+                <label for="password">Contraseña:</label>
+                <input type="password" id="password" name="password" required/>
+            </div>
+            <div>
+                <button type="submit">Ingresar</button>
+            </div>
+        </form>
+        <p>¿No tienes cuenta? <a th:href="@{/auth/registro}">Regístrate</a></p>
+    </div>
+</section>
+</body>
+</html>
