@@ -7,6 +7,7 @@ import com.sabi.sabi.service.UsuarioService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,28 +17,34 @@ import org.springframework.web.bind.annotation.*;
 public class AuthController {
 
     private final UsuarioService usuarioService;
+    private final PasswordEncoder passwordEncoder; // <- agregado
 
     @GetMapping("/login")
     public String login() {
-        return "auth/login"; // Thymeleaf login.html
+        return "auth/login";
     }
 
     @GetMapping("/registro")
     public String registroForm() {
-        return "auth/registro"; // Thymeleaf registro.html
+        return "auth/registro";
     }
 
     @PostMapping("/registro")
     public String registrarUsuario(@ModelAttribute UsuarioDTO usuarioDTO) {
-        // asignar rol temporal CLIENTE
+        // Asignar rol temporal CLIENTE
         usuarioDTO.setRol(Rol.CLIENTE);
+
+        // Encriptar la contraseña antes de guardar
+        usuarioDTO.setContraseña(passwordEncoder.encode(usuarioDTO.getContraseña()));
+
         usuarioService.createUsuario(usuarioDTO);
+
         return "redirect:/auth/seleccionar-rol";
     }
 
     @GetMapping("/seleccionar-rol")
     public String seleccionarRolForm() {
-        return "auth/seleccionar-rol"; // Thymeleaf seleccionar-rol.html
+        return "auth/seleccionar-rol";
     }
 
     @PostMapping("/seleccionar-rol")
@@ -47,7 +54,7 @@ public class AuthController {
     ) {
         Usuario usuario = usuarioService.obtenerPorEmail(userDetails.getUsername());
         usuario.setRol(rol);
-        usuarioService.actualizarUsuario(usuario); // o updateRol si usas DTO
+        usuarioService.actualizarUsuario(usuario);
         return "redirect:/dashboard";
     }
 }

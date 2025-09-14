@@ -1,13 +1,16 @@
 package com.sabi.sabi.config;
 
-import jakarta.servlet.ServletException;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
+import com.sabi.sabi.entity.enums.Rol;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
 
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Collection;
 
 @Component
 public class CustomSuccessHandler implements AuthenticationSuccessHandler {
@@ -19,7 +22,15 @@ public class CustomSuccessHandler implements AuthenticationSuccessHandler {
             Authentication authentication
     ) throws IOException, ServletException {
 
-        // Redirigir siempre al dashboard después del login
-        response.sendRedirect("/dashboard");
+        Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
+        String redirectURL = "/dashboard"; // valor por defecto
+
+        if (authorities.stream().anyMatch(a -> a.getAuthority().equals("ROLE_CLIENTE"))) {
+            redirectURL = "/cliente/dashboard";
+        } else if (authorities.stream().anyMatch(a -> a.getAuthority().equals("ROLE_ENTRENADOR"))) {
+            redirectURL = "/entrenador/dashboard";
+        }
+
+        response.sendRedirect(redirectURL);
     }
 }

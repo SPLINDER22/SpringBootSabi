@@ -3,6 +3,7 @@ package com.sabi.sabi.entity;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -19,6 +20,8 @@ public class Cliente extends Usuario {
     @Column(length = 255)
     private String objetivos;
 
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    @Column(name = "fecha_nacimiento")
     private LocalDate fechaNacimiento;
 
     @Column(length = 10)
