@@ -41,8 +41,8 @@ public class Ejercicio {
 
     // Si es privado, se asigna al entrenador creador
     @ManyToOne
-    @JoinColumn(name = "entrenador_id")
-    private Entrenador entrenador;
+    @JoinColumn(name = "usuario_id")
+    private Usuario usuario;
 
     @Column(name = "estado", nullable = false)
     private Boolean estado = true;

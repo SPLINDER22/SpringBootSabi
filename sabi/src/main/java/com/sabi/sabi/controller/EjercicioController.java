@@ -1,10 +1,13 @@
 package com.sabi.sabi.controller;
 
 import com.sabi.sabi.dto.EjercicioDTO;
+import com.sabi.sabi.entity.Usuario;
 import com.sabi.sabi.service.EjercicioService;
-import com.sabi.sabi.service.EntrenadorService;
+import com.sabi.sabi.service.UsuarioService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -18,13 +21,19 @@ public class EjercicioController {
     @Autowired
     private EjercicioService ejercicioService;
     @Autowired
-    private EntrenadorService entrenadorService;
+    private UsuarioService usuarioService;
 
-    @GetMapping("/ejercicios/{entrenadorId}")
-    public String listarEjercicios(@PathVariable Long entrenadorId, Model model) {
-        model.addAttribute("ejercicios", ejercicioService.getEjerciciosPorEntrenador(entrenadorId));
+    @GetMapping("/ejercicios")
+    public String listarEjercicios(@AuthenticationPrincipal UserDetails userDetails, Model model) {
+        // Obtenemos el usuario logueado
+        Usuario usuario = usuarioService.obtenerPorEmail(userDetails.getUsername());
+
+        // Usamos su ID para traer sus ejercicios
+        model.addAttribute("ejercicios", ejercicioService.getEjerciciosPorUsuario(usuario.getId()));
+
         return "ejercicios/lista";
     }
+
 
     @GetMapping("/ejercicios/nuevo")
     public String crearEjercicioView(Model model) {
@@ -43,14 +52,10 @@ public class EjercicioController {
         return "ejercicios/formulario";
     }
 
-
     @PostMapping("/ejercicios/guardar")
-    public String guardarEjercicio(@Valid @ModelAttribute("ejercicio") EjercicioDTO ejercicioDTO,
-                                   BindingResult result, Model model) {
-        if (result.hasErrors()) {
-            return "ejercicios/formulario";
-        }
-        ejercicioService.createEjercicio(ejercicioDTO);
+    public String crearEjercicio(@ModelAttribute EjercicioDTO ejercicioDTO, @AuthenticationPrincipal UserDetails userDetails) {
+        Usuario usuario = usuarioService.obtenerPorEmail(userDetails.getUsername());
+        ejercicioService.createEjercicio(ejercicioDTO, usuario.getId());
         return "redirect:/ejercicios";
     }
 

@@ -6,11 +6,11 @@ import java.util.List;
 
 public interface EjercicioService {
 
-    List<EjercicioDTO> getEjerciciosPorEntrenador(Long entrenadorId);
+    List<EjercicioDTO> getEjerciciosPorUsuario(Long usuarioId);
 
     EjercicioDTO getEjercicioById(long id);
 
-    EjercicioDTO createEjercicio(EjercicioDTO ejercicioDTO);
+    EjercicioDTO createEjercicio(EjercicioDTO ejercicioDTO, Long usuarioId);
 
     EjercicioDTO updateEjercicio(long id, EjercicioDTO ejercicioDTO);
 

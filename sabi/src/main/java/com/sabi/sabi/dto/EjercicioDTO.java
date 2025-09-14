@@ -26,7 +26,7 @@ public class EjercicioDTO {
     private TipoEjercicio tipo;
 
     // Si es privado, se asigna al entrenador creador
-    private Long idEntrenador;
+    private Long idUsuario;
 
     private Boolean estado = true;
 }

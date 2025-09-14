@@ -33,8 +33,5 @@ public class Entrenador extends Usuario {
     private List<Suscripcion> suscripciones;
 
     @OneToMany(mappedBy = "entrenador", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Ejercicio> ejercicios;
-
-    @OneToMany(mappedBy = "entrenador", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Calificacion> calificaciones;
 }

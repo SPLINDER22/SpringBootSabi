@@ -2,6 +2,7 @@ package com.sabi.sabi.repository;
 
 import com.sabi.sabi.entity.Ejercicio;
 import com.sabi.sabi.entity.Entrenador;
+import com.sabi.sabi.entity.Usuario;
 import com.sabi.sabi.entity.enums.TipoEjercicio;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -15,11 +16,13 @@ public interface EjercicioRepository extends JpaRepository<Ejercicio, Long> {
 
     // Para evitar duplicados en el DataInitializer
     boolean existsByNombreAndTipo(String nombre, TipoEjercicio tipo);
-    boolean existsByNombreAndTipoAndEntrenador(String nombre, TipoEjercicio tipo, Entrenador entrenador);
 
-    // Para listar ejercicios activos (globales o del entrenador)
-    @Query("SELECT e FROM Ejercicio e " +
-            "WHERE e.estado = true AND " +
-            "(e.tipo = com.sabi.sabi.entity.enums.TipoEjercicio.GLOBAL OR e.entrenador.id = :entrenadorId)")
-    List<Ejercicio> findActivosByEntrenadorOrGlobal(@Param("entrenadorId") Long entrenadorId);
+    // Antes era con Entrenador, ahora con Usuario
+    boolean existsByNombreAndTipoAndUsuario(String nombre, TipoEjercicio tipo, Usuario usuario);
+
+    // Para listar ejercicios activos (globales o del usuario)
+    @Query("SELECT e FROM Ejercicio e WHERE (e.usuario.id = :usuarioId OR e.usuario IS NULL) AND e.estado = true")
+    List<Ejercicio> findActivosPorUsuario(@Param("usuarioId") Long usuarioId);
+
 }
+

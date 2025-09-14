@@ -24,7 +24,5 @@ public class EntrenadorDTO extends UsuarioDTO{
 
     private List<Long> idSuscripciones;
 
-    private List<Long> idEjercicios;
-
     private List<Long> idCalificaciones;
 }

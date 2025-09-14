@@ -3,6 +3,8 @@ package com.sabi.sabi.dto;
 import com.sabi.sabi.entity.enums.Rol;
 import lombok.*;
 
+import java.util.List;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -14,5 +16,6 @@ public class UsuarioDTO {
     private String email;
     private String contraseña;
     private Rol rol;
+    private List<Long> idEjercicios;
     private Boolean estado = true;
 }

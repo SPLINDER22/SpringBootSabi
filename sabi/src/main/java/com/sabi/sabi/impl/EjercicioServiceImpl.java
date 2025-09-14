@@ -3,8 +3,10 @@ package com.sabi.sabi.impl;
 import com.sabi.sabi.dto.EjercicioDTO;
 import com.sabi.sabi.entity.Ejercicio;
 import com.sabi.sabi.entity.Entrenador;
+import com.sabi.sabi.entity.Usuario;
 import com.sabi.sabi.repository.EjercicioRepository;
 import com.sabi.sabi.repository.EntrenadorRepository;
+import com.sabi.sabi.repository.UsuarioRepository;
 import com.sabi.sabi.service.EjercicioService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,15 +21,13 @@ public class EjercicioServiceImpl implements EjercicioService {
     @Autowired
     private ModelMapper modelMapper;
     @Autowired
-    private EntrenadorRepository entrenadorRepository;
+    private UsuarioRepository usuarioRepository;
 
     @Override
-    public List<EjercicioDTO> getEjerciciosPorEntrenador(Long entrenadorId) {
-        List<Ejercicio> ejercicios =
-                ejercicioRepository.findActivosByEntrenadorOrGlobal(entrenadorId);
-
+    public List<EjercicioDTO> getEjerciciosPorUsuario(Long usuarioId) {
+        List<Ejercicio> ejercicios = ejercicioRepository.findActivosPorUsuario(usuarioId);
         return ejercicios.stream()
-                .map(ejercicio -> modelMapper.map(ejercicio, EjercicioDTO.class))
+                .map(e -> modelMapper.map(e, EjercicioDTO.class))
                 .toList();
     }
 
@@ -42,28 +42,34 @@ public class EjercicioServiceImpl implements EjercicioService {
     }
 
     @Override
-    public EjercicioDTO createEjercicio(EjercicioDTO ejercicioDTO) {
+    public EjercicioDTO createEjercicio(EjercicioDTO ejercicioDTO, Long usuarioId) {
         Ejercicio ejercicio = modelMapper.map(ejercicioDTO, Ejercicio.class);
-        if (ejercicio.getId() != null && ejercicioRepository.findById(ejercicio.getId()).isPresent()){
-            updateEjercicio(ejercicio.getId(), ejercicioDTO);
+
+        // Si existe el ID, se actualiza
+        if (ejercicio.getId() != null && ejercicioRepository.findById(ejercicio.getId()).isPresent()) {
+            return updateEjercicio(ejercicio.getId(), ejercicioDTO);
         }
-        if (ejercicioDTO.getIdEntrenador() != null) {
-            Entrenador entrenador = entrenadorRepository.findById(ejercicioDTO.getIdEntrenador())
-                    .orElseThrow(() -> new RuntimeException("Entrenador not found with id: " + ejercicioDTO.getIdEntrenador()));
-            ejercicio.setEntrenador(entrenador);
-        }
+
+        // Asignar usuario logueado como creador
+        Usuario usuario = usuarioRepository.findById(usuarioId)
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado con id: " + usuarioId));
+        ejercicio.setUsuario(usuario);
+
+        // Guardar
         ejercicio = ejercicioRepository.save(ejercicio);
+
         return modelMapper.map(ejercicio, EjercicioDTO.class);
     }
+
 
     @Override
     public EjercicioDTO updateEjercicio(long id, EjercicioDTO ejercicioDTO) {
         Ejercicio ejercicio = ejercicioRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Ejercicio not found with id: " + id));
-        if (ejercicioDTO.getIdEntrenador() != null) {
-            Entrenador entrenador = entrenadorRepository.findById(ejercicioDTO.getIdEntrenador())
-                    .orElseThrow(() -> new RuntimeException("Entrenador not found with id: " + ejercicioDTO.getIdEntrenador()));
-            ejercicio.setEntrenador(entrenador);
+        if (ejercicioDTO.getIdUsuario() != null) {
+            Usuario usuario = usuarioRepository.findById(ejercicioDTO.getIdUsuario())
+                    .orElseThrow(() -> new RuntimeException("Entrenador not found with id: " + ejercicioDTO.getIdUsuario()));
+            ejercicio.setUsuario(usuario);
         }
         ejercicio.setNombre(ejercicioDTO.getNombre());
         ejercicio.setDescripcion(ejercicioDTO.getDescripcion());

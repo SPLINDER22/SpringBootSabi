@@ -3,6 +3,7 @@ package com.sabi.sabi.config;
 import com.sabi.sabi.entity.Cliente;
 import com.sabi.sabi.entity.Ejercicio;
 import com.sabi.sabi.entity.Entrenador;
+import com.sabi.sabi.entity.Usuario;
 import com.sabi.sabi.entity.enums.Rol;
 import com.sabi.sabi.entity.enums.TipoEjercicio;
 import com.sabi.sabi.repository.EjercicioRepository;
@@ -60,20 +61,27 @@ public class DataInitializer implements CommandLineRunner {
     }
 
     private void crearEjerciciosSiNoExisten() {
+        // Ejercicio global (no asignado a ningún usuario)
         crearEjercicioGlobalSiNoExiste(
                 "Sentadilla con barra",
                 "Ejercicio compuesto para piernas y glúteos.",
                 "Piernas",
                 "Barra"
         );
+
+        // Ejercicio privado (asignado a un usuario existente)
+        Usuario usuario = usuarioRepository.findByEmail("entrenador@sabi.com")
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+
         crearEjercicioPrivadoSiNoExiste(
                 "Circuito HIIT personalizado",
                 "Rutina HIIT diseñada por el entrenador.",
                 "Full body",
                 "Peso corporal",
-                "entrenador@sabi.com"
+                usuario.getId()
         );
     }
+
 
     private void crearEjercicioGlobalSiNoExiste(String nombre, String descripcion, String grupoMuscular, String equipo) {
         if (!ejercicioRepository.existsByNombreAndTipo(nombre, TipoEjercicio.GLOBAL)) {
@@ -89,24 +97,25 @@ public class DataInitializer implements CommandLineRunner {
         }
     }
 
-    private void crearEjercicioPrivadoSiNoExiste(String nombre, String descripcion, String grupoMuscular, String equipo, String emailEntrenador) {
-        Entrenador entrenador = usuarioRepository.findByEmail(emailEntrenador)
-                .filter(u -> u instanceof Entrenador)
-                .map(u -> (Entrenador) u)
-                .orElse(null);
-        if (entrenador == null) return;
+    private void crearEjercicioPrivadoSiNoExiste(String nombre, String descripcion,
+                                                 String grupoMuscular, String equipo, Long usuarioId) {
+        Usuario usuario = usuarioRepository.findById(usuarioId)
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
 
-        if (!ejercicioRepository.existsByNombreAndTipoAndEntrenador(nombre, TipoEjercicio.PRIVADO, entrenador)) {
-            Ejercicio e = Ejercicio.builder()
-                    .nombre(nombre)
-                    .descripcion(descripcion)
-                    .grupoMuscular(grupoMuscular)
-                    .equipo(equipo)
-                    .tipo(TipoEjercicio.PRIVADO)
-                    .entrenador(entrenador)
-                    .estado(true)
-                    .build();
-            ejercicioRepository.save(e);
+        if (ejercicioRepository.existsByNombreAndTipoAndUsuario(nombre, TipoEjercicio.PRIVADO, usuario)) {
+            return;
         }
+
+        Ejercicio ejercicio = Ejercicio.builder()
+                .nombre(nombre)
+                .descripcion(descripcion)
+                .grupoMuscular(grupoMuscular)
+                .equipo(equipo)
+                .tipo(TipoEjercicio.PRIVADO)
+                .usuario(usuario)
+                .estado(true)
+                .build();
+
+        ejercicioRepository.save(ejercicio);
     }
 }
