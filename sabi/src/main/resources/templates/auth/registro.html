@@ -8,7 +8,7 @@
 <section th:fragment="section">
     <div class="container">
         <h2>Registro</h2>
-        <form th:action="@{/auth/registro}" th:object="${registroDTO}" method="post">
+        <form th:action="@{/auth/registrar}" th:object="${usuarioDTO}" method="post">
             <div>
                 <label for="nombre">Nombre:</label>
                 <input type="text" id="nombre" th:field="*{nombre}" required/>

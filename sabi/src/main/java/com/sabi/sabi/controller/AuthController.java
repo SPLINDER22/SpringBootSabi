@@ -1,5 +1,6 @@
 package com.sabi.sabi.controller;
 
+import com.sabi.sabi.dto.RegistroDTO;
 import com.sabi.sabi.dto.UsuarioDTO;
 import com.sabi.sabi.entity.Usuario;
 import com.sabi.sabi.entity.enums.Rol;
@@ -9,6 +10,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 @Controller
@@ -17,7 +19,7 @@ import org.springframework.web.bind.annotation.*;
 public class AuthController {
 
     private final UsuarioService usuarioService;
-    private final PasswordEncoder passwordEncoder; // <- agregado
+    private final PasswordEncoder passwordEncoder;
 
     @GetMapping("/login")
     public String login() {
@@ -25,11 +27,12 @@ public class AuthController {
     }
 
     @GetMapping("/registro")
-    public String registroForm() {
+    public String registroForm(Model model) {
+        model.addAttribute("usuarioDTO", new UsuarioDTO());
         return "auth/registro";
     }
 
-    @PostMapping("/registro")
+    @PostMapping("/registrar")
     public String registrarUsuario(@ModelAttribute UsuarioDTO usuarioDTO) {
         // Asignar rol temporal CLIENTE
         usuarioDTO.setRol(Rol.CLIENTE);

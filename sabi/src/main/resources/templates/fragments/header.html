@@ -1,5 +1,5 @@
 <!-- fragments/header.html -->
-<div th:fragment="navbar">
+<div th:fragment="navbar" xmlns:th="http://www.w3.org/1999/xhtml">
     <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
 
         <!-- Botón toggle sidebar -->
@@ -9,8 +9,7 @@
 
         <!-- Texto o atajo rápido -->
         <span class="mr-auto d-none d-lg-inline text-gray-600 small">
-            <!--th:text="${#authentication.name}"-->
-            Bienvenido, <b     >Entrenador</b>
+            Bienvenido, <b th:text="${#authentication.name}">Entrenador</b>
         </span>
 
         <!-- Menú de usuario -->
