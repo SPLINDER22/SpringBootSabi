@@ -1,10 +1,12 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>Lista De Ejercicios</title>
 </head>
-<body>
- dash del cliente
+<body th:replace="layout/layout :: layout('Lista de ejercicios', ~{::section})" xmlns:sec="http://www.w3.org/1999/xhtml">
+<section th:fragment="section">
+    <h2>Dashboard cliente</h2>
+</section>
 </body>
 </html>

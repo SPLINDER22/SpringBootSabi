@@ -1,5 +1,7 @@
 <!-- fragments/header.html -->
-<div th:fragment="navbar" xmlns:th="http://www.w3.org/1999/xhtml">
+<div th:fragment="navbar"
+     xmlns:th="http://www.thymeleaf.org"
+     xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
     <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
 
         <!-- Botón toggle sidebar -->
@@ -60,7 +62,10 @@
 
 
 
-<div th:fragment="sidebar">
+<div th:fragment="sidebar"
+     xmlns:th="http://www.thymeleaf.org"
+     xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
     <!-- Sidebar -->
     <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
 
@@ -94,7 +99,7 @@
 
         <!-- Clientes -->
         <li class="nav-item">
-            <a class="nav-link" th:href="@{/clientes}">
+            <a class="nav-link" th:href="@{/clientes}" sec:authorize="hasAnyRole('ENTRENADOR')">
                 <i class="fas fa-fw fa-user-friends"></i>
                 <span>Clientes</span>
             </a>
@@ -104,7 +109,8 @@
         <li class="nav-item">
             <a class="nav-link" th:href="@{/rutinas}">
                 <i class="fas fa-fw fa-calendar-check"></i>
-                <span>Rutinas</span>
+                <span sec:authorize="hasRole('ENTRENADOR')">Rutinas</span>
+                <span sec:authorize="hasRole('CLIENTE')">Mi Rutina</span>
             </a>
         </li>
 
