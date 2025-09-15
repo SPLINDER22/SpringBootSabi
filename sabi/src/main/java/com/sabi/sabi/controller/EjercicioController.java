@@ -25,12 +25,17 @@ public class EjercicioController {
 
     @GetMapping("/ejercicios")
     public String listarEjercicios(@AuthenticationPrincipal UserDetails userDetails, Model model) {
-        // Obtenemos el usuario logueado
-        Usuario usuario = usuarioService.obtenerPorEmail(userDetails.getUsername());
-
-        // Usamos su ID para traer sus ejercicios
+        if (userDetails == null) {
+            return "redirect:/auth/login";
+        }
+        Usuario usuario;
+        try {
+            usuario = usuarioService.obtenerPorEmail(userDetails.getUsername());
+        } catch (RuntimeException ex) {
+            return "redirect:/auth/login";
+        }
         model.addAttribute("ejercicios", ejercicioService.getEjerciciosPorUsuario(usuario.getId()));
-
+        model.addAttribute("idUsuarioActual", usuario.getId());
         return "ejercicios/lista";
     }
 
@@ -43,24 +48,54 @@ public class EjercicioController {
     }
 
     @GetMapping("/ejercicios/editar/{id}")
-    public String editarEjercicioView(@PathVariable Long id, Model model) {
+    public String editarEjercicioView(@PathVariable Long id,
+                                      @AuthenticationPrincipal UserDetails userDetails,
+                                      Model model) {
+        if (userDetails == null) {
+            return "redirect:/auth/login";
+        }
+        Usuario usuario = usuarioService.obtenerPorEmail(userDetails.getUsername());
         EjercicioDTO ejercicioDTO = ejercicioService.getEjercicioById(id);
         if (ejercicioDTO == null) {
             return "redirect:/ejercicios?error=notfound";
+        }
+        // Solo permitir editar si es propietario
+        if (ejercicioDTO.getIdUsuario() == null || !ejercicioDTO.getIdUsuario().equals(usuario.getId())) {
+            return "redirect:/ejercicios?error=forbidden";
         }
         model.addAttribute("ejercicio", ejercicioDTO);
         return "ejercicios/formulario";
     }
 
     @PostMapping("/ejercicios/guardar")
-    public String crearEjercicio(@ModelAttribute EjercicioDTO ejercicioDTO, @AuthenticationPrincipal UserDetails userDetails) {
+    public String crearEjercicio(@ModelAttribute EjercicioDTO ejercicioDTO,
+                                 @AuthenticationPrincipal UserDetails userDetails) {
+        if (userDetails == null) {
+            return "redirect:/auth/login";
+        }
         Usuario usuario = usuarioService.obtenerPorEmail(userDetails.getUsername());
+        // Si viene ID (update), validar propiedad
+        if (ejercicioDTO.getIdEjercicio() != null) {
+            EjercicioDTO existente = ejercicioService.getEjercicioById(ejercicioDTO.getIdEjercicio());
+            if (existente.getIdUsuario() == null || !existente.getIdUsuario().equals(usuario.getId())) {
+                return "redirect:/ejercicios?error=forbidden";
+            }
+        }
         ejercicioService.createEjercicio(ejercicioDTO, usuario.getId());
         return "redirect:/ejercicios";
     }
 
     @PostMapping("/ejercicios/eliminar/{id}")
-    public String eliminarEjercicio(@PathVariable Long id) {
+    public String eliminarEjercicio(@PathVariable Long id,
+                                    @AuthenticationPrincipal UserDetails userDetails) {
+        if (userDetails == null) {
+            return "redirect:/auth/login";
+        }
+        Usuario usuario = usuarioService.obtenerPorEmail(userDetails.getUsername());
+        EjercicioDTO ejercicioDTO = ejercicioService.getEjercicioById(id);
+        if (ejercicioDTO.getIdUsuario() == null || !ejercicioDTO.getIdUsuario().equals(usuario.getId())) {
+            return "redirect:/ejercicios?error=forbidden";
+        }
         ejercicioService.desactivateEjercicio(id);
         return "redirect:/ejercicios";
     }

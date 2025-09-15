@@ -1,12 +1,16 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <title>Lista De Ejercicios</title>
 </head>
-<body th:replace="layout/layout :: layout('Lista de ejercicios', ~{::section})" xmlns:sec="http://www.w3.org/1999/xhtml">
+<body th:replace="layout/layout :: layout('Lista de ejercicios', ~{::section})">
 <section th:fragment="section">
     <h1 class="h3 mb-4 text-gray-800">Lista de Ejercicios</h1>
+
+    <div class="mb-3 text-end">
+        <a th:href="@{/ejercicios/nuevo}" class="btn btn-success">Crear ejercicio</a>
+    </div>
 
     <table class="table table-bordered">
         <thead>
@@ -14,6 +18,7 @@
             <th>ID</th>
             <th>Nombre</th>
             <th>Descripción</th>
+            <th>Propiedad</th>
             <th>Acciones</th>
         </tr>
         </thead>
@@ -22,9 +27,16 @@
             <td th:text="${ejercicio.idEjercicio}"></td>
             <td th:text="${ejercicio.nombre}"></td>
             <td th:text="${ejercicio.descripcion}"></td>
+            <td th:text="${ejercicio.idUsuario != null and ejercicio.idUsuario == idUsuarioActual ? 'De tu propiedad' : 'Sabi'}"></td>
             <td>
-                <a th:href="@{'/ejercicios/editar/' + ${ejercicio.idEjercicio}}" class="btn btn-sm btn-primary">Editar</a>
-                <a th:href="@{'/ejercicios/eliminar/' + ${ejercicio.idEjercicio}}" class="btn btn-sm btn-danger">Eliminar</a>
+                <div th:if="${ejercicio.idUsuario != null and ejercicio.idUsuario == idUsuarioActual}">
+                    <a th:href="@{'/ejercicios/editar/' + ${ejercicio.idEjercicio}}" class="btn btn-sm btn-primary">Editar</a>
+                    <form th:action="@{'/ejercicios/eliminar/' + ${ejercicio.idEjercicio}}" method="post" style="display:inline">
+                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                        <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('¿Eliminar ejercicio?')">Eliminar</button>
+                    </form>
+                </div>
+                <span class="text-muted" th:unless="${ejercicio.idUsuario != null and ejercicio.idUsuario == idUsuarioActual}">-</span>
             </td>
         </tr>
         </tbody>

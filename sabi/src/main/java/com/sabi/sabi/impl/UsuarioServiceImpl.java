@@ -1,7 +1,10 @@
 package com.sabi.sabi.impl;
 
 import com.sabi.sabi.dto.UsuarioDTO;
+import com.sabi.sabi.entity.Cliente;
+import com.sabi.sabi.entity.Entrenador;
 import com.sabi.sabi.entity.Usuario;
+import com.sabi.sabi.entity.enums.Rol;
 import com.sabi.sabi.repository.UsuarioRepository;
 import com.sabi.sabi.service.UsuarioService;
 import org.modelmapper.ModelMapper;
@@ -51,12 +54,44 @@ public class UsuarioServiceImpl implements UsuarioService {
 
     @Override
     public UsuarioDTO createUsuario(UsuarioDTO usuarioDTO) {
-        Usuario usuario = modelMapper.map(usuarioDTO, Usuario.class);
-        if (usuario.getId() != null && usuarioRepository.findById(usuario.getId()).isPresent()){
-            updateUsuario(usuario.getId(), usuarioDTO);
+        // Si viene ID, actualizar
+        if (usuarioDTO.getId() != null && usuarioRepository.findById(usuarioDTO.getId()).isPresent()){
+            return updateUsuario(usuarioDTO.getId(), usuarioDTO);
         }
-        usuario = usuarioRepository.save(usuario);
-        return modelMapper.map(usuario, UsuarioDTO.class);
+
+        // Crear subclase según rol para que exista la fila en la tabla específica
+        Rol rol = usuarioDTO.getRol();
+        Usuario toSave;
+        if (rol == Rol.CLIENTE) {
+            toSave = Cliente.builder()
+                    .nombre(usuarioDTO.getNombre())
+                    .email(usuarioDTO.getEmail())
+                    .contraseña(usuarioDTO.getContraseña())
+                    .rol(Rol.CLIENTE)
+                    .estado(usuarioDTO.getEstado() != null ? usuarioDTO.getEstado() : true)
+                    .build();
+        } else if (rol == Rol.ENTRENADOR) {
+            toSave = Entrenador.builder()
+                    .nombre(usuarioDTO.getNombre())
+                    .email(usuarioDTO.getEmail())
+                    .contraseña(usuarioDTO.getContraseña())
+                    .rol(Rol.ENTRENADOR)
+                    .estado(usuarioDTO.getEstado() != null ? usuarioDTO.getEstado() : true)
+                    .calificacionPromedio(0.0)
+                    .build();
+        } else {
+            // Por defecto, crea usuario base
+            toSave = Usuario.builder()
+                    .nombre(usuarioDTO.getNombre())
+                    .email(usuarioDTO.getEmail())
+                    .contraseña(usuarioDTO.getContraseña())
+                    .rol(rol != null ? rol : Rol.CLIENTE)
+                    .estado(usuarioDTO.getEstado() != null ? usuarioDTO.getEstado() : true)
+                    .build();
+        }
+
+        toSave = usuarioRepository.save(toSave);
+        return modelMapper.map(toSave, UsuarioDTO.class);
     }
 
     @Override
@@ -65,7 +100,15 @@ public class UsuarioServiceImpl implements UsuarioService {
                 .orElseThrow(() -> new RuntimeException("Usuario not found with id: " + id));
         existingUsuario.setNombre(usuarioDTO.getNombre());
         existingUsuario.setEmail(usuarioDTO.getEmail());
-        existingUsuario.setEstado(usuarioDTO.getEstado());
+        if (usuarioDTO.getContraseña() != null && !usuarioDTO.getContraseña().isBlank()) {
+            existingUsuario.setContraseña(usuarioDTO.getContraseña());
+        }
+        if (usuarioDTO.getRol() != null) {
+            existingUsuario.setRol(usuarioDTO.getRol());
+        }
+        if (usuarioDTO.getEstado() != null) {
+            existingUsuario.setEstado(usuarioDTO.getEstado());
+        }
         existingUsuario = usuarioRepository.save(existingUsuario);
         return modelMapper.map(existingUsuario, UsuarioDTO.class);
     }

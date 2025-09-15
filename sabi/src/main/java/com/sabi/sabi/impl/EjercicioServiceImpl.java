@@ -2,10 +2,9 @@ package com.sabi.sabi.impl;
 
 import com.sabi.sabi.dto.EjercicioDTO;
 import com.sabi.sabi.entity.Ejercicio;
-import com.sabi.sabi.entity.Entrenador;
 import com.sabi.sabi.entity.Usuario;
+import com.sabi.sabi.entity.enums.TipoEjercicio;
 import com.sabi.sabi.repository.EjercicioRepository;
-import com.sabi.sabi.repository.EntrenadorRepository;
 import com.sabi.sabi.repository.UsuarioRepository;
 import com.sabi.sabi.service.EjercicioService;
 import org.modelmapper.ModelMapper;
@@ -55,6 +54,11 @@ public class EjercicioServiceImpl implements EjercicioService {
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado con id: " + usuarioId));
         ejercicio.setUsuario(usuario);
 
+        // Tipo por defecto PRIVADO si no viene en el DTO
+        if (ejercicio.getTipo() == null) {
+            ejercicio.setTipo(TipoEjercicio.PRIVADO);
+        }
+
         // Guardar
         ejercicio = ejercicioRepository.save(ejercicio);
 
@@ -77,7 +81,9 @@ public class EjercicioServiceImpl implements EjercicioService {
         ejercicio.setEquipo(ejercicioDTO.getEquipo());
         ejercicio.setUrlVideo(ejercicioDTO.getUrlVideo());
         ejercicio.setUrlImagen(ejercicioDTO.getUrlImagen());
-        ejercicio.setTipo(ejercicioDTO.getTipo());
+        if (ejercicioDTO.getTipo() != null) {
+            ejercicio.setTipo(ejercicioDTO.getTipo());
+        }
 
         ejercicio = ejercicioRepository.save(ejercicio);
         return modelMapper.map(ejercicio, EjercicioDTO.class);

@@ -1,7 +1,6 @@
 package com.sabi.sabi.repository;
 
 import com.sabi.sabi.entity.Ejercicio;
-import com.sabi.sabi.entity.Entrenador;
 import com.sabi.sabi.entity.Usuario;
 import com.sabi.sabi.entity.enums.TipoEjercicio;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -20,9 +19,8 @@ public interface EjercicioRepository extends JpaRepository<Ejercicio, Long> {
     // Antes era con Entrenador, ahora con Usuario
     boolean existsByNombreAndTipoAndUsuario(String nombre, TipoEjercicio tipo, Usuario usuario);
 
-    // Para listar ejercicios activos (globales o del usuario)
-    @Query("SELECT e FROM Ejercicio e WHERE (e.usuario.id = :usuarioId OR e.usuario IS NULL) AND e.estado = true")
+    // Para listar ejercicios activos (globales o del usuario) con fetch del usuario
+    @Query("SELECT e FROM Ejercicio e LEFT JOIN FETCH e.usuario u WHERE (u.id = :usuarioId OR u IS NULL) AND e.estado = true")
     List<Ejercicio> findActivosPorUsuario(@Param("usuarioId") Long usuarioId);
 
 }
-
