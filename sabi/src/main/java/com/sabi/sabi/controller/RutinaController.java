@@ -28,6 +28,10 @@ public class RutinaController {
         } catch (RuntimeException ex) {
             return "redirect:/auth/login";
         }
+        // Validar que el usuario sea entrenador
+        if (usuario.getRol() == null || !usuario.getRol().name().equalsIgnoreCase("ENTRENADOR")) {
+            return "redirect:/cliente/dashboard"; // O redirigir al dashboard del cliente si lo prefieres
+        }
         model.addAttribute("rutinas", rutinaService.getRutinasPorUsuario(usuario.getId()));
         model.addAttribute("idUsuarioActual", usuario.getId());
         return "rutinas/lista";

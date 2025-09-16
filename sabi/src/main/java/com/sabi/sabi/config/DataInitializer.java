@@ -4,10 +4,21 @@ import com.sabi.sabi.entity.Cliente;
 import com.sabi.sabi.entity.Ejercicio;
 import com.sabi.sabi.entity.Entrenador;
 import com.sabi.sabi.entity.Usuario;
+import com.sabi.sabi.entity.Rutina;
+import com.sabi.sabi.entity.Semana;
+import com.sabi.sabi.entity.Dia;
+import com.sabi.sabi.entity.EjercicioAsignado;
+import com.sabi.sabi.entity.Serie;
 import com.sabi.sabi.entity.enums.Rol;
 import com.sabi.sabi.entity.enums.TipoEjercicio;
+import com.sabi.sabi.entity.enums.EstadoRutina;
 import com.sabi.sabi.repository.EjercicioRepository;
 import com.sabi.sabi.repository.UsuarioRepository;
+import com.sabi.sabi.repository.RutinaRepository;
+import com.sabi.sabi.repository.SemanaRepository;
+import com.sabi.sabi.repository.DiaRepository;
+import com.sabi.sabi.repository.EjercicioAsignadoRepository;
+import com.sabi.sabi.repository.SerieRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -20,12 +31,18 @@ public class DataInitializer implements CommandLineRunner {
     private final UsuarioRepository usuarioRepository;
     private final EjercicioRepository ejercicioRepository;
     private final PasswordEncoder passwordEncoder;
+    private final RutinaRepository rutinaRepository;
+    private final SemanaRepository semanaRepository;
+    private final DiaRepository diaRepository;
+    private final EjercicioAsignadoRepository ejercicioAsignadoRepository;
+    private final SerieRepository serieRepository;
 
     @Override
     public void run(String... args) {
         crearClienteSiNoExiste("Cliente", "cliente@sabi.com", "1234");
         crearEntrenadorSiNoExiste("Entrenador", "entrenador@sabi.com", "1234");
         crearEjerciciosSiNoExisten();
+        crearRutinaDeEjemplo();
     }
 
     private void crearClienteSiNoExiste(String nombre, String email, String rawPassword) {
@@ -117,5 +134,67 @@ public class DataInitializer implements CommandLineRunner {
                 .build();
 
         ejercicioRepository.save(ejercicio);
+    }
+
+    private void crearRutinaDeEjemplo() {
+        // Obtener cliente y entrenador
+        Cliente cliente = (Cliente) usuarioRepository.findByEmail("cliente@sabi.com").orElse(null);
+        Entrenador entrenador = (Entrenador) usuarioRepository.findByEmail("entrenador@sabi.com").orElse(null);
+        if (cliente == null || entrenador == null) return;
+        // Verificar si ya existe la rutina
+        if (rutinaRepository.findAll().stream().anyMatch(r -> r.getNombre().equals("Rutina de ejemplo"))) return;
+        // Obtener ejercicio global
+        Ejercicio ejercicio = ejercicioRepository.findAll().stream().filter(e -> e.getTipo().name().equals("GLOBAL")).findFirst().orElse(null);
+        if (ejercicio == null) return;
+        // Crear rutina
+        Rutina rutina = Rutina.builder()
+                .nombre("Rutina de ejemplo")
+                .objetivo("Hipertrofia")
+                .descripcion("Rutina de prueba para desarrollo.")
+                .fechaCreacion(java.time.LocalDate.now())
+                .estadoRutina(EstadoRutina.ACTIVA)
+                .numeroSemanas(1L)
+                .cliente(cliente)
+                .entrenador(entrenador)
+                .estado(true)
+                .build();
+        rutinaRepository.save(rutina);
+        // Crear semana
+        Semana semana = Semana.builder()
+                .numeroSemana(1L)
+                .descripcion("Semana 1 de la rutina de ejemplo")
+                .rutina(rutina)
+                .estado(true)
+                .build();
+        semanaRepository.save(semana);
+        // Crear día
+        Dia dia = Dia.builder()
+                .numeroDia(1L)
+                .descripcion("Día 1: Piernas y glúteos")
+                .semana(semana)
+                .estado(true)
+                .build();
+        diaRepository.save(dia);
+        // Crear ejercicio asignado
+        EjercicioAsignado ejercicioAsignado = EjercicioAsignado.builder()
+                .orden(1L)
+                .comentarios("Ejecutar con buena técnica")
+                .dia(dia)
+                .ejercicio(ejercicio)
+                .estado(true)
+                .build();
+        ejercicioAsignadoRepository.save(ejercicioAsignado);
+        // Crear serie
+        Serie serie = Serie.builder()
+                .orden(1L)
+                .repeticiones(12L)
+                .peso(60.0)
+                .descanso(90L)
+                .intensidad(null)
+                .comentarios("Peso moderado")
+                .ejercicioAsignado(ejercicioAsignado)
+                .estado(true)
+                .build();
+        serieRepository.save(serie);
     }
 }

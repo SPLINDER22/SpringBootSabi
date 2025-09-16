@@ -9,7 +9,7 @@ public interface RutinaService {
     List<RutinaDTO> getAllRutinas();
     List<RutinaDTO> getAllActiveRutinas();
 
-    List<Rutina> getRutinasPorUsuario(Long usuarioId);
+    List<RutinaDTO> getRutinasPorUsuario(Long usuarioId);
 
     RutinaDTO getRutinaById(long id);
 

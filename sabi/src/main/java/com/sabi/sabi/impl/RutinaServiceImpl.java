@@ -42,10 +42,10 @@ public class RutinaServiceImpl implements RutinaService {
     }
 
     @Override
-    public List<Rutina> getRutinasPorUsuario(Long usuarioId) {
+    public List<RutinaDTO> getRutinasPorUsuario(Long usuarioId) {
         List<Rutina> rutinas = rutinaRepository.getRutinasPorUsuario(usuarioId);
         return rutinas.stream()
-                .map(r -> modelMapper.map(r, Rutina.class))
+                .map(r -> modelMapper.map(r, RutinaDTO.class))
                 .toList();
     }
 
