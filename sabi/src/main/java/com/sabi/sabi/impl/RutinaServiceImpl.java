@@ -42,6 +42,14 @@ public class RutinaServiceImpl implements RutinaService {
     }
 
     @Override
+    public List<RutinaDTO> getRutinasPorUsuario(Long usuarioId) {
+        List<Rutina> rutinas = rutinaRepository.getRutinasPorUsuario(usuarioId);
+        return rutinas.stream()
+                .map(r -> modelMapper.map(r, RutinaDTO.class))
+                .toList();
+    }
+
+    @Override
     public RutinaDTO getRutinaById(long id) {
         Rutina rutina = rutinaRepository.findById(id)
                 .stream()

@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Lista de Rutinas</title>
+</head>
+<body th:replace="layout/layout :: layout('Lista de rutinas', ~{::section})">
+<section th:fragment="section">
+    <h1 class="h3 mb-4 text-gray-800">Lista de Rutinas</h1>
+
+    <div class="mb-3 text-end">
+        <a th:href="@{/rutinas/nueva}" class="btn btn-success">Crear rutina</a>
+    </div>
+
+    <table class="table table-bordered">
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Nombre</th>
+            <th>Objetivo</th>
+            <th>Descripción</th>
+            <th>Estado</th>
+            <th>N° Semanas</th>
+            <th>Acciones</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="rutina : ${rutinas}">
+            <td th:text="${rutina.idRutina}"></td>
+            <td th:text="${rutina.nombre}"></td>
+            <td th:text="${rutina.objetivo}"></td>
+            <td th:text="${rutina.descripcion}"></td>
+            <td th:text="${rutina.estadoRutina}"></td>
+            <td th:text="${rutina.numeroSemanas}"></td>
+            <td>
+                <div th:if="${rutina.idEntrenador != null and rutina.idEntrenador == idUsuarioActual}">
+                    <a th:href="@{'/rutinas/editar/' + ${rutina.idRutina}}" class="btn btn-sm btn-primary">Editar</a>
+                    <form th:action="@{'/rutinas/eliminar/' + ${rutina.idRutina}}" method="post" style="display:inline">
+                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                        <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('¿Eliminar rutina?')">Eliminar</button>
+                    </form>
+                </div>
+                <span class="text-muted" th:unless="${rutina.idEntrenador != null and rutina.idEntrenador == idUsuarioActual}">-</span>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</section>
+</body>
+</html>
