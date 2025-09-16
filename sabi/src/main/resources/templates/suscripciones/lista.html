@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Lista De Ejercicios</title>
+</head>
+<body th:replace="layout/layout :: layout('Lista de ejercicios', ~{::section})">
+<section th:fragment="section">
+    <h1 class="h3 mb-4 text-gray-800 text-center">Lista de Suscripciones</h1>
+
+    <div class="mb-3 text-end">
+        <a th:href="@{/suscripciones/nuevo}" class="btn btn-success">Crear suscripción</a>
+    </div>
+
+    <div class="container">
+        <div class="row justify-content-center">
+            <div th:if="${#lists.isEmpty(suscripciones)}" class="col-12 d-flex justify-content-center">
+                <div class="alert alert-info text-center w-50 mt-5" role="alert">
+                    <strong>Aún no hay suscripciones</strong><br>
+                    Cuando tengas alguna, aquí se mostrarán.
+                </div>
+            </div>
+            <div th:each="suscripcion, iterStat : ${suscripciones}" th:if="${!#lists.isEmpty(suscripciones)}"
+                 th:classappend="col-md-6 d-flex align-items-stretch mb-4">
+                <div class="card w-100 shadow-sm">
+                    <div class="card-body">
+                        <h5 class="card-title mb-2">Suscripción #<span th:text="${suscripcion.idSuscripcion}"></span></h5>
+                        <p class="card-text mb-1"><strong>Cliente:</strong> <span th:text="${suscripcion.idCliente}"></span></p>
+                        <p class="card-text mb-1"><strong>Entrenador:</strong> <span th:text="${suscripcion.idEntrenador}"></span></p>
+                        <p class="card-text mb-1"><strong>Plazo:</strong> <span th:text="${suscripcion.plazo}"></span></p>
+                        <p class="card-text mb-1"><strong>Fecha Inicio:</strong> <span th:text="${suscripcion.fechaInicio}"></span></p>
+                        <p class="card-text mb-1"><strong>Fecha Fin:</strong> <span th:text="${suscripcion.fechaFin}"></span></p>
+                        <p class="card-text mb-2"><strong>Estado:</strong> <span th:text="${suscripcion.estadoSuscripcion}"></span></p>
+                        <div class="d-flex gap-2">
+                            <a th:href="@{'/suscripciones/editar/' + ${suscripcion.idSuscripcion}}" class="btn btn-sm btn-primary flex-fill">Editar</a>
+                            <form th:action="@{'/suscripciones/eliminar/' + ${suscripcion.idSuscripcion}}" method="post" style="display:inline" class="flex-fill">
+                                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                                <button type="submit" class="btn btn-sm btn-danger w-100" onclick="return confirm('¿Eliminar suscripción?')">Eliminar</button>
+                            </form>
+                            <form th:action="@{'/suscripciones/desactivar/' + ${suscripcion.idSuscripcion}}" method="post" style="display:inline" class="flex-fill">
+                                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                                <button type="submit" class="btn btn-sm btn-warning w-100" onclick="return confirm('¿Desactivar suscripción?')">Desactivar</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+</body>
+</html>
