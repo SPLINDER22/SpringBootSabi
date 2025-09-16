@@ -1,0 +1,310 @@
+/* Estilos base y fondo igual que login */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+body {
+    font-family: 'Arial', sans-serif;
+    height: 100vh;
+    overflow: hidden;
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" fill="%23e8f4ff"><g fill="%2393c5fd" opacity="0.3"><path d="M20 20h10v5h-5v5h-5zM30 30h5v10h-5zM40 25h5v5h-5zM15 35h5v5h-5z"/><circle cx="25" cy="45" r="3"/><circle cx="35" cy="15" r="2"/><path d="M50 40l5-5v10l-5-5zM60 30h8v2h-8zM65 35h6v2h-6z"/><circle cx="70" cy="20" r="2"/><path d="M10 60h5v5h-5zM20 65h3v3h-3zM30 55h4v4h-4z"/><circle cx="45" cy="65" r="2"/><path d="M60 60l3-3v6l-3-3zM70 55h5v2h-5zM75 60h4v2h-4z"/><circle cx="80" cy="45" r="3"/></g></svg>') repeat;
+    background-size: 100px 100px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.registro-container {
+    display: flex;
+    width: 900px;
+    height: 600px;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+    background: white;
+}
+
+.registro-card {
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+    padding: 30px;
+    max-width: 600px;
+    width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+/* Header compacto */
+.header-section {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.logo-container {
+    flex: 1;
+}
+
+.logo-img {
+    height: 40px;
+    width: auto;
+}
+
+.close-btn {
+    background: #f8fafc;
+    border: none;
+    border-radius: 50%;
+    width: 35px;
+    height: 35px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #64748b;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.close-btn:hover {
+    background: #ef4444;
+    color: white;
+}
+
+/* Título y subtítulo */
+.title-section {
+    text-align: center;
+    margin-bottom: 25px;
+}
+
+.page-title {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: #1e293b;
+    margin: 0 0 5px 0;
+}
+
+.page-subtitle {
+    color: #64748b;
+    font-size: 0.9rem;
+    margin: 0;
+}
+
+/* Inputs y selects igual que login */
+.form-row-compact {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+}
+.form-field, .form-field-full {
+    display: flex;
+    flex-direction: column;
+}
+.form-field-full {
+    grid-column: 1 / -1;
+}
+.form-field label {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #374151;
+    margin-bottom: 5px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+.form-field input,
+.form-field select {
+    padding: 10px 14px;
+    border: 1.5px solid #e2e8f0;
+    border-radius: 6px;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    background: #f8fafc;
+    color: #374151;
+}
+.form-field input:focus,
+.form-field select:focus {
+    outline: none;
+    border-color: #2563eb;
+    background: white;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+.form-field input::placeholder {
+    color: #94a3b8;
+    font-style: italic;
+}
+
+/* Términos compactos */
+.terms-compact {
+    margin: 10px 0;
+}
+.checkbox-label {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    cursor: pointer;
+    font-size: 0.8rem;
+    color: #374151;
+    line-height: 1.4;
+}
+.checkbox-label input[type="checkbox"] {
+    margin: 0;
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+    flex-shrink: 0;
+    margin-top: 2px;
+}
+.terms-text {
+    flex: 1;
+}
+.terms-link {
+    color: #2563eb;
+    text-decoration: none;
+    font-weight: 600;
+}
+.terms-link:hover {
+    text-decoration: underline;
+}
+
+/* Botón igual que login */
+.register-btn {
+    background: linear-gradient(135deg, #2563eb, #1d4ed8);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 14px 22px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin: 20px 0 10px 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+.register-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 10px 25px rgba(37, 99, 235, 0.3);
+}
+
+/* Link de login */
+.login-link {
+    text-align: center;
+    font-size: 0.95rem;
+    color: #64748b;
+}
+.login-link a {
+    color: #2563eb;
+    text-decoration: none;
+    font-weight: 600;
+}
+.login-link a:hover {
+    text-decoration: underline;
+}
+
+/* Sección logo */
+.sabi-logo img {
+    height: 70px;
+    width: auto;
+    margin-bottom: 20px;
+}
+.sabi-text {
+    font-size: 2.2rem;
+    font-weight: bold;
+    color: #fff;
+    text-align: center;
+    letter-spacing: 2px;
+}
+
+/* Responsive igual que login */
+@media (max-width: 900px) {
+    .registro-container {
+        width: 100vw;
+        height: 100vh;
+        border-radius: 0;
+    }
+}
+@media (max-width: 768px) {
+    .registro-container {
+        flex-direction: column;
+        height: auto;
+        min-height: 100vh;
+    }
+    .registro-form-section {
+        padding: 40px 20px;
+    }
+    .logo-section {
+        min-height: 200px;
+    }
+}
+@media (max-width: 480px) {
+    .registro-form-section {
+        padding: 20px 5px;
+    }
+    .form-field label {
+        font-size: 0.8rem;
+    }
+    .form-field input,
+    .form-field select {
+        padding: 8px 10px;
+        font-size: 0.9rem;
+    }
+    .register-btn {
+        padding: 10px 12px;
+        font-size: 0.9rem;
+    }
+    .sabi-logo img {
+        height: 40px;
+    }
+    .sabi-text {
+        font-size: 1.3rem;
+    }
+}
+
+/* Animación card */
+.registro-container {
+    animation: fadeInUp 0.5s ease-out;
+}
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Scroll personalizado */
+.registro-form-section::-webkit-scrollbar {
+    width: 4px;
+}
+.registro-form-section::-webkit-scrollbar-track {
+    background: #f1f5f9;
+    border-radius: 2px;
+}
+.registro-form-section::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 2px;
+}
+.registro-form-section::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+}
+
+/* Alertas compactas */
+.compact-alert {
+    padding: 10px 15px;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+}

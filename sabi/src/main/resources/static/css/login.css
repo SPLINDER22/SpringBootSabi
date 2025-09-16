@@ -1,0 +1,209 @@
+/* CSS para la página de login de SABI */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Arial', sans-serif;
+    height: 100vh;
+    overflow: hidden;
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" fill="%23e8f4ff"><g fill="%2393c5fd" opacity="0.3"><path d="M20 20h10v5h-5v5h-5zM30 30h5v10h-5zM40 25h5v5h-5zM15 35h5v5h-5z"/><circle cx="25" cy="45" r="3"/><circle cx="35" cy="15" r="2"/><path d="M50 40l5-5v10l-5-5zM60 30h8v2h-8zM65 35h6v2h-6z"/><circle cx="70" cy="20" r="2"/><path d="M10 60h5v5h-5zM20 65h3v3h-3zM30 55h4v4h-4z"/><circle cx="45" cy="65" r="2"/><path d="M60 60l3-3v6l-3-3zM70 55h5v2h-5zM75 60h4v2h-4z"/><circle cx="80" cy="45" r="3"/></g></svg>') repeat;
+    background-size: 100px 100px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.login-container {
+    display: flex;
+    width: 900px;
+    height: 600px;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+    background: white;
+}
+
+.login-form-section {
+    flex: 1;
+    padding: 60px 50px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    background: white;
+}
+
+.logo-section {
+    flex: 1;
+    background: linear-gradient(135deg, #2563eb, #1d4ed8);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.logo-section::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" fill="none"><g stroke="%23ffffff" stroke-width="0.5" opacity="0.1"><path d="M20 20h10v5h-5v5h-5zM30 30h5v10h-5zM40 25h5v5h-5zM15 35h5v5h-5z"/><circle cx="25" cy="45" r="3"/><circle cx="35" cy="15" r="2"/><path d="M50 40l5-5v10l-5-5zM60 30h8v2h-8zM65 35h6v2h-6z"/><circle cx="70" cy="20" r="2"/></g></svg>') repeat;
+    background-size: 80px 80px;
+    animation: float 20s infinite linear;
+}
+
+@keyframes float {
+    0% { transform: translate(0, 0); }
+    100% { transform: translate(-100px, -100px); }
+}
+
+.login-title {
+    font-size: 2.5rem;
+    font-weight: bold;
+    color: #1f2937;
+    margin-bottom: 40px;
+    text-align: center;
+}
+
+.divider {
+    display: flex;
+    align-items: center;
+    margin: 30px 0;
+    color: #6b7280;
+    font-size: 0.9rem;
+}
+
+.divider::before,
+.divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: #d1d5db;
+}
+
+.divider::before {
+    margin-right: 15px;
+}
+
+.divider::after {
+    margin-left: 15px;
+}
+
+.form-group {
+    margin-bottom: 25px;
+}
+
+.form-group label {
+    display: block;
+    font-weight: 600;
+    color: #374151;
+    margin-bottom: 8px;
+    font-size: 0.95rem;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 15px 20px;
+    border: 2px solid #e5e7eb;
+    border-radius: 12px;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    background: #f9fafb;
+}
+
+.form-group input:focus {
+    outline: none;
+    border-color: #2563eb;
+    background: white;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+.form-group input::placeholder {
+    color: #9ca3af;
+}
+
+.login-button {
+    width: 100%;
+    padding: 15px;
+    background: linear-gradient(135deg, #2563eb, #1d4ed8);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-bottom: 25px;
+}
+
+.login-button:hover {
+    background: linear-gradient(135deg, #1d4ed8, #1e40af);
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba(37, 99, 235, 0.3);
+}
+
+.register-link {
+    text-align: center;
+    color: #6b7280;
+    font-size: 0.95rem;
+}
+
+.register-link a {
+    color: #2563eb;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.register-link a:hover {
+    text-decoration: underline;
+}
+
+.sabi-logo {
+    z-index: 2;
+    position: relative;
+}
+
+.sabi-logo img {
+    max-width: 200px;
+    height: auto;
+    filter: brightness(0) invert(1);
+}
+
+.sabi-text {
+    color: white;
+    font-size: 3rem;
+    font-weight: bold;
+    margin-top: 20px;
+    letter-spacing: 2px;
+    z-index: 2;
+    position: relative;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .login-container {
+        flex-direction: column;
+        width: 90%;
+        height: auto;
+        margin: 20px;
+    }
+
+    .login-form-section {
+        padding: 40px 30px;
+    }
+
+    .logo-section {
+        height: 200px;
+    }
+
+    .sabi-text {
+        font-size: 2rem;
+    }
+}

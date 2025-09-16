@@ -1,12 +1,699 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<html lang="es" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
-    <title>Lista De Ejercicios</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SABI - Dashboard Cliente</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/contenido.css}">
+    <link rel="stylesheet" th:href="@{/css/dashboard-cliente.css}">
 </head>
-<body th:replace="layout/layout :: layout('Lista de ejercicios', ~{::section})" xmlns:sec="http://www.w3.org/1999/xhtml">
-<section th:fragment="section">
-    <h2>Dashboard cliente</h2>
-</section>
+<body>
+<div class="dashboard-container">
+    <header th:replace="fragments/layout :: navbar"></header>
+
+    <main class="main-content">
+        <div class="welcome-section">
+            <h2>🏃‍♂️ ¡Bienvenido a SABI!</h2>
+            <p sec:authentication="name">Hola, </p>
+            <p>Tu plataforma de entrenamiento personalizado</p>
+        </div>
+
+        <!-- Sección principal con 3 categorías -->
+        <div class="categories-container">
+
+            <!-- 1. CATEGORÍA: DIAGNÓSTICO -->
+            <div class="category-section">
+                <div class="category-header">
+                    <h3>📋 Mi Diagnóstico</h3>
+                    <div class="category-status" th:classappend="${tieneDiagnostico} ? 'completed' : 'pending'">
+                        <span th:if="${tieneDiagnostico}" class="status-text">✅ Completado</span>
+                        <span th:unless="${tieneDiagnostico}" class="status-text">⏳ Pendiente</span>
+                    </div>
+                </div>
+
+                <div class="category-content">
+                    <div th:if="${tieneDiagnostico}" class="diagnostic-info">
+                        <div class="info-grid">
+                            <div class="info-item">
+                                <span class="info-label">Fecha del diagnóstico:</span>
+                                <span class="info-value" th:text="${#temporals.format(diagnosticoActual.fecha, 'dd/MM/yyyy')}">--</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Nivel de experiencia:</span>
+                                <span class="info-value" th:text="${diagnosticoActual.nivelExperiencia}">--</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Peso actual:</span>
+                                <span class="info-value" th:text="${diagnosticoActual.peso + ' kg'}">-- kg</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Estatura:</span>
+                                <span class="info-value" th:text="${diagnosticoActual.estatura + ' cm'}">-- cm</span>
+                            </div>
+                        </div>
+                        <div class="category-actions">
+                            <button class="btn btn-secondary" onclick="window.location.href='/cliente/diagnostico/ver'">
+                                Ver Diagnóstico Completo
+                            </button>
+                            <button class="btn btn-outline" onclick="window.location.href='/cliente/diagnostico/crear'">
+                                Actualizar Diagnóstico
+                            </button>
+                        </div>
+                    </div>
+
+                    <div th:unless="${tieneDiagnostico}" class="diagnostic-empty">
+                        <div class="empty-icon">📋</div>
+                        <h4>¡Completa tu Diagnóstico Inicial!</h4>
+                        <p>Para brindarte rutinas personalizadas, necesitamos conocer tu estado físico actual y objetivos.</p>
+                        <div class="category-actions">
+                            <button class="btn btn-primary" onclick="window.location.href='/cliente/diagnostico/crear'">
+                                Hacer Diagnóstico Ahora
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 2. CATEGORÍA: RUTINAS -->
+            <div class="category-section">
+                <div class="category-header">
+                    <h3>💪 Mis Rutinas</h3>
+                    <div class="category-status" th:classappend="${tieneRutinas} ? 'completed' : 'pending'">
+                        <span th:if="${tieneRutinas}" class="status-text">✅ Activa</span>
+                        <span th:unless="${tieneRutinas}" class="status-text">⏳ Sin asignar</span>
+                    </div>
+                </div>
+
+                <div class="category-content">
+                    <div th:if="${tieneRutinas}" class="rutinas-info">
+                        <div class="rutinas-list">
+                            <div th:each="rutina : ${rutinas}" class="rutina-card">
+                                <div class="rutina-header">
+                                    <h5 th:text="${rutina.nombre}">Rutina de Entrenamiento</h5>
+                                    <span class="rutina-estado" th:text="${rutina.estado}" th:classappend="${rutina.estado.toLowerCase()}">ACTIVA</span>
+                                </div>
+                                <div class="rutina-details">
+                                    <p><strong>Objetivo:</strong> <span th:text="${rutina.objetivo}">Fuerza general</span></p>
+                                    <p><strong>Duración:</strong> <span th:text="${rutina.numeroSemanas + ' semanas'}">8 semanas</span></p>
+                                    <p><strong>Creada:</strong> <span th:text="${#temporals.format(rutina.fechaCreacion, 'dd/MM/yyyy')}">01/12/2024</span></p>
+                                </div>
+                                <div class="rutina-actions">
+                                    <button class="btn btn-primary btn-sm" onclick="window.location.href='/cliente/entrenamiento-hoy'">
+                                        🗓️ Entrenamiento de Hoy
+                                    </button>
+                                    <button class="btn btn-outline btn-sm" onclick="window.location.href='/cliente/rutina/ver'">Ver Rutina Completa</button>
+                                    <button class="btn btn-outline btn-sm" onclick="window.location.href='/cliente/progreso'">📈 Mi Progreso</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div th:unless="${tieneRutinas}" class="rutinas-empty">
+                        <div class="empty-icon">💪</div>
+                        <h4>Aún no tienes rutinas asignadas</h4>
+                        <p>Tu entrenador te asignará rutinas personalizadas basadas en tu diagnóstico.</p>
+                        <div class="category-actions" th:if="${!tieneDiagnostico}">
+                            <button class="btn btn-disabled" disabled>
+                                Primero completa tu diagnóstico
+                            </button>
+                        </div>
+                        <div class="category-actions" th:if="${tieneDiagnostico}">
+                            <button class="btn btn-outline" onclick="window.location.href='/cliente/entrenadores'">
+                                Contactar Entrenador
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 3. CATEGORÍA: ENTRENADORES -->
+            <div class="category-section">
+                <div class="category-header">
+                    <h3>👨‍⚕️ Entrenadores Disponibles</h3>
+                    <div class="category-status completed">
+                        <span class="status-text" th:text="${#lists.size(entrenadores) + ' disponibles'}">5 disponibles</span>
+                    </div>
+                </div>
+
+                <div class="category-content">
+                    <div class="entrenadores-grid">
+                        <div th:each="entrenador : ${entrenadores}" class="entrenador-card">
+                            <div class="entrenador-avatar">
+                                <img th:src="@{/img/entrenador.jpg}" alt="Entrenador" />
+                            </div>
+                            <div class="entrenador-info">
+                                <h5>Entrenador Profesional</h5>
+                                <p class="especialidad" th:text="${entrenador.especialidad ?: 'Entrenamiento General'}">Entrenamiento General</p>
+                                <p class="experiencia" th:text="${entrenador.experiencia ?: 'Experiencia variada'}">5 años de experiencia</p>
+                                <div class="calificacion">
+                                    <span class="stars">⭐⭐⭐⭐⭐</span>
+                                    <span class="rating" th:text="${entrenador.calificacionPromedio ?: '5.0'}">5.0</span>
+                                </div>
+                            </div>
+                            <div class="entrenador-actions">
+                                <button class="btn btn-primary btn-sm" th:onclick="'window.location.href=\'/cliente/entrenador/perfil/' + ${entrenador.id} + '\''">Ver Perfil</button>
+                                <form th:if="${tieneDiagnostico}" th:action="@{/cliente/suscripcion/solicitar}" method="post" style="display: inline;">
+                                    <input type="hidden" name="entrenadorId" th:value="${entrenador.id}">
+                                    <button type="submit" class="btn btn-outline btn-sm">Contactar</button>
+                                </form>
+                                <button class="btn btn-disabled btn-sm" th:unless="${tieneDiagnostico}" disabled>Requiere diagnóstico</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div th:if="${#lists.isEmpty(entrenadores)}" class="entrenadores-empty">
+                        <div class="empty-icon">👨‍⚕️</div>
+                        <h4>No hay entrenadores disponibles</h4>
+                        <p>En este momento no hay entrenadores registrados en el sistema.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer th:replace="fragments/layout :: footer"></footer>
+</div>
+
+<!-- Eliminado: estilos movidos a dashboard-cliente.css -->
+
+<script>
+    // Funciones JavaScript para el dashboard del cliente
+    document.addEventListener('DOMContentLoaded', function() {
+        // Agregar animaciones de entrada
+        const sections = document.querySelectorAll('.category-section');
+        sections.forEach((section, index) => {
+            section.style.opacity = '0';
+            section.style.transform = 'translateY(20px)';
+
+            setTimeout(() => {
+                section.style.transition = 'all 0.6s ease';
+                section.style.opacity = '1';
+                section.style.transform = 'translateY(0)';
+            }, index * 200);
+        });
+    });
+
+    // Función para mostrar notificación
+    function showNotification(message, type = 'info') {
+        // Crear elemento de notificación
+        const notification = document.createElement('div');
+        notification.className = `notification ${type}`;
+        notification.textContent = message;
+        notification.style.cssText = `
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: ${type === 'success' ? '#10b981' : '#3b82f6'};
+            color: white;
+            padding: 15px 20px;
+            border-radius: 8px;
+            z-index: 1000;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            transform: translateX(100%);
+            transition: transform 0.3s ease;
+        `;
+
+        document.body.appendChild(notification);
+
+        // Mostrar notificación
+        setTimeout(() => {
+            notification.style.transform = 'translateX(0)';
+        }, 100);
+
+        // Ocultar después de 3 segundos
+        setTimeout(() => {
+            notification.style.transform = 'translateX(100%)';
+            setTimeout(() => {
+                document.body.removeChild(notification);
+            }, 300);
+        }, 3000);
+    }
+</script>
+
+<!-- Modal: Entrenamiento de Hoy -->
+<div class="modal fade" id="entrenamientoHoyModal" tabindex="-1" aria-labelledby="entrenamientoHoyModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title" id="entrenamientoHoyModalLabel">
+                    🗓️ Entrenamiento de Hoy - <span id="fechaHoy"></span>
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" id="entrenamientoHoyContent">
+                <div class="text-center">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Cargando...</span>
+                    </div>
+                    <p class="mt-2">Cargando tu entrenamiento...</p>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                <button type="button" class="btn btn-success" id="completarDiaModal" disabled>
+                    <i class="fas fa-check-circle"></i> Completar Día
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal: Rutina Completa -->
+<div class="modal fade" id="rutinaCompletaModal" tabindex="-1" aria-labelledby="rutinaCompletaModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header bg-info text-white">
+                <h5 class="modal-title" id="rutinaCompletaModalLabel">
+                    💪 Mi Rutina Completa
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" id="rutinaCompletaContent">
+                <div class="text-center">
+                    <div class="spinner-border text-info" role="status">
+                        <span class="visually-hidden">Cargando...</span>
+                    </div>
+                    <p class="mt-2">Cargando tu rutina completa...</p>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Cargar entrenamiento de hoy al abrir modal
+    document.getElementById('entrenamientoHoyModal').addEventListener('show.bs.modal', function () {
+        cargarEntrenamientoHoy();
+    });
+
+    // Cargar rutina completa al abrir modal
+    document.getElementById('rutinaCompletaModal').addEventListener('show.bs.modal', function () {
+        cargarRutinaCompleta();
+    });
+
+    function cargarEntrenamientoHoy() {
+        const content = document.getElementById('entrenamientoHoyContent');
+        const fechaHoy = document.getElementById('fechaHoy');
+
+        // Actualizar fecha
+        const hoy = new Date();
+        const fechaFormateada = hoy.toLocaleDateString('es-ES', {
+            weekday: 'long',
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+        });
+        fechaHoy.textContent = fechaFormateada;
+
+        // Simular carga de datos
+        setTimeout(() => {
+            content.innerHTML = `
+                <div class="entrenamiento-hoy-content">
+                    <!-- Header del progreso -->
+                    <div class="progreso-header mb-4">
+                        <div class="row align-items-center">
+                            <div class="col-md-8">
+                                <h4 class="mb-0">Tu entrenamiento de hoy</h4>
+                                <p class="text-muted mb-0">Marca cada serie cuando la completes</p>
+                            </div>
+                            <div class="col-md-4 text-end">
+                                <div class="progreso-circular">
+                                    <div class="circle-progress" data-progress="0">
+                                        <span class="progress-text">0%</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Ejercicios del día -->
+                    <div class="ejercicios-lista">
+                        <div class="ejercicio-card mb-4">
+                            <div class="card">
+                                <div class="card-header bg-light">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <h5 class="mb-0">
+                                            <i class="fas fa-dumbbell text-primary me-2"></i>
+                                            Press de Banca
+                                        </h5>
+                                        <span class="badge bg-warning" id="estadoEjercicio1">Pendiente</span>
+                                    </div>
+                                </div>
+                                <div class="card-body">
+                                    <p class="text-muted mb-3">Ejercicio para desarrollar el pecho y tríceps</p>
+
+                                    <!-- Series checklist -->
+                                    <div class="series-checklist">
+                                        <h6 class="mb-3">Series a completar:</h6>
+
+                                        <div class="serie-item mb-2">
+                                            <div class="form-check">
+                                                <input class="form-check-input serie-checkbox" type="checkbox" id="serie1" data-ejercicio="1">
+                                                <label class="form-check-label w-100" for="serie1">
+                                                    <div class="d-flex justify-content-between">
+                                                        <span><strong>Serie 1:</strong> 12 reps × 80kg</span>
+                                                        <span class="text-muted">Descanso: 90s</span>
+                                                    </div>
+                                                </label>
+                                            </div>
+                                        </div>
+
+                                        <div class="serie-item mb-2">
+                                            <div class="form-check">
+                                                <input class="form-check-input serie-checkbox" type="checkbox" id="serie2" data-ejercicio="1">
+                                                <label class="form-check-label w-100" for="serie2">
+                                                    <div class="d-flex justify-content-between">
+                                                        <span><strong>Serie 2:</strong> 10 reps × 85kg</span>
+                                                        <span class="text-muted">Descanso: 90s</span>
+                                                    </div>
+                                                </label>
+                                            </div>
+                                        </div>
+
+                                        <div class="serie-item mb-2">
+                                            <div class="form-check">
+                                                <input class="form-check-input serie-checkbox" type="checkbox" id="serie3" data-ejercicio="1">
+                                                <label class="form-check-label w-100" for="serie3">
+                                                    <div class="d-flex justify-content-between">
+                                                        <span><strong>Serie 3:</strong> 8 reps × 90kg</span>
+                                                        <span class="text-muted">Descanso: 90s</span>
+                                                    </div>
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Progreso del ejercicio -->
+                                    <div class="mt-3">
+                                        <div class="progress" style="height: 10px;">
+                                            <div class="progress-bar bg-success" id="progressEjercicio1" style="width: 0%"></div>
+                                        </div>
+                                        <small class="text-muted">Progreso: <span id="textoProgreso1">0 de 3 series</span></small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Segundo ejercicio -->
+                        <div class="ejercicio-card mb-4">
+                            <div class="card">
+                                <div class="card-header bg-light">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <h5 class="mb-0">
+                                            <i class="fas fa-dumbbell text-primary me-2"></i>
+                                            Sentadillas
+                                        </h5>
+                                        <span class="badge bg-warning" id="estadoEjercicio2">Pendiente</span>
+                                    </div>
+                                </div>
+                                <div class="card-body">
+                                    <p class="text-muted mb-3">Ejercicio para desarrollar las piernas y glúteos</p>
+
+                                    <div class="series-checklist">
+                                        <h6 class="mb-3">Series a completar:</h6>
+
+                                        <div class="serie-item mb-2">
+                                            <div class="form-check">
+                                                <input class="form-check-input serie-checkbox" type="checkbox" id="serie4" data-ejercicio="2">
+                                                <label class="form-check-label w-100" for="serie4">
+                                                    <div class="d-flex justify-content-between">
+                                                        <span><strong>Serie 1:</strong> 15 reps × 100kg</span>
+                                                        <span class="text-muted">Descanso: 120s</span>
+                                                    </div>
+                                                </label>
+                                            </div>
+                                        </div>
+
+                                        <div class="serie-item mb-2">
+                                            <div class="form-check">
+                                                <input class="form-check-input serie-checkbox" type="checkbox" id="serie5" data-ejercicio="2">
+                                                <label class="form-check-label w-100" for="serie5">
+                                                    <div class="d-flex justify-content-between">
+                                                        <span><strong>Serie 2:</strong> 12 reps × 110kg</span>
+                                                        <span class="text-muted">Descanso: 120s</span>
+                                                    </div>
+                                                </label>
+                                            </div>
+                                        </div>
+
+                                        <div class="serie-item mb-2">
+                                            <div class="form-check">
+                                                <input class="form-check-input serie-checkbox" type="checkbox" id="serie6" data-ejercicio="2">
+                                                <label class="form-check-label w-100" for="serie6">
+                                                    <div class="d-flex justify-content-between">
+                                                        <span><strong>Serie 3:</strong> 10 reps × 120kg</span>
+                                                        <span class="text-muted">Descanso: 120s</span>
+                                                    </div>
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="mt-3">
+                                        <div class="progress" style="height: 10px;">
+                                            <div class="progress-bar bg-success" id="progressEjercicio2" style="width: 0%"></div>
+                                        </div>
+                                        <small class="text-muted">Progreso: <span id="textoProgreso2">0 de 3 series</span></small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Timer de descanso -->
+                    <div class="timer-container" id="timerContainer" style="display: none;">
+                        <div class="alert alert-info text-center">
+                            <h5><i class="fas fa-clock me-2"></i>Tiempo de Descanso</h5>
+                            <div class="timer-display">
+                                <span id="timerDisplay" class="fs-2 fw-bold">01:30</span>
+                            </div>
+                            <button class="btn btn-sm btn-outline-primary mt-2" onclick="saltarDescanso()">
+                                Saltar Descanso
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            // Inicializar event listeners
+            inicializarEventListeners();
+        }, 1000);
+    }
+
+    function cargarRutinaCompleta() {
+        const content = document.getElementById('rutinaCompletaContent');
+
+        setTimeout(() => {
+            fetch('/cliente/rutina/ver')
+                .then(response => response.text())
+                .then(html => {
+                    // Extraer solo el contenido principal de la rutina
+                    const parser = new DOMParser();
+                    const doc = parser.parseFromString(html, 'text/html');
+                    const rutinaContent = doc.querySelector('.rutina-container');
+
+                    if (rutinaContent) {
+                        content.innerHTML = rutinaContent.innerHTML;
+                    } else {
+                        content.innerHTML = '<p>Error al cargar la rutina completa</p>';
+                    }
+                })
+                .catch(error => {
+                    content.innerHTML = '<p>Error al cargar la rutina completa</p>';
+                });
+        }, 800);
+    }
+
+    let totalSeries = 6;
+    let seriesCompletadas = 0;
+    let timerInterval = null;
+
+        if (progressBar) progressBar.style.width = porcentaje + '%';
+        if (textoProgreso) textoProgreso.textContent = `${completadas.length} de ${checkboxes.length} series`;
+
+        // Actualizar estado
+        if (estadoBadge) {
+            if (completadas.length === checkboxes.length) {
+                estadoBadge.textContent = 'Completado';
+                estadoBadge.className = 'badge bg-success';
+            } else if (completadas.length > 0) {
+                estadoBadge.textContent = 'En Progreso';
+                estadoBadge.className = 'badge bg-primary';
+            } else {
+                estadoBadge.textContent = 'Pendiente';
+                estadoBadge.className = 'badge bg-warning';
+            }
+        }
+    }
+
+    function actualizarProgreso() {
+        const porcentajeGeneral = (seriesCompletadas / totalSeries) * 100;
+
+        // Actualizar círculo de progreso
+        const circleProgress = document.querySelector('.circle-progress');
+        const progressText = document.querySelector('.progress-text');
+
+        if (circleProgress && progressText) {
+            circleProgress.dataset.progress = porcentajeGeneral;
+            progressText.textContent = Math.round(porcentajeGeneral) + '%';
+
+            // Actualizar visual del círculo
+            circleProgress.style.background = `conic-gradient(#28a745 ${porcentajeGeneral * 3.6}deg, #e9ecef 0deg)`;
+        }
+
+        // Habilitar botón de completar día
+        const botonCompletar = document.getElementById('completarDiaModal');
+        if (botonCompletar) {
+            botonCompletar.disabled = seriesCompletadas !== totalSeries;
+
+            if (seriesCompletadas === totalSeries) {
+                botonCompletar.classList.add('pulse');
+            } else {
+                botonCompletar.classList.remove('pulse');
+            }
+        }
+    }
+
+    function mostrarTimer(segundos) {
+        const timerContainer = document.getElementById('timerContainer');
+        const timerDisplay = document.getElementById('timerDisplay');
+
+        timerContainer.style.display = 'block';
+
+        let tiempoRestante = segundos;
+
+        timerInterval = setInterval(() => {
+            const minutos = Math.floor(tiempoRestante / 60);
+            const segs = tiempoRestante % 60;
+            timerDisplay.textContent = `${minutos.toString().padStart(2, '0')}:${segs.toString().padStart(2, '0')}`;
+
+            tiempoRestante--;
+
+            if (tiempoRestante < 0) {
+                clearInterval(timerInterval);
+                timerContainer.style.display = 'none';
+            }
+        }, 1000);
+    }
+
+    function saltarDescanso() {
+        clearInterval(timerInterval);
+        document.getElementById('timerContainer').style.display = 'none';
+    }
+
+    function completarDiaEntrenamiento() {
+        // Mostrar confirmación
+        if (confirm('🎉 ¡Excelente! ¿Confirmas que has completado todo el entrenamiento de hoy?')) {
+            // Aquí harías la llamada al servidor
+            fetch('/cliente/completar-dia', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(response => response.text())
+            .then(data => {
+                if (data === 'success') {
+                    // Celebración
+                    mostrarCelebracion();
+
+                    // Cerrar modal después de la celebración
+                    setTimeout(() => {
+                        bootstrap.Modal.getInstance(document.getElementById('entrenamientoHoyModal')).hide();
+                    }, 3000);
+                } else {
+                    alert('Error al completar el día: ' + data);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error al completar el día');
+            });
+        }
+    }
+
+    function mostrarCelebracion() {
+        const modalBody = document.getElementById('entrenamientoHoyContent');
+        modalBody.innerHTML = `
+            <div class="text-center py-5">
+                <div class="celebration-animation">
+                    <div style="font-size: 5rem; margin-bottom: 1rem;">🎉</div>
+                    <h2 class="text-success mb-3">¡Excelente Trabajo!</h2>
+                    <p class="lead">Has completado tu entrenamiento de hoy</p>
+                    <div style="font-size: 3rem; margin-top: 2rem;">💪 🔥 ⭐</div>
+                    <p class="text-muted mt-3">¡Sigue así y alcanzarás tus objetivos!</p>
+                </div>
+            </div>
+        `;
+    }
+</script>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<style>
+    .circle-progress {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        background: conic-gradient(#28a745 0deg, #e9ecef 0deg);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+    }
+
+    .circle-progress::before {
+        content: '';
+        width: 45px;
+        height: 45px;
+        border-radius: 50%;
+        background: white;
+        position: absolute;
+    }
+
+    .progress-text {
+        position: relative;
+        z-index: 1;
+        font-weight: bold;
+        font-size: 0.9rem;
+    }
+
+    .serie-item {
+        transition: all 0.3s ease;
+        border-radius: 5px;
+        padding: 5px;
+    }
+
+    .pulse {
+        animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+        0% { box-shadow: 0 0 0 0 rgba(40, 167, 69, 0.7); }
+        70% { box-shadow: 0 0 0 10px rgba(40, 167, 69, 0); }
+        100% { box-shadow: 0 0 0 0 rgba(40, 167, 69, 0); }
+    }
+
+    .timer-display {
+        font-family: 'Courier New', monospace;
+    }
+
+    .celebration-animation {
+        animation: bounceIn 1s ease-out;
+    }
+
+    @keyframes bounceIn {
+        0% { transform: scale(0); opacity: 0; }
+        50% { transform: scale(1.1); opacity: 1; }
+        100% { transform: scale(1); opacity: 1; }
+    }
+</style>
 </body>
 </html>
