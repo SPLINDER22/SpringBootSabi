@@ -74,6 +74,10 @@ public class RutinaServiceImpl implements RutinaService {
                     .orElseThrow(() -> new RuntimeException("Entrenador not found with id: " + rutinaDTO.getIdEntrenador()));
             rutina.setEntrenador(entrenador);
         }
+        // Asignar fecha de creación si no viene en el DTO
+        if (rutina.getFechaCreacion() == null) {
+            rutina.setFechaCreacion(java.time.LocalDate.now());
+        }
         rutina = rutinaRepository.save(rutina);
         return modelMapper.map(rutina, RutinaDTO.class);
     }
