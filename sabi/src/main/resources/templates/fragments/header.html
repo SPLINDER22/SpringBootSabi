@@ -105,6 +105,14 @@
             </a>
         </li>
 
+        <!-- Entrenador -->
+        <li class="nav-item">
+            <a class="nav-link" th:href="@{/cliente/listaEntrenadores}" sec:authorize="hasAnyRole('CLIENTE')">
+                <i class="fas fa-fw fa-user-friends"></i>
+                <span>Entrenadores</span>
+            </a>
+        </li>
+
         <!-- Rutinas -->
         <li class="nav-item">
             <a class="nav-link" th:href="@{/rutinas}">
