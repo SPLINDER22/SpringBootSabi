@@ -11,7 +11,8 @@
     background: white;
     border-radius: 15px;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-    overflow: hidden;
+    /* allow children to overflow (e.g. dropdowns, modals inside card) and avoid clipping content */
+    overflow: visible;
     transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
@@ -54,6 +55,9 @@
 
 .category-content {
     padding: 25px;
+    /* do not artificially constrain height; allow scroll inside if needed on small screens */
+    max-height: none;
+    overflow: visible;
 }
 
 .diagnostic-info .info-grid {
@@ -197,6 +201,8 @@
     border-radius: 50%;
     object-fit: cover;
     border: 3px solid #e5e7eb;
+    max-width: 100%;
+    display: block;
 }
 
 .entrenador-info h5 {
@@ -337,6 +343,15 @@
     }
 }
 
+/* provide an explicit container max-height on very small viewports to avoid the page being unusable */
+@media (max-height: 640px) {
+    .categories-container {
+        max-height: calc(100vh - 160px);
+        overflow-y: auto;
+        padding-bottom: 30px;
+    }
+}
+
 .circle-progress {
     width: 60px;
     height: 60px;
@@ -393,4 +408,3 @@
     50% { transform: scale(1.1); opacity: 1; }
     100% { transform: scale(1); opacity: 1; }
 }
-

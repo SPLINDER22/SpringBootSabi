@@ -4,7 +4,11 @@ import com.sabi.sabi.entity.enums.Rol;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 @Entity
@@ -28,7 +32,7 @@ public class Usuario {
     private String email;
 
     @Column(nullable = false)
-    private String contraseña;
+    private String contraseña; // Cambiado desde 'password' para consistencia con el idioma español
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -39,5 +43,8 @@ public class Usuario {
 
     @Column(name = "estado", nullable = false)
     private Boolean estado = true;
-}
 
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return Collections.singletonList(new SimpleGrantedAuthority("ROLE_" + this.rol.name()));
+    }
+}

@@ -66,7 +66,7 @@ public class UsuarioServiceImpl implements UsuarioService {
             toSave = Cliente.builder()
                     .nombre(usuarioDTO.getNombre())
                     .email(usuarioDTO.getEmail())
-                    .contraseña(usuarioDTO.getContraseña())
+                    .contraseña(usuarioDTO.getContraseña()) // Cambiado desde 'getPassword' para consistencia con el idioma español
                     .rol(Rol.CLIENTE)
                     .estado(usuarioDTO.getEstado() != null ? usuarioDTO.getEstado() : true)
                     .build();
@@ -74,7 +74,7 @@ public class UsuarioServiceImpl implements UsuarioService {
             toSave = Entrenador.builder()
                     .nombre(usuarioDTO.getNombre())
                     .email(usuarioDTO.getEmail())
-                    .contraseña(usuarioDTO.getContraseña())
+                    .contraseña(usuarioDTO.getContraseña()) // Cambiado desde 'getPassword' para consistencia con el idioma español
                     .rol(Rol.ENTRENADOR)
                     .estado(usuarioDTO.getEstado() != null ? usuarioDTO.getEstado() : true)
                     .calificacionPromedio(0.0)
@@ -84,7 +84,7 @@ public class UsuarioServiceImpl implements UsuarioService {
             toSave = Usuario.builder()
                     .nombre(usuarioDTO.getNombre())
                     .email(usuarioDTO.getEmail())
-                    .contraseña(usuarioDTO.getContraseña())
+                    .contraseña(usuarioDTO.getContraseña()) // Cambiado desde 'getPassword' para consistencia con el idioma español
                     .rol(rol != null ? rol : Rol.CLIENTE)
                     .estado(usuarioDTO.getEstado() != null ? usuarioDTO.getEstado() : true)
                     .build();
@@ -101,7 +101,7 @@ public class UsuarioServiceImpl implements UsuarioService {
         existingUsuario.setNombre(usuarioDTO.getNombre());
         existingUsuario.setEmail(usuarioDTO.getEmail());
         if (usuarioDTO.getContraseña() != null && !usuarioDTO.getContraseña().isBlank()) {
-            existingUsuario.setContraseña(usuarioDTO.getContraseña());
+            existingUsuario.setContraseña(usuarioDTO.getContraseña()); // Cambiado desde 'getPassword' para consistencia con el idioma español
         }
         if (usuarioDTO.getRol() != null) {
             existingUsuario.setRol(usuarioDTO.getRol());

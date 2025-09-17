@@ -25,15 +25,51 @@ body {
     background: white;
 }
 
-.registro-card {
-    background: white;
-    border-radius: 20px;
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-    padding: 30px;
-    max-width: 600px;
-    width: 100%;
-    max-height: 90vh;
+/* Overrides to ensure the registration page shows all fields and is scrollable when needed */
+/* These target the login-container/layout classes used by registro.html and ensure no clipping */
+.login-container, .registro-container {
+    width: 95%;
+    max-width: 1100px;
+    height: auto; /* allow content to determine height */
+    min-height: 70vh;
+    border-radius: 18px;
+    overflow: visible; /* avoid clipping form fields */
+    display: flex;
+    gap: 0;
+}
+
+/* Form section should scroll if it's taller than viewport */
+.login-form-section, .registro-form-section {
+    flex: 1 1 60%;
+    padding: 40px 36px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: stretch;
+    max-height: calc(100vh - 120px);
     overflow-y: auto;
+}
+
+/* Logo section sizing */
+.logo-section {
+    flex: 0 0 40%;
+    min-width: 260px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 30px;
+}
+
+/* Make sure form inputs expand fully and are visible */
+.login-form .form-group, .login-form .form-row-compact, .login-form .form-field, .registro-form .form-group {
+    width: 100%;
+}
+
+/* Ensure the register button sticks to bottom area visually but not overlapping */
+.login-button, .register-btn {
+    position: relative;
+    z-index: 2;
 }
 
 /* Header compacto */
@@ -225,11 +261,13 @@ body {
 
 /* Responsive igual que login */
 @media (max-width: 900px) {
-    .registro-container {
-        width: 100vw;
-        height: 100vh;
-        border-radius: 0;
+    .login-container, .registro-container {
+        flex-direction: column;
+        width: 95%;
+        min-height: 100vh;
     }
+    .logo-section { order: 2; min-height: 160px; }
+    .login-form-section { order: 1; max-height: none; overflow: visible; padding: 30px 20px; }
 }
 @media (max-width: 768px) {
     .registro-container {

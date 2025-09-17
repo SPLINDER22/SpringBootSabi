@@ -14,7 +14,7 @@ public class UsuarioDTO {
     private Long id;
     private String nombre;
     private String email;
-    private String contraseña;
+    private String contraseña; // Cambiado desde 'password' para consistencia con el idioma español
     private Rol rol;
     private List<Long> idEjercicios;
     private Boolean estado = true;

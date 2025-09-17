@@ -39,10 +39,21 @@ public class DataInitializer implements CommandLineRunner {
 
     @Override
     public void run(String... args) {
-        crearClienteSiNoExiste("Cliente", "cliente@sabi.com", "1234");
-        crearEntrenadorSiNoExiste("Entrenador", "entrenador@sabi.com", "1234");
+        crearClienteSiNoExiste("Cliente", "cliente@sabi.com", "1234567");
+        crearEntrenadorSiNoExiste("Entrenador", "entrenador@sabi.com", "1234567");
         crearEjerciciosSiNoExisten();
         crearRutinaDeEjemplo();
+
+        // Mostrar en consola un resumen de los usuarios creados / existentes
+        System.out.println("----- Usuarios en la base de datos -----");
+        usuarioRepository.findAll().forEach(u -> {
+            System.out.println("ID: " + u.getId()
+                    + " | Nombre: " + u.getNombre()
+                    + " | Email: " + u.getEmail()
+                    + " | Rol: " + u.getRol()
+                    + " | Estado: " + u.getEstado()
+                    + " | Contraseña(encrypted): " + u.getContraseña());
+        });
     }
 
     private void crearClienteSiNoExiste(String nombre, String email, String rawPassword) {
@@ -58,6 +69,9 @@ public class DataInitializer implements CommandLineRunner {
                     .telefono("3144153367")
                     .build();
             usuarioRepository.save(cliente);
+            System.out.println("Usuario creado: " + nombre + " | " + email + " | contraseña (raw): " + rawPassword);
+        } else {
+            System.out.println("Usuario ya existe: " + email + " (no se muestra contraseña raw)");
         }
     }
 
@@ -74,6 +88,9 @@ public class DataInitializer implements CommandLineRunner {
                     .calificacionPromedio(0.0)
                     .build();
             usuarioRepository.save(entrenador);
+            System.out.println("Usuario creado: " + nombre + " | " + email + " | contraseña (raw): " + rawPassword);
+        } else {
+            System.out.println("Usuario ya existe: " + email + " (no se muestra contraseña raw)");
         }
     }
 

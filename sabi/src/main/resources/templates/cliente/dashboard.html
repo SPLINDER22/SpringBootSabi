@@ -10,8 +10,7 @@
     <link rel="stylesheet" th:href="@{/css/dashboard-cliente.css}">
 </head>
 <body>
-<div class="dashboard-container">
-    <header th:replace="fragments/layout :: navbar"></header>
+<header th:replace="~{fragments/header :: navbar}"></header>
 
     <main class="main-content">
         <div class="welcome-section">
@@ -34,7 +33,7 @@
                 </div>
 
                 <div class="category-content">
-                    <div th:if="${tieneDiagnostico}" class="diagnostic-info">
+                    <div th:if="${tieneDiagnostico == true}" class="diagnostic-info">
                         <div class="info-grid">
                             <div class="info-item">
                                 <span class="info-label">Fecha del diagnóstico:</span>
@@ -63,7 +62,7 @@
                         </div>
                     </div>
 
-                    <div th:unless="${tieneDiagnostico}" class="diagnostic-empty">
+                    <div th:if="${tieneDiagnostico != true}" class="diagnostic-empty">
                         <div class="empty-icon">📋</div>
                         <h4>¡Completa tu Diagnóstico Inicial!</h4>
                         <p>Para brindarte rutinas personalizadas, necesitamos conocer tu estado físico actual y objetivos.</p>
@@ -80,9 +79,9 @@
             <div class="category-section">
                 <div class="category-header">
                     <h3>💪 Mis Rutinas</h3>
-                    <div class="category-status" th:classappend="${tieneRutinas} ? 'completed' : 'pending'">
-                        <span th:if="${tieneRutinas}" class="status-text">✅ Activa</span>
-                        <span th:unless="${tieneRutinas}" class="status-text">⏳ Sin asignar</span>
+                    <div class="category-status" th:classappend="${tieneRutinas == true} ? 'completed' : 'pending'">
+                        <span th:if="${tieneRutinas == true}" class="status-text">✅ Activa</span>
+                        <span th:if="${tieneRutinas != true}" class="status-text">⏳ Sin asignar</span>
                     </div>
                 </div>
 
@@ -154,11 +153,11 @@
                             </div>
                             <div class="entrenador-actions">
                                 <button class="btn btn-primary btn-sm" th:onclick="'window.location.href=\'/cliente/entrenador/perfil/' + ${entrenador.id} + '\''">Ver Perfil</button>
-                                <form th:if="${tieneDiagnostico}" th:action="@{/cliente/suscripcion/solicitar}" method="post" style="display: inline;">
+                                <form th:if="${tieneDiagnostico == true}" th:action="@{/cliente/suscripcion/solicitar}" method="post" style="display: inline;">
                                     <input type="hidden" name="entrenadorId" th:value="${entrenador.id}">
                                     <button type="submit" class="btn btn-outline btn-sm">Contactar</button>
                                 </form>
-                                <button class="btn btn-disabled btn-sm" th:unless="${tieneDiagnostico}" disabled>Requiere diagnóstico</button>
+                                <button class="btn btn-disabled btn-sm" th:if="${tieneDiagnostico != true}" disabled>Requiere diagnóstico</button>
                             </div>
                         </div>
                     </div>
@@ -173,9 +172,9 @@
         </div>
     </main>
 
-    <footer th:replace="fragments/layout :: footer"></footer>
-</div>
-
+    <footer th:replace="~{fragments/footer :: footer}"></footer>
+</body>
+</html>
 <!-- Eliminado: estilos movidos a dashboard-cliente.css -->
 
 <script>
