@@ -27,7 +27,15 @@ public class AuthController {
     private final AuthenticationManager authenticationManager;
 
     @GetMapping("/login")
-    public String login() {
+    public String login(Authentication authentication) {
+        if (authentication != null && authentication.isAuthenticated()) {
+            if (authentication.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_CLIENTE"))) {
+                return "redirect:/cliente/dashboard";
+            } else if (authentication.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_ENTRENADOR"))) {
+                return "redirect:/entrenador/dashboard";
+            }
+            return "redirect:/";
+        }
         return "auth/login";
     }
 
