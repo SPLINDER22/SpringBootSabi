@@ -24,7 +24,7 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/auth/**", "/img/**", "/css/**", "/js/**", "/vendor/**", "/img/**").permitAll()
+                        .requestMatchers("/auth/**", "/img/**", "/css/**", "/js/**", "/vendor/**", "/img/**", "/h2-console/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .formLogin(form -> form
@@ -41,6 +41,10 @@ public class SecurityConfig {
                         .deleteCookies("JSESSIONID")
                         .permitAll()
                 );
+
+        // Permitir frames para la consola H2 y desactivar CSRF solo allí
+        http.csrf(csrf -> csrf.ignoringRequestMatchers("/h2-console/**"));
+        http.headers(headers -> headers.frameOptions(frame -> frame.sameOrigin()));
 
         return http.build();
     }

@@ -31,8 +31,8 @@ public class Usuario {
     @Column(nullable = false, unique = true)
     private String email;
 
-    @Column(nullable = false)
-    private String contraseña; // Cambiado desde 'password' para consistencia con el idioma español
+    @Column(name = "contrasena", nullable = false)
+    private String contraseña; // Campo lógico mantiene la ñ, columna física sin carácter especial
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)

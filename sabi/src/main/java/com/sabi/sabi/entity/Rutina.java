@@ -37,14 +37,14 @@ public class Rutina {
 
     @NotNull
     @Enumerated(EnumType.STRING)
-    private EstadoRutina estadoRutina; // ACTIVA o FINALIZADA
+    private EstadoRutina estadoRutina; // ACTIVA o FINALIZADA, informacion sobre el cliente y la rutina
 
     @NotNull(message = "Debe especificar el número de semanas")
     private Long numeroSemanas;
 
     // Relación con Cliente
     @ManyToOne
-    @JoinColumn(name = "cliente_id", nullable = false)
+    @JoinColumn(name = "cliente_id", nullable = true)
     private Cliente cliente;
 
     // Relación con Entrenador

@@ -81,7 +81,7 @@ public class RutinaController {
         if (rutinaDTO.getIdRutina() == null) {
             rutinaGuardada = rutinaService.createRutina(rutinaDTO);
             // Redirigir a detalles si es creación
-            return "redirect:/rutinas/detalle/" + rutinaGuardada.getIdRutina();
+            return "redirect:/semanas/listar/" + rutinaGuardada.getIdRutina();
         } else {
             rutinaGuardada = rutinaService.updateRutina(rutinaDTO.getIdRutina(), rutinaDTO);
             // Redirigir a la lista si es edición

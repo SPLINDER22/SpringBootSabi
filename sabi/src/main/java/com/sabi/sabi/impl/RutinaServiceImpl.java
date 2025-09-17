@@ -99,9 +99,16 @@ public class RutinaServiceImpl implements RutinaService {
         existingRutina.setNombre(rutinaDTO.getNombre());
         existingRutina.setObjetivo(rutinaDTO.getObjetivo());
         existingRutina.setDescripcion(rutinaDTO.getDescripcion());
-        existingRutina.setFechaCreacion(rutinaDTO.getFechaCreacion());
-        existingRutina.setEstadoRutina(rutinaDTO.getEstadoRutina());
-        existingRutina.setNumeroSemanas(rutinaDTO.getNumeroSemanas());
+        // No sobreescribir fechaCreacion si viene null (el formulario no la envía)
+        if (rutinaDTO.getFechaCreacion() != null) {
+            existingRutina.setFechaCreacion(rutinaDTO.getFechaCreacion());
+        }
+        if (rutinaDTO.getEstadoRutina() != null) {
+            existingRutina.setEstadoRutina(rutinaDTO.getEstadoRutina());
+        }
+        if (rutinaDTO.getNumeroSemanas() != null) {
+            existingRutina.setNumeroSemanas(rutinaDTO.getNumeroSemanas());
+        }
 
         existingRutina = rutinaRepository.save(existingRutina);
         return modelMapper.map(existingRutina, RutinaDTO.class);
