@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="fragments/layout :: head('Detalle del Diagnóstico', ${['/css/admin.css']}, null)"></head>
+<body>
+    <div class="dashboard-container">
+        <header th:replace="fragments/layout :: navbar"></header>
+
+        <main class="main-content">
+            <!-- Header del diagnóstico -->
+            <div class="page-header">
+                <div class="header-content">
+                    <div class="header-text">
+                        <h1>📋 Mi Diagnóstico</h1>
+                        <p>Información completa de tu perfil físico y objetivos</p>
+                    </div>
+                    <div class="header-actions">
+                        <a th:href="@{'/cliente/diagnostico/editar/' + ${diagnostico.id}}" class="btn btn-primary">
+                            <i class="fas fa-edit"></i> Editar
+                        </a>
+                        <a th:href="@{/cliente/diagnostico/historial}" class="btn btn-secondary">
+                            <i class="fas fa-history"></i> Ver Historial
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Mensajes -->
+            <div th:if="${success}" class="alert alert-success">
+                <i class="fas fa-check-circle"></i>
+                <span th:text="${success}"></span>
+            </div>
+
+            <div th:if="${error}" class="alert alert-error">
+                <i class="fas fa-exclamation-circle"></i>
+                <span th:text="${error}"></span>
+            </div>
+
+            <!-- Contenido del diagnóstico -->
+            <div class="diagnostico-detail-section">
+
+                <!-- Información física y IMC -->
+                <div class="detail-grid">
+                    <div class="detail-card physical-info">
+                        <div class="card-header">
+                            <h3><i class="fas fa-weight"></i> Información Física</h3>
+                            <span class="date-badge" th:text="'Actualizado: ' + ${#temporals.format(diagnostico.fechaActualizacion, 'dd/MM/yyyy')}">
+                                Fecha
+                            </span>
+                        </div>
+
+                        <div class="physical-metrics">
+                            <div class="metric">
+                                <div class="metric-icon">
+                                    <i class="fas fa-weight-hanging"></i>
+                                </div>
+                                <div class="metric-info">
+                                    <h4 th:text="${diagnostico.peso + ' kg'}">70 kg</h4>
+                                    <p>Peso Actual</p>
+                                </div>
+                            </div>
+
+                            <div class="metric">
+                                <div class="metric-icon">
+                                    <i class="fas fa-ruler-vertical"></i>
+                                </div>
+                                <div class="metric-info">
+                                    <h4 th:text="${diagnostico.altura + ' m'}">1.75 m</h4>
+                                    <p>Altura</p>
+                                </div>
+                            </div>
+
+                            <div class="metric imc-metric" th:if="${imc != null}">
+                                <div class="metric-icon">
+                                    <i class="fas fa-calculator"></i>
+                                </div>
+                                <div class="metric-info">
+                                    <h4 th:text="${#numbers.formatDecimal(imc, 1, 1)}">22.9</h4>
+                                    <p>Índice de Masa Corporal</p>
+                                    <span class="imc-status"
+                                          th:class="'imc-status ' + ${#strings.toLowerCase(#strings.replace(estadoImc, ' ', '-'))}"
+                                          th:text="${estadoImc}">Normal</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Gráfico visual del IMC -->
+                        <div class="imc-chart" th:if="${imc != null}">
+                            <div class="imc-scale">
+                                <div class="scale-segment bajo-peso">
+                                    <span>Bajo peso</span>
+                                    <small>&lt; 18.5</small>
+                                </div>
+                                <div class="scale-segment normal">
+                                    <span>Normal</span>
+                                    <small>18.5 - 24.9</small>
+                                </div>
+                                <div class="scale-segment sobrepeso">
+                                    <span>Sobrepeso</span>
+                                    <small>25 - 29.9</small>
+                                </div>
+                                <div class="scale-segment obesidad">
+                                    <span>Obesidad</span>
+                                    <small>&gt; 30</small>
+                                </div>
+                            </div>
+                            <div class="imc-pointer" th:style="'left: ' + ${(imc < 35 ? (imc / 35) * 100 : 100)} + '%'">
+                                <i class="fas fa-caret-down"></i>
+                                <span th:text="${#numbers.formatDecimal(imc, 1, 1)}">22.9</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Perfil de actividad -->
+                    <div class="detail-card activity-profile">
+                        <div class="card-header">
+                            <h3><i class="fas fa-running"></i> Perfil de Actividad</h3>
+                        </div>
+
+                        <div class="activity-info">
+                            <div class="info-item">
+                                <div class="item-icon nivel-actividad">
+                                    <i class="fas fa-chart-line"></i>
+                                </div>
+                                <div class="item-content">
+                                    <h4>Nivel de Actividad</h4>
+                                    <p th:switch="${diagnostico.nivelActividad}">
+                                        <span th:case="'SEDENTARIO'">😴 Sedentario</span>
+                                        <span th:case="'POCO_ACTIVO'">🚶 Poco Activo</span>
+                                        <span th:case="'MODERADAMENTE_ACTIVO'">🏃 Moderadamente Activo</span>
+                                        <span th:case="'MUY_ACTIVO'">💪 Muy Activo</span>
+                                        <span th:case="'EXTREMADAMENTE_ACTIVO'">🏋️ Extremadamente Activo</span>
+                                        <span th:case="*">No definido</span>
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div class="info-item">
+                                <div class="item-icon experiencia">
+                                    <i class="fas fa-medal"></i>
+                                </div>
+                                <div class="item-content">
+                                    <h4>Experiencia</h4>
+                                    <p th:switch="${diagnostico.experienciaEjercicio}">
+                                        <span th:case="'PRINCIPIANTE'">🌱 Principiante</span>
+                                        <span th:case="'INTERMEDIO'">📈 Intermedio</span>
+                                        <span th:case="'AVANZADO'">🏆 Avanzado</span>
+                                        <span th:case="'EXPERTO'">👑 Experto</span>
+                                        <span th:case="*">No definido</span>
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div class="info-item">
+                                <div class="item-icon objetivo">
+                                    <i class="fas fa-target"></i>
+                                </div>
+                                <div class="item-content">
+                                    <h4>Objetivo Principal</h4>
+                                    <p th:switch="${diagnostico.objetivos}">
+                                        <span th:case="'PERDER_PESO'">📉 Perder Peso</span>
+                                        <span th:case="'GANAR_MASA_MUSCULAR'">💪 Ganar Músculo</span>
+                                        <span th:case="'MANTENERSE_EN_FORMA'">⚖️ Mantener Forma</span>
+                                        <span th:case="'MEJORAR_RESISTENCIA'">🏃‍♂️ Mejorar Resistencia</span>
+                                        <span th:case="'REHABILITACION'">🏥 Rehabilitación</span>
+                                        <span th:case="'COMPETICION'">🏅 Competición</span>
+                                        <span th:case="*">No definido</span>
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div class="info-item" th:if="${diagnostico.tipoEjercicioPreferido != null}">
+                                <div class="item-icon preferencia">
+                                    <i class="fas fa-heart"></i>
+                                </div>
+                                <div class="item-content">
+                                    <h4>Ejercicio Preferido</h4>
+                                    <p th:switch="${diagnostico.tipoEjercicioPreferido}">
+                                        <span th:case="'CARDIO'">🏃 Cardio</span>
+                                        <span th:case="'FUERZA'">🏋️ Fuerza</span>
+                                        <span th:case="'FLEXIBILIDAD'">🧘 Flexibilidad</span>
+                                        <span th:case="'MIXTO'">🔄 Mixto</span>
+                                        <span th:case="'FUNCIONAL'">⚡ Funcional</span>
+                                        <span th:case="*">No definido</span>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recomendaciones basadas en el diagnóstico -->
+                <div class="recommendations-section">
+                    <div class="recommendations-card">
+                        <div class="card-header">
+                            <h3><i class="fas fa-lightbulb"></i> Recomendaciones Personalizadas</h3>
+                        </div>
+
+                        <div class="recommendations-grid">
+                            <!-- Recomendación de entrenamiento -->
+                            <div class="recommendation-item training">
+                                <div class="rec-icon">
+                                    <i class="fas fa-dumbbell"></i>
+                                </div>
+                                <div class="rec-content">
+                                    <h4>Plan de Entrenamiento</h4>
+                                    <p th:switch="${diagnostico.objetivos}">
+                                        <span th:case="'PERDER_PESO'">
+                                            Recomendamos combinar ejercicio cardiovascular (3-4 veces/semana) con entrenamiento de fuerza (2-3 veces/semana).
+                                            Enfócate en ejercicios que quemen muchas calorías.
+                                        </span>
+                                        <span th:case="'GANAR_MASA_MUSCULAR'">
+                                            Prioriza el entrenamiento de fuerza (4-5 veces/semana) con ejercicios compuestos.
+                                            Incluye cardio moderado para mantener la salud cardiovascular.
+                                        </span>
+                                        <span th:case="'MANTENERSE_EN_FORMA'">
+                                            Mantén un equilibrio entre cardio y fuerza (3-4 veces/semana total).
+                                            Varía los ejercicios para mantener la motivación.
+                                        </span>
+                                        <span th:case="*">
+                                            Consulta con un entrenador personalizado para obtener recomendaciones específicas.
+                                        </span>
+                                    </p>
+                                </div>
+                            </div>
+
+                            <!-- Recomendación nutricional -->
+                            <div class="recommendation-item nutrition">
+                                <div class="rec-icon">
+                                    <i class="fas fa-apple-alt"></i>
+                                </div>
+                                <div class="rec-content">
+                                    <h4>Nutrición</h4>
+                                    <p th:if="${imc != null}">
+                                        <span th:if="${imc < 18.5}">
+                                            Enfócate en aumentar la ingesta calórica con alimentos nutritivos.
+                                            Incluye proteínas de calidad, carbohidratos complejos y grasas saludables.
+                                        </span>
+                                        <span th:if="${imc >= 18.5 and imc < 25}">
+                                            Mantén una dieta equilibrada con las proporciones adecuadas de macronutrientes.
+                                            Ajusta las calorías según tu objetivo específico.
+                                        </span>
+                                        <span th:if="${imc >= 25}">
+                                            Considera un déficit calórico moderado. Prioriza alimentos ricos en nutrientes
+                                            y reduce los alimentos procesados y azúcares añadidos.
+                                        </span>
+                                    </p>
+                                </div>
+                            </div>
+
+                            <!-- Recomendación de frecuencia -->
+                            <div class="recommendation-item frequency">
+                                <div class="rec-icon">
+                                    <i class="fas fa-calendar-check"></i>
+                                </div>
+                                <div class="rec-content">
+                                    <h4>Frecuencia Recomendada</h4>
+                                    <p th:switch="${diagnostico.experienciaEjercicio}">
+                                        <span th:case="'PRINCIPIANTE'">
+                                            Comienza con 2-3 sesiones por semana. Da tiempo a tu cuerpo para adaptarse
+                                            y evita el sobreentrenamiento.
+                                        </span>
+                                        <span th:case="'INTERMEDIO'">
+                                            3-4 sesiones por semana te permitirán progresar de manera consistente.
+                                            Puedes alternar diferentes tipos de ejercicio.
+                                        </span>
+                                        <span th:case="'AVANZADO'">
+                                            4-5 sesiones por semana con mayor intensidad y volumen.
+                                            Incluye periodización en tu entrenamiento.
+                                        </span>
+                                        <span th:case="*">
+                                            La frecuencia ideal depende de tu experiencia y objetivos específicos.
+                                        </span>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Próximos pasos -->
+                <div class="next-steps-section">
+                    <div class="next-steps-card">
+                        <div class="card-header">
+                            <h3><i class="fas fa-route"></i> Próximos Pasos</h3>
+                        </div>
+
+                        <div class="steps-list">
+                            <div class="step-item">
+                                <div class="step-number">1</div>
+                                <div class="step-content">
+                                    <h4>Encuentra tu Entrenador</h4>
+                                    <p>Explora nuestros entrenadores especializados y encuentra el que mejor se adapte a tus objetivos.</p>
+                                    <a href="/cliente/entrenadores" class="step-link">Ver Entrenadores <i class="fas fa-arrow-right"></i></a>
+                                </div>
+                            </div>
+
+                            <div class="step-item">
+                                <div class="step-number">2</div>
+                                <div class="step-content">
+                                    <h4>Comienza tu Rutina</h4>
+                                    <p>Una vez asignado un entrenador, tendrás acceso a rutinas personalizadas basadas en tu diagnóstico.</p>
+                                    <a href="/cliente/rutinas" class="step-link">Ver Mis Rutinas <i class="fas fa-arrow-right"></i></a>
+                                </div>
+                            </div>
+
+                            <div class="step-item">
+                                <div class="step-number">3</div>
+                                <div class="step-content">
+                                    <h4>Sigue tu Progreso</h4>
+                                    <p>Monitorea tu evolución y ajusta tu plan según tus resultados.</p>
+                                    <a href="/cliente/progreso" class="step-link">Ver Progreso <i class="fas fa-arrow-right"></i></a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <footer th:replace="fragments/layout :: footer"></footer>
+    </div>
+
+    <style>
+        .diagnostico-detail-section {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .detail-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .detail-card {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            border: 1px solid var(--gray-200);
+            overflow: hidden;
+        }
+
+        .card-header {
+            background: linear-gradient(135deg, var(--gray-50), var(--gray-100));
+            padding: 20px 25px;
+            border-bottom: 1px solid var(--gray-200);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .card-header h3 {
+            margin: 0;
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--gray-900);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .date-badge {
+            background: var(--primary);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .physical-metrics {
+            display: flex;
+            padding: 25px;
+            gap: 20px;
+        }
+
+        .metric {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 20px;
+            background: var(--gray-50);
+            border-radius: 12px;
+        }
+
+        .metric-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5rem;
+        }
+
+        .metric-info h4 {
+            margin: 0 0 5px 0;
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: var(--gray-900);
+        }
+
+        .metric-info p {
+            margin: 0;
+            color: var(--gray-500);
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .imc-status {
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-top: 5px;
+            display: inline-block;
+        }
+
+        .imc-status.bajo-peso { background: #fef3c7; color: #92400e; }
+        .imc-status.normal { background: #d1fae5; color: #065f46; }
+        .imc-status.sobrepeso { background: #fed7aa; color: #9a3412; }
+        .imc-status.obesidad { background: #fecaca; color: #991b1b; }
+
+        .imc-chart {
+            padding: 0 25px 25px;
+        }
+
+        .imc-scale {
+            display: flex;
+            border-radius: 8px;
+            overflow: hidden;
+            position: relative;
+            margin-bottom: 15px;
+        }
+
+        .scale-segment {
+            flex: 1;
+            padding: 10px 5px;
+            text-align: center;
+            color: white;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .scale-segment.bajo-peso { background: #f59e0b; }
+        .scale-segment.normal { background: #10b981; }
+        .scale-segment.sobrepeso { background: #f97316; }
+        .scale-segment.obesidad { background: #ef4444; }
+
+        .imc-pointer {
+            position: relative;
+            height: 30px;
+        }
+
+        .imc-pointer i {
+            position: absolute;
+            font-size: 20px;
+            color: var(--gray-700);
+            transform: translateX(-50%);
+        }
+
+        .imc-pointer span {
+            position: absolute;
+            top: 25px;
+            transform: translateX(-50%);
+            font-weight: 700;
+            font-size: 14px;
+            color: var(--gray-900);
+        }
+
+        .activity-info {
+            padding: 25px;
+        }
+
+        .info-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 15px 0;
+            border-bottom: 1px solid var(--gray-200);
+        }
+
+        .info-item:last-child {
+            border-bottom: none;
+        }
+
+        .item-icon {
+            width: 45px;
+            height: 45px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.2rem;
+        }
+
+        .item-icon.nivel-actividad { background: linear-gradient(135deg, var(--info), #0891b2); }
+        .item-icon.experiencia { background: linear-gradient(135deg, var(--warning), #d97706); }
+        .item-icon.objetivo { background: linear-gradient(135deg, var(--success), #059669); }
+        .item-icon.preferencia { background: linear-gradient(135deg, #ec4899, #be185d); }
+
+        .item-content h4 {
+            margin: 0 0 5px 0;
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--gray-900);
+        }
+
+        .item-content p {
+            margin: 0;
+            color: var(--gray-600);
+            font-size: 14px;
+        }
+
+        .recommendations-section,
+        .next-steps-section {
+            margin-bottom: 30px;
+        }
+
+        .recommendations-card,
+        .next-steps-card {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            border: 1px solid var(--gray-200);
+            overflow: hidden;
+        }
+
+        .recommendations-grid {
+            padding: 25px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .recommendation-item {
+            background: var(--gray-50);
+            border-radius: 12px;
+            padding: 20px;
+            display: flex;
+            gap: 15px;
+        }
+
+        .rec-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.3rem;
+            flex-shrink: 0;
+        }
+
+        .recommendation-item.training .rec-icon { background: linear-gradient(135deg, var(--primary), var(--primary-dark)); }
+        .recommendation-item.nutrition .rec-icon { background: linear-gradient(135deg, var(--success), #059669); }
+        .recommendation-item.frequency .rec-icon { background: linear-gradient(135deg, var(--warning), #d97706); }
+
+        .rec-content h4 {
+            margin: 0 0 10px 0;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--gray-900);
+        }
+
+        .rec-content p {
+            margin: 0;
+            color: var(--gray-600);
+            line-height: 1.5;
+            font-size: 14px;
+        }
+
+        .steps-list {
+            padding: 25px;
+        }
+
+        .step-item {
+            display: flex;
+            gap: 20px;
+            padding: 20px 0;
+            border-bottom: 1px solid var(--gray-200);
+        }
+
+        .step-item:last-child {
+            border-bottom: none;
+        }
+
+        .step-number {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1.2rem;
+            flex-shrink: 0;
+        }
+
+        .step-content h4 {
+            margin: 0 0 8px 0;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--gray-900);
+        }
+
+        .step-content p {
+            margin: 0 0 10px 0;
+            color: var(--gray-600);
+            line-height: 1.5;
+        }
+
+        .step-link {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 14px;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            transition: all 0.3s ease;
+        }
+
+        .step-link:hover {
+            color: var(--primary-dark);
+            transform: translateX(3px);
+        }
+
+        @media (max-width: 768px) {
+            .detail-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .physical-metrics {
+                flex-direction: column;
+            }
+
+            .recommendations-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</body>
+</html>
+

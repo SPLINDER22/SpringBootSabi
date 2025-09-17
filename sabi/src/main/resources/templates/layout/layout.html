@@ -19,7 +19,7 @@
 <div id="wrapper">
 
     <!-- Sidebar -->
-    <div th:replace="fragments/header :: sidebar"></div>
+    <div th:replace="~{fragments/header :: sidebar}"></div>
 
     <!-- Content Wrapper -->
     <div id="content-wrapper" class="d-flex flex-column">
@@ -28,16 +28,16 @@
         <div id="content">
 
             <!-- Navbar -->
-            <div th:replace="fragments/header :: navbar"></div>
+            <div th:replace="~{fragments/header :: navbar}"></div>
 
             <!-- Contenido dinámico -->
             <div class="container-fluid">
-                <div th:insert="${bodyFragment}"></div>
+                <div th:insert="~{${bodyFragment}}"></div>
             </div>
         </div>
 
         <!-- Footer -->
-        <div th:replace="fragments/footer :: footer"></div>
+        <div th:replace="~{fragments/footer :: footer}"></div>
     </div>
 </div>
 

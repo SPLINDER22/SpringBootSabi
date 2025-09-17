@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Error - SABI</title>
+    <link rel="stylesheet" th:href="@{/css/contenido.css}">
+</head>
+<body>
+    <div style="max-width:800px;margin:80px auto;font-family:Arial,Helvetica,sans-serif;text-align:center;">
+        <h1>Lo sentimos, ocurrió un error</h1>
+        <p th:if="${status}"><strong>Código:</strong> <span th:text="${status}">500</span></p>
+        <p th:if="${error}"><strong>Error:</strong> <span th:text="${error}">Internal Server Error</span></p>
+        <p th:if="${message}"><strong>Mensaje:</strong> <span th:text="${message}">Ha ocurrido un error inesperado.</span></p>
+        <p th:if="${path}"><strong>Ruta:</strong> <span th:text="${path}"></span></p>
+        <hr>
+        <p>Vuelve a la <a th:href="@{/}">página principal</a> o contacta al administrador.</p>
+    </div>
+</body>
+</html>
+

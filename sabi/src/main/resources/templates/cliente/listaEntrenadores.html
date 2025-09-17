@@ -1,41 +1,59 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+
 <head>
     <meta charset="UTF-8">
-    <title>Lista De Entrenadores</title>
+    <title>Entrenadores Disponibles</title>
+    <link rel="stylesheet" th:href="@{/css/dashboard-cliente.css}">
 </head>
-<body th:replace="layout/layout :: layout('Lista de entrenadores', ~{::section})">
-<section th:fragment="section">
-    <h1 class="h3 mb-4 text-gray-800 text-center">Lista de Entrenadores</h1>
 
-    <div class="container">
-        <div class="row justify-content-center">
-            <div th:if="${#lists.isEmpty(entrenadores)}" class="col-12 d-flex justify-content-center">
-                <div class="alert alert-info text-center w-50 mt-5" role="alert">
-                    <strong>Aún no hay entrenadores disponibles</strong><br>
-                    Cuando haya entrenadores, aquí se mostrarán.
+<body>
+    <header th:replace="~{fragments/header :: navbar}"></header>
+    <main class="main-content">
+        <div class="category-section">
+            <div class="category-header">
+                <h3>👨‍⚕️ Entrenadores Disponibles</h3>
+                <div class="category-status completed">
+                    <span class="status-text" th:text="${entrenadores != null ? #lists.size(entrenadores) + ' disponibles' : '0 disponibles'}">0 disponibles</span>
                 </div>
             </div>
-            <div th:each="entrenador, iterStat : ${entrenadores}" th:if="${!#lists.isEmpty(entrenadores)}"
-                 th:classappend="col-md-4 d-flex align-items-stretch mb-4">
-                <div class="card w-100 shadow-sm">
-                    <div class="card-body">
-                        <h5 class="card-title mb-2" th:text="${entrenador.nombre}">Nombre</h5>
-                        <p class="card-text mb-1"><strong>Email:</strong> <span th:text="${entrenador.email}"></span></p>
-                        <p class="card-text mb-1"><strong>Especialidades:</strong> <span th:text="${entrenador.especialidades}"></span></p>
-                        <p class="card-text mb-1"><strong>Experiencia:</strong> <span th:text="${entrenador.experiencia}"></span></p>
-                        <p class="card-text mb-1"><strong>Calificación promedio:</strong> <span th:text="${entrenador.calificacionPromedio}"></span></p>
-                        <div class="d-grid mt-3">
-                            <form th:action="@{'/entrenadores/solicitar/' + ${entrenador.idUsuario}}" method="post">
-                                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
-                                <button type="submit" class="btn btn-primary">Solicitar</button>
+            <div class="category-content">
+                <div class="entrenadores-grid" th:if="${entrenadores != null}">
+                    <div th:each="entrenador : ${entrenadores}" class="entrenador-card">
+                        <div class="entrenador-avatar">
+                            <img th:src="@{/img/entrenador.jpg}" alt="Entrenador" />
+                        </div>
+                        <div class="entrenador-info">
+                            <h5 th:text="${entrenador.nombre ?: 'Entrenador Profesional'}">Entrenador Profesional</h5>
+                            <p class="especialidad" th:text="${entrenador.especialidad ?: 'Entrenamiento General'}">Entrenamiento General</p>
+                            <p class="experiencia" th:text="${entrenador.experiencia ?: 'Experiencia variada'}">5 años de experiencia</p>
+                            <div class="calificacion">
+                                <span class="stars">⭐⭐⭐⭐⭐</span>
+                                <span class="rating" th:text="${entrenador.calificacionPromedio ?: '5.0'}">5.0</span>
+                            </div>
+                        </div>
+                        <div class="entrenador-actions">
+                            <a class="btn btn-primary btn-sm" th:href="@{'/cliente/entrenador/perfil/' + ${entrenador.id}}">Ver Perfil</a>
+                            <form th:if="${tieneDiagnostico == true}" th:action="@{/cliente/suscripcion/solicitar}" method="post" style="display: inline;">
+                                <input type="hidden" name="entrenadorId" th:value="${entrenador.id}">
+                                <button type="submit" class="btn btn-outline btn-sm">Contactar</button>
                             </form>
+                            <button class="btn btn-disabled btn-sm" th:if="${tieneDiagnostico != true}" disabled>Requiere diagnóstico</button>
                         </div>
                     </div>
                 </div>
+
+                <div th:if="${entrenadores == null || #lists.isEmpty(entrenadores)}" class="entrenadores-empty">
+                    <div class="empty-icon">👨‍⚕️</div>
+                    <h4 th:if="${entrenadores == null}">Error al cargar entrenadores</h4>
+                    <h4 th:if="${entrenadores != null}">No hay entrenadores disponibles</h4>
+                    <p th:if="${entrenadores == null}">Por favor, intenta nuevamente más tarde.</p>
+                    <p th:if="${entrenadores != null}">En este momento no hay entrenadores registrados en el sistema.</p>
+                </div>
             </div>
         </div>
-    </div>
-</section>
+    </main>
+    <footer th:replace="~{fragments/footer :: footer}"></footer>
 </body>
+
 </html>

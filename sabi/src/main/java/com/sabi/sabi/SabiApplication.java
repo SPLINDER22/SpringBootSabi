@@ -11,3 +11,12 @@ public class SabiApplication {
 	}
 
 }
+
+// tareas para santiago
+// USUARIOS DE PRUEBA CORREGIDOS
+// LOGIN Y REGISTRO FUNCIONALES
+// SOLUCIONADO VISTA DEL CLIENTE.
+// SEPARADOS LAS VISTAS DEL CLIENTE.
+// CREACION DEL ERROR GENERAL
+// 4. Que funcione y muestre los datos.
+// 5. Mostrar los diagnosticos creados osea un historial.

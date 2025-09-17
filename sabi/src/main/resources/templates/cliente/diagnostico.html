@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Mi Diagnóstico</title>
+    <link rel="stylesheet" th:href="@{/css/dashboard-cliente.css}">
+</head>
+
+<body>
+    <header th:replace="~{fragments/header :: navbar}"></header>
+    <main class="main-content">
+        <div class="category-section">
+            <div class="category-header">
+                <h3>📋 Mi Diagnóstico</h3>
+                <div class="category-status" th:classappend="${tieneDiagnostico} ? 'completed' : 'pending'">
+                    <span th:if="${tieneDiagnostico}" class="status-text">✅ Completado</span>
+                    <span th:unless="${tieneDiagnostico}" class="status-text">⏳ Pendiente</span>
+                </div>
+            </div>
+            <div class="category-content">
+                <div th:if="${tieneDiagnostico == true}" class="diagnostic-info">
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <span class="info-label">Fecha del diagnóstico:</span>
+                            <span class="info-value"
+                                th:text="${#temporals.format(diagnosticoActual.fecha, 'dd/MM/yyyy')}">--</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Nivel de experiencia:</span>
+                            <span class="info-value" th:text="${diagnosticoActual.nivelExperiencia}">--</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Peso actual:</span>
+                            <span class="info-value"
+                                th:text="${diagnosticoActual.peso + ' kg'}">-- kg</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Estatura:</span>
+                            <span class="info-value"
+                                th:text="${diagnosticoActual.estatura + ' cm'}">-- cm</span>
+                        </div>
+                    </div>
+                    <div class="category-actions">
+                        <button class="btn btn-secondary"
+                            onclick="window.location.href='/cliente/diagnostico/ver'">
+                            Ver Diagnóstico Completo
+                        </button>
+                        <button class="btn btn-outline"
+                            onclick="window.location.href='/cliente/diagnostico/crear'">
+                            Actualizar Diagnóstico
+                        </button>
+                    </div>
+                </div>
+                <div th:if="${tieneDiagnostico != true}" class="diagnostic-empty">
+                    <div class="empty-icon">📋</div>
+                    <h4>¡Completa tu Diagnóstico Inicial!</h4>
+                    <p>Para brindarte rutinas personalizadas, necesitamos conocer tu estado físico actual y objetivos.</p>
+                    <div class="category-actions">
+                        <button class="btn btn-primary"
+                            onclick="window.location.href='/cliente/diagnostico/crear'">
+                            Hacer Diagnóstico Ahora
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    <footer th:replace="~{fragments/footer :: footer}"></footer>
+</body>
+
+</html>

@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Historial de Diagnósticos - SABI</title>
+    <link rel="stylesheet" th:href="@{/css/contenido.css}">
+    <link rel="stylesheet" th:href="@{/css/dashboard-cliente.css}">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="dashboard-container">
+        <header th:replace="~{fragments/header :: navbar}"></header>
+
+        <main class="main-content">
+            <!-- Header -->
+            <div class="page-header">
+                <div class="header-content">
+                    <div class="header-text">
+                        <h1>📈 Historial de Diagnósticos</h1>
+                        <p>Revisa la evolución de tu perfil físico y objetivos a lo largo del tiempo</p>
+                    </div>
+                    <div class="header-actions">
+                        <a href="/cliente/diagnostico/nuevo" class="btn btn-primary">
+                            <i class="fas fa-plus"></i> Nuevo Diagnóstico
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Mensajes -->
+            <div th:if="${success}" class="alert alert-success">
+                <i class="fas fa-check-circle"></i>
+                <span th:text="${success}"></span>
+            </div>
+
+            <div th:if="${error}" class="alert alert-error">
+                <i class="fas fa-exclamation-circle"></i>
+                <span th:text="${error}"></span>
+            </div>
+
+            <!-- Estadísticas del historial -->
+            <div class="historial-stats" th:if="${diagnosticos != null && !#lists.isEmpty(diagnosticos)}">
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-clipboard-list"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3 th:text="${#lists.size(diagnosticos)}">0</h3>
+                            <p>Total Diagnósticos</p>
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-calendar-alt"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3 th:text="${#temporals.format(diagnosticos[0].fechaActualizacion, 'dd/MM/yyyy')}">Fecha</h3>
+                            <p>Último Diagnóstico</p>
+                        </div>
+                    </div>
+
+                    <!-- Mostrar cambio de peso si hay más de un diagnóstico -->
+                    <div class="stat-card" th:if="${#lists.size(diagnosticos) > 1}">
+                        <div class="stat-icon">
+                            <i class="fas fa-weight"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3 th:text="'Cambio: ' + (diagnosticos[0].peso - diagnosticos[1].peso) + ' kg'">0 kg</h3>
+                            <p>Cambio de Peso</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div th:if="${diagnosticos == null || #lists.isEmpty(diagnosticos)}" class="historial-empty">
+                <div class="empty-icon">📋</div>
+                <h4>No hay diagnósticos registrados</h4>
+                <p>Realiza tu primer diagnóstico para comenzar a registrar tu progreso.</p>
+                <a href="/cliente/diagnostico/nuevo" class="btn btn-primary">
+                    <i class="fas fa-plus"></i> Nuevo Diagnóstico
+                </a>
+            </div>
+
+            <!-- Lista de diagnósticos -->
+            <div class="historial-section">
+                <div class="historial-card">
+                    <div class="historial-header">
+                        <h3>
+                            <i class="fas fa-history"></i>
+                            Tu Historial Completo
+                        </h3>
+                        <div class="view-options">
+                            <button class="view-btn active" onclick="setView('timeline')" data-view="timeline">
+                                <i class="fas fa-project-diagram"></i> Timeline
+                            </button>
+                            <button class="view-btn" onclick="setView('table')" data-view="table">
+                                <i class="fas fa-table"></i> Tabla
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Vista Timeline -->
+                    <div id="timeline-view" class="historial-content">
+                        <div class="timeline" th:if="${!#lists.isEmpty(diagnosticos)}">
+                            <div th:each="diagnostico, iterStat : ${diagnosticos}"
+                                 class="timeline-item"
+                                 th:classappend="${iterStat.first} ? 'current' : ''">
+
+                                <div class="timeline-marker">
+                                    <div class="marker-icon" th:classappend="${iterStat.first} ? 'current' : ''">
+                                        <i class="fas fa-clipboard-check" th:if="${iterStat.first}"></i>
+                                        <i class="fas fa-circle" th:unless="${iterStat.first}"></i>
+                                    </div>
+                                    <div class="timeline-line" th:unless="${iterStat.last}"></div>
+                                </div>
+
+                                <div class="timeline-content">
+                                    <div class="timeline-card">
+                                        <div class="card-header">
+                                            <div class="date-info">
+                                                <h4 th:text="${#temporals.format(diagnostico.fechaActualizacion, 'dd/MM/yyyy')}">01/01/2024</h4>
+                                                <span class="time" th:text="${#temporals.format(diagnostico.fechaActualizacion, 'HH:mm')}">10:30</span>
+                                                <span class="badge current" th:if="${iterStat.first}">Actual</span>
+                                            </div>
+                                            <div class="card-actions">
+                                                <a th:href="@{'/cliente/diagnostico/detalle/' + ${diagnostico.id}}"
+                                                   class="btn btn-sm btn-primary">
+                                                    <i class="fas fa-eye"></i> Ver
+                                                </a>
+                                                <a th:href="@{'/cliente/diagnostico/editar/' + ${diagnostico.id}}"
+                                                   class="btn btn-sm btn-secondary"
+                                                   th:if="${iterStat.first}">
+                                                    <i class="fas fa-edit"></i> Editar
+                                                </a>
+                                            </div>
+                                        </div>
+
+                                        <div class="card-body">
+                                            <div class="metrics-summary">
+                                                <div class="metric-item">
+                                                    <span class="metric-label">Peso:</span>
+                                                    <span class="metric-value" th:text="${diagnostico.peso} + ' kg'">70 kg</span>
+                                                    <!-- Mostrar cambio respecto al anterior -->
+                                                    <span th:if="${!iterStat.last}" class="metric-change">
+                                                        <span th:if="${diagnostico.peso > diagnosticos[iterStat.index + 1].peso}"
+                                                              class="change positive">
+                                                            <i class="fas fa-arrow-up"></i>
+                                                            +<span th:text="${#numbers.formatDecimal(diagnostico.peso - diagnosticos[iterStat.index + 1].peso, 1, 1)}">1.5</span>kg
+                                                        </span>
+                                                        <span th:if="${diagnostico.peso < diagnosticos[iterStat.index + 1].peso}"
+                                                              class="change negative">
+                                                            <i class="fas fa-arrow-down"></i>
+                                                            <span th:text="${#numbers.formatDecimal(diagnostico.peso - diagnosticos[iterStat.index + 1].peso, 1, 1)}">-1.5</span>kg
+                                                        </span>
+                                                        <span th:if="${diagnostico.peso == diagnosticos[iterStat.index + 1].peso}"
+                                                              class="change neutral">
+                                                            <i class="fas fa-minus"></i> Sin cambio
+                                                        </span>
+                                                    </span>
+                                                </div>
+
+                                                <div class="metric-item">
+                                                    <span class="metric-label">IMC:</span>
+                                                    <span class="metric-value"
+                                                          th:text="${#numbers.formatDecimal(diagnostico.peso / (diagnostico.altura * diagnostico.altura), 1, 1)}">
+                                                        22.9
+                                                    </span>
+                                                </div>
+
+                                                <div class="metric-item">
+                                                    <span class="metric-label">Objetivo:</span>
+                                                    <span class="metric-value" th:switch="${diagnostico.objetivos}">
+                                                        <span th:case="'PERDER_PESO'">Perder Peso</span>
+                                                        <span th:case="'GANAR_MASA_MUSCULAR'">Ganar Músculo</span>
+                                                        <span th:case="'MANTENERSE_EN_FORMA'">Mantener Forma</span>
+                                                        <span th:case="'MEJORAR_RESISTENCIA'">Mejorar Resistencia</span>
+                                                        <span th:case="'REHABILITACION'">Rehabilitación</span>
+                                                        <span th:case="'COMPETICION'">Competición</span>
+                                                        <span th:case="*">No definido</span>
+                                                    </span>
+                                                </div>
+                                            </div>
+
+                                            <!-- Mostrar cambios importantes -->
+                                            <div class="changes-summary" th:if="${!iterStat.last}">
+                                                <div class="changes-header">
+                                                    <i class="fas fa-exchange-alt"></i>
+                                                    <span>Cambios respecto al anterior:</span>
+                                                </div>
+                                                <div class="changes-list">
+                                                    <span th:if="${diagnostico.objetivos != diagnosticos[iterStat.index + 1].objetivos}"
+                                                          class="change-item objetivo">
+                                                        <i class="fas fa-target"></i> Cambió objetivo
+                                                    </span>
+                                                    <span th:if="${diagnostico.nivelActividad != diagnosticos[iterStat.index + 1].nivelActividad}"
+                                                          class="change-item actividad">
+                                                        <i class="fas fa-running"></i> Cambió nivel de actividad
+                                                    </span>
+                                                    <span th:if="${diagnostico.experienciaEjercicio != diagnosticos[iterStat.index + 1].experienciaEjercicio}"
+                                                          class="change-item experiencia">
+                                                        <i class="fas fa-medal"></i> Cambió experiencia
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Estado vacío -->
+                        <div th:if="${#lists.isEmpty(diagnosticos)}" class="empty-state-modern">
+                            <div class="empty-illustration">
+                                <i class="fas fa-clipboard-list"></i>
+                            </div>
+                            <h3>No tienes diagnósticos registrados</h3>
+                            <p>Crea tu primer diagnóstico para comenzar tu journey fitness</p>
+                            <a href="/cliente/diagnostico/nuevo" class="btn btn-primary">
+                                <i class="fas fa-plus"></i> Crear Primer Diagnóstico
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Vista Tabla -->
+                    <div id="table-view" class="historial-content" style="display: none;">
+                        <div class="table-container" th:if="${!#lists.isEmpty(diagnosticos)}">
+                            <table class="historial-table">
+                                <thead>
+                                    <tr>
+                                        <th><i class="fas fa-calendar"></i> Fecha</th>
+                                        <th><i class="fas fa-weight"></i> Peso</th>
+                                        <th><i class="fas fa-ruler"></i> Altura</th>
+                                        <th><i class="fas fa-calculator"></i> IMC</th>
+                                        <th><i class="fas fa-target"></i> Objetivo</th>
+                                        <th><i class="fas fa-running"></i> Actividad</th>
+                                        <th><i class="fas fa-cog"></i> Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:each="diagnostico, iterStat : ${diagnosticos}"
+                                        th:classappend="${iterStat.first} ? 'current-row' : ''">
+                                        <td>
+                                            <div class="date-cell">
+                                                <span th:text="${#temporals.format(diagnostico.fechaActualizacion, 'dd/MM/yyyy')}">01/01/2024</span>
+                                                <small th:text="${#temporals.format(diagnostico.fechaActualizacion, 'HH:mm')}">10:30</small>
+                                                <span class="badge current" th:if="${iterStat.first}">Actual</span>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <span th:text="${diagnostico.peso} + ' kg'">70 kg</span>
+                                        </td>
+                                        <td>
+                                            <span th:text="${diagnostico.altura} + ' m'">1.75 m</span>
+                                        </td>
+                                        <td>
+                                            <span th:text="${#numbers.formatDecimal(diagnostico.peso / (diagnostico.altura * diagnostico.altura), 1, 1)}">22.9</span>
+                                        </td>
+                                        <td>
+                                            <span th:switch="${diagnostico.objetivos}" class="objetivo-badge">
+                                                <span th:case="'PERDER_PESO'" class="badge perder-peso">Perder Peso</span>
+                                                <span th:case="'GANAR_MASA_MUSCULAR'" class="badge ganar-masa">Ganar Músculo</span>
+                                                <span th:case="'MANTENERSE_EN_FORMA'" class="badge mantener">Mantener</span>
+                                                <span th:case="'MEJORAR_RESISTENCIA'" class="badge resistencia">Resistencia</span>
+                                                <span th:case="'REHABILITACION'" class="badge rehabilitacion">Rehabilitación</span>
+                                                <span th:case="'COMPETICION'" class="badge competicion">Competición</span>
+                                                <span th:case="*" class="badge">No definido</span>
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <span th:switch="${diagnostico.nivelActividad}" class="actividad-badge">
+                                                <span th:case="'SEDENTARIO'">😴 Sedentario</span>
+                                                <span th:case="'POCO_ACTIVO'">🚶 Poco Activo</span>
+                                                <span th:case="'MODERADAMENTE_ACTIVO'">🏃 Moderado</span>
+                                                <span th:case="'MUY_ACTIVO'">💪 Muy Activo</span>
+                                                <span th:case="'EXTREMADAMENTE_ACTIVO'">🏋️ Extremo</span>
+                                                <span th:case="*">No definido</span>
+                                            </span>
+                                        </td>
+                                        <td class="actions-cell">
+                                            <div class="action-buttons">
+                                                <a th:href="@{'/cliente/diagnostico/detalle/' + ${diagnostico.id}}"
+                                                   class="action-btn view" title="Ver detalles">
+                                                    <i class="fas fa-eye"></i>
+                                                </a>
+                                                <a th:href="@{'/cliente/diagnostico/editar/' + ${diagnostico.id}}"
+                                                   class="action-btn edit" title="Editar"
+                                                   th:if="${iterStat.first}">
+                                                    <i class="fas fa-edit"></i>
+                                                </a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <footer th:replace="fragments/footer :: footer"></footer>
+    </div>
+
+    <script>
+        function setView(viewType) {
+            // Cambiar botones activos
+            document.querySelectorAll('.view-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            document.querySelector(`[data-view="${viewType}"]`).classList.add('active');
+
+            // Cambiar vistas
+            document.getElementById('timeline-view').style.display = viewType === 'timeline' ? 'block' : 'none';
+            document.getElementById('table-view').style.display = viewType === 'table' ? 'block' : 'none';
+        }
+
+        // Animaciones para el timeline
+        document.addEventListener('DOMContentLoaded', function() {
+            const timelineItems = document.querySelectorAll('.timeline-item');
+            timelineItems.forEach((item, index) => {
+                setTimeout(() => {
+                    item.style.opacity = '1';
+                    item.style.transform = 'translateX(0)';
+                }, index * 100);
+            });
+        });
+    </script>
+</body>
+</html>

@@ -21,6 +21,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const ciudadesPorDepartamento = {
         'ANTIOQUIA': ['Medellín', 'Bello', 'Itagüí', 'Envigado', 'Apartadó'],
         'CUNDINAMARCA': ['Bogotá', 'Soacha', 'Girardot', 'Zipaquirá', 'Facatativá'],
+        'BOGOTA': ['Bogotá D.C'],
         'VALLE_DEL_CAUCA': ['Cali', 'Palmira', 'Buenaventura', 'Tuluá', 'Cartago'],
         'ATLANTICO': ['Barranquilla', 'Soledad', 'Malambo', 'Sabanalarga', 'Galapa'],
         'BOLIVAR': ['Cartagena', 'Magangué', 'Turbaco', 'Arjona', 'El Carmen de Bolívar'],
