@@ -2,9 +2,9 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Lista De Ejercicios</title>
+    <title>Lista De Suscripciones</title>
 </head>
-<body th:replace="layout/layout :: layout('Lista de ejercicios', ~{::section})">
+<body th:replace="layout/layout :: layout('Lista de suscripciones', ~{::section})">
 <section th:fragment="section">
     <h1 class="h3 mb-4 text-gray-800 text-center">Lista de Suscripciones</h1>
 
@@ -32,15 +32,49 @@
                         <p class="card-text mb-1"><strong>Fecha Fin:</strong> <span th:text="${suscripcion.fechaFin}"></span></p>
                         <p class="card-text mb-2"><strong>Estado:</strong> <span th:text="${suscripcion.estadoSuscripcion}"></span></p>
                         <div class="d-flex gap-2">
-                            <a th:href="@{'/suscripciones/editar/' + ${suscripcion.idSuscripcion}}" class="btn btn-sm btn-primary flex-fill">Editar</a>
-                            <form th:action="@{'/suscripciones/eliminar/' + ${suscripcion.idSuscripcion}}" method="post" style="display:inline" class="flex-fill">
-                                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
-                                <button type="submit" class="btn btn-sm btn-danger w-100" onclick="return confirm('¿Eliminar suscripción?')">Eliminar</button>
-                            </form>
-                            <form th:action="@{'/suscripciones/desactivar/' + ${suscripcion.idSuscripcion}}" method="post" style="display:inline" class="flex-fill">
-                                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
-                                <button type="submit" class="btn btn-sm btn-warning w-100" onclick="return confirm('¿Desactivar suscripción?')">Desactivar</button>
-                            </form>
+                            <!-- Opciones para CLIENTE -->
+                            <div th:if="${rolUsuario == 'CLIENTE'}" class="w-100">
+                                <!-- Botón Pagar: solo si estado es COTIZADA -->
+                                <form th:if="${suscripcion.estadoSuscripcion == 'COTIZADA'}"
+                                      th:action="@{'/suscripciones/pagar/' + ${suscripcion.idSuscripcion}}" method="post" style="display:inline" class="flex-fill">
+                                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                                    <button type="submit" class="btn btn-sm btn-success w-100">Pagar</button>
+                                </form>
+                                <!-- Botón Rechazar: siempre visible para cliente -->
+                                <form th:action="@{'/suscripciones/rechazar/' + ${suscripcion.idSuscripcion}}" method="post" style="display:inline" class="flex-fill ms-2">
+                                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                                    <button type="submit" class="btn btn-sm btn-warning w-100" onclick="return confirm('¿Rechazar suscripción?')">Rechazar</button>
+                                </form>
+                                <!-- Botón Cancelar/Eliminar: solo si estado es RECHAZADA o ACEPTADA -->
+                                <form th:if="${suscripcion.estadoSuscripcion == 'RECHAZADA' or suscripcion.estadoSuscripcion == 'ACEPTADA'}"
+                                      th:action="@{'/suscripciones/eliminar/' + ${suscripcion.idSuscripcion}}" method="post" style="display:inline" class="flex-fill ms-2">
+                                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                                    <button type="submit" class="btn btn-sm btn-danger w-100" onclick="return confirm('¿Cancelar suscripción?')">Cancelar</button>
+                                </form>
+                            </div>
+                            <!-- Opciones para ENTRENADOR -->
+                            <div th:if="${rolUsuario == 'ENTRENADOR'}" class="w-100">
+                                <button type="button" class="btn btn-sm btn-primary flex-fill" 
+                                        data-bs-toggle="modal" 
+                                        data-bs-target="#modalEditarSuscripcion"
+                                        th:attr="data-id=${suscripcion.idSuscripcion},
+                                                 data-cliente=${suscripcion.idCliente},
+                                                 data-entrenador=${suscripcion.idEntrenador},
+                                                 data-plazo=${suscripcion.plazo},
+                                                 data-fechainicio=${suscripcion.fechaInicio},
+                                                 data-fechafin=${suscripcion.fechaFin},
+                                                 data-estado=${suscripcion.estadoSuscripcion}">
+                                    Editar
+                                </button>
+                                <form th:action="@{'/suscripciones/rechazar/' + ${suscripcion.idSuscripcion}}" method="post" style="display:inline" class="flex-fill ms-2">
+                                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                                    <button type="submit" class="btn btn-sm btn-warning w-100" onclick="return confirm('¿Rechazar suscripción?')">Rechazar</button>
+                                </form>
+                                <form th:action="@{'/suscripciones/eliminar/' + ${suscripcion.idSuscripcion}}" method="post" style="display:inline" class="flex-fill ms-2">
+                                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                                    <button type="submit" class="btn btn-sm btn-danger w-100" onclick="return confirm('¿Cancelar suscripción?')">Cancelar</button>
+                                </form>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -48,5 +82,69 @@
         </div>
     </div>
 </section>
+
+<!-- Modal Editar Suscripción -->
+<div class="modal fade" id="modalEditarSuscripcion" tabindex="-1" aria-labelledby="modalEditarSuscripcionLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form th:action="@{/suscripciones/guardar}" method="post">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalEditarSuscripcionLabel">Editar Suscripción</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" name="idSuscripcion" id="modal-idSuscripcion">
+                    <div class="mb-3">
+                        <label for="modal-cliente" class="form-label">Cliente</label>
+                        <input type="text" class="form-control" id="modal-cliente" name="idCliente" readonly>
+                    </div>
+                    <div class="mb-3">
+                        <label for="modal-entrenador" class="form-label">Entrenador</label>
+                        <input type="text" class="form-control" id="modal-entrenador" name="idEntrenador" readonly>
+                    </div>
+                    <div class="mb-3">
+                        <label for="modal-plazo" class="form-label">Plazo</label>
+                        <input type="text" class="form-control" id="modal-plazo" name="plazo">
+                    </div>
+                    <div class="mb-3">
+                        <label for="modal-fechainicio" class="form-label">Fecha Inicio</label>
+                        <input type="date" class="form-control" id="modal-fechainicio" name="fechaInicio">
+                    </div>
+                    <div class="mb-3">
+                        <label for="modal-fechafin" class="form-label">Fecha Fin</label>
+                        <input type="date" class="form-control" id="modal-fechafin" name="fechaFin">
+                    </div>
+                    <div class="mb-3">
+                        <label for="modal-estado" class="form-label">Estado</label>
+                        <input type="text" class="form-control" id="modal-estado" name="estadoSuscripcion" readonly>
+                    </div>
+                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                    <button type="submit" class="btn btn-primary">Guardar cambios</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    var modal = document.getElementById('modalEditarSuscripcion');
+    if (modal) {
+        modal.addEventListener('show.bs.modal', function (event) {
+            var button = event.relatedTarget;
+            document.getElementById('modal-idSuscripcion').value = button.getAttribute('data-id');
+            document.getElementById('modal-cliente').value = button.getAttribute('data-cliente');
+            document.getElementById('modal-entrenador').value = button.getAttribute('data-entrenador');
+            document.getElementById('modal-plazo').value = button.getAttribute('data-plazo');
+            document.getElementById('modal-fechainicio').value = button.getAttribute('data-fechainicio');
+            document.getElementById('modal-fechafin').value = button.getAttribute('data-fechafin');
+            document.getElementById('modal-estado').value = button.getAttribute('data-estado');
+        });
+    }
+});
+</script>
 </body>
 </html>

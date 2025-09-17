@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Lista De Entrenadores</title>
+</head>
+<body th:replace="layout/layout :: layout('Lista de entrenadores', ~{::section})">
+<section th:fragment="section">
+    <h1 class="h3 mb-4 text-gray-800 text-center">Lista de Entrenadores</h1>
+
+    <div class="container">
+        <div class="row justify-content-center">
+            <div th:if="${#lists.isEmpty(entrenadores)}" class="col-12 d-flex justify-content-center">
+                <div class="alert alert-info text-center w-50 mt-5" role="alert">
+                    <strong>Aún no hay entrenadores disponibles</strong><br>
+                    Cuando haya entrenadores, aquí se mostrarán.
+                </div>
+            </div>
+            <div th:each="entrenador, iterStat : ${entrenadores}" th:if="${!#lists.isEmpty(entrenadores)}"
+                 th:classappend="col-md-4 d-flex align-items-stretch mb-4">
+                <div class="card w-100 shadow-sm">
+                    <div class="card-body">
+                        <h5 class="card-title mb-2" th:text="${entrenador.nombre}">Nombre</h5>
+                        <p class="card-text mb-1"><strong>Email:</strong> <span th:text="${entrenador.email}"></span></p>
+                        <p class="card-text mb-1"><strong>Especialidades:</strong> <span th:text="${entrenador.especialidades}"></span></p>
+                        <p class="card-text mb-1"><strong>Experiencia:</strong> <span th:text="${entrenador.experiencia}"></span></p>
+                        <p class="card-text mb-1"><strong>Calificación promedio:</strong> <span th:text="${entrenador.calificacionPromedio}"></span></p>
+                        <div class="d-grid mt-3">
+                            <form th:action="@{'/entrenadores/solicitar/' + ${entrenador.idUsuario}}" method="post">
+                                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                                <button type="submit" class="btn btn-primary">Solicitar</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+</body>
+</html>

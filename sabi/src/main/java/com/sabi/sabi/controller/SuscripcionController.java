@@ -1,8 +1,16 @@
 package com.sabi.sabi.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 
+import com.sabi.sabi.dto.SuscripcionDTO;
 import com.sabi.sabi.service.ClienteService;
 import com.sabi.sabi.service.EntrenadorService;
 import com.sabi.sabi.service.SuscripcionService;
@@ -19,11 +27,11 @@ public class SuscripcionController {
     private ClienteService clienteService;
 
 
-    @org.springframework.beans.factory.annotation.Autowired
+    @Autowired
     private UsuarioService usuarioService;
 
-    @org.springframework.web.bind.annotation.GetMapping("/suscripciones")
-    public String listarSuscripciones(@org.springframework.security.core.annotation.AuthenticationPrincipal org.springframework.security.core.userdetails.UserDetails userDetails, org.springframework.ui.Model model) {
+    @GetMapping("/suscripciones")
+    public String listarSuscripciones(@AuthenticationPrincipal UserDetails userDetails, Model model) {
         if (userDetails == null) {
             return "redirect:/auth/login";
         }
@@ -33,19 +41,19 @@ public class SuscripcionController {
         return "suscripciones/lista";
     }
 
-    @org.springframework.web.bind.annotation.GetMapping("/suscripciones/nuevo")
-    public String crearSuscripcionView(org.springframework.ui.Model model) {
-        com.sabi.sabi.dto.SuscripcionDTO suscripcionDTO = new com.sabi.sabi.dto.SuscripcionDTO();
+    @GetMapping("/suscripciones/nuevo")
+    public String crearSuscripcionView(Model model) {
+        SuscripcionDTO suscripcionDTO = new SuscripcionDTO();
         model.addAttribute("suscripcion", suscripcionDTO);
         model.addAttribute("clientes", clienteService.getAllActiveClientes());
         model.addAttribute("entrenadores", entrenadorService.getAllActiveEntrenadores());
         return "suscripciones/formulario";
     }
 
-    @org.springframework.web.bind.annotation.GetMapping("/suscripciones/editar/{id}")
-    public String editarSuscripcionView(@org.springframework.web.bind.annotation.PathVariable Long id,
-                                        @org.springframework.security.core.annotation.AuthenticationPrincipal org.springframework.security.core.userdetails.UserDetails userDetails,
-                                        org.springframework.ui.Model model) {
+    @GetMapping("/suscripciones/editar/{id}")
+    public String editarSuscripcionView(@PathVariable Long id,
+                                        @AuthenticationPrincipal UserDetails userDetails,
+                                        Model model) {
         if (userDetails == null) {
             return "redirect:/auth/login";
         }
@@ -60,9 +68,9 @@ public class SuscripcionController {
         return "suscripciones/formulario";
     }
 
-    @org.springframework.web.bind.annotation.PostMapping("/suscripciones/guardar")
-    public String crearSuscripcion(@org.springframework.web.bind.annotation.ModelAttribute com.sabi.sabi.dto.SuscripcionDTO suscripcionDTO,
-                                   @org.springframework.security.core.annotation.AuthenticationPrincipal org.springframework.security.core.userdetails.UserDetails userDetails) {
+    @PostMapping("/suscripciones/guardar")
+    public String crearSuscripcion(@ModelAttribute SuscripcionDTO suscripcionDTO,
+                                   @AuthenticationPrincipal UserDetails userDetails) {
         if (userDetails == null) {
             return "redirect:/auth/login";
         }
@@ -75,9 +83,38 @@ public class SuscripcionController {
         return "redirect:/suscripciones";
     }
 
-    @org.springframework.web.bind.annotation.PostMapping("/suscripciones/eliminar/{id}")
-    public String eliminarSuscripcion(@org.springframework.web.bind.annotation.PathVariable Long id,
-                                      @org.springframework.security.core.annotation.AuthenticationPrincipal org.springframework.security.core.userdetails.UserDetails userDetails) {
+
+    @PostMapping("/suscripciones/pagar/{id}")
+    public String pagarSuscripcion(@PathVariable Long id,
+                                   @AuthenticationPrincipal UserDetails userDetails) {
+        if (userDetails == null) {
+            return "redirect:/auth/login";
+        }
+        var suscripcion = suscripcionService.getSuscripcionById(id);
+        if (suscripcion != null) {
+            suscripcion.setEstadoSuscripcion(com.sabi.sabi.entity.enums.EstadoSuscripcion.ACEPTADA);
+            suscripcionService.updateSuscripcion(id, suscripcion);
+        }
+        return "redirect:/suscripciones";
+    }
+
+    @PostMapping("/suscripciones/rechazar/{id}")
+    public String rechazarSuscripcion(@PathVariable Long id,
+                                      @AuthenticationPrincipal UserDetails userDetails) {
+        if (userDetails == null) {
+            return "redirect:/auth/login";
+        }
+        var suscripcion = suscripcionService.getSuscripcionById(id);
+        if (suscripcion != null) {
+            suscripcion.setEstadoSuscripcion(com.sabi.sabi.entity.enums.EstadoSuscripcion.RECHAZADA);
+            suscripcionService.updateSuscripcion(id, suscripcion);
+        }
+        return "redirect:/suscripciones";
+    }
+
+    @PostMapping("/suscripciones/eliminar/{id}")
+    public String eliminarSuscripcion(@PathVariable Long id,
+                                      @AuthenticationPrincipal UserDetails userDetails) {
         if (userDetails == null) {
             return "redirect:/auth/login";
         }
@@ -85,9 +122,9 @@ public class SuscripcionController {
         return "redirect:/suscripciones";
     }
 
-    @org.springframework.web.bind.annotation.PostMapping("/suscripciones/desactivar/{id}")
-    public String desactivarSuscripcion(@org.springframework.web.bind.annotation.PathVariable Long id,
-                                        @org.springframework.security.core.annotation.AuthenticationPrincipal org.springframework.security.core.userdetails.UserDetails userDetails) {
+    @PostMapping("/suscripciones/desactivar/{id}")
+    public String desactivarSuscripcion(@PathVariable Long id,
+                                        @AuthenticationPrincipal UserDetails userDetails) {
         if (userDetails == null) {
             return "redirect:/auth/login";
         }
