@@ -1,7 +1,3 @@
-    public Usuario getUsuario() {
-        return usuario;
-    }
-
 package com.sabi.sabi.security;
 
 import com.sabi.sabi.entity.Usuario;
