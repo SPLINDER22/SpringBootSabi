@@ -19,7 +19,6 @@
             <th>Nombre</th>
             <th>Objetivo</th>
             <th>Descripción</th>
-            <th>Estado</th>
             <th>N° Semanas</th>
             <th>Acciones</th>
         </tr>
@@ -30,7 +29,6 @@
             <td th:text="${rutina.nombre}"></td>
             <td th:text="${rutina.objetivo}"></td>
             <td th:text="${rutina.descripcion}"></td>
-            <td th:text="${rutina.estadoRutina}"></td>
             <td th:text="${rutina.numeroSemanas}"></td>
             <td>
                 <div th:if="${rutina.idEntrenador != null and rutina.idEntrenador == idUsuarioActual}">
