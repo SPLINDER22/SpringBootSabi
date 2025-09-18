@@ -1,3 +1,7 @@
+    public Usuario getUsuario() {
+        return usuario;
+    }
+
 package com.sabi.sabi.security;
 
 import com.sabi.sabi.entity.Usuario;
@@ -13,6 +17,10 @@ public class CustomUserDetails implements UserDetails {
 
     public CustomUserDetails(Usuario usuario) {
         this.usuario = usuario;
+    }
+
+    public Usuario getUsuario() {
+        return usuario;
     }
 
     @Override
