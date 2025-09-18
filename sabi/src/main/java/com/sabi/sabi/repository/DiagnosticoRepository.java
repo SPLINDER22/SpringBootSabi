@@ -9,4 +9,5 @@ import java.util.List;
 @Repository
 public interface DiagnosticoRepository extends JpaRepository<Diagnostico,Long> {
     List<Diagnostico> findByEstadoTrue();
+    List<Diagnostico> findByClienteIdAndEstadoTrue(Long clienteId);
 }

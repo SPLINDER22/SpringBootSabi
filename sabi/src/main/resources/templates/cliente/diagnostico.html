@@ -53,15 +53,10 @@
                     </div>
                 </div>
                 <div th:if="${tieneDiagnostico != true}" class="diagnostic-empty">
-                    <div class="empty-icon">📋</div>
-                    <h4>¡Completa tu Diagnóstico Inicial!</h4>
-                    <p>Para brindarte rutinas personalizadas, necesitamos conocer tu estado físico actual y objetivos.</p>
-                    <div class="category-actions">
-                        <button class="btn btn-primary"
-                            onclick="window.location.href='/cliente/diagnostico/crear'">
-                            Hacer Diagnóstico Ahora
-                        </button>
-                    </div>
+                    <p>¡Aún no has realizado tu diagnóstico! Esto es fundamental para recibir un plan personalizado.</p>
+                    <button class="btn btn-primary" onclick="window.location.href='/cliente/diagnostico/crear'">
+                        Realizar Diagnóstico
+                    </button>
                 </div>
             </div>
         </div>

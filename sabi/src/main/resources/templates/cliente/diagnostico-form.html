@@ -4,15 +4,13 @@
 <body>
     <div class="dashboard-container">
         <header th:replace="fragments/layout :: navbar"></header>
-
         <main class="main-content">
-            <!-- Header del diagnóstico -->
             <div class="page-header">
                 <div class="header-content">
                     <div class="header-text">
-                        <h1 th:if="${isEdit == null}">📋 Nuevo Diagnóstico</h1>
+                        <h1 th:if="${isEdit == null}">🩺 Nuevo Diagnóstico</h1>
                         <h1 th:if="${isEdit != null}">✏️ Editar Diagnóstico</h1>
-                        <p>Completa tu información para un plan personalizado</p>
+                        <p>Completa tu información para un plan personalizado y seguimiento de tu progreso</p>
                     </div>
                 </div>
             </div>
@@ -29,7 +27,7 @@
             </div>
 
             <!-- Formulario de diagnóstico -->
-            <div class="diagnostico-form-section">
+            <div class="diagnostico-form-section shadow rounded bg-white p-4">
                 <form th:if="${isEdit == null}" th:action="@{/cliente/diagnostico/guardar}"
                       th:if="${isEdit != null}" th:action="@{'/cliente/diagnostico/actualizar/' + ${diagnostico.id}}"
                       method="post" th:object="${diagnostico}" class="diagnostico-form">
@@ -38,34 +36,30 @@
                         <!-- Paso 1: Información Física -->
                         <div class="form-step active" id="step-1">
                             <div class="step-header">
-                                <h3><i class="fas fa-weight"></i> Información Física</h3>
+                                <h3>⚖️ Información Física</h3>
                                 <p>Datos básicos sobre tu condición física actual</p>
                             </div>
 
                             <div class="form-grid">
-                                <div class="form-group">
+                                <div class="form-group shadow rounded">
                                     <label for="peso">
                                         <i class="fas fa-weight-hanging"></i>
                                         Peso (kg) *
                                     </label>
-                                    <input type="number" id="peso" th:field="*{peso}"
-                                           step="0.1" min="30" max="300"
-                                           class="form-control" required>
-                                    <div th:if="${#fields.hasErrors('peso')}" class="error-message">
+                                    <input type="number" id="peso" th:field="*{peso}" required min="1" class="form-control" />
+                                    <div class="invalid-feedback" th:if="${#fields.hasErrors('peso')}">
                                         <span th:errors="*{peso}"></span>
                                     </div>
                                 </div>
 
-                                <div class="form-group">
+                                <div class="form-group shadow rounded">
                                     <label for="altura">
                                         <i class="fas fa-ruler-vertical"></i>
-                                        Altura (m) *
+                                        Estatura (cm) *
                                     </label>
-                                    <input type="number" id="altura" th:field="*{altura}"
-                                           step="0.01" min="1.0" max="2.5"
-                                           class="form-control" required>
-                                    <div th:if="${#fields.hasErrors('altura')}" class="error-message">
-                                        <span th:errors="*{altura}"></span>
+                                    <input type="number" id="altura" th:field="*{estatura}" required min="100" max="250" class="form-control" />
+                                    <div class="invalid-feedback" th:if="${#fields.hasErrors('estatura')}">
+                                        <span th:errors="*{estatura}"></span>
                                     </div>
                                 </div>
                             </div>
@@ -88,7 +82,7 @@
                         <!-- Paso 2: Nivel de Actividad -->
                         <div class="form-step" id="step-2">
                             <div class="step-header">
-                                <h3><i class="fas fa-running"></i> Nivel de Actividad</h3>
+                                <h3>🏃‍♂️ Nivel de Actividad</h3>
                                 <p>¿Qué tan activo eres en tu día a día?</p>
                             </div>
 
@@ -156,7 +150,7 @@
                         <!-- Paso 3: Experiencia -->
                         <div class="form-step" id="step-3">
                             <div class="step-header">
-                                <h3><i class="fas fa-medal"></i> Experiencia con Ejercicio</h3>
+                                <h3>🏆 Experiencia con Ejercicio</h3>
                                 <p>¿Cuál es tu nivel de experiencia?</p>
                             </div>
 
@@ -215,7 +209,7 @@
                         <!-- Paso 4: Objetivos -->
                         <div class="form-step" id="step-4">
                             <div class="step-header">
-                                <h3><i class="fas fa-target"></i> Objetivos</h3>
+                                <h3>🎯 Objetivos</h3>
                                 <p>¿Cuál es tu objetivo principal?</p>
                             </div>
 
@@ -292,7 +286,7 @@
                         <!-- Paso 5: Preferencias -->
                         <div class="form-step" id="step-5">
                             <div class="step-header">
-                                <h3><i class="fas fa-heart"></i> Preferencias de Ejercicio</h3>
+                                <h3>❤️ Preferencias de Ejercicio</h3>
                                 <p>¿Qué tipo de ejercicio prefieres? (Opcional)</p>
                             </div>
 
@@ -465,4 +459,3 @@
     </script>
 </body>
 </html>
-

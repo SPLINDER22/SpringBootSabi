@@ -1,73 +1,62 @@
 <!DOCTYPE html>
-<html lang="es" xmlns:th="http://www.thymeleaf.org" th:replace="~{layout/layout :: layout('Mis Rutinas', ~{::section})}">
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
 
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mis Rutinas</title>
     <link rel="stylesheet" th:href="@{/css/dashboard-cliente.css}">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 </head>
 
 <body>
 <header th:replace="~{fragments/header :: navbar}"></header>
-<section th:fragment="section">
-    <main class="main-content">
-        <div class="category-section">
-            <div class="category-header">
-                <h3>💪 Mis Rutinas</h3>
-                <div class="category-status" th:classappend="${tieneRutinas == true} ? 'completed' : 'pending'">
-                    <span th:if="${tieneRutinas == true}" class="status-text">✅ Activa</span>
-                    <span th:if="${tieneRutinas != true}" class="status-text">⏳ Sin asignar</span>
-                </div>
+<main class="main-content">
+    <div class="category-section">
+        <div class="category-header">
+            <h3>💪 Mis Rutinas</h3>
+            <div class="category-status" th:classappend="${tieneRutinas == true} ? 'completed' : 'pending'">
+                <span th:if="${tieneRutinas == true}" class="status-text">✅ Activa</span>
+                <span th:if="${tieneRutinas != true}" class="status-text">⏳ Sin asignar</span>
             </div>
-            <div class="category-content">
-                <div th:if="${tieneRutinas}" class="rutinas-info">
-                    <div class="rutinas-list">
-                        <div th:each="rutina : ${rutinas}" class="rutina-card">
-                            <div class="rutina-header">
-                                <h5 th:text="${rutina.nombre}">Rutina de Entrenamiento</h5>
-                                <span class="rutina-estado" th:text="${rutina.estado}"
-                                    th:classappend="${rutina.estado.toLowerCase()}">ACTIVA</span>
-                            </div>
-                            <div class="rutina-details">
-                                <p><strong>Objetivo:</strong> <span th:text="${rutina.objetivo}">Fuerza general</span></p>
-                                <p><strong>Duración:</strong> <span th:text="${rutina.numeroSemanas + ' semanas'}">8
-                                        semanas</span></p>
-                                <p><strong>Creada:</strong> <span th:text="${#temporals.format(rutina.fechaCreacion, 'dd/MM/yyyy')}">01/12/2024</span>
-                                </p>
-                            </div>
-                            <div class="rutina-actions">
-                                <button class="btn btn-primary btn-sm"
-                                    onclick="window.location.href='/cliente/entrenamiento-hoy'">
-                                    🗓️ Entrenamiento de Hoy
-                                </button>
-                                <button class="btn btn-outline btn-sm"
-                                    onclick="window.location.href='/cliente/rutina/ver'">Ver Rutina Completa</button>
-                                <button class="btn btn-outline btn-sm"
-                                    onclick="window.location.href='/cliente/progreso'">📈 Mi Progreso</button>
-                            </div>
+        </div>
+        <div class="category-content">
+            <div th:if="${tieneRutinas}" class="rutinas-info">
+                <div class="rutinas-list">
+                    <div th:each="rutina : ${rutinas}" class="rutina-card shadow rounded">
+                        <div class="rutina-header">
+                            <h5>🏋️ <span th:text="${rutina.nombre}">Rutina de Entrenamiento</span></h5>
+                            <span class="rutina-estado" th:text="${rutina.estado}"
+                                th:classappend="${rutina.estado.toLowerCase()}">ACTIVA</span>
+                        </div>
+                        <div class="rutina-details">
+                            <p><strong>Objetivo:</strong> <span th:text="${rutina.objetivo}">Fuerza general</span></p>
+                            <p><strong>Duración:</strong> <span th:text="${rutina.numeroSemanas + ' semanas'}">8
+                                    semanas</span></p>
+                            <p><strong>Creada:</strong> <span th:text="${#temporals.format(rutina.fechaCreacion, 'dd/MM/yyyy')}">01/12/2024</span>
+                            </p>
+                        </div>
+                        <div class="rutina-actions">
+                            <a class="btn btn-primary btn-sm" th:href="@{'/cliente/entrenamiento-hoy'}">
+                                🗓️ Entrenamiento de Hoy
+                            </a>
+                            <a class="btn btn-outline btn-sm"
+                                th:href="@{'/cliente/rutina/ver/' + ${rutina.id}}">Ver Rutina Completa</a>
+                            <a class="btn btn-outline btn-sm"
+                                th:href="@{'/cliente/progreso'}">📈 Mi Progreso</a>
                         </div>
                     </div>
                 </div>
-                <div th:unless="${tieneRutinas}" class="rutinas-empty">
-                    <div class="empty-icon">💪</div>
-                    <h4>Aún no tienes rutinas asignadas</h4>
-                    <p>Tu entrenador te asignará rutinas personalizadas basadas en tu diagnóstico.</p>
-                    <div class="category-actions" th:if="${!tieneDiagnostico}">
-                        <button class="btn btn-disabled" disabled>
-                            Primero completa tu diagnóstico
-                        </button>
-                    </div>
-                    <div class="category-actions" th:if="${tieneDiagnostico}">
-                        <button class="btn btn-outline"
-                            onclick="window.location.href='/cliente/entrenadores'">
-                            Contactar Entrenador
-                        </button>
-                    </div>
-                </div>
+            </div>
+            <div th:if="${!tieneRutinas}" class="rutinas-empty text-center">
+                <div class="empty-icon" style="font-size: 3rem;">💪</div>
+                <h4>No tienes rutinas asignadas</h4>
+                <p>¡Solicita una rutina personalizada a tu entrenador y comienza tu progreso!</p>
+                <a href="/cliente/listaEntrenadores" class="btn btn-primary">Buscar Entrenador</a>
             </div>
         </div>
-    </main>
-</section>
+    </div>
+</main>
 <footer th:replace="~{fragments/footer :: footer}"></footer>
 </body>
 

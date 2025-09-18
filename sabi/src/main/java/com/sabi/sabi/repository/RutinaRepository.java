@@ -12,6 +12,7 @@ import java.util.List;
 @Repository
 public interface RutinaRepository extends JpaRepository<Rutina,Long> {
     List<Rutina> findByEstadoTrue();
+    List<Rutina> findByClienteIdAndEstadoTrue(Long clienteId);
 
     @Query("SELECT r FROM Rutina r LEFT JOIN FETCH r.entrenador e WHERE (e.id = :usuarioId) AND r.estado = true")
     List<Rutina> getRutinasPorUsuario(@Param("usuarioId") Long usuarioId);

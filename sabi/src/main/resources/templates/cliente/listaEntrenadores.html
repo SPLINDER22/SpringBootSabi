@@ -39,6 +39,7 @@
                                 <button type="submit" class="btn btn-outline btn-sm">Contactar</button>
                             </form>
                             <button class="btn btn-disabled btn-sm" th:if="${tieneDiagnostico != true}" disabled>Requiere diagnóstico</button>
+                            <span th:if="${tieneDiagnostico != true}" class="diagnostico-requerido-msg">Debes realizar tu diagnóstico para contactar entrenadores.</span>
                         </div>
                     </div>
                 </div>
@@ -47,8 +48,7 @@
                     <div class="empty-icon">👨‍⚕️</div>
                     <h4 th:if="${entrenadores == null}">Error al cargar entrenadores</h4>
                     <h4 th:if="${entrenadores != null}">No hay entrenadores disponibles</h4>
-                    <p th:if="${entrenadores == null}">Por favor, intenta nuevamente más tarde.</p>
-                    <p th:if="${entrenadores != null}">En este momento no hay entrenadores registrados en el sistema.</p>
+                    <p th:if="${entrenadores == null}">Por favor, intenta nuevamente más tarde o verifica tu conexión.</p>
                 </div>
             </div>
         </div>

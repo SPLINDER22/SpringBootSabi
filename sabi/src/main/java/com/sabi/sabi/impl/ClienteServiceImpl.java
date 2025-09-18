@@ -1,8 +1,17 @@
 package com.sabi.sabi.impl;
 
 import com.sabi.sabi.dto.ClienteDTO;
+import com.sabi.sabi.dto.DiagnosticoDTO;
+import com.sabi.sabi.dto.EntrenadorDTO;
+import com.sabi.sabi.dto.RutinaDTO;
 import com.sabi.sabi.entity.Cliente;
+import com.sabi.sabi.entity.Diagnostico;
+import com.sabi.sabi.entity.Entrenador;
+import com.sabi.sabi.entity.Rutina;
 import com.sabi.sabi.repository.ClienteRepository;
+import com.sabi.sabi.repository.DiagnosticoRepository;
+import com.sabi.sabi.repository.EntrenadorRepository;
+import com.sabi.sabi.repository.RutinaRepository;
 import com.sabi.sabi.repository.UsuarioRepository;
 import com.sabi.sabi.service.ClienteService;
 import org.modelmapper.ModelMapper;
@@ -15,6 +24,12 @@ import java.util.List;
 public class ClienteServiceImpl implements ClienteService {
     @Autowired
     private ClienteRepository clienteRepository;
+    @Autowired
+    private EntrenadorRepository entrenadorRepository;
+    @Autowired
+    private DiagnosticoRepository diagnosticoRepository;
+    @Autowired
+    private RutinaRepository rutinaRepository;
     @Autowired
     private ModelMapper modelMapper;
 
@@ -79,5 +94,39 @@ public class ClienteServiceImpl implements ClienteService {
         }
         clienteRepository.deleteById(id);
         return true;
+    }
+
+    @Override
+    public List<EntrenadorDTO> getAllEntrenadores() {
+        List<Entrenador> entrenadores = entrenadorRepository.findByEstadoTrue();
+        return entrenadores.stream()
+                .map(entrenador -> modelMapper.map(entrenador, EntrenadorDTO.class))
+                .toList();
+    }
+
+    @Override
+    public DiagnosticoDTO getDiagnosticoActualByClienteId(Long clienteId) {
+        List<Diagnostico> diagnosticos = diagnosticoRepository.findByClienteIdAndEstadoTrue(clienteId);
+        if (diagnosticos.isEmpty()) return null;
+        Diagnostico diagnosticoActual = diagnosticos.stream()
+            .max((d1, d2) -> d1.getFecha().compareTo(d2.getFecha()))
+            .orElse(diagnosticos.get(0));
+        return modelMapper.map(diagnosticoActual, DiagnosticoDTO.class);
+    }
+
+    @Override
+    public List<DiagnosticoDTO> getHistorialDiagnosticosByClienteId(Long clienteId) {
+        List<Diagnostico> diagnosticos = diagnosticoRepository.findByClienteIdAndEstadoTrue(clienteId);
+        return diagnosticos.stream()
+            .map(d -> modelMapper.map(d, DiagnosticoDTO.class))
+            .toList();
+    }
+
+    @Override
+    public List<RutinaDTO> getRutinasByClienteId(Long clienteId) {
+        List<Rutina> rutinas = rutinaRepository.findByClienteIdAndEstadoTrue(clienteId);
+        return rutinas.stream()
+            .map(r -> modelMapper.map(r, RutinaDTO.class))
+            .toList();
     }
 }
