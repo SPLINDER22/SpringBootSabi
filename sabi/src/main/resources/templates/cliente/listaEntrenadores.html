@@ -16,6 +16,8 @@
                     <div class="alert alert-info text-center w-50 mt-5" role="alert">
                         <strong>Aún no hay entrenadores disponibles</strong><br>
                         Cuando haya entrenadores, aquí se mostrarán.
+
+                        
                     </div>
                 </div>
                 <div th:each="entrenador, iterStat : ${entrenadores}" th:if="${!#lists.isEmpty(entrenadores)}"
