@@ -16,6 +16,8 @@ public class SemanaDTO {
 
     private String descripcion; // notas opcionales del entrenador
 
+    private Long numeroDias;
+
     // Relación con Rutina
     private Long idRutina;
 

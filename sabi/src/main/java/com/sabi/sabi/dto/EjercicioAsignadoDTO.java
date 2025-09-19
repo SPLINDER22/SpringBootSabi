@@ -1,5 +1,6 @@
 package com.sabi.sabi.dto;
 
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 import java.util.List;
@@ -15,6 +16,8 @@ public class EjercicioAsignadoDTO {
     private Long orden; // para organizar el día
 
     private String comentarios; // notas adicionales del entrenador
+
+    private Long numeroSeries;
 
     // Relación con Día
     private Long idDia;
