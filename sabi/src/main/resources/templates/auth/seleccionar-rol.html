@@ -1,27 +1,136 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <title>Seleccionar Rol</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            background: #f5f7fa;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Segoe UI', Arial, sans-serif;
+        }
+        .roles-container {
+            display: flex;
+            gap: 3vw;
+            width: 90vw;
+            max-width: 1200px;
+            justify-content: center;
+        }
+        .card-rol {
+            flex: 1 1 0;
+            background: #fff;
+            border-radius: 30px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.15);
+            padding: 3rem 2rem 2rem 2rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            transition: transform 0.3s, box-shadow 0.3s;
+            cursor: pointer;
+            min-width: 320px;
+            max-width: 500px;
+        }
+        .card-rol.cliente {
+            background: linear-gradient(135deg, #e0f7fa 0%, #80deea 100%);
+            border: 2px solid #00bcd4;
+        }
+        .card-rol.entrenador {
+            background: linear-gradient(135deg, #ffe0b2 0%, #ffb74d 100%);
+            border: 2px solid #ff9800;
+        }
+        .card-rol:hover {
+            transform: scale(1.05);
+            box-shadow: 0 16px 48px rgba(0,0,0,0.25);
+        }
+        .card-rol h2 {
+            margin-bottom: 1rem;
+            font-size: 2.2rem;
+            font-weight: bold;
+            letter-spacing: 1px;
+        }
+        .card-rol ul {
+            margin-bottom: 2rem;
+            font-size: 1.1rem;
+            text-align: left;
+            padding-left: 1.2rem;
+        }
+        .card-rol .desc {
+            font-size: 1.15rem;
+            margin-bottom: 1.5rem;
+            color: #333;
+        }
+        .card-rol button {
+            padding: 1rem 2.5rem;
+            font-size: 1.2rem;
+            border: none;
+            border-radius: 20px;
+            background: #00bcd4;
+            color: #fff;
+            font-weight: bold;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.10);
+            cursor: pointer;
+            transition: background 0.3s, transform 0.2s;
+        }
+        .card-rol.entrenador button {
+            background: #ff9800;
+        }
+        .card-rol button:hover {
+            background: #0097a7;
+            transform: scale(1.08);
+        }
+        .card-rol.entrenador button:hover {
+            background: #f57c00;
+        }
+        @media (max-width: 900px) {
+            .roles-container {
+                flex-direction: column;
+                align-items: center;
+            }
+            .card-rol {
+                margin-bottom: 2rem;
+                max-width: 90vw;
+            }
+        }
+    </style>
 </head>
-<body th:replace="layout/layout :: layout('Seleccionar rol', ~{::section})">
-<section th:fragment="section">
-    <div class="container">
-        <h2>Selecciona tu rol</h2>
-        <form th:action="@{/auth/seleccionar-rol}" method="post">
-            <div>
-                <input type="radio" id="cliente" name="rol" value="CLIENTE" checked/>
-                <label for="cliente">Cliente</label>
+<body>
+    <form action="/auth/seleccionar-rol" method="post">
+        <div class="roles-container">
+            <div class="card-rol cliente" onclick="document.getElementById('rolCliente').click();">
+                <h2>Cliente</h2>
+                <div class="desc">
+                    <strong>¡Transforma tu vida!</strong> Accede a rutinas personalizadas, seguimiento de tu progreso y diagnóstico físico profesional. Disfruta de recomendaciones de hábitos saludables, historial de avances, y la posibilidad de conectar con entrenadores expertos. Vive la experiencia fitness más completa y adaptada a tus objetivos.
+                </div>
+                <ul>
+                    <li>Rutinas y planes hechos para ti</li>
+                    <li>Registro y evolución de tu estado físico</li>
+                    <li>Diagnóstico profesional y consejos de salud</li>
+                    <li>Acceso a comunidad y entrenadores</li>
+                    <li>Recompensas y retos mensuales</li>
+                </ul>
+                <button type="submit" name="rol" value="CLIENTE" id="rolCliente">Quiero ser Cliente</button>
             </div>
-            <div>
-                <input type="radio" id="entrenador" name="rol" value="ENTRENADOR"/>
-                <label for="entrenador">Entrenador</label>
+            <div class="card-rol entrenador" onclick="document.getElementById('rolEntrenador').click();">
+                <h2>Entrenador</h2>
+                <div class="desc">
+                    <strong>¡Impulsa tu carrera!</strong> Gestiona clientes, crea rutinas personalizadas, monitorea resultados y ofrece diagnósticos profesionales. Accede a herramientas avanzadas para seguimiento, comunicación directa y gestión de tu comunidad. Sé parte de una red de profesionales y haz crecer tu reputación.
+                </div>
+                <ul>
+                    <li>Gestión integral de clientes y rutinas</li>
+                    <li>Panel de resultados y evolución</li>
+                    <li>Diagnóstico físico y recomendaciones</li>
+                    <li>Comunicación directa con tus clientes</li>
+                    <li>Acceso a comunidad de entrenadores</li>
+                </ul>
+                <button type="submit" name="rol" value="ENTRENADOR" id="rolEntrenador">Quiero ser Entrenador</button>
             </div>
-            <div>
-                <button type="submit">Continuar</button>
-            </div>
-        </form>
-    </div>
-</section>
+        </div>
+    </form>
 </body>
 </html>
