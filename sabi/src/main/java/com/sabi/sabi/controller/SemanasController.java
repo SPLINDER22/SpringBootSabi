@@ -11,6 +11,8 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
+import java.util.List;
+
 @Controller
 public class SemanasController {
     @Autowired
@@ -23,16 +25,24 @@ public class SemanasController {
     @GetMapping("/semanas/detallar/{idRutina}")
     public String detallarSemanas(@PathVariable Long idRutina, Model model) {
         RutinaDTO rutinaDTO = rutinaService.getRutinaById(idRutina);
-        model.addAttribute("semanas", semanaService.getSemanasRutina(idRutina));
-        model.addAttribute("rutina", rutinaDTO.getNombre());
+        List<?> semanas = semanaService.getSemanasRutina(idRutina); // devuelve entidades Semana
+        model.addAttribute("semanas", semanas);
+        model.addAttribute("totalSemanas", semanas.size());
+        model.addAttribute("rutina", rutinaDTO);
         return "semanas/lista";
     }
 
     @GetMapping("/semanas/crear/{idRutina}")
     public String crearSemanaView(@PathVariable Long idRutina, Model model) {
-        SemanaDTO semanaDTO = new SemanaDTO();
         RutinaDTO rutinaDTO = rutinaService.getRutinaById(idRutina);
+        var semanas = semanaService.getSemanasRutina(idRutina);
+        int total = semanas != null ? semanas.size() : 0;
+        SemanaDTO semanaDTO = new SemanaDTO();
+        semanaDTO.setIdRutina(idRutina);
+        semanaDTO.setNumeroSemana((long) (total + 1)); // pre-asignado
         model.addAttribute("rutina", rutinaDTO);
+        model.addAttribute("semanas", semanas);
+        model.addAttribute("totalSemanas", total);
         model.addAttribute("semana", semanaDTO);
         return "semanas/formulario";
     }

@@ -6,91 +6,70 @@
     <div class="shadow-sm bg-white rounded p-4 mb-4">
         <div class="d-flex justify-content-between align-items-center mb-3">
             <h2 th:text="${semana.idSemana == null ? 'Crear semana' : 'Editar semana'}"></h2>
-            <!-- Enlace correcto de retorno -->
             <a th:href="@{'/semanas/detallar/' + ${semana.idRutina}}" class="btn btn-outline-secondary">
                 <i class="bi bi-arrow-left-circle me-1"></i>Volver a la lista
             </a>
         </div>
 
-        <form th:action="@{/semanas/guardar}"
-              th:object="${semana}"
-              th:method="post">
-            <!-- CSRF -->
+        <!-- Mostrar datos básicos de la rutina -->
+        <div class="mb-3" th:if="${rutina != null}">
+            <strong>Rutina:</strong> <span th:text="${rutina.nombre}"></span>
+            <span class="text-muted">(ID: <span th:text="${rutina.idRutina}"></span>)</span>
+        </div>
+
+        <form th:action="@{/semanas/guardar}" th:object="${semana}" method="post">
             <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
             <input type="hidden" th:field="*{idSemana}"/>
-            <!-- Aseguramos enviar idRutina -->
             <input type="hidden" th:field="*{idRutina}"/>
 
-            <!-- Campo orden de semana (numeroSemana) -->
-            <!-- Modo CREAR: autocalculado (#semanas existentes + 1) -->
-            <div class="mb-3" th:if="${semana.idSemana == null}" th:with="totalSemanas=${semanas != null ? #lists.size(semanas) : 0}">
+            <!-- Campo Orden (numeroSemana) -->
+            <!-- En creación viene ya preasignado desde el controlador y es readonly -->
+            <div class="mb-3" th:if="${semana.idSemana == null}">
                 <label for="numeroSemana" class="form-label">Orden de semana</label>
-                <input type="number"
-                       id="numeroSemana"
-                       th:field="*{numeroSemana}"
-                       th:value="${totalSemanas + 1}"
-                       class="form-control"
-                       readonly
-                       min="1"/>
+                <input type="number" id="numeroSemana" th:field="*{numeroSemana}" class="form-control" readonly min="1"/>
                 <div class="form-text">
-                    Total semanas actuales: <span th:text="${totalSemanas}"></span>. Esta nueva semana será la número <strong th:text="${totalSemanas + 1}"></strong>.
+                    Total semanas existentes: <strong th:text="${totalSemanas}">0</strong>. Esta será la número <strong th:text="${semana.numeroSemana}"></strong>.
                 </div>
             </div>
-
-            <!-- Modo EDITAR: editable dentro de 1..rutina.numeroSemanas -->
+            <!-- En edición editable con límite -->
             <div class="mb-3" th:if="${semana.idSemana != null}">
                 <label for="numeroSemana" class="form-label">Orden de semana</label>
-                <input type="number"
-                       id="numeroSemana"
-                       th:field="*{numeroSemana}"
-                       class="form-control"
-                       min="1"
-                       th:attr="max=${rutina != null ? rutina.numeroSemanas : (semanas != null ? #lists.size(semanas) : 1)}"
-                       required/>
+                <input type="number" id="numeroSemana" th:field="*{numeroSemana}" class="form-control" min="1" th:attr="max=${rutina != null && rutina.numeroSemanas != null ? rutina.numeroSemanas : totalSemanas}" required/>
                 <div class="form-text">
-                    Máximo permitido: <span th:text="${rutina != null ? rutina.numeroSemanas : (semanas != null ? #lists.size(semanas) : 1)}"></span>.
+                    Máximo permitido: <span th:text="${rutina != null && rutina.numeroSemanas != null ? rutina.numeroSemanas : totalSemanas}"></span>
                 </div>
                 <div id="numeroSemanaError" class="text-danger mt-1" style="display:none"></div>
             </div>
 
+            <!-- Descripción (campo real en SemanaDTO) -->
             <div class="mb-3">
-                <label for="descripcion" class="form-label">Nombre de la semana</label>
-                <input type="text"
-                       id="descripcion"
-                       th:field="*{nombre}"
-                       class="form-control"
-                       placeholder="Semana de carga, Semana de descarga, etc."
-                       required/>
-                <div class="text-danger mt-1"
-                     th:if="${#fields.hasErrors('descripcion')}" th:errors="*{descripcion}"></div>
+                <label for="descripcion" class="form-label">Descripción / Nombre interno</label>
+                <textarea id="descripcion" th:field="*{descripcion}" class="form-control" rows="3" placeholder="Ej: Semana de carga, Semana de adaptación" required></textarea>
+                <div class="text-danger mt-1" th:if="${#fields.hasErrors('descripcion')}" th:errors="*{descripcion}"></div>
             </div>
 
+            <!-- Número de días -->
             <div class="mb-3">
-                <label for="numeroDias" class="form-label">Numero de dias</label>
-                <input type="text"
-                       id="numeroDias"
-                       th:field="*{numeroDias}"
-                       class="form-control"
-                       placeholder="Cuantos dias de entrenamiento tendrá esta semana"
-                       required/>
+                <label for="numeroDias" class="form-label">Número de días</label>
+                <input type="number" id="numeroDias" th:field="*{numeroDias}" class="form-control" min="1" max="14" placeholder="Ingresa cuántos días tiene esta semana" required/>
+                <div class="text-danger mt-1" th:if="${#fields.hasErrors('numeroDias')}" th:errors="*{numeroDias}"></div>
             </div>
-            
+
             <div class="d-flex justify-content-end">
                 <button type="submit" class="btn btn-success me-2">
                     <i class="bi bi-save me-1"></i>
                     <span th:text="${semana.idSemana == null ? 'Guardar y continuar' : 'Guardar'}"></span>
                 </button>
-                <a th:href="@{/rutinas}" class="btn btn-outline-secondary">Cancelar</a>
+                <a th:href="@{'/semanas/detallar/' + ${semana.idRutina}}" class="btn btn-outline-secondary">Cancelar</a>
             </div>
         </form>
     </div>
 
-    <!-- Validación JS solo aplica en modo edición -->
     <script th:inline="javascript">
         /*<![CDATA[*/
         (function(){
             var input = document.getElementById('numeroSemana');
-            if(!input || input.readOnly) return; // solo edición
+            if(!input || input.readOnly) return; // sólo edición
             var max = parseInt(input.getAttribute('max'),10) || 1;
             var errorSpan = document.getElementById('numeroSemanaError');
             function showError(msg){ if(errorSpan){ errorSpan.textContent = msg; errorSpan.style.display='block'; } }
