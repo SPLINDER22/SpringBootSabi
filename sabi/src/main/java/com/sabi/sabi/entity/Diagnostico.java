@@ -38,10 +38,10 @@ public class Diagnostico {
     private String lesiones;
     private String condicionesMedicas;
 
-    private String fotoFrontalUrl;
-    private String fotoLateralUrl;
 
     // Opcionales
+    private String fotoFrontalUrl;
+    private String fotoLateralUrl;
     private String fotoTraseraUrl;
     private Double porcentajeGrasaCorporal;
     private Double circunferenciaCintura;

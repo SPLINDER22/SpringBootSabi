@@ -22,21 +22,17 @@
     <div class="category-section mt-4">
         <div class="category-header">
             <h3>📋 Mi Diagnóstico</h3>
-            <div class="category-status" th:classappend="${tieneDiagnostico} ? 'completed' : 'pending'">
-                <span th:if="${tieneDiagnostico}" class="status-text">✅ Completado</span>
-                <span th:unless="${tieneDiagnostico}" class="status-text">⏳ Pendiente</span>
+            <div class="category-status" th:classappend="${diagnosticoActual != null} ? 'completed' : 'pending'">
+                <span th:if="${diagnosticoActual != null}" class="status-text">✅ Completado</span>
+                <span th:unless="${diagnosticoActual != null}" class="status-text">⏳ Pendiente</span>
             </div>
         </div>
         <div class="category-content">
-            <div th:if="${tieneDiagnostico == true}" class="diagnostic-info">
+            <div th:if="${diagnosticoActual != null}" class="diagnostic-info">
                 <div class="info-grid">
                     <div class="info-item">
                         <span class="info-label">Fecha del diagnóstico:</span>
                         <span class="info-value" th:text="${#temporals.format(diagnosticoActual.fecha, 'dd/MM/yyyy')}">--</span>
-                    </div>
-                    <div class="info-item">
-                        <span class="info-label">Nivel de experiencia:</span>
-                        <span class="info-value" th:text="${diagnosticoActual.nivelExperiencia}">--</span>
                     </div>
                     <div class="info-item">
                         <span class="info-label">Peso actual:</span>
@@ -46,34 +42,22 @@
                         <span class="info-label">Estatura:</span>
                         <span class="info-value" th:text="${diagnosticoActual.estatura + ' cm'}">-- cm</span>
                     </div>
+                    <div class="info-item">
+                        <span class="info-label">IMC:</span>
+                        <span class="info-value" th:text="${diagnosticoActual.peso != null && diagnosticoActual.estatura != null ? T(java.lang.Math).round((diagnosticoActual.peso / ((diagnosticoActual.estatura/100)*(diagnosticoActual.estatura/100))) * 10) / 10.0 : '--'}">--</span>
+                    </div>
                 </div>
-                <div class="category-actions">
-                    <button class="btn btn-secondary" onclick="window.location.href='/cliente/diagnostico/ver'">Ver Diagnóstico Completo</button>
-                    <button class="btn btn-outline" onclick="window.location.href='/cliente/diagnostico/crear'">Actualizar Diagnóstico</button>
+                <div class="category-actions mt-3">
+                    <a class="btn btn-outline-primary" th:href="@{/diagnostico/cliente}">Ver/Actualizar Diagnóstico</a>
                 </div>
             </div>
-            <div th:if="${tieneDiagnostico != true}" class="diagnostic-empty">
-                <div class="empty-icon">📋</div>
-                <h4>¡Completa tu Diagnóstico Inicial!</h4>
-                <p>Para brindarte rutinas personalizadas, necesitamos conocer tu estado físico actual y objetivos.</p>
-                <div class="category-actions">
-                    <button class="btn btn-primary" onclick="window.location.href='/cliente/diagnostico/crear'">Hacer Diagnóstico Ahora</button>
-                </div>
+            <div th:unless="${diagnosticoActual != null}">
+                <div class="alert alert-warning mb-3">Aún no has realizado tu diagnóstico. ¡Hazlo para personalizar tu experiencia!</div>
+                <a class="btn btn-primary" th:href="@{/diagnostico/cliente}">Hacer Diagnóstico</a>
             </div>
         </div>
     </div>
-    <!-- Enlaces a otras vistas -->
-    <div class="row justify-content-center mt-5">
-        <div class="col-md-3 mb-4">
-            <a class="btn btn-lg btn-outline-success w-100" th:href="@{/cliente/rutinas}">💪 Mis Rutinas</a>
-        </div>
-        <div class="col-md-3 mb-4">
-            <a class="btn btn-lg btn-outline-info w-100" th:href="@{/cliente/listaEntrenadores}">👨‍⚕️ Entrenadores Disponibles</a>
-        </div>
-        <div class="col-md-3 mb-4">
-            <a class="btn btn-lg btn-outline-warning w-100" th:href="@{/cliente/diagnostico/historial}">📜 Historial de Diagnósticos</a>
-        </div>
-    </div>
+    <!-- El resto del dashboard permanece igual, sin mostrar el historial ni el formulario aquí -->
 </section>
 </body>
 </html>
