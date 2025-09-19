@@ -87,4 +87,15 @@ public class RutinaController {
             return "redirect:/rutinas";
         }
     }
+
+    @PostMapping("/rutinas/desactivate/{id}")
+    public String desactivarRutina(@PathVariable Long id) {
+        RutinaDTO rutinaDTO = rutinaService.getRutinaById(id);
+        if (rutinaDTO == null) {
+            return "redirect:/rutinas?error=notfound";
+        }
+        rutinaService.desactivateRutina(id);
+        return "redirect:/rutinas";
+    }
+
 }
