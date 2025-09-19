@@ -1,130 +1,104 @@
 <!DOCTYPE html>
-<html lang="es" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Historial de Diagnósticos - SABI</title>
-    <link rel="stylesheet" th:href="@{/css/contenido.css}">
-    <link rel="stylesheet" th:href="@{/css/dashboard-cliente.css}">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <title>Historial de Diagnósticos</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/diagnostico-form.css}">
 </head>
-<body th:replace="layout/layout :: layout('Historial Diagnóstico', ~{::section})">
+<body th:replace="layout/layout :: layout('Historial de Diagnósticos', ~{::section})">
 <section th:fragment="section">
-    <div class="dashboard-container">
-        <header th:replace="~{fragments/header :: navbar}"></header>
-        <main class="main-content">
-            <div class="page-header">
-                <div class="header-content">
-                    <div class="header-text">
-                        <h1>📈 Historial de Diagnósticos</h1>
-                        <p>Revisa la evolución de tu perfil físico y objetivos a lo largo del tiempo</p>
-                    </div>
-                    <div class="header-actions">
-                        <a href="/cliente/diagnostico/crear" class="btn btn-primary">
-                            <i class="fas fa-plus"></i> Nuevo Diagnóstico
-                        </a>
-                    </div>
-                </div>
+<div class="container py-4">
+    <h2 class="mb-4">Historial de Diagnósticos</h2>
+    <table class="table table-bordered table-hover">
+        <thead>
+            <tr>
+                <th>Fecha</th>
+                <th>Peso</th>
+                <th>Estatura</th>
+                <th>Nivel</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="diag : ${historial}">
+                <td th:text="${#temporals.format(diag.fecha, 'dd/MM/yyyy')}"></td>
+                <td th:text="${diag.peso}"></td>
+                <td th:text="${diag.estatura}"></td>
+                <td th:text="${diag.nivelExperiencia}"></td>
+                <td>
+                    <button type="button" class="btn btn-info btn-sm" data-bs-toggle="modal" data-bs-target="#modalDetalle" th:attr="data-id=${diag.idDiagnostico}">Ver detalle</button>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <!-- Modal para detalle de diagnóstico -->
+    <div class="modal fade" id="modalDetalle" tabindex="-1" aria-labelledby="modalDetalleLabel" aria-hidden="true">
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+          <div class="modal-header bg-primary text-white">
+            <h5 class="modal-title" id="modalDetalleLabel">Detalle de Diagnóstico</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+          </div>
+          <div class="modal-body">
+            <div id="detalleDiagnosticoContent">
+              <!-- Aquí se cargan los datos por AJAX -->
             </div>
-
-            <!-- Mensajes -->
-            <div th:if="${success}" class="alert alert-success">
-                <i class="fas fa-check-circle"></i>
-                <span th:text="${success}"></span>
+            <div class="alert alert-info mt-3">
+              <i class="fas fa-info-circle"></i> Los datos mostrados son solo informativos y no pueden ser editados.
             </div>
-
-            <div th:if="${error}" class="alert alert-error">
-                <i class="fas fa-exclamation-circle"></i>
-                <span th:text="${error}"></span>
-            </div>
-
-            <!-- Estadísticas del historial -->
-            <div class="historial-stats" th:if="${diagnosticos != null && !#lists.isEmpty(diagnosticos)}">
-                <div class="stats-grid">
-                    <div class="stat-card shadow rounded">
-                        <div class="stat-icon">
-                            <i class="fas fa-clipboard-list"></i>
-                        </div>
-                        <div class="stat-content">
-                            <h3 th:text="${#lists.size(diagnosticos)}">0</h3>
-                            <p>Total de diagnósticos</p>
-                        </div>
-                    </div>
-
-                    <div class="stat-card">
-                        <div class="stat-icon">
-                            <i class="fas fa-calendar-alt"></i>
-                        </div>
-                        <div class="stat-content">
-                            <h3 th:text="${#temporals.format(diagnosticos[0].fechaActualizacion, 'dd/MM/yyyy')}">Fecha</h3>
-                            <p>Último Diagnóstico</p>
-                        </div>
-                    </div>
-
-                    <!-- Mostrar cambio de peso si hay más de un diagnóstico -->
-                    <div class="stat-card" th:if="${#lists.size(diagnosticos) > 1}">
-                        <div class="stat-icon">
-                            <i class="fas fa-weight"></i>
-                        </div>
-                        <div class="stat-content">
-                            <h3 th:text="'Cambio: ' + (diagnosticos[0].peso - diagnosticos[1].peso) + ' kg'">0 kg</h3>
-                            <p>Cambio de Peso</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div th:if="${diagnosticos == null || #lists.isEmpty(diagnosticos)}" class="diagnosticos-empty text-center">
-                <div class="empty-icon" style="font-size: 3rem;">🩺</div>
-                <h4>No tienes diagnósticos registrados</h4>
-                <p>¡Realiza tu primer diagnóstico para comenzar tu evolución!</p>
-                <a href="/cliente/diagnostico/crear" class="btn btn-primary">Realizar Diagnóstico</a>
-            </div>
-
-            <!-- Lista de diagnósticos -->
-            <div class="diagnosticos-list" th:if="${diagnosticos != null && !#lists.isEmpty(diagnosticos)}">
-                <div th:each="diag : ${diagnosticos}" class="diagnostico-card shadow rounded">
-                    <div class="diagnostico-header">
-                        <h4>🩺 Diagnóstico <span th:text="${diag.fecha}">--</span></h4>
-                        <span class="diagnostico-estado" th:text="${diag.estado ? 'Activo' : 'Inactivo'}"></span>
-                    </div>
-                    <div class="diagnostico-details">
-                        <p><strong>Peso:</strong> <span th:text="${diag.peso}">--</span> kg</p>
-                        <p><strong>Estatura:</strong> <span th:text="${diag.estatura}">--</span> cm</p>
-                        <p><strong>Nivel de experiencia:</strong> <span th:text="${diag.nivelExperiencia}">--</span></p>
-                    </div>
-                    <div class="diagnostico-actions">
-                        <a class="btn btn-outline btn-sm" th:href="@{'/cliente/diagnostico/ver/' + ${diag.idDiagnostico}}">Ver Detalle</a>
-                    </div>
-                </div>
-            </div>
-        </main>
-        <footer th:replace="~{fragments/footer :: footer}"></footer>
+          </div>
+        </div>
+      </div>
     </div>
-
-    <script>
-        function setView(viewType) {
-            // Cambiar botones activos
-            document.querySelectorAll('.view-btn').forEach(btn => {
-                btn.classList.remove('active');
-            });
-            document.querySelector(`[data-view="${viewType}"]`).classList.add('active');
-
-            // Cambiar vistas
-            document.getElementById('timeline-view').style.display = viewType === 'timeline' ? 'block' : 'none';
-            document.getElementById('table-view').style.display = viewType === 'table' ? 'block' : 'none';
-        }
-
-        // Animaciones para el timeline
-        document.addEventListener('DOMContentLoaded', function() {
-            const timelineItems = document.querySelectorAll('.timeline-item');
-            timelineItems.forEach((item, index) => {
-                setTimeout(() => {
-                    item.style.opacity = '1';
-                    item.style.transform = 'translateX(0)';
-                }, index * 100);
-            });
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    var modal = document.getElementById('modalDetalle');
+    modal.addEventListener('show.bs.modal', function (event) {
+      var button = event.relatedTarget;
+      var diagId = button.getAttribute('data-id');
+      fetch('/diagnostico/detalle/' + diagId)
+        .then(response => response.json())
+        .then(data => {
+          document.getElementById('detalleDiagnosticoContent').innerHTML = `
+            <div class='row'>
+              <div class='col-md-6'>
+                <ul class='list-group mb-3'>
+                  <li class='list-group-item'><strong>Fecha:</strong> ${data.fecha}</li>
+                  <li class='list-group-item'><strong>Peso:</strong> ${data.peso} kg</li>
+                  <li class='list-group-item'><strong>Estatura:</strong> ${data.estatura} cm</li>
+                  <li class='list-group-item'><strong>IMC:</strong> ${data.peso && data.estatura ? (Math.round((data.peso / Math.pow(data.estatura/100,2))*10)/10) : '--'}</li>
+                  <li class='list-group-item'><strong>Nivel de experiencia:</strong> ${data.nivelExperiencia}</li>
+                  <li class='list-group-item'><strong>Disponibilidad de tiempo:</strong> ${data.disponibilidadTiempo || 'N/A'}</li>
+                  <li class='list-group-item'><strong>Acceso a recursos:</strong> ${data.accesoRecursos || 'N/A'}</li>
+                  <li class='list-group-item'><strong>Lesiones:</strong> ${data.lesiones || 'N/A'}</li>
+                  <li class='list-group-item'><strong>Condiciones médicas:</strong> ${data.condicionesMedicas || 'N/A'}</li>
+                </ul>
+              </div>
+              <div class='col-md-6'>
+                <ul class='list-group mb-3'>
+                  <li class='list-group-item'><strong>Foto Frontal:</strong> ${data.fotoFrontalUrl ? `<a href='${data.fotoFrontalUrl}' target='_blank'>Ver foto</a>` : 'N/A'}</li>
+                  <li class='list-group-item'><strong>Foto Lateral:</strong> ${data.fotoLateralUrl ? `<a href='${data.fotoLateralUrl}' target='_blank'>Ver foto</a>` : 'N/A'}</li>
+                  <li class='list-group-item'><strong>Foto Trasera:</strong> ${data.fotoTraseraUrl ? `<a href='${data.fotoTraseraUrl}' target='_blank'>Ver foto</a>` : 'N/A'}</li>
+                  <li class='list-group-item'><strong>% Grasa Corporal:</strong> ${data.porcentajeGrasaCorporal || 'N/A'}</li>
+                  <li class='list-group-item'><strong>Circunferencia Cintura:</strong> ${data.circunferenciaCintura || 'N/A'} cm</li>
+                  <li class='list-group-item'><strong>Circunferencia Cadera:</strong> ${data.circunferenciaCadera || 'N/A'} cm</li>
+                  <li class='list-group-item'><strong>Circunferencia Brazo:</strong> ${data.circunferenciaBrazo || 'N/A'} cm</li>
+                  <li class='list-group-item'><strong>Circunferencia Pierna:</strong> ${data.circunferenciaPierna || 'N/A'} cm</li>
+                  <li class='list-group-item'><strong>Frecuencia Cardíaca Reposo:</strong> ${data.frecuenciaCardiacaReposo || 'N/A'} bpm</li>
+                  <li class='list-group-item'><strong>Presión Arterial:</strong> ${data.presionArterial || 'N/A'}</li>
+                  <li class='list-group-item'><strong>Horas de Sueño:</strong> ${data.horasSueno || 'N/A'}</li>
+                  <li class='list-group-item'><strong>Hábitos Alimenticios:</strong> ${data.habitosAlimenticios || 'N/A'}</li>
+                </ul>
+              </div>
+            </div>
+          `;
         });
-    </script>
+    });
+  });
+</script>
 </section>
 </body>
 </html>

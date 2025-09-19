@@ -129,4 +129,11 @@ public class ClienteServiceImpl implements ClienteService {
             .map(r -> modelMapper.map(r, RutinaDTO.class))
             .toList();
     }
+
+    @Override
+    public ClienteDTO getClienteByEmail(String email) {
+        Cliente cliente = clienteRepository.findByEmail(email);
+        if (cliente == null) return null;
+        return modelMapper.map(cliente, ClienteDTO.class);
+    }
 }

@@ -2,465 +2,145 @@
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Formulario Diagnóstico</title>
+    <title>Mi Diagnóstico</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/diagnostico-form.css}">
 </head>
-<body th:replace="layout/layout :: layout('Formulario Diagnóstico', ~{::section})">
+<body th:replace="layout/layout :: layout('Mi Diagnóstico', ~{::section})">
 <section th:fragment="section">
-    <div class="dashboard-container">
-        <header th:replace="fragments/layout :: navbar"></header>
-        <main class="main-content">
-            <div class="page-header">
-                <div class="header-content">
-                    <div class="header-text">
-                        <h1 th:if="${isEdit == null}">🩺 Nuevo Diagnóstico</h1>
-                        <h1 th:if="${isEdit != null}">✏️ Editar Diagnóstico</h1>
-                        <p>Completa tu información para un plan personalizado y seguimiento de tu progreso</p>
-                    </div>
+<div class="container py-4">
+    <h2 class="mb-4">Mi Diagnóstico</h2>
+    <form th:action="@{/diagnostico/crear}" method="post" class="needs-validation" novalidate>
+         <!-- Obligatorios -->
+        <div class="categoria">
+            <div class="categoria-titulo">Datos físicos <span class="badge bg-danger">Obligatorio</span></div>
+            <div class="row g-3 align-items-end">
+                <div class="col-md-4">
+                    <label for="peso" class="form-label">Peso (kg)</label>
+                    <input type="number" step="0.1" min="30" max="300" class="form-control" id="peso" name="peso" th:value="${diagnosticoActual?.peso}" required placeholder="Ej: 70.5">
+                    <small class="text-muted">Ingrese su peso actual en kilogramos.</small>
+                    <div class="invalid-feedback">Este campo es obligatorio.</div>
+                </div>
+                <div class="col-md-4">
+                    <label for="estatura" class="form-label">Estatura (cm)</label>
+                    <input type="number" step="0.1" min="100" max="250" class="form-control" id="estatura" name="estatura" th:value="${diagnosticoActual?.estatura}" required placeholder="Ej: 175">
+                    <small class="text-muted">Ingrese su estatura en centímetros.</small>
+                    <div class="invalid-feedback">Este campo es obligatorio.</div>
+                </div>
+                <div class="col-md-4">
+                    <div id="imcBox" class="imc-box">IMC: <span id="imcValue">--</span></div>
+                    <small class="text-muted">El IMC se calcula automáticamente.</small>
+                </div>
+                <div class="col-md-4">
+                    <label for="nivelExperiencia" class="form-label">Nivel de experiencia</label>
+                    <select class="form-select" id="nivelExperiencia" name="nivelExperiencia" required>
+                        <option value="">Seleccione...</option>
+                        <option th:selected="${diagnosticoActual?.nivelExperiencia == 'PRINCIPIANTE'}" value="PRINCIPIANTE">Principiante</option>
+                        <option th:selected="${diagnosticoActual?.nivelExperiencia == 'INTERMEDIO'}" value="INTERMEDIO">Intermedio</option>
+                        <option th:selected="${diagnosticoActual?.nivelExperiencia == 'AVANZADO'}" value="AVANZADO">Avanzado</option>
+                    </select>
+                    <small class="text-muted">Seleccione su nivel de experiencia física.</small>
+                    <div class="invalid-feedback">Este campo es obligatorio.</div>
+                </div>
+                <div class="col-md-4">
+                    <label for="disponibilidadTiempo" class="form-label">Disponibilidad de tiempo</label>
+                    <input type="text" class="form-control" id="disponibilidadTiempo" name="disponibilidadTiempo" th:value="${diagnosticoActual?.disponibilidadTiempo}" required placeholder="Ej: 3 veces por semana, 45 min">
+                    <small class="text-muted">Ejemplo: 3 veces por semana, 45 min.</small>
+                    <div class="invalid-feedback">Este campo es obligatorio.</div>
+                </div>
+                <div class="col-md-4">
+                    <label for="accesoRecursos" class="form-label">Acceso a recursos</label>
+                    <input type="text" class="form-control" id="accesoRecursos" name="accesoRecursos" th:value="${diagnosticoActual?.accesoRecursos}" required placeholder="Ej: casa, gimnasio, pesas">
+                    <small class="text-muted">Ejemplo: casa, gimnasio, pesas.</small>
+                    <div class="invalid-feedback">Este campo es obligatorio.</div>
+                </div>
+                <div class="col-md-4">
+                    <label for="lesiones" class="form-label">Lesiones</label>
+                    <input type="text" class="form-control" id="lesiones" name="lesiones" th:value="${diagnosticoActual?.lesiones}" required placeholder="Ej: ninguna, rodilla, espalda">
+                    <small class="text-muted">Indique si tiene alguna lesión relevante.</small>
+                    <div class="invalid-feedback">Este campo es obligatorio.</div>
+                </div>
+                <div class="col-md-4">
+                    <label for="condicionesMedicas" class="form-label">Condiciones médicas</label>
+                    <input type="text" class="form-control" id="condicionesMedicas" name="condicionesMedicas" th:value="${diagnosticoActual?.condicionesMedicas}" required placeholder="Ej: hipertensión, diabetes">
+                    <small class="text-muted">Indique si tiene alguna condición médica relevante.</small>
+                    <div class="invalid-feedback">Este campo es obligatorio.</div>
                 </div>
             </div>
-
-            <!-- Mensajes de retroalimentación -->
-            <div th:if="${success}" class="alert alert-success">
-                <i class="fas fa-check-circle"></i>
-                <span th:text="${success}"></span>
+        </div>
+        <!-- Opcionales -->
+        <div class="categoria">
+            <div class="categoria-titulo">Datos adicionales <span class="badge bg-info">Opcional</span></div>
+            <div class="row g-3">
+                <div class="col-md-4">
+                    <label for="fotoFrontalUrl" class="form-label">Foto Frontal (URL)</label>
+                    <input type="text" class="form-control" id="fotoFrontalUrl" name="fotoFrontalUrl" th:value="${diagnosticoActual?.fotoFrontalUrl}" placeholder="Ej: https://...">
+                    <small class="text-muted">URL de una foto frontal actual.</small>
+                </div>
+                <div class="col-md-4">
+                    <label for="fotoLateralUrl" class="form-label">Foto Lateral (URL)</label>
+                    <input type="text" class="form-control" id="fotoLateralUrl" name="fotoLateralUrl" th:value="${diagnosticoActual?.fotoLateralUrl}" placeholder="Ej: https://...">
+                    <small class="text-muted">URL de una foto lateral actual.</small>
+                </div>
+                <div class="col-md-4">
+                    <label for="fotoTraseraUrl" class="form-label">Foto Trasera (URL)</label>
+                    <input type="text" class="form-control" id="fotoTraseraUrl" name="fotoTraseraUrl" th:value="${diagnosticoActual?.fotoTraseraUrl}" placeholder="Ej: https://...">
+                    <small class="text-muted">URL de una foto trasera actual.</small>
+                </div>
+                <div class="col-md-4">
+                    <label for="porcentajeGrasaCorporal" class="form-label">% Grasa Corporal</label>
+                    <input type="number" step="0.1" min="0" max="100" class="form-control" id="porcentajeGrasaCorporal" name="porcentajeGrasaCorporal" th:value="${diagnosticoActual?.porcentajeGrasaCorporal}" placeholder="Ej: 18.5">
+                    <small class="text-muted">Porcentaje estimado de grasa corporal.</small>
+                </div>
+                <div class="col-md-4">
+                    <label for="circunferenciaCintura" class="form-label">Circunferencia Cintura (cm)</label>
+                    <input type="number" step="0.1" min="0" class="form-control" id="circunferenciaCintura" name="circunferenciaCintura" th:value="${diagnosticoActual?.circunferenciaCintura}" placeholder="Ej: 80">
+                    <small class="text-muted">Medida de la cintura en centímetros.</small>
+                </div>
+                <div class="col-md-4">
+                    <label for="circunferenciaCadera" class="form-label">Circunferencia Cadera (cm)</label>
+                    <input type="number" step="0.1" min="0" class="form-control" id="circunferenciaCadera" name="circunferenciaCadera" th:value="${diagnosticoActual?.circunferenciaCadera}" placeholder="Ej: 95">
+                    <small class="text-muted">Medida de la cadera en centímetros.</small>
+                </div>
+                <div class="col-md-4">
+                    <label for="circunferenciaBrazo" class="form-label">Circunferencia Brazo (cm)</label>
+                    <input type="number" step="0.1" min="0" class="form-control" id="circunferenciaBrazo" name="circunferenciaBrazo" th:value="${diagnosticoActual?.circunferenciaBrazo}" placeholder="Ej: 32">
+                    <small class="text-muted">Medida del brazo en centímetros.</small>
+                </div>
+                <div class="col-md-4">
+                    <label for="circunferenciaPierna" class="form-label">Circunferencia Pierna (cm)</label>
+                    <input type="number" step="0.1" min="0" class="form-control" id="circunferenciaPierna" name="circunferenciaPierna" th:value="${diagnosticoActual?.circunferenciaPierna}" placeholder="Ej: 40">
+                    <small class="text-muted">Medida de la pierna en centímetros.</small>
+                </div>
+                <div class="col-md-4">
+                    <label for="frecuenciaCardiacaReposo" class="form-label">Frecuencia Cardíaca Reposo (bpm)</label>
+                    <input type="number" min="30" max="200" class="form-control" id="frecuenciaCardiacaReposo" name="frecuenciaCardiacaReposo" th:value="${diagnosticoActual?.frecuenciaCardiacaReposo}" placeholder="Ej: 70">
+                    <small class="text-muted">Latidos por minuto en reposo.</small>
+                </div>
+                <div class="col-md-4">
+                    <label for="presionArterial" class="form-label">Presión Arterial</label>
+                    <input type="text" class="form-control" id="presionArterial" name="presionArterial" th:value="${diagnosticoActual?.presionArterial}" placeholder="Ej: 120/80">
+                    <small class="text-muted">Ejemplo: 120/80.</small>
+                </div>
+                <div class="col-md-4">
+                    <label for="horasSueno" class="form-label">Horas de Sueño</label>
+                    <input type="number" min="0" max="24" class="form-control" id="horasSueno" name="horasSueno" th:value="${diagnosticoActual?.horasSueno}" placeholder="Ej: 7">
+                    <small class="text-muted">Promedio de horas de sueño por día.</small>
+                </div>
+                <div class="col-md-4">
+                    <label for="habitosAlimenticios" class="form-label">Hábitos Alimenticios</label>
+                    <input type="text" class="form-control" id="habitosAlimenticios" name="habitosAlimenticios" th:value="${diagnosticoActual?.habitosAlimenticios}" placeholder="Ej: dieta balanceada, vegetariano">
+                    <small class="text-muted">Descripción libre de sus hábitos alimenticios.</small>
+                </div>
             </div>
-
-            <div th:if="${error}" class="alert alert-error">
-                <i class="fas fa-exclamation-circle"></i>
-                <span th:text="${error}"></span>
-            </div>
-
-            <!-- Formulario de diagnóstico -->
-            <div class="diagnostico-form-section shadow rounded bg-white p-4">
-                <form th:if="${isEdit == null}" th:action="@{/cliente/diagnostico/guardar}"
-                      th:if="${isEdit != null}" th:action="@{'/cliente/diagnostico/actualizar/' + ${diagnostico.id}}"
-                      method="post" th:object="${diagnostico}" class="diagnostico-form">
-
-                    <div class="form-steps">
-                        <!-- Paso 1: Información Física -->
-                        <div class="form-step active" id="step-1">
-                            <div class="step-header">
-                                <h3>⚖️ Información Física</h3>
-                                <p>Datos básicos sobre tu condición física actual</p>
-                            </div>
-
-                            <div class="form-grid">
-                                <div class="form-group shadow rounded">
-                                    <label for="peso">
-                                        <i class="fas fa-weight-hanging"></i>
-                                        Peso (kg) *
-                                    </label>
-                                    <input type="number" id="peso" th:field="*{peso}" required min="1" class="form-control" />
-                                    <div class="invalid-feedback" th:if="${#fields.hasErrors('peso')}">
-                                        <span th:errors="*{peso}"></span>
-                                    </div>
-                                </div>
-
-                                <div class="form-group shadow rounded">
-                                    <label for="altura">
-                                        <i class="fas fa-ruler-vertical"></i>
-                                        Estatura (cm) *
-                                    </label>
-                                    <input type="number" id="altura" th:field="*{estatura}" required min="100" max="250" class="form-control" />
-                                    <div class="invalid-feedback" th:if="${#fields.hasErrors('estatura')}">
-                                        <span th:errors="*{estatura}"></span>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Cálculo automático del IMC -->
-                            <div class="imc-calculator">
-                                <div class="imc-result">
-                                    <h4>Tu IMC: <span id="imc-value">--</span></h4>
-                                    <p id="imc-status" class="imc-status"></p>
-                                </div>
-                            </div>
-
-                            <div class="step-buttons">
-                                <button type="button" class="btn btn-primary" onclick="nextStep(2)">
-                                    Siguiente <i class="fas fa-arrow-right"></i>
-                                </button>
-                            </div>
-                        </div>
-
-                        <!-- Paso 2: Nivel de Actividad -->
-                        <div class="form-step" id="step-2">
-                            <div class="step-header">
-                                <h3>🏃‍♂️ Nivel de Actividad</h3>
-                                <p>¿Qué tan activo eres en tu día a día?</p>
-                            </div>
-
-                            <div class="radio-grid">
-                                <div class="radio-option">
-                                    <input type="radio" id="sedentario" th:field="*{nivelActividad}" value="SEDENTARIO">
-                                    <label for="sedentario" class="radio-card">
-                                        <div class="radio-icon">😴</div>
-                                        <h4>Sedentario</h4>
-                                        <p>Trabajo de oficina, poco ejercicio</p>
-                                    </label>
-                                </div>
-
-                                <div class="radio-option">
-                                    <input type="radio" id="poco-activo" th:field="*{nivelActividad}" value="POCO_ACTIVO">
-                                    <label for="poco-activo" class="radio-card">
-                                        <div class="radio-icon">🚶</div>
-                                        <h4>Poco Activo</h4>
-                                        <p>Ejercicio ligero 1-3 días/semana</p>
-                                    </label>
-                                </div>
-
-                                <div class="radio-option">
-                                    <input type="radio" id="moderadamente-activo" th:field="*{nivelActividad}" value="MODERADAMENTE_ACTIVO">
-                                    <label for="moderadamente-activo" class="radio-card">
-                                        <div class="radio-icon">🏃</div>
-                                        <h4>Moderadamente Activo</h4>
-                                        <p>Ejercicio moderado 3-5 días/semana</p>
-                                    </label>
-                                </div>
-
-                                <div class="radio-option">
-                                    <input type="radio" id="muy-activo" th:field="*{nivelActividad}" value="MUY_ACTIVO">
-                                    <label for="muy-activo" class="radio-card">
-                                        <div class="radio-icon">💪</div>
-                                        <h4>Muy Activo</h4>
-                                        <p>Ejercicio intenso 6-7 días/semana</p>
-                                    </label>
-                                </div>
-
-                                <div class="radio-option">
-                                    <input type="radio" id="extremadamente-activo" th:field="*{nivelActividad}" value="EXTREMADAMENTE_ACTIVO">
-                                    <label for="extremadamente-activo" class="radio-card">
-                                        <div class="radio-icon">🏋️</div>
-                                        <h4>Extremadamente Activo</h4>
-                                        <p>Entrenamiento doble, trabajo físico</p>
-                                    </label>
-                                </div>
-                            </div>
-
-                            <div th:if="${#fields.hasErrors('nivelActividad')}" class="error-message">
-                                <span th:errors="*{nivelActividad}"></span>
-                            </div>
-
-                            <div class="step-buttons">
-                                <button type="button" class="btn btn-secondary" onclick="prevStep(1)">
-                                    <i class="fas fa-arrow-left"></i> Anterior
-                                </button>
-                                <button type="button" class="btn btn-primary" onclick="nextStep(3)">
-                                    Siguiente <i class="fas fa-arrow-right"></i>
-                                </button>
-                            </div>
-                        </div>
-
-                        <!-- Paso 3: Experiencia -->
-                        <div class="form-step" id="step-3">
-                            <div class="step-header">
-                                <h3>🏆 Experiencia con Ejercicio</h3>
-                                <p>¿Cuál es tu nivel de experiencia?</p>
-                            </div>
-
-                            <div class="radio-grid">
-                                <div class="radio-option">
-                                    <input type="radio" id="principiante" th:field="*{experienciaEjercicio}" value="PRINCIPIANTE">
-                                    <label for="principiante" class="radio-card">
-                                        <div class="radio-icon">🌱</div>
-                                        <h4>Principiante</h4>
-                                        <p>Menos de 6 meses de experiencia</p>
-                                    </label>
-                                </div>
-
-                                <div class="radio-option">
-                                    <input type="radio" id="intermedio" th:field="*{experienciaEjercicio}" value="INTERMEDIO">
-                                    <label for="intermedio" class="radio-card">
-                                        <div class="radio-icon">📈</div>
-                                        <h4>Intermedio</h4>
-                                        <p>6 meses - 2 años de experiencia</p>
-                                    </label>
-                                </div>
-
-                                <div class="radio-option">
-                                    <input type="radio" id="avanzado" th:field="*{experienciaEjercicio}" value="AVANZADO">
-                                    <label for="avanzado" class="radio-card">
-                                        <div class="radio-icon">🏆</div>
-                                        <h4>Avanzado</h4>
-                                        <p>Más de 2 años de experiencia</p>
-                                    </label>
-                                </div>
-
-                                <div class="radio-option">
-                                    <input type="radio" id="experto" th:field="*{experienciaEjercicio}" value="EXPERTO">
-                                    <label for="experto" class="radio-card">
-                                        <div class="radio-icon">👑</div>
-                                        <h4>Experto</h4>
-                                        <p>Atleta o instructor profesional</p>
-                                    </label>
-                                </div>
-                            </div>
-
-                            <div th:if="${#fields.hasErrors('experienciaEjercicio')}" class="error-message">
-                                <span th:errors="*{experienciaEjercicio}"></span>
-                            </div>
-
-                            <div class="step-buttons">
-                                <button type="button" class="btn btn-secondary" onclick="prevStep(2)">
-                                    <i class="fas fa-arrow-left"></i> Anterior
-                                </button>
-                                <button type="button" class="btn btn-primary" onclick="nextStep(4)">
-                                    Siguiente <i class="fas fa-arrow-right"></i>
-                                </button>
-                            </div>
-                        </div>
-
-                        <!-- Paso 4: Objetivos -->
-                        <div class="form-step" id="step-4">
-                            <div class="step-header">
-                                <h3>🎯 Objetivos</h3>
-                                <p>¿Cuál es tu objetivo principal?</p>
-                            </div>
-
-                            <div class="radio-grid">
-                                <div class="radio-option">
-                                    <input type="radio" id="perder-peso" th:field="*{objetivos}" value="PERDER_PESO">
-                                    <label for="perder-peso" class="radio-card">
-                                        <div class="radio-icon">📉</div>
-                                        <h4>Perder Peso</h4>
-                                        <p>Reducir grasa corporal</p>
-                                    </label>
-                                </div>
-
-                                <div class="radio-option">
-                                    <input type="radio" id="ganar-masa" th:field="*{objetivos}" value="GANAR_MASA_MUSCULAR">
-                                    <label for="ganar-masa" class="radio-card">
-                                        <div class="radio-icon">💪</div>
-                                        <h4>Ganar Músculo</h4>
-                                        <p>Aumentar masa muscular</p>
-                                    </label>
-                                </div>
-
-                                <div class="radio-option">
-                                    <input type="radio" id="mantener-forma" th:field="*{objetivos}" value="MANTENERSE_EN_FORMA">
-                                    <label for="mantener-forma" class="radio-card">
-                                        <div class="radio-icon">⚖️</div>
-                                        <h4>Mantener Forma</h4>
-                                        <p>Conservar condición actual</p>
-                                    </label>
-                                </div>
-
-                                <div class="radio-option">
-                                    <input type="radio" id="mejorar-resistencia" th:field="*{objetivos}" value="MEJORAR_RESISTENCIA">
-                                    <label for="mejorar-resistencia" class="radio-card">
-                                        <div class="radio-icon">🏃‍♂️</div>
-                                        <h4>Mejorar Resistencia</h4>
-                                        <p>Aumentar capacidad cardiovascular</p>
-                                    </label>
-                                </div>
-
-                                <div class="radio-option">
-                                    <input type="radio" id="rehabilitacion" th:field="*{objetivos}" value="REHABILITACION">
-                                    <label for="rehabilitacion" class="radio-card">
-                                        <div class="radio-icon">🏥</div>
-                                        <h4>Rehabilitación</h4>
-                                        <p>Recuperación de lesiones</p>
-                                    </label>
-                                </div>
-
-                                <div class="radio-option">
-                                    <input type="radio" id="competicion" th:field="*{objetivos}" value="COMPETICION">
-                                    <label for="competicion" class="radio-card">
-                                        <div class="radio-icon">🏅</div>
-                                        <h4>Competición</h4>
-                                        <p>Preparación deportiva</p>
-                                    </label>
-                                </div>
-                            </div>
-
-                            <div th:if="${#fields.hasErrors('objetivos')}" class="error-message">
-                                <span th:errors="*{objetivos}"></span>
-                            </div>
-
-                            <div class="step-buttons">
-                                <button type="button" class="btn btn-secondary" onclick="prevStep(3)">
-                                    <i class="fas fa-arrow-left"></i> Anterior
-                                </button>
-                                <button type="button" class="btn btn-primary" onclick="nextStep(5)">
-                                    Siguiente <i class="fas fa-arrow-right"></i>
-                                </button>
-                            </div>
-                        </div>
-
-                        <!-- Paso 5: Preferencias -->
-                        <div class="form-step" id="step-5">
-                            <div class="step-header">
-                                <h3>❤️ Preferencias de Ejercicio</h3>
-                                <p>¿Qué tipo de ejercicio prefieres? (Opcional)</p>
-                            </div>
-
-                            <div class="radio-grid">
-                                <div class="radio-option">
-                                    <input type="radio" id="cardio" th:field="*{tipoEjercicioPreferido}" value="CARDIO">
-                                    <label for="cardio" class="radio-card">
-                                        <div class="radio-icon">🏃</div>
-                                        <h4>Cardio</h4>
-                                        <p>Correr, bicicleta, natación</p>
-                                    </label>
-                                </div>
-
-                                <div class="radio-option">
-                                    <input type="radio" id="fuerza" th:field="*{tipoEjercicioPreferido}" value="FUERZA">
-                                    <label for="fuerza" class="radio-card">
-                                        <div class="radio-icon">🏋️</div>
-                                        <h4>Fuerza</h4>
-                                        <p>Pesas, calistenia</p>
-                                    </label>
-                                </div>
-
-                                <div class="radio-option">
-                                    <input type="radio" id="flexibilidad" th:field="*{tipoEjercicioPreferido}" value="FLEXIBILIDAD">
-                                    <label for="flexibilidad" class="radio-card">
-                                        <div class="radio-icon">🧘</div>
-                                        <h4>Flexibilidad</h4>
-                                        <p>Yoga, pilates, estiramientos</p>
-                                    </label>
-                                </div>
-
-                                <div class="radio-option">
-                                    <input type="radio" id="mixto" th:field="*{tipoEjercicioPreferido}" value="MIXTO">
-                                    <label for="mixto" class="radio-card">
-                                        <div class="radio-icon">🔄</div>
-                                        <h4>Mixto</h4>
-                                        <p>Combinación de diferentes tipos</p>
-                                    </label>
-                                </div>
-
-                                <div class="radio-option">
-                                    <input type="radio" id="funcional" th:field="*{tipoEjercicioPreferido}" value="FUNCIONAL">
-                                    <label for="funcional" class="radio-card">
-                                        <div class="radio-icon">⚡</div>
-                                        <h4>Funcional</h4>
-                                        <p>Movimientos naturales</p>
-                                    </label>
-                                </div>
-                            </div>
-
-                            <div class="step-buttons">
-                                <button type="button" class="btn btn-secondary" onclick="prevStep(4)">
-                                    <i class="fas fa-arrow-left"></i> Anterior
-                                </button>
-                                <button type="submit" class="btn btn-success">
-                                    <i class="fas fa-save"></i> Guardar Diagnóstico
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Progress bar -->
-                    <div class="progress-bar">
-                        <div class="progress-step active" data-step="1">1</div>
-                        <div class="progress-step" data-step="2">2</div>
-                        <div class="progress-step" data-step="3">3</div>
-                        <div class="progress-step" data-step="4">4</div>
-                        <div class="progress-step" data-step="5">5</div>
-                    </div>
-                </form>
-            </div>
-        </main>
-
-        <footer th:replace="fragments/layout :: footer"></footer>
-    </div>
-
-    <script>
-        let currentStep = 1;
-
-        function nextStep(step) {
-            if (validateCurrentStep()) {
-                document.getElementById('step-' + currentStep).classList.remove('active');
-                document.getElementById('step-' + step).classList.add('active');
-
-                // Actualizar progress bar
-                document.querySelector('.progress-step[data-step="' + currentStep + '"]').classList.add('completed');
-                document.querySelector('.progress-step[data-step="' + step + '"]').classList.add('active');
-
-                currentStep = step;
-            }
-        }
-
-        function prevStep(step) {
-            document.getElementById('step-' + currentStep).classList.remove('active');
-            document.getElementById('step-' + step).classList.add('active');
-
-            // Actualizar progress bar
-            document.querySelector('.progress-step[data-step="' + currentStep + '"]').classList.remove('active');
-            document.querySelector('.progress-step[data-step="' + step + '"]').classList.add('active');
-
-            currentStep = step;
-        }
-
-        function validateCurrentStep() {
-            switch(currentStep) {
-                case 1:
-                    const peso = document.getElementById('peso').value;
-                    const altura = document.getElementById('altura').value;
-                    if (!peso || !altura) {
-                        alert('Por favor, completa peso y altura');
-                        return false;
-                    }
-                    break;
-                case 2:
-                    if (!document.querySelector('input[name="nivelActividad"]:checked')) {
-                        alert('Por favor, selecciona tu nivel de actividad');
-                        return false;
-                    }
-                    break;
-                case 3:
-                    if (!document.querySelector('input[name="experienciaEjercicio"]:checked')) {
-                        alert('Por favor, selecciona tu experiencia con ejercicio');
-                        return false;
-                    }
-                    break;
-                case 4:
-                    if (!document.querySelector('input[name="objetivos"]:checked')) {
-                        alert('Por favor, selecciona tu objetivo principal');
-                        return false;
-                    }
-                    break;
-            }
-            return true;
-        }
-
-        // Calcular IMC automáticamente
-        function calcularIMC() {
-            const peso = parseFloat(document.getElementById('peso').value);
-            const altura = parseFloat(document.getElementById('altura').value);
-
-            if (peso && altura) {
-                const imc = peso / (altura * altura);
-                const imcValue = document.getElementById('imc-value');
-                const imcStatus = document.getElementById('imc-status');
-
-                imcValue.textContent = imc.toFixed(1);
-
-                if (imc < 18.5) {
-                    imcStatus.textContent = 'Bajo peso';
-                    imcStatus.className = 'imc-status bajo-peso';
-                } else if (imc < 25) {
-                    imcStatus.textContent = 'Peso normal';
-                    imcStatus.className = 'imc-status normal';
-                } else if (imc < 30) {
-                    imcStatus.textContent = 'Sobrepeso';
-                    imcStatus.className = 'imc-status sobrepeso';
-                } else {
-                    imcStatus.textContent = 'Obesidad';
-                    imcStatus.className = 'imc-status obesidad';
-                }
-            }
-        }
-
-        // Event listeners para cálculo automático de IMC
-        document.getElementById('peso').addEventListener('input', calcularIMC);
-        document.getElementById('altura').addEventListener('input', calcularIMC);
-
-        // Calcular IMC al cargar si hay valores
-        document.addEventListener('DOMContentLoaded', calcularIMC);
-    </script>
+        </div>
+        <div class="col-12 text-end">
+            <button type="submit" class="btn btn-primary">Guardar diagnóstico</button>
+        </div>
+    </form>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script th:src="@{/js/diagnostico-form.js}"></script>
 </section>
 </body>
 </html>

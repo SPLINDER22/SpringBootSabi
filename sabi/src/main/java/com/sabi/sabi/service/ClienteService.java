@@ -24,4 +24,6 @@ public interface ClienteService {
     DiagnosticoDTO getDiagnosticoActualByClienteId(Long clienteId);
     List<DiagnosticoDTO> getHistorialDiagnosticosByClienteId(Long clienteId);
     List<RutinaDTO> getRutinasByClienteId(Long clienteId);
+
+    ClienteDTO getClienteByEmail(String email);
 }

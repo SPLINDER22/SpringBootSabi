@@ -1,0 +1,61 @@
+/* Estilos para el formulario de diagnóstico */
+.categoria {
+    background: #fff;
+    border-radius: 18px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+    margin-bottom: 2rem;
+    padding: 2rem 1.5rem;
+    border: 2px solid #2563eb;
+    transition: box-shadow 0.3s;
+}
+.categoria:hover {
+    box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+}
+.categoria-titulo {
+    font-size: 1.3rem;
+    font-weight: bold;
+    color: #2563eb;
+    margin-bottom: 1rem;
+}
+.imc-box {
+    background: #e3f2fd;
+    border: 1px solid #2563eb;
+    border-radius: 10px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    font-size: 1.1rem;
+    color: #2563eb;
+    transition: background 0.3s;
+}
+.imc-box.imc-ok {
+    background: #d4edda;
+    color: #155724;
+}
+.imc-box.imc-warning {
+    background: #fff3cd;
+    color: #856404;
+}
+.imc-box.imc-danger {
+    background: #f8d7da;
+    color: #721c24;
+}
+.form-label {
+    font-weight: 500;
+}
+.form-control:focus {
+    border-color: #00bcd4;
+    box-shadow: 0 0 0 0.2rem rgba(0,188,212,.25);
+    transition: box-shadow 0.3s;
+}
+.btn-primary {
+    background: linear-gradient(135deg, #2563eb 0%, #00bcd4 100%);
+    border: none;
+    transition: transform 0.2s;
+}
+.btn-primary:hover {
+    transform: scale(1.05);
+    background: linear-gradient(135deg, #00bcd4 0%, #2563eb 100%);
+}
+.invalid-feedback {
+    display: block;
+}
