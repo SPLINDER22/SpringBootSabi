@@ -46,4 +46,12 @@ public class DiagnosticoDTO {
     private String habitosAlimenticios;       // descripción libre
 
     private Boolean estado = true;
+
+    public Long getSueno() {
+        return horasSueno;
+    }
+
+    public String getAlimentacion() {
+        return habitosAlimenticios;
+    }
 }

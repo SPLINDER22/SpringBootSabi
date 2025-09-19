@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+o<!DOCTYPE html>
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
@@ -64,6 +64,18 @@
                     <label for="condicionesMedicas" class="form-label">Condiciones médicas</label>
                     <input type="text" class="form-control" id="condicionesMedicas" name="condicionesMedicas" th:value="${diagnosticoActual?.condicionesMedicas}" required placeholder="Ej: hipertensión, diabetes">
                     <small class="text-muted">Indique si tiene alguna condición médica relevante.</small>
+                    <div class="invalid-feedback">Este campo es obligatorio.</div>
+                </div>
+                 <div class="col-md-4">
+                    <label for="sueno" class="form-label">Horas de sueño</label>
+                    <input type="number" step="0.1" min="0" max="24" class="form-control" id="sueno" name="sueno" th:value="${diagnosticoActual?.sueno}" required placeholder="Ej: 8">
+                    <small class="text-muted">Ingrese el promedio de horas de sueño diarias.</small>
+                    <div class="invalid-feedback">Este campo es obligatorio.</div>
+                </div>
+                <div class="col-md-4">
+                    <label for="alimentacion" class="form-label">Alimentación</label>
+                    <input type="text" class="form-control" id="alimentacion" name="alimentacion" th:value="${diagnosticoActual?.alimentacion}" required placeholder="Ej: balanceada, alta en proteínas">
+                    <small class="text-muted">Describa brevemente su alimentación.</small>
                     <div class="invalid-feedback">Este campo es obligatorio.</div>
                 </div>
             </div>

@@ -10,6 +10,11 @@
 <section th:fragment="section">
 <div class="container py-4">
     <h2 class="mb-4">Historial de Diagnósticos</h2>
+    <div class="d-flex justify-content-end mb-3">
+        <a class="btn btn-success" th:href="@{/cliente/diagnostico/descargar}">
+            <i class="fas fa-file-excel"></i> Descargar Excel
+        </a>
+    </div>
     <table class="table table-bordered table-hover">
         <thead>
             <tr>
@@ -28,6 +33,9 @@
                 <td th:text="${diag.nivelExperiencia}"></td>
                 <td>
                     <button type="button" class="btn btn-info btn-sm" data-bs-toggle="modal" data-bs-target="#modalDetalle" th:attr="data-id=${diag.idDiagnostico}">Ver detalle</button>
+                    <a th:href="@{/cliente/diagnostico/descargar/{id}(id=${diag.idDiagnostico})}" class="btn btn-success btn-sm">
+                        <i class="fas fa-file-excel"></i> Descargar Excel
+                    </a>
                 </td>
             </tr>
         </tbody>
