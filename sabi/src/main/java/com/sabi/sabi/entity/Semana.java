@@ -26,7 +26,6 @@ public class Semana {
     @Size(max = 255, message = "La descripción no puede superar 255 caracteres")
     private String descripcion; // notas opcionales del entrenador
 
-    @NotNull(message = "Debe especificar el número de dias")
     private Long numeroDias;
 
     // Relación con Rutina

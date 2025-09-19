@@ -21,7 +21,7 @@
             <!-- Eliminar campo de fechaCreacion y estado -->
             <!-- Solo mostrar los campos relevantes -->
             <div class="mb-3">
-                <label for="nombre" class="form-label">Nombre de la rutina</label>
+                <label for="nombre" class="form-label">Nombre de la rutina *</label>
                 <input type="text"
                        id="nombre"
                        th:field="*{nombre}"
@@ -34,7 +34,7 @@
             </div>
 
             <div class="mb-3">
-                <label for="objetivo" class="form-label">Objetivo</label>
+                <label for="objetivo" class="form-label">Objetivo *</label>
                 <input type="text"
                        id="objetivo"
                        th:field="*{objetivo}"
@@ -48,18 +48,7 @@
                 <textarea id="descripcion"
                        th:field="*{descripcion}"
                        class="form-control"
-                       placeholder="Describe la rutina"
-                       required></textarea>
-            </div>
-
-            <div class="mb-3">
-                <label for="numeroSemanas" class="form-label">Número de semanas</label>
-                <input type="number"
-                       id="numeroSemanas"
-                       th:field="*{numeroSemanas}"
-                       class="form-control"
-                       min="1"
-                       required/>
+                       placeholder="Describe la rutina"></textarea>
             </div>
 
             <div class="d-flex justify-content-end">

@@ -73,18 +73,16 @@ public class RutinaController {
             return "redirect:/auth/login";
         }
         Usuario usuario = usuarioService.obtenerPorEmail(userDetails.getUsername());
-        // Asignar el entrenador actual si es creación
         if (rutinaDTO.getIdRutina() == null) {
             rutinaDTO.setIdEntrenador(usuario.getId());
         }
+
         RutinaDTO rutinaGuardada;
         if (rutinaDTO.getIdRutina() == null) {
             rutinaGuardada = rutinaService.createRutina(rutinaDTO);
-            // Redirigir a detalles si es creación
-            return "redirect:/semanas/listar/" + rutinaGuardada.getIdRutina();
+            return "redirect:/semanas/detallar/" + rutinaGuardada.getIdRutina();
         } else {
             rutinaGuardada = rutinaService.updateRutina(rutinaDTO.getIdRutina(), rutinaDTO);
-            // Redirigir a la lista si es edición
             redirectAttributes.addFlashAttribute("success", "Rutina actualizada correctamente");
             return "redirect:/rutinas";
         }

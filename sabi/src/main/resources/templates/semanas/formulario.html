@@ -43,16 +43,9 @@
 
             <!-- Descripción (campo real en SemanaDTO) -->
             <div class="mb-3">
-                <label for="descripcion" class="form-label">Descripción / Nombre interno</label>
+                <label for="descripcion" class="form-label">Descripción</label>
                 <textarea id="descripcion" th:field="*{descripcion}" class="form-control" rows="3" placeholder="Ej: Semana de carga, Semana de adaptación" required></textarea>
                 <div class="text-danger mt-1" th:if="${#fields.hasErrors('descripcion')}" th:errors="*{descripcion}"></div>
-            </div>
-
-            <!-- Número de días -->
-            <div class="mb-3">
-                <label for="numeroDias" class="form-label">Número de días</label>
-                <input type="number" id="numeroDias" th:field="*{numeroDias}" class="form-control" min="1" max="14" placeholder="Ingresa cuántos días tiene esta semana" required/>
-                <div class="text-danger mt-1" th:if="${#fields.hasErrors('numeroDias')}" th:errors="*{numeroDias}"></div>
             </div>
 
             <div class="d-flex justify-content-end">

@@ -35,11 +35,9 @@ public class Rutina {
     @NotNull(message = "La fecha de creación es obligatoria")
     private LocalDate fechaCreacion;
 
-    @NotNull
     @Enumerated(EnumType.STRING)
     private EstadoRutina estadoRutina; // ACTIVA o FINALIZADA, informacion sobre el cliente y la rutina
 
-    @NotNull(message = "Debe especificar el número de semanas")
     private Long numeroSemanas;
 
     // Relación con Cliente
