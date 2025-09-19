@@ -7,11 +7,6 @@
 <body th:replace="layout/layout :: layout('Dashboard Entrenador', ~{::section})">
 <section th:fragment="section">
     <h1 class="h3 mb-4 text-gray-800">Dashboard Entrenador</h1>
-
-    <div class="mb-3 text-end">
-        <a th:href="@{/rutinas/nueva}" class="btn btn-success">Crear rutina</a>
-    </div>
-
     <div class="row">
         <div class="col-12">
             <p class="mb-4">Bienvenido a tu panel de control como entrenador.</p>

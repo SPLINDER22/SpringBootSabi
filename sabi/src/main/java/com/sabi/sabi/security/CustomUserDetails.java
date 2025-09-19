@@ -19,6 +19,15 @@ public class CustomUserDetails implements UserDetails {
         return usuario;
     }
 
+    public String getNombre() {
+        return usuario.getNombre();
+    }
+
+
+    public String getNombreCompleto() {
+        return usuario.getNombre();
+    }
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(new SimpleGrantedAuthority("ROLE_" + usuario.getRol().name()));
