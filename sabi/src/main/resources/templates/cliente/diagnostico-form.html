@@ -1,7 +1,11 @@
 <!DOCTYPE html>
-<html lang="es" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
-<head th:replace="fragments/layout :: head('Diagnóstico', ${['/css/admin.css']}, null)"></head>
-<body>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Formulario Diagnóstico</title>
+</head>
+<body th:replace="layout/layout :: layout('Formulario Diagnóstico', ~{::section})">
+<section th:fragment="section">
     <div class="dashboard-container">
         <header th:replace="fragments/layout :: navbar"></header>
         <main class="main-content">
@@ -457,5 +461,6 @@
         // Calcular IMC al cargar si hay valores
         document.addEventListener('DOMContentLoaded', calcularIMC);
     </script>
+</section>
 </body>
 </html>

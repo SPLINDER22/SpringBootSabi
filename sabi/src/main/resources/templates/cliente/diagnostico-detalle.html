@@ -1,7 +1,11 @@
 <!DOCTYPE html>
-<html lang="es" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
-<head th:replace="fragments/layout :: head('Detalle del Diagnóstico', ${['/css/admin.css']}, null)"></head>
-<body>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Detalle Diagnóstico</title>
+</head>
+<body th:replace="layout/layout :: layout('Detalle Diagnóstico', ~{::section})">
+<section th:fragment="section">
     <div class="dashboard-container">
         <header th:replace="fragments/layout :: navbar"></header>
 
@@ -648,6 +652,6 @@
             }
         }
     </style>
+</section>
 </body>
 </html>
-

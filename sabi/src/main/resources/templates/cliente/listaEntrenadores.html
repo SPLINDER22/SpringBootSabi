@@ -7,53 +7,61 @@
     <link rel="stylesheet" th:href="@{/css/dashboard-cliente.css}">
 </head>
 
-<body>
-    <header th:replace="~{fragments/header :: navbar}"></header>
-    <main class="main-content">
-        <div class="category-section">
-            <div class="category-header">
-                <h3>👨‍⚕️ Entrenadores Disponibles</h3>
-                <div class="category-status completed">
-                    <span class="status-text" th:text="${entrenadores != null ? #lists.size(entrenadores) + ' disponibles' : '0 disponibles'}">0 disponibles</span>
-                </div>
-            </div>
-            <div class="category-content">
-                <div class="entrenadores-grid" th:if="${entrenadores != null}">
-                    <div th:each="entrenador : ${entrenadores}" class="entrenador-card">
-                        <div class="entrenador-avatar">
-                            <img th:src="@{/img/entrenador.jpg}" alt="Entrenador" />
-                        </div>
-                        <div class="entrenador-info">
-                            <h5 th:text="${entrenador.nombre ?: 'Entrenador Profesional'}">Entrenador Profesional</h5>
-                            <p class="especialidad" th:text="${entrenador.especialidad ?: 'Entrenamiento General'}">Entrenamiento General</p>
-                            <p class="experiencia" th:text="${entrenador.experiencia ?: 'Experiencia variada'}">5 años de experiencia</p>
-                            <div class="calificacion">
-                                <span class="stars">⭐⭐⭐⭐⭐</span>
-                                <span class="rating" th:text="${entrenador.calificacionPromedio ?: '5.0'}">5.0</span>
-                            </div>
-                        </div>
-                        <div class="entrenador-actions">
-                            <a class="btn btn-primary btn-sm" th:href="@{'/cliente/entrenador/perfil/' + ${entrenador.id}}">Ver Perfil</a>
-                            <form th:if="${tieneDiagnostico == true}" th:action="@{/cliente/suscripcion/solicitar}" method="post" style="display: inline;">
-                                <input type="hidden" name="entrenadorId" th:value="${entrenador.id}">
-                                <button type="submit" class="btn btn-outline btn-sm">Contactar</button>
-                            </form>
-                            <button class="btn btn-disabled btn-sm" th:if="${tieneDiagnostico != true}" disabled>Requiere diagnóstico</button>
-                            <span th:if="${tieneDiagnostico != true}" class="diagnostico-requerido-msg">Debes realizar tu diagnóstico para contactar entrenadores.</span>
-                        </div>
+<body th:replace="layout/layout :: layout('Entrenadores Disponibles', ~{::section})">
+    <section th:fragment="section">
+        <header th:replace="~{fragments/header :: navbar}"></header>
+        <main class="main-content">
+            <div class="category-section">
+                <div class="category-header">
+                    <h3>👨‍⚕️ Entrenadores Disponibles</h3>
+                    <div class="category-status completed">
+                        <span class="status-text" th:text="${entrenadores != null ? #lists.size(entrenadores) + ' disponibles' : '0 disponibles'}">0
+                            disponibles</span>
                     </div>
                 </div>
+                <div class="category-content">
+                    <div class="entrenadores-grid" th:if="${entrenadores != null}">
+                        <div th:each="entrenador : ${entrenadores}" class="entrenador-card">
+                            <div class="entrenador-avatar">
+                                <img th:src="@{/img/entrenador.jpg}" alt="Entrenador" />
+                            </div>
+                            <div class="entrenador-info">
+                                <h5 th:text="${entrenador.nombre ?: 'Entrenador Profesional'}">Entrenador Profesional</h5>
+                                <p class="especialidad" th:text="${entrenador.especialidad ?: 'Entrenamiento General'}">Entrenamiento General
+                                </p>
+                                <p class="experiencia" th:text="${entrenador.experiencia ?: 'Experiencia variada'}">5 años de experiencia
+                                </p>
+                                <div class="calificacion">
+                                    <span class="stars">⭐⭐⭐⭐⭐</span>
+                                    <span class="rating" th:text="${entrenador.calificacionPromedio ?: '5.0'}">5.0</span>
+                                </div>
+                            </div>
+                            <div class="entrenador-actions">
+                                <a class="btn btn-primary btn-sm" th:href="@{'/cliente/entrenador/perfil/' + ${entrenador.id}}">Ver Perfil</a>
+                                <form th:if="${tieneDiagnostico == true}" th:action="@{/cliente/suscripcion/solicitar}" method="post"
+                                    style="display: inline;">
+                                    <input type="hidden" name="entrenadorId" th:value="${entrenador.id}">
+                                    <button type="submit" class="btn btn-outline btn-sm">Contactar</button>
+                                </form>
+                                <button class="btn btn-disabled btn-sm" th:if="${tieneDiagnostico != true}" disabled>Requiere diagnóstico
+                                </button>
+                                <span th:if="${tieneDiagnostico != true}" class="diagnostico-requerido-msg">Debes realizar tu diagnóstico para
+                                    contactar entrenadores.</span>
+                            </div>
+                        </div>
+                    </div>
 
-                <div th:if="${entrenadores == null || #lists.isEmpty(entrenadores)}" class="entrenadores-empty">
-                    <div class="empty-icon">👨‍⚕️</div>
-                    <h4 th:if="${entrenadores == null}">Error al cargar entrenadores</h4>
-                    <h4 th:if="${entrenadores != null}">No hay entrenadores disponibles</h4>
-                    <p th:if="${entrenadores == null}">Por favor, intenta nuevamente más tarde o verifica tu conexión.</p>
+                    <div th:if="${entrenadores == null || #lists.isEmpty(entrenadores)}" class="entrenadores-empty">
+                        <div class="empty-icon">👨‍⚕️</div>
+                        <h4 th:if="${entrenadores == null}">Error al cargar entrenadores</h4>
+                        <h4 th:if="${entrenadores != null}">No hay entrenadores disponibles</h4>
+                        <p th:if="${entrenadores == null}">Por favor, intenta nuevamente más tarde o verifica tu conexión.</p>
+                    </div>
                 </div>
             </div>
-        </div>
-    </main>
-    <footer th:replace="~{fragments/footer :: footer}"></footer>
+        </main>
+        <footer th:replace="~{fragments/footer :: footer}"></footer>
+    </section>
 </body>
 
 </html>

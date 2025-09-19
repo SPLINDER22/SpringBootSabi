@@ -7,7 +7,8 @@
     <link rel="stylesheet" th:href="@{/css/contenido.css}">
     <link rel="stylesheet" th:href="@{/css/dashboard-cliente.css}">
 </head>
-<body>
+<body th:replace="layout/layout :: layout('Diagnóstico Inicial', ~{::section})">
+<section th:fragment="section">
     <div class="dashboard-container">
         <header th:replace="~{fragments/header :: navbar}"></header>
 
@@ -185,5 +186,6 @@
             alert('¡Perfecto! Te notificaremos por email cuando el formulario de diagnóstico esté disponible.');
         }
     </script>
+</section>
 </body>
 </html>

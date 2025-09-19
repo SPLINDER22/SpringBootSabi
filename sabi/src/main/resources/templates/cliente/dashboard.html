@@ -11,9 +11,8 @@
     <link rel="stylesheet" th:href="@{/css/dashboard-cliente.css}">
 </head>
 
-<body>
-<header th:replace="~{fragments/header :: navbar}"></header>
-<main class="main-content">
+<body th:replace="layout/layout :: layout('Dashboard Cliente', ~{::section})">
+<section th:fragment="section">
     <div class="welcome-section text-center">
         <h2>🏃‍♂️ ¡Bienvenido a SABI!</h2>
         <p sec:authentication="name">Hola, </p>
@@ -75,7 +74,6 @@
             <a class="btn btn-lg btn-outline-warning w-100" th:href="@{/cliente/diagnostico/historial}">📜 Historial de Diagnósticos</a>
         </div>
     </div>
-</main>
-<footer th:replace="~{fragments/footer :: footer}"></footer>
+</section>
 </body>
 </html>
