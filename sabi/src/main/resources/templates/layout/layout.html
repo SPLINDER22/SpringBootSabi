@@ -32,6 +32,33 @@
 
             <!-- Contenido dinámico -->
             <div class="container-fluid">
+                <!-- Alertas Flash -->
+                <div class="mt-2">
+                    <div th:if="${success}" class="alert alert-success alert-dismissible fade show auto-dismiss" role="alert">
+                        <span th:text="${success}"></span>
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div th:if="${error}" class="alert alert-danger alert-dismissible fade show auto-dismiss" role="alert">
+                        <span th:text="${error}"></span>
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div th:if="${warning}" class="alert alert-warning alert-dismissible fade show auto-dismiss" role="alert">
+                        <span th:text="${warning}"></span>
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div th:if="${info}" class="alert alert-info alert-dismissible fade show auto-dismiss" role="alert">
+                        <span th:text="${info}"></span>
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                </div>
                 <div th:insert="${bodyFragment}"></div>
             </div>
         </div>
@@ -46,6 +73,12 @@
 <script src="/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
 <script src="/vendor/jquery-easing/jquery.easing.min.js"></script>
 <script src="/js/sb-admin-2.min.js"></script>
+<script>
+    // Auto cerrar alertas luego de 4s
+    setTimeout(function(){
+        $('.alert.auto-dismiss').alert('close');
+    },4000);
+</script>
 
 </body>
 </html>

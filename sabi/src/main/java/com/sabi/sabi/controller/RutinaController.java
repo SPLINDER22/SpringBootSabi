@@ -9,10 +9,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
@@ -80,21 +77,24 @@ public class RutinaController {
         RutinaDTO rutinaGuardada;
         if (rutinaDTO.getIdRutina() == null) {
             rutinaGuardada = rutinaService.createRutina(rutinaDTO);
+            redirectAttributes.addFlashAttribute("success", "Rutina creada correctamente. Ahora define sus semanas.");
             return "redirect:/semanas/detallar/" + rutinaGuardada.getIdRutina();
         } else {
             rutinaGuardada = rutinaService.updateRutina(rutinaDTO.getIdRutina(), rutinaDTO);
-            redirectAttributes.addFlashAttribute("success", "Rutina actualizada correctamente");
+            redirectAttributes.addFlashAttribute("success", "Rutina actualizada correctamente.");
             return "redirect:/rutinas";
         }
     }
 
     @PostMapping("/rutinas/desactivate/{id}")
-    public String desactivarRutina(@PathVariable Long id) {
+    public String desactivarRutina(@PathVariable Long id, RedirectAttributes redirectAttributes) {
         RutinaDTO rutinaDTO = rutinaService.getRutinaById(id);
         if (rutinaDTO == null) {
-            return "redirect:/rutinas?error=notfound";
+            redirectAttributes.addFlashAttribute("error", "La rutina no existe.");
+            return "redirect:/rutinas";
         }
         rutinaService.desactivateRutina(id);
+        redirectAttributes.addFlashAttribute("success", "Estado de la rutina actualizado.");
         return "redirect:/rutinas";
     }
 

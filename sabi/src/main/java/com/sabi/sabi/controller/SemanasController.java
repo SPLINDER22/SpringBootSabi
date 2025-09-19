@@ -4,14 +4,11 @@ import com.sabi.sabi.dto.RutinaDTO;
 import com.sabi.sabi.dto.SemanaDTO;
 import com.sabi.sabi.service.RutinaService;
 import com.sabi.sabi.service.SemanaService;
-import com.sabi.sabi.service.UsuarioService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
 
@@ -19,8 +16,6 @@ import java.util.List;
 public class SemanasController {
     @Autowired
     private SemanaService semanaService;
-    @Autowired
-    private UsuarioService usuarioService;
     @Autowired
     private RutinaService rutinaService;
 
@@ -50,10 +45,11 @@ public class SemanasController {
     }
 
     @GetMapping("/semanas/editar/{idSemana}")
-    public String editarSemanaView(@PathVariable Long idSemana, Model model) {
+    public String editarSemanaView(@PathVariable Long idSemana, Model model, RedirectAttributes redirectAttributes) {
         SemanaDTO semanaDTO = semanaService.getSemanaById(idSemana);
         if (semanaDTO == null) {
-            return "redirect:/semanas?error=notfound";
+            redirectAttributes.addFlashAttribute("error", "La semana no existe.");
+            return "redirect:/rutinas";
         }
         RutinaDTO rutinaDTO = rutinaService.getRutinaById(semanaDTO.getIdRutina());
         var semanas = semanaService.getSemanasRutina(semanaDTO.getIdRutina());
@@ -66,18 +62,30 @@ public class SemanasController {
     }
 
     @PostMapping("/semanas/guardar")
-    public String guardarSemana(@ModelAttribute SemanaDTO semanaDTO) {
-        semanaService.createSemana(semanaDTO);
-        return "redirect:/semanas/detallar/" + semanaDTO.getIdRutina();
+    public String guardarSemana(@ModelAttribute SemanaDTO semanaDTO, RedirectAttributes redirectAttributes) {
+        if (semanaDTO.getIdSemana() == null) {
+            SemanaDTO creada = semanaService.createSemana(semanaDTO);
+            redirectAttributes.addFlashAttribute("success", "Semana creada correctamente. Ahora agrega los días.");
+            return "redirect:/dias/detallar/" + creada.getIdSemana();
+        } else {
+            semanaService.updateSemana(semanaDTO.getIdSemana(), semanaDTO);
+            redirectAttributes.addFlashAttribute("success", "Semana actualizada correctamente.");
+            return "redirect:/semanas/detallar/" + semanaDTO.getIdRutina();
+        }
     }
 
     @PostMapping("/semanas/eliminar/{idSemana}")
-    public String eliminarSemana(@PathVariable Long idSemana) {
-        SemanaDTO semanaDTO = semanaService.getSemanaById(idSemana);
-        if (semanaDTO != null) {
-            semanaService.deleteSemana(idSemana);
-            return "redirect:/semanas/detallar/" + semanaDTO.getIdRutina();
+    public String eliminarSemana(@PathVariable Long idSemana, RedirectAttributes redirectAttributes) {
+        SemanaDTO semanaDTO = null;
+        try {
+            semanaDTO = semanaService.getSemanaById(idSemana);
+        } catch (RuntimeException ex) {
+            redirectAttributes.addFlashAttribute("error", "La semana no existe.");
+            return "redirect:/rutinas";
         }
-        return "redirect:/semanas?error=notfound";
+        Long idRutina = semanaDTO.getIdRutina();
+        semanaService.deleteSemana(idSemana);
+        redirectAttributes.addFlashAttribute("success", "Semana eliminada correctamente.");
+        return "redirect:/semanas/detallar/" + idRutina;
     }
 }

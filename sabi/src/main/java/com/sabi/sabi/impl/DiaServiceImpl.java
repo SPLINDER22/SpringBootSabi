@@ -1,7 +1,9 @@
 package com.sabi.sabi.impl;
 
 import com.sabi.sabi.dto.DiaDTO;
+import com.sabi.sabi.dto.SemanaDTO;
 import com.sabi.sabi.entity.Dia;
+import com.sabi.sabi.entity.Rutina;
 import com.sabi.sabi.entity.Semana;
 import com.sabi.sabi.repository.DiaRepository;
 import com.sabi.sabi.repository.SemanaRepository;
@@ -38,6 +40,12 @@ public class DiaServiceImpl implements DiaService {
     }
 
     @Override
+    public List<Dia> getDiasSemana(Long idSemana) {
+        List<Dia> dias = diaRepository.getDiasSemana(idSemana);
+        return dias.stream().toList();
+    }
+
+    @Override
     public DiaDTO getDiaById(long id) {
         Dia dia = diaRepository.findById(id)
                 .stream()
@@ -48,41 +56,123 @@ public class DiaServiceImpl implements DiaService {
 
     @Override
     public DiaDTO createDia(DiaDTO diaDTO) {
-        Dia dia = modelMapper.map(diaDTO, Dia.class);
-        if (dia.getId() != null && diaRepository.findById(dia.getId()).isPresent()){
-            updateDia(dia.getId(), diaDTO);
+        if (diaDTO.getIdDia() != null) {
+            return updateDia(diaDTO.getIdDia(), diaDTO);
         }
-        if (diaDTO.getIdSemana() != null) {
-            Semana semana = semanaRepository.findById(diaDTO.getIdSemana())
-                    .orElseThrow(() -> new RuntimeException("Semana not found with id: " + diaDTO.getIdSemana()));
-            dia.setSemana(semana);
+        if (diaDTO.getIdSemana() == null) {
+            throw new IllegalArgumentException("Debe indicar la semana a la que pertenece el dia");
         }
-        dia = diaRepository.save(dia);
-        return modelMapper.map(dia, DiaDTO.class);
+        Semana semana = semanaRepository.findById(diaDTO.getIdSemana())
+                .orElseThrow(() -> new RuntimeException("Semana not found with id: " + diaDTO.getIdSemana()));
+
+        Long nextPos;
+        List<Dia> actuales = diaRepository.getDiasSemana(diaDTO.getIdSemana());
+        if (diaDTO.getNumeroDia() == null || diaDTO.getNumeroDia() <= 0) {
+            nextPos = (long) (actuales.size() + 1);
+        } else {
+            nextPos = diaDTO.getNumeroDia();
+            if (nextPos > actuales.size() + 1) {
+                nextPos = (long) (actuales.size() + 1);
+            }
+            if (nextPos <= actuales.size()) {
+                for (Dia d : actuales) {
+                    if (d.getNumeroDia() >= nextPos) {
+                        d.setNumeroDia(d.getNumeroDia() + 1);
+                    }
+                }
+                diaRepository.saveAll(actuales);
+            }
+        }
+
+        Dia nuevo = new Dia();
+        nuevo.setSemana(semana);
+        nuevo.setNumeroDia(nextPos);
+        nuevo.setDescripcion(diaDTO.getDescripcion());
+        nuevo.setNumeroEjercicios(diaDTO.getNumeroEjercicios() != null ? diaDTO.getNumeroEjercicios() : 0L); // default
+        nuevo.setEstado(true);
+
+        nuevo = diaRepository.save(nuevo);
+
+        Long numDias = semana.getNumeroDias();
+        if (numDias == null) numDias = 0L;
+        semana.setNumeroDias(numDias + 1);
+        semanaRepository.save(semana);
+
+        return modelMapper.map(nuevo, DiaDTO.class);
     }
 
     @Override
     public DiaDTO updateDia(long id, DiaDTO diaDTO) {
         Dia existingDia = diaRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Dia not found with id: " + id));
-        if (diaDTO.getIdSemana() != null) {
-            Semana semana = semanaRepository.findById(diaDTO.getIdSemana())
-                    .orElseThrow(() -> new RuntimeException("Semana not found with id: " + diaDTO.getIdSemana()));
-            existingDia.setSemana(semana);
-        }
-        existingDia.setNumeroDia(diaDTO.getNumeroDia());
-        existingDia.setDescripcion(diaDTO.getDescripcion());
 
-        existingDia = diaRepository.save(existingDia);
+        if (diaDTO.getIdSemana() != null && !diaDTO.getIdSemana().equals(existingDia.getSemana().getId())) {
+            throw new IllegalArgumentException("No se puede cambiar la semana de un dia usando este método.");
+        }
+
+        Long semanaId = existingDia.getSemana().getId();
+        List<Dia> dias = diaRepository.getDiasSemana(semanaId);
+
+        Long oldPos = existingDia.getNumeroDia();
+        Long newPos = diaDTO.getNumeroDia();
+        if (newPos == null) newPos = oldPos;
+        if (newPos < 1) newPos = 1L;
+        if (newPos > dias.size()) newPos = (long) dias.size();
+
+        existingDia.setDescripcion(diaDTO.getDescripcion());
+        if (diaDTO.getNumeroEjercicios() != null) {
+            existingDia.setNumeroEjercicios(diaDTO.getNumeroEjercicios());
+        }
+
+        if (!newPos.equals(oldPos)) {
+            if (newPos < oldPos) {
+                for (Dia d : dias) {
+                    Long num = d.getNumeroDia();
+                    if (!d.getId().equals(existingDia.getId()) && num >= newPos && num < oldPos) {
+                        d.setNumeroDia(num + 1);
+                    }
+                }
+                existingDia.setNumeroDia(newPos);
+            } else {
+                for (Dia d : dias) {
+                    Long num = d.getNumeroDia();
+                    if (!d.getId().equals(existingDia.getId()) && num <= newPos && num > oldPos) {
+                        d.setNumeroDia(num - 1);
+                    }
+                }
+                existingDia.setNumeroDia(newPos);
+            }
+        }
+
+        diaRepository.saveAll(dias);
+        diaRepository.save(existingDia);
         return modelMapper.map(existingDia, DiaDTO.class);
     }
 
     @Override
     public boolean deleteDia(long id) {
-        if (!diaRepository.findById(id).isPresent()) {
-            throw new RuntimeException("Dia not found with id: " + id);
+        Dia dia = diaRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Dia not found with id: " + id));
+        Semana semana = dia.getSemana();
+        Long posEliminada = dia.getNumeroDia();
+        diaRepository.delete(dia);
+
+        if (semana != null) {
+            List<Dia> restantes = diaRepository.getDiasSemana(semana.getId());
+            for (Dia d : restantes) {
+                if (d.getNumeroDia() > posEliminada) {
+                    d.setNumeroDia(d.getNumeroDia() - 1);
+                }
+            }
+            diaRepository.saveAll(restantes);
+            Long numDias = semana.getNumeroDias();
+            if (numDias == null || numDias <= 1) {
+                semana.setNumeroDias((long) restantes.size());
+            } else {
+                semana.setNumeroDias(numDias - 1);
+            }
+            semanaRepository.save(semana);
         }
-        diaRepository.deleteById(id);
         return true;
     }
 

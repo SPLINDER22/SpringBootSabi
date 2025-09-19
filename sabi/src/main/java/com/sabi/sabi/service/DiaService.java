@@ -1,12 +1,14 @@
 package com.sabi.sabi.service;
 
 import com.sabi.sabi.dto.DiaDTO;
+import com.sabi.sabi.entity.Dia;
 
 import java.util.List;
 
 public interface DiaService {
     List<DiaDTO> getAllDia();
     List<DiaDTO> getAllActiveDia();
+    List<Dia> getDiasSemana(Long idSemana);
 
     DiaDTO getDiaById(long id);
 
