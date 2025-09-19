@@ -8,7 +8,8 @@
     <link rel="stylesheet" th:href="@{/css/dashboard-cliente.css}">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 </head>
-<body>
+<body th:replace="layout/layout :: layout('Historial Diagnóstico', ~{::section})">
+<section th:fragment="section">
     <div class="dashboard-container">
         <header th:replace="~{fragments/header :: navbar}"></header>
         <main class="main-content">
@@ -124,5 +125,6 @@
             });
         });
     </script>
+</section>
 </body>
 </html>

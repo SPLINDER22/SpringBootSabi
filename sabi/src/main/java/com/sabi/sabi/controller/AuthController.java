@@ -17,6 +17,8 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
+import jakarta.servlet.http.HttpServletRequest;
+
 @Controller
 @RequestMapping("/auth")
 @RequiredArgsConstructor
@@ -93,5 +95,15 @@ public class AuthController {
         } else {
             return "redirect:/";
         }
+    }
+
+    @GetMapping("/logout")
+    public String logout(HttpServletRequest request) {
+        // Invalidar la sesión
+        request.getSession().invalidate();
+        // Limpiar el contexto de seguridad
+        SecurityContextHolder.clearContext();
+        // Redirigir al login con mensaje
+        return "redirect:/auth/login?logoutMessage=Has cerrado sesión exitosamente.";
     }
 }

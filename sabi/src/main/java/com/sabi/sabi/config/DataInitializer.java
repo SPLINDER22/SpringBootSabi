@@ -177,6 +177,7 @@ public class DataInitializer implements CommandLineRunner {
         Semana semana = Semana.builder()
                 .numeroSemana(1L)
                 .descripcion("Semana 1 de la rutina de ejemplo")
+                .numeroDias(1L)
                 .rutina(rutina)
                 .estado(true)
                 .build();
@@ -185,6 +186,7 @@ public class DataInitializer implements CommandLineRunner {
         Dia dia = Dia.builder()
                 .numeroDia(1L)
                 .descripcion("Día 1: Piernas y glúteos")
+                .numeroEjercicios(1l)
                 .semana(semana)
                 .estado(true)
                 .build();
@@ -193,6 +195,7 @@ public class DataInitializer implements CommandLineRunner {
         EjercicioAsignado ejercicioAsignado = EjercicioAsignado.builder()
                 .orden(1L)
                 .comentarios("Ejecutar con buena técnica")
+                .numeroSeries(1L)
                 .dia(dia)
                 .ejercicio(ejercicio)
                 .estado(true)

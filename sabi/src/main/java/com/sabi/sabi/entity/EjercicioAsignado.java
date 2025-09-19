@@ -26,6 +26,9 @@ public class EjercicioAsignado {
     @Size(max = 255, message = "El comentario no puede superar 255 caracteres")
     private String comentarios; // notas adicionales del entrenador
 
+    @NotNull(message = "Debe especificar el número de series")
+    private Long numeroSeries;
+
     // Relación con Día
     @ManyToOne
     @JoinColumn(name = "dia_id", nullable = false)

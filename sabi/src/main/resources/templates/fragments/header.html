@@ -11,7 +11,7 @@
 
         <!-- Texto o atajo rápido -->
         <span class="mr-auto d-none d-lg-inline text-gray-600 small">
-            Bienvenido, <b th:text="${#authentication.principal.nombreCompleto} ?: (${#authentication.principal.nombre} ?: ${#authentication.name})">Usuario</b>
+            Bienvenido, <b th:text="${#authentication.name}">Entrenador</b>
         </span>
 
         <!-- Menú de usuario -->
@@ -67,7 +67,7 @@
      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 
     <!-- Sidebar -->
-    <ul class="navbar-nav bg-primary sidebar sidebar-dark accordion" id="accordionSidebar">
+    <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
 
         <!-- Brand -->
         <a class="sidebar-brand d-flex align-items-center justify-content-center" th:href="@{/}">
@@ -81,13 +81,9 @@
 
         <!-- Dashboard -->
         <li class="nav-item active">
-            <a class="nav-link" th:href="@{/dashboard/cliente}" sec:authorize="hasRole('CLIENTE')">
+            <a class="nav-link" th:href="@{/}">
                 <i class="fas fa-fw fa-home"></i>
-                <span>Inicio</span>
-            </a>
-            <a class="nav-link" th:href="@{/dashboard/entrenador}" sec:authorize="hasRole('ENTRENADOR')">
-                <i class="fas fa-fw fa-home"></i>
-                <span>Inicio</span>
+                <span>Dashboard</span>
             </a>
         </li>
 

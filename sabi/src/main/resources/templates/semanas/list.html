@@ -2,24 +2,23 @@
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Lista de Rutinas</title>
+    <title>Semanas de la rutina</title>
 </head>
-<body th:replace="layout/layout :: layout('Lista de rutinas', ~{::section})">
+<body th:replace="layout/layout :: layout('Lista de Semanas', ~{::section})">
 <section th:fragment="section">
-    <h1 class="h3 mb-4 text-gray-800">Lista de Rutinas</h1>
+    <h1 class="h3 mb-4 text-gray-800">Lista de Semanas</h1>
 
     <div class="mb-3 text-end">
-        <a th:href="@{/rutinas/nueva}" class="btn btn-success">Crear rutina</a>
+        <a th:href="@{/semanas/nueva}" class="btn btn-success">Agregar Semana</a>
     </div>
 
     <table class="table table-bordered">
         <thead>
         <tr>
             <th>ID</th>
-            <th>Nombre</th>
-            <th>Objetivo</th>
+            <th># Semana</th>
             <th>Descripción</th>
-            <th>N° Semanas</th>
+            <th>N° Dias</th>
             <th>Acciones</th>
         </tr>
         </thead>

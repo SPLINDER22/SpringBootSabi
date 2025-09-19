@@ -26,6 +26,9 @@ public class Dia {
     @Size(max = 255, message = "La descripción no puede superar 255 caracteres")
     private String descripcion; // notas opcionales (ej. "Cardio + tren inferior")
 
+    @NotNull(message = "Debe especificar el número de ejercicios")
+    private Long numeroEjercicios;
+
     // Relación con Semana
     @ManyToOne
     @JoinColumn(name = "semana_id", nullable = false)

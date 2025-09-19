@@ -16,6 +16,8 @@ public class DiaDTO {
 
     private String descripcion; // notas opcionales (ej. "Cardio + tren inferior")
 
+    private Long numeroEjercicios;
+
     private Long idSemana;
 
     private List<Long> idEjerciciosAsignados;

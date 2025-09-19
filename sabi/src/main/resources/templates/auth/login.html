@@ -49,9 +49,9 @@
             </div>
 
             <!-- Mostrar mensaje de logout si existe -->
-            <div th:if="${param.logout}" class="logout-message">
-                <p style="color: #10b981; font-size: 0.9rem; margin-bottom: 15px;">
-                    Has cerrado sesión correctamente
+            <div th:if="${logoutMessage}" class="success-message">
+                <p style="color: #22c55e; font-size: 0.9rem; margin-bottom: 15px;">
+                    <span th:text="${logoutMessage}"></span>
                 </p>
             </div>
 
