@@ -38,6 +38,13 @@ public class SemanaServiceImpl implements SemanaService {
     }
 
     @Override
+    public List<Semana> getSemanasRutina(Long idRutina) {
+        List<Semana> semanas = semanaRepository.getSemanasRutina(idRutina);
+        return semanas.stream()
+                .toList();
+    }
+
+    @Override
     public SemanaDTO getSemanaById(long id) {
         Semana semana = semanaRepository.findById(id)
                 .stream()
