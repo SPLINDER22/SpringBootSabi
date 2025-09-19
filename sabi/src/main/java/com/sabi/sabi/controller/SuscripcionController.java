@@ -15,6 +15,9 @@ import com.sabi.sabi.service.ClienteService;
 import com.sabi.sabi.service.EntrenadorService;
 import com.sabi.sabi.service.SuscripcionService;
 import com.sabi.sabi.service.UsuarioService;
+import java.util.Map;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Controller
 public class SuscripcionController {
@@ -36,7 +39,14 @@ public class SuscripcionController {
             return "redirect:/auth/login";
         }
         var usuario = usuarioService.obtenerPorEmail(userDetails.getUsername());
-        model.addAttribute("suscripciones", suscripcionService.getAllSuscripciones());
+        var suscripciones = suscripcionService.getAllSuscripciones();
+        model.addAttribute("suscripciones", suscripciones);
+        Map<Long, String> nombresEntrenadores = suscripciones.stream()
+                .map(SuscripcionDTO::getIdEntrenador)
+                .filter(Objects::nonNull)
+                .distinct()
+                .collect(Collectors.toMap(id -> id, id -> entrenadorService.getEntrenadorById(id).getNombre()));
+        model.addAttribute("nombresEntrenadores", nombresEntrenadores);
         model.addAttribute("idUsuarioActual", usuario.getId());
         return "suscripciones/lista";
     }
