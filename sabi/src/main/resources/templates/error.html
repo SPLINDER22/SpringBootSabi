@@ -4,17 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Error - SABI</title>
-    <link rel="stylesheet" th:href="@{/css/contenido.css}">
+    <link rel="stylesheet" th:href="@{/css/error.css}">
 </head>
 <body>
-    <div style="max-width:800px;margin:80px auto;font-family:Arial,Helvetica,sans-serif;text-align:center;">
-        <h1>Lo sentimos, ocurrió un error</h1>
-        <p th:if="${status}"><strong>Código:</strong> <span th:text="${status}">500</span></p>
-        <p th:if="${error}"><strong>Error:</strong> <span th:text="${error}">Internal Server Error</span></p>
-        <p th:if="${message}"><strong>Mensaje:</strong> <span th:text="${message}">Ha ocurrido un error inesperado.</span></p>
-        <p th:if="${path}"><strong>Ruta:</strong> <span th:text="${path}"></span></p>
-        <hr>
-        <p>Vuelve a la <a th:href="@{/}">página principal</a> o contacta al administrador.</p>
+    <div class="error-container">
+        <div class="error-title">¡Ups! Algo salió mal</div>
+        <div th:if="${status}" class="error-code">Error <span th:text="${status}">500</span></div>
+        <div th:if="${error}" class="error-message"><strong th:text="${error}">Error</strong></div>
+        <div th:if="${message}" class="error-details"><strong>Detalle:</strong> <span th:text="${message}">Ha ocurrido un error inesperado.</span></div>
+        <div th:if="${path}" class="error-details"><strong>Ruta:</strong> <span th:text="${path}"></span></div>
+        <button class="error-btn" onclick="window.location.href='/'">Regresar al inicio</button>
     </div>
 </body>
 </html>

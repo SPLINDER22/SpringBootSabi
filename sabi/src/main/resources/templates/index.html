@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sabi App - Inicio</title>
+    <link rel="stylesheet" th:href="@{/css/index.css}">
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <h1 class="logo">Sabi App</h1>
+            <nav>
+                <ul>
+                    <li><a href="#quienes-somos">¿Quiénes somos?</a></li>
+                    <li><a href="#objetivo">¿Qué buscamos solucionar?</a></li>
+                    <li><a href="#equipo">Equipo</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+    <main>
+        <section id="quienes-somos" class="section">
+            <div class="container">
+                <h2>¿Quiénes somos?</h2>
+                <p><strong>Sabi App</strong> es una plataforma digital que ayuda a personas de todas las edades a mejorar su bienestar físico y mental a través de rutinas personalizadas, diagnósticos de salud y seguimiento de progreso.</p>
+                <p>Dirigido a <span class="target">usuarios que buscan una vida más saludable</span>, desde principiantes hasta deportistas, Sabi App conecta clientes con entrenadores y facilita el acceso a planes de ejercicio, historial de diagnósticos y rutinas adaptadas.</p>
+            </div>
+        </section>
+        <section id="objetivo" class="section section-bg">
+            <div class="container">
+                <h2>¿Qué buscamos solucionar?</h2>
+                <p>Buscamos <span class="highlight">simplificar el acceso a rutinas y diagnósticos</span> para que cualquier persona pueda recibir orientación profesional, registrar su avance y obtener recomendaciones personalizadas, todo en un solo lugar y de manera sencilla.</p>
+                <ul class="goals">
+                    <li>✔️ Diagnóstico físico y de hábitos fácil y rápido</li>
+                    <li>✔️ Rutinas personalizadas según tu nivel y objetivos</li>
+                    <li>✔️ Seguimiento visual de tu progreso</li>
+                    <li>✔️ Conexión directa con entrenadores certificados</li>
+                </ul>
+            </div>
+        </section>
+        <section id="equipo" class="section">
+            <div class="container">
+                <h2>Scrum Team</h2>
+                <ul class="team-list">
+                    <li class="team-lead">William Espinel <span class="rol">Líder</span></li>
+                    <li class="team-db">Andrés Mena <span class="rol">Base de datos</span></li>
+                    <li class="team-design">Santiago Castro <span class="rol">Diseñador y presentador</span></li>
+                </ul>
+            </div>
+        </section>
+        <section class="section section-login">
+            <div class="container login-actions">
+                <div class="action-card" onclick="window.location.href='/auth/login'">
+                    <span>Iniciar sesión</span>
+                </div>
+                <div class="action-card" onclick="window.location.href='/auth/registro'">
+                    <span>Crear cuenta</span>
+                </div>
+            </div>
+        </section>
+    </main>
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2025 Sabi App. Todos los derechos reservados.</p>
+        </div>
+    </footer>
+    <script th:src="@{/js/index.js}"></script>
+</body>
+</html>

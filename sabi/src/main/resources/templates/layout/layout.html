@@ -78,6 +78,19 @@
     setTimeout(function(){
         $('.alert.auto-dismiss').alert('close');
     },4000);
+    // Fix para que el modal de perfil funcione con Bootstrap 5
+    document.querySelectorAll('[data-bs-toggle="modal"]').forEach(function(btn) {
+        btn.addEventListener('click', function(e) {
+            var target = btn.getAttribute('data-bs-target');
+            if (window.bootstrap && target) {
+                var modal = document.querySelector(target);
+                if (modal) {
+                    var bsModal = window.bootstrap.Modal.getOrCreateInstance(modal);
+                    bsModal.show();
+                }
+            }
+        });
+    });
 </script>
 
 </body>
