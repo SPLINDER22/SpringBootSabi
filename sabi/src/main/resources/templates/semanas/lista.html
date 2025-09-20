@@ -3,6 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <title>Semanas de la rutina</title>
+    <style>
+        .action-buttons { display:flex; flex-wrap:wrap; align-items:center; }
+        .action-buttons > * { margin-right:.4rem; }
+        .action-buttons > *:last-child { margin-right:0; }
+        .action-buttons form { display:inline-block; margin:0; }
+        .action-buttons .btn i { margin-right:.25rem; }
+        .table thead th { white-space:nowrap; }
+    </style>
 </head>
 <body th:replace="layout/layout :: layout('Lista de Semanas', ~{::section})">
 <section th:fragment="section">
@@ -26,9 +34,9 @@
     <table class="table table-bordered table-hover align-middle shadow-sm bg-white">
         <thead class="table-light">
         <tr>
-            <th style="width:10%">#</th>
-            <th style="width:45%">Descripción</th>
-            <th style="width:15%">N° Días</th>
+            <th style="width:10%"># Semana</th>
+            <th style="width:52%">Descripción</th>
+            <th style="width:8%">N° Días</th>
             <th style="width:30%">Acciones</th>
         </tr>
         </thead>
@@ -38,12 +46,18 @@
             <td th:text="${semana.descripcion}"></td>
             <td th:text="${semana.numeroDias}"></td>
             <td>
-                <div class="btn-group btn-group-sm" role="group">
-                    <a th:href="@{'/dias/detallar/' + ${semana.id}}" class="btn btn-info" title="Ver días"><i class="fas fa-calendar-day"></i></a>
-                    <a th:href="@{'/semanas/editar/' + ${semana.id}}" class="btn btn-primary" title="Editar"><i class="fas fa-edit"></i></a>
+                <div class="action-buttons">
+                    <a th:href="@{'/dias/detallar/' + ${semana.id}}" class="btn btn-sm btn-info">
+                        <i class="fas fa-calendar-day"></i> Ver Días
+                    </a>
+                    <a th:href="@{'/semanas/editar/' + ${semana.id}}" class="btn btn-sm btn-primary">
+                        <i class="fas fa-edit"></i> Editar
+                    </a>
                     <form th:action="@{'/semanas/eliminar/' + ${semana.id}}" method="post" onsubmit="return confirm('¿Eliminar semana?')">
                         <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
-                        <button type="submit" class="btn btn-danger" title="Eliminar"><i class="fas fa-trash"></i></button>
+                        <button type="submit" class="btn btn-sm btn-danger">
+                            <i class="fas fa-trash"></i> Eliminar
+                        </button>
                     </form>
                 </div>
             </td>

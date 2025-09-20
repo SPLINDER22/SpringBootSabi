@@ -3,6 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <title>Ejercicios Asignados</title>
+    <style>
+        /* Alineación horizontal consistente para Bootstrap 4 */
+        .action-buttons > * { margin-right: .4rem; }
+        .action-buttons > *:last-child { margin-right: 0; }
+        .action-buttons form { display: inline-block; }
+        .action-buttons .btn i { margin-right: .25rem; }
+    </style>
 </head>
 <body th:replace="layout/layout :: layout('Lista de Ejercicios Asignados', ~{::section})">
 <section th:fragment="section">
@@ -20,14 +27,14 @@
         </div>
     </div>
 
-    <table class="table table-bordered table-hover align-middle shadow-sm bg-white">
+    <table class="table table-bordered table-hover shadow-sm bg-white">
         <thead class="table-light">
         <tr>
-            <th style="width:8%">#</th>
-            <th style="width:18%">Ejercicio</th>
-            <th style="width:44%">Comentarios</th>
-            <th style="width:10%">Series</th>
-            <th style="width:20%">Acciones</th>
+            <th style="width:10%">#</th>
+            <th style="width:17%">Ejercicio</th>
+            <th style="width:35%">Comentarios</th>
+            <th style="width:8%">Series</th>
+            <th style="width:30%">Acciones</th>
         </tr>
         </thead>
         <tbody>
@@ -39,16 +46,18 @@
             <td th:text="${eje.comentarios}" class="small"></td>
             <td th:text="${eje.numeroSeries}"></td>
             <td>
-                <div class="d-flex flex-wrap gap-1">
-                    <a th:href="@{'/series/detallar/' + ${eje.idEjercicioAsignado}}" class="btn btn-sm btn-info">Ver series</a>
-                    <a th:href="@{'/ejes/editar/' + ${eje.idEjercicioAsignado}}" class="btn btn-sm btn-primary">Editar
-                        <i class="fas fa-edit"></i>
+                <!-- Contenedor flex compatible Bootstrap 4 sin gap -->
+                <div class="d-flex flex-wrap align-items-center action-buttons">
+                    <a th:href="@{'/series/detallar/' + ${eje.idEjercicioAsignado}}" class="btn btn-sm btn-info">
+                        <i class="fas fa-list"></i> Ver Series
                     </a>
-                    <form th:action="@{'/ejes/eliminar/' + ${eje.idEjercicioAsignado}}" method="post" class="m-0"
-                          onsubmit="return confirm('¿Eliminar ejercicio asignado?')">
+                    <a th:href="@{'/ejes/editar/' + ${eje.idEjercicioAsignado}}" class="btn btn-sm btn-primary">
+                        <i class="fas fa-edit"></i> Editar
+                    </a>
+                    <form th:action="@{'/ejes/eliminar/' + ${eje.idEjercicioAsignado}}" method="post" class="m-0" onsubmit="return confirm('¿Eliminar ejercicio asignado?')">
                         <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
-                        <button type="submit" class="btn btn-sm btn-danger">Eliminar
-                            <i class="fas fa-trash"></i>
+                        <button type="submit" class="btn btn-sm btn-danger">
+                            <i class="fas fa-trash"></i> Eliminar
                         </button>
                     </form>
                 </div>

@@ -5,8 +5,15 @@
 <section th:fragment="section">
     <div class="shadow-sm bg-white rounded p-4 mb-4">
         <div class="d-flex justify-content-between align-items-center mb-3">
-            <h2>Registro de ejercicios</h2>
-            <a th:href="@{/ejercicios}" class="btn btn-outline-secondary">
+            <h2 th:text="${ejercicio.idEjercicio != null ? 'Editar ejercicio' : 'Nuevo ejercicio'}">Registro de ejercicios</h2>
+            <a th:if="${fromEjes}"
+               th:href="@{'/ejercicios'(fromEjes=true, idDia=${idDia})}"
+               class="btn btn-outline-secondary">
+                <i class="bi bi-arrow-left-circle me-1"></i>Volver a la lista
+            </a>
+            <a th:if="${!fromEjes}"
+               th:href="@{/ejercicios}"
+               class="btn btn-outline-secondary">
                 <i class="bi bi-arrow-left-circle me-1"></i>Volver a la lista
             </a>
         </div>
@@ -17,6 +24,9 @@
             <!-- CSRF -->
             <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
             <input type="hidden" th:field="*{idEjercicio}"/>
+            <!-- Contexto -->
+            <input type="hidden" name="fromEjes" th:value="${fromEjes}"/>
+            <input type="hidden" name="idDia" th:value="${idDia}"/>
 
             <div class="mb-3">
                 <label for="nombre" class="form-label">Nombre del ejercicio</label>
@@ -79,7 +89,6 @@
                 </select>
             </div>
 
-
             <div class="mb-3">
                 <label for="urlVideo">Video demostrativo</label>
                 <input type="url"
@@ -99,11 +108,12 @@
             <div class="d-flex justify-content-end">
                 <button type="submit"
                         class="btn btn-success me-2">
-                    <i class="bi bi-save me-1"></i>Save
+                    <i class="bi bi-save me-1"></i>Guardar
                 </button>
-                <a th:href="@{/ejercicios}"
-                   class="btn btn-outline-secondary">Cancel
-                </a>
+                <a th:if="${fromEjes}" th:href="@{'/ejercicios'(fromEjes=true, idDia=${idDia})}"
+                   class="btn btn-outline-secondary">Cancelar</a>
+                <a th:if="${!fromEjes}" th:href="@{/ejercicios}"
+                   class="btn btn-outline-secondary">Cancelar</a>
             </div>
         </form>
     </div>

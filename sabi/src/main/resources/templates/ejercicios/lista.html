@@ -1,43 +1,67 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <title>Lista De Ejercicios</title>
+    <style>
+        .action-buttons { display:flex; flex-wrap:wrap; align-items:center; }
+        .action-buttons > * { margin-right:.4rem; }
+        .action-buttons > *:last-child { margin-right:0; }
+        .action-buttons form { display:inline-block; margin:0; }
+        .action-buttons .btn i { margin-right:.25rem; }
+        .table thead th { white-space:nowrap; }
+    </style>
 </head>
 <body th:replace="layout/layout :: layout('Lista de ejercicios', ~{::section})">
 <section th:fragment="section">
-    <h1 class="h3 mb-4 text-gray-800">Lista de Ejercicios</h1>
-
-    <div class="mb-3 text-end">
-        <a th:href="@{/ejercicios/nuevo}" class="btn btn-success">Crear ejercicio</a>
+    <!-- Encabezado con botones condicionales -->
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h1 class="h3 mb-0 text-gray-800">Lista de Ejercicios</h1>
+        <div class="btn-group">
+            <a th:if="${fromEjes}"
+               th:href="@{'/ejes/detallar/' + ${idDia}}"
+               class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-left"></i> Volver a Ejercicios Asignados
+            </a>
+            <a th:href="@{/ejercicios/nuevo}" class="btn btn-success">
+                <i class="fas fa-plus"></i> Crear Ejercicio
+            </a>
+        </div>
     </div>
 
-    <table class="table table-bordered">
-        <thead>
+    <table class="table table-bordered table-hover shadow-sm bg-white">
+        <thead class="table-light">
         <tr>
-            <th>ID</th>
-            <th>Nombre</th>
-            <th>Descripción</th>
-            <th>Propiedad</th>
-            <th>Acciones</th>
+            <th style="width:10%">ID</th>
+            <th style="width:17%">Nombre</th>
+            <th style="width:31%">Descripción</th>
+            <th style="width:12%">Propiedad</th>
+            <th style="width:30%">Acciones</th>
         </tr>
         </thead>
         <tbody>
         <tr th:each="ejercicio : ${ejercicios}">
             <td th:text="${ejercicio.idEjercicio}"></td>
             <td th:text="${ejercicio.nombre}"></td>
-            <td th:text="${ejercicio.descripcion}"></td>
+            <td th:text="${ejercicio.descripcion}" class="small"></td>
             <td th:text="${ejercicio.idUsuario != null and ejercicio.idUsuario == idUsuarioActual ? 'De tu propiedad' : 'Sabi'}"></td>
             <td>
-                <div th:if="${ejercicio.idUsuario != null and ejercicio.idUsuario == idUsuarioActual}">
-                    <a th:href="@{'/ejercicios/editar/' + ${ejercicio.idEjercicio}}" class="btn btn-sm btn-primary">Editar</a>
-                    <form th:action="@{'/ejercicios/eliminar/' + ${ejercicio.idEjercicio}}" method="post" style="display:inline">
+                <div th:if="${ejercicio.idUsuario != null and ejercicio.idUsuario == idUsuarioActual}" class="action-buttons">
+                    <a th:href="@{'/ejercicios/editar/' + ${ejercicio.idEjercicio}}" class="btn btn-sm btn-primary">
+                        <i class="fas fa-edit"></i> Editar
+                    </a>
+                    <form th:action="@{'/ejercicios/eliminar/' + ${ejercicio.idEjercicio}}" method="post" onsubmit="return confirm('¿Eliminar ejercicio?')">
                         <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
-                        <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('¿Eliminar ejercicio?')">Eliminar</button>
+                        <button type="submit" class="btn btn-sm btn-danger">
+                            <i class="fas fa-trash"></i> Eliminar
+                        </button>
                     </form>
                 </div>
                 <span class="text-muted" th:unless="${ejercicio.idUsuario != null and ejercicio.idUsuario == idUsuarioActual}">-</span>
             </td>
+        </tr>
+        <tr th:if="${ejercicios == null || #lists.isEmpty(ejercicios)}">
+            <td colspan="5" class="text-center text-muted py-4">No hay ejercicios registrados todavía.</td>
         </tr>
         </tbody>
     </table>

@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
 public class EjercicioController {
@@ -24,7 +25,10 @@ public class EjercicioController {
     private UsuarioService usuarioService;
 
     @GetMapping("/ejercicios")
-    public String listarEjercicios(@AuthenticationPrincipal UserDetails userDetails, Model model) {
+    public String listarEjercicios(@AuthenticationPrincipal UserDetails userDetails,
+                                   Model model,
+                                   @RequestParam(value = "fromEjes", required = false) Boolean fromEjes,
+                                   @RequestParam(value = "idDia", required = false) Long idDia) {
         if (userDetails == null) {
             return "redirect:/auth/login";
         }
@@ -36,21 +40,29 @@ public class EjercicioController {
         }
         model.addAttribute("ejercicios", ejercicioService.getEjerciciosPorUsuario(usuario.getId()));
         model.addAttribute("idUsuarioActual", usuario.getId());
+        model.addAttribute("fromEjes", Boolean.TRUE.equals(fromEjes));
+        model.addAttribute("idDia", idDia);
         return "ejercicios/lista";
     }
 
 
     @GetMapping("/ejercicios/nuevo")
-    public String crearEjercicioView(Model model) {
+    public String crearEjercicioView(Model model,
+                                     @RequestParam(value = "fromEjes", required = false) Boolean fromEjes,
+                                     @RequestParam(value = "idDia", required = false) Long idDia) {
         EjercicioDTO ejercicioDTO = new EjercicioDTO();
         model.addAttribute("ejercicio", ejercicioDTO);
+        model.addAttribute("fromEjes", Boolean.TRUE.equals(fromEjes));
+        model.addAttribute("idDia", idDia);
         return "ejercicios/formulario";
     }
 
     @GetMapping("/ejercicios/editar/{id}")
     public String editarEjercicioView(@PathVariable Long id,
                                       @AuthenticationPrincipal UserDetails userDetails,
-                                      Model model) {
+                                      Model model,
+                                      @RequestParam(value = "fromEjes", required = false) Boolean fromEjes,
+                                      @RequestParam(value = "idDia", required = false) Long idDia) {
         if (userDetails == null) {
             return "redirect:/auth/login";
         }
@@ -64,12 +76,16 @@ public class EjercicioController {
             return "redirect:/ejercicios?error=forbidden";
         }
         model.addAttribute("ejercicio", ejercicioDTO);
+        model.addAttribute("fromEjes", Boolean.TRUE.equals(fromEjes));
+        model.addAttribute("idDia", idDia);
         return "ejercicios/formulario";
     }
 
     @PostMapping("/ejercicios/guardar")
     public String crearEjercicio(@ModelAttribute EjercicioDTO ejercicioDTO,
-                                 @AuthenticationPrincipal UserDetails userDetails) {
+                                 @AuthenticationPrincipal UserDetails userDetails,
+                                 @RequestParam(value = "fromEjes", required = false) Boolean fromEjes,
+                                 @RequestParam(value = "idDia", required = false) Long idDia) {
         if (userDetails == null) {
             return "redirect:/auth/login";
         }
@@ -82,12 +98,17 @@ public class EjercicioController {
             }
         }
         ejercicioService.createEjercicio(ejercicioDTO, usuario.getId());
+        if (Boolean.TRUE.equals(fromEjes) && idDia != null) {
+            return "redirect:/ejercicios?fromEjes=true&idDia=" + idDia;
+        }
         return "redirect:/ejercicios";
     }
 
     @PostMapping("/ejercicios/eliminar/{id}")
     public String eliminarEjercicio(@PathVariable Long id,
-                                    @AuthenticationPrincipal UserDetails userDetails) {
+                                    @AuthenticationPrincipal UserDetails userDetails,
+                                    @RequestParam(value = "fromEjes", required = false) Boolean fromEjes,
+                                    @RequestParam(value = "idDia", required = false) Long idDia) {
         if (userDetails == null) {
             return "redirect:/auth/login";
         }
@@ -97,6 +118,9 @@ public class EjercicioController {
             return "redirect:/ejercicios?error=forbidden";
         }
         ejercicioService.desactivateEjercicio(id);
+        if (Boolean.TRUE.equals(fromEjes) && idDia != null) {
+            return "redirect:/ejercicios?fromEjes=true&idDia=" + idDia;
+        }
         return "redirect:/ejercicios";
     }
 }
