@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mi Perfil - Sabi App</title>
+    <link rel="stylesheet" th:href="@{/css/perfil.css}">
+</head>
+<body th:replace="layout/layout :: layout('Mi Perfil', ~{::section})">
+<section th:fragment="section">
+    <div class="perfil-container">
+        <h2 class="perfil-title">Mi Perfil</h2>
+        <div class="perfil-card">
+            <div class="perfil-img-box">
+                <img class="perfil-img" src="https://ui-avatars.com/api/?name=" th:src="@{/img/default-profile.png}" alt="Foto de perfil">
+            </div>
+            <div class="perfil-info">
+                <div class="perfil-info-item"><strong>Nombre:</strong> <span th:text="${#authentication.principal.nombre} ?: ${#authentication.name}">Usuario</span></div>
+                <div class="perfil-info-item"><strong>Email:</strong> <span th:text="${#authentication.principal.username} ?: ${#authentication.name}">correo@ejemplo.com</span></div>
+                <div class="perfil-info-item"><strong>Rol:</strong> <span th:text="${#authentication.authorities[0].authority}">ROL</span></div>
+                <div class="perfil-info-item"><strong>Teléfono:</strong> <span th:text="${#authentication.principal.telefono}">No registrado</span></div>
+                <div class="perfil-info-item"><strong>Ciudad:</strong> <span th:text="${#authentication.principal.ciudad}">No registrada</span></div>
+            </div>
+        </div>
+        <!-- Aquí se podrá agregar el input para subir foto de perfil -->
+    </div>
+</section>
+</body>
+</html>

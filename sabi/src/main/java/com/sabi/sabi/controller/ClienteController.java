@@ -184,4 +184,8 @@ public class ClienteController {
 
         return ResponseEntity.ok().headers(headers).body(archivoExcel);
     }
+    @GetMapping("/perfil")
+    public String perfilUsuario() {
+        return "perfil";
+    }
 }
