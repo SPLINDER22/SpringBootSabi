@@ -46,7 +46,7 @@ public class DataInitializer implements CommandLineRunner {
 
         // Mostrar en consola un resumen de los usuarios creados / existentes
         System.out.println("");
-        System.out.println("Resumen de usuarios en la base de datos:");
+        System.out.println("Resumen de usuarios iniciales:");
         System.out.println("");
         System.out.println("Cliente - cliente@sabi.com - Contraseña (raw): 1234567");
         System.out.println("entrenador - entrenador@sabi.com - Contraseña (raw): 1234567");

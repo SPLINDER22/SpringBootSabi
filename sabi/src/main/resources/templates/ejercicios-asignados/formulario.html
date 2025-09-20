@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="layout/layout :: layout('Registro de ejercicio',~{::section})">
+<body>
+<section th:fragment="section">
+    <div class="shadow-sm bg-white rounded p-4 mb-4">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h2 th:text="${eje.idEjercicioAsignado == null ? 'Asignar Ejercicio' : 'Editar Ejercicio Asignado'}"></h2>
+            <a th:href="@{'/ejes/detallar/' + ${eje.idDia}}" class="btn btn-outline-secondary">
+                <i class="bi bi-arrow-left-circle me-1"></i>Volver a la lista
+            </a>
+        </div>
+
+        <div class="mb-3" th:if="${dia != null}">
+            <strong>Dia:</strong> <span th:text="${dia.numeroDia}"></span>
+        </div>
+
+        <form th:action="@{/ejes/guardar}" th:object="${eje}" method="post">
+            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+            <input type="hidden" th:field="*{idEjercicioAsignado}"/>
+            <input type="hidden" th:field="*{idDia}"/>
+
+            <div class="mb-3">
+                <label for="idEjercicio" class="form-label">Ejercicio</label>
+                <select id="idEjercicio" th:field="*{idEjercicio}" class="form-select" required>
+                    <option value="" disabled th:selected="${eje.idEjercicio == null}">-- Seleccione un ejercicio --</option>
+                    <option th:each="ej : ${ejercicios}" th:value="${ej.idEjercicio}" th:text="${ej.nombre}"></option>
+                </select>
+                <div class="text-danger mt-1" th:if="${#fields.hasErrors('idEjercicio')}" th:errors="*{idEjercicio}"></div>
+            </div>
+
+            <div class="mb-3" th:if="${eje.idEjercicioAsignado == null}">
+                <label for="orden" class="form-label">Orden de ejercicio</label>
+                <input type="number" id="orden" th:field="*{orden}" class="form-control" readonly min="1"/>
+                <div class="form-text">
+                    Total ejercicios asignados: <strong th:text="${totalEjes}">0</strong>. Este será el número <strong th:text="${eje.orden}"></strong>.
+                </div>
+            </div>
+            <div class="mb-3" th:if="${eje.idEjercicioAsignado != null}">
+                <label for="orden" class="form-label">Orden de ejercicio</label>
+                <input type="number" id="orden" th:field="*{orden}" class="form-control" min="1" th:attr="
+                max=${dia != null && dia.numeroEjercicios != null ? dia.numeroEjercicios : totalEjes}" required/>
+                <div class="form-text">
+                    Máximo permitido: <span th:text="${dia != null && dia.numeroEjercicios != null ? dia.numeroEjercicios : totalEjes}"></span>
+                </div>
+                <div id="numeroEjeError" class="text-danger mt-1" style="display:none"></div>
+            </div>
+
+            <div class="mb-3">
+                <label for="comentarios" class="form-label">Comentario</label>
+                <textarea id="comentarios" th:field="*{comentarios}" class="form-control" rows="3" placeholder="Una nota que verá el cliente"></textarea>
+                <div class="text-danger mt-1" th:if="${#fields.hasErrors('comentarios')}" th:errors="*{comentarios}"></div>
+            </div>
+
+            <div class="d-flex justify-content-end">
+                <button type="submit" class="btn btn-success me-2">
+                    <i class="bi bi-save me-1"></i>
+                    <span th:text="${eje.idEjercicioAsignado == null ? 'Guardar y continuar' : 'Guardar'}"></span>
+                </button>
+                <a th:href="@{'/ejes/detallar/' + ${eje.idDia}}" class="btn btn-outline-secondary">Cancelar</a>
+            </div>
+        </form>
+    </div>
+
+    <script th:inline="javascript">
+        /*<![CDATA[*/
+        (function(){
+            var input = document.getElementById('orden');
+            if(!input || input.readOnly) return; // sólo edición
+            var max = parseInt(input.getAttribute('max'),10) || 1;
+            var errorSpan = document.getElementById('numeroEjeError');
+            function showError(msg){ if(errorSpan){ errorSpan.textContent = msg; errorSpan.style.display='block'; } }
+            function hideError(){ if(errorSpan){ errorSpan.textContent=''; errorSpan.style.display='none'; } }
+            input.addEventListener('input', function(e){
+                var v = parseInt(e.target.value,10);
+                if(isNaN(v) || v < 1){ e.target.value = 1; hideError(); return; }
+                if(v > max){ e.target.value = max; showError('El orden del ejercicio no puede ser mayor a ' + max); }
+                else { hideError(); }
+            });
+        })();
+        /*]]>*/
+    </script>
+</section>
+</body>
+</html>

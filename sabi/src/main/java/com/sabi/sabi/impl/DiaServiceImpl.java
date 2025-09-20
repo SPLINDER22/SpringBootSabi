@@ -1,9 +1,7 @@
 package com.sabi.sabi.impl;
 
 import com.sabi.sabi.dto.DiaDTO;
-import com.sabi.sabi.dto.SemanaDTO;
 import com.sabi.sabi.entity.Dia;
-import com.sabi.sabi.entity.Rutina;
 import com.sabi.sabi.entity.Semana;
 import com.sabi.sabi.repository.DiaRepository;
 import com.sabi.sabi.repository.SemanaRepository;

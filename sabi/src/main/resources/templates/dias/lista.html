@@ -36,7 +36,7 @@
             <td th:text="${dia.numeroEjercicios}"></td>
             <td>
                 <div class="btn-group btn-group-sm" role="group">
-                    <a th:href="@{'/dias/detallar/' + ${dia.id}}" class="btn btn-info" title="Ver ejercicios"><i class="fas fa-dumbbell"></i></a>
+                    <a th:href="@{'/ejes/detallar/' + ${dia.id}}" class="btn btn-info" title="Ver ejercicios"><i class="fas fa-dumbbell"></i></a>
                     <a th:href="@{'/dias/editar/' + ${dia.id}}" class="btn btn-primary" title="Editar"><i class="fas fa-edit"></i></a>
                     <form th:action="@{'/dias/eliminar/' + ${dia.id}}" method="post" onsubmit="return confirm('¿Eliminar día?')">
                         <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>

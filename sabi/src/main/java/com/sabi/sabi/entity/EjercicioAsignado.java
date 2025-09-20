@@ -17,7 +17,7 @@ public class EjercicioAsignado {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Long idEjercicioAsignado;
 
     @NotNull(message = "El orden del ejercicio es obligatorio")
     @Min(value = 1, message = "El orden debe ser mayor o igual a 1")

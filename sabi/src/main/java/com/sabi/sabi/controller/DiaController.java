@@ -20,7 +20,7 @@ public class DiaController {
     private SemanaService semanaService;
 
     @GetMapping("/dias/detallar/{idSemana}")
-    public String detallarSemanas(@PathVariable Long idSemana, Model model, RedirectAttributes redirectAttributes) {
+    public String detallarDias(@PathVariable Long idSemana, Model model, RedirectAttributes redirectAttributes) {
         SemanaDTO semanaDTO;
         try {
             semanaDTO = semanaService.getSemanaById(idSemana);
@@ -87,9 +87,10 @@ public class DiaController {
     @PostMapping("/dias/guardar")
     public String guardarDia(@ModelAttribute DiaDTO diaDTO, RedirectAttributes redirectAttributes) {
         boolean esNuevo = diaDTO.getIdDia() == null;
-        diaService.createDia(diaDTO); // createDia internamente detecta update si trae idDia
+        diaService.createDia(diaDTO);
         if (esNuevo) {
-            redirectAttributes.addFlashAttribute("success", "Día creado correctamente.");
+            redirectAttributes.addFlashAttribute("success", "Día creado correctamente. Ahora agrega los días.");
+            return "redirect:/ejes/detallar/" + diaDTO.getIdDia();
         } else {
             redirectAttributes.addFlashAttribute("success", "Día actualizado correctamente.");
         }

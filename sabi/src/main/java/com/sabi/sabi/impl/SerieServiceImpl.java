@@ -3,7 +3,7 @@ package com.sabi.sabi.impl;
 import com.sabi.sabi.dto.SerieDTO;
 import com.sabi.sabi.entity.EjercicioAsignado;
 import com.sabi.sabi.entity.Serie;
-import com.sabi.sabi.repository.EjercicioAsignadorRepository;
+import com.sabi.sabi.repository.EjercicioAsignadoRepository;
 import com.sabi.sabi.repository.SerieRepository;
 import com.sabi.sabi.service.SerieService;
 import org.modelmapper.ModelMapper;
@@ -19,7 +19,7 @@ public class SerieServiceImpl implements SerieService {
     @Autowired
     private ModelMapper modelMapper;
     @Autowired
-    private EjercicioAsignadorRepository ejercicioAsignadorRepository;
+    private EjercicioAsignadoRepository ejercicioAsignadorRepository;
 
     @Override
     public List<SerieDTO> getAllSeries() {
