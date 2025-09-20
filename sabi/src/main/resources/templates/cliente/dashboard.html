@@ -54,15 +54,6 @@
                         <span class="info-label" style="margin-right: 10px;">🍎 Alimentación:</span>
                         <span class="info-value" th:text="${diagnosticoActual.habitosAlimenticios != null ? diagnosticoActual.habitosAlimenticios : '--'}" style="font-weight: bold;">--</span>
                     </div>
-                    <div class="info-item">
-                        <span class="info-label">Comparación con el diagnóstico anterior:</span>
-                        <span class="info-value" th:if="${diagnosticoActual.mejorado}" style="color: green; font-weight: bold;">
-                            <i class="fas fa-arrow-up"></i> Mejorado
-                        </span>
-                        <span class="info-value" th:if="${!diagnosticoActual.mejorado}" style="color: red; font-weight: bold;">
-                            <i class="fas fa-arrow-down"></i> Empeorado
-                        </span>
-                    </div>
                 </div>
                 <div class="category-actions mt-3">
                     <a class="btn btn-outline-primary" th:href="@{/diagnostico/cliente}">Ver/Actualizar Diagnóstico</a>
