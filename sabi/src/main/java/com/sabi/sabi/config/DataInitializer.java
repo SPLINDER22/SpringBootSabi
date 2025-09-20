@@ -206,7 +206,7 @@ public class DataInitializer implements CommandLineRunner {
                 .orden(1L)
                 .repeticiones(12L)
                 .peso(60.0)
-                .descanso(90L)
+                .descanso("60 - 90 segundos")
                 .intensidad(null)
                 .comentarios("Peso moderado")
                 .ejercicioAsignado(ejercicioAsignado)

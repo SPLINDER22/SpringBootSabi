@@ -21,7 +21,7 @@ public class SerieDTO {
     private Double peso;
 
     // Descanso en segundos (opcional)
-    private Long descanso;
+    private String descanso;
 
     // Intensidad estandarizada
     private Intensidad intensidad;

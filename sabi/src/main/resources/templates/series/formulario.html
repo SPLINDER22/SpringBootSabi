@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="layout/layout :: layout('Registro de serie',~{::section})">
+<body>
+<section th:fragment="section">
+    <div class="shadow-sm bg-white rounded p-4 mb-4">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h2 th:text="${serie.id == null ? 'Crear serie' : 'Editar serie'}"></h2>
+            <a th:href="@{'/series/detallar/' + ${serie.idEjercicioAsignado}}" class="btn btn-outline-secondary">
+                <i class="bi bi-arrow-left-circle me-1"></i>Volver a la lista
+            </a>
+        </div>
+
+        <div class="mb-3" th:if="${ejercicioAsignado != null}">
+            <strong>Ejercicio:</strong>
+            <span th:text="${nombreEjercicio != null ? nombreEjercicio : ejercicioAsignado.idEjercicio}"></span>
+        </div>
+
+        <form th:action="@{/series/guardar}" th:object="${serie}" method="post" class="row g-3">
+            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+            <input type="hidden" th:field="*{id}"/>
+            <input type="hidden" th:field="*{idEjercicioAsignado}"/>
+
+            <!-- Orden -->
+            <div class="col-12" th:if="${serie.id == null}">
+                <label for="orden" class="form-label">Orden de serie</label>
+                <input type="number" id="orden" th:field="*{orden}" class="form-control" readonly min="1"/>
+                <div class="form-text">
+                    Total series existentes: <strong th:text="${totalSeries}">0</strong>. Esta será la número
+                    <strong th:text="${serie.orden}"></strong>.
+                </div>
+            </div>
+            <div class="col-md-4" th:if="${serie.id != null}">
+                <label for="orden" class="form-label">Orden de serie</label>
+                <input type="number" id="orden" th:field="*{orden}" class="form-control" min="1" th:attr="max=${ejercicioAsignado != null && ejercicioAsignado.numeroSeries != null ? ejercicioAsignado.numeroSeries : totalSeries}" required/>
+                <div class="form-text">
+                    Máximo permitido: <span th:text="${ejercicioAsignado != null && ejercicioAsignado.numeroSeries != null ? ejercicioAsignado.numeroSeries : totalSeries}"></span>
+                </div>
+                <div id="ordenError" class="text-danger mt-1" style="display:none"></div>
+            </div>
+
+            <!-- Repeticiones -->
+            <div class="col-md-4">
+                <label for="repeticiones" class="form-label">Repeticiones</label>
+                <input type="number" id="repeticiones" th:field="*{repeticiones}" class="form-control" min="1" placeholder="Ej: 12"/>
+                <div class="form-text">Deja vacío si es al fallo u otro esquema.</div>
+            </div>
+
+            <!-- Peso -->
+            <div class="col-md-4">
+                <label for="peso" class="form-label">Peso (kg) <span class="text-muted small">(opcional)</span></label>
+                <input type="number" step="0.25" id="peso" th:field="*{peso}" class="form-control" min="0" placeholder="Ej: 20"/>
+            </div>
+
+            <!-- Intensidad -->
+            <div class="col-md-4">
+                <label for="intensidad" class="form-label">Intensidad</label>
+                <select id="intensidad" th:field="*{intensidad}" class="form-select">
+                    <option value="">-- Selecciona --</option>
+                    <option value="BAJA">Baja</option>
+                    <option value="MEDIA">Media</option>
+                    <option value="ALTA">Alta</option>
+                </select>
+            </div>
+
+            <!-- Comentarios -->
+            <div class="col-12">
+                <label for="comentarios" class="form-label">Comentarios</label>
+                <textarea id="comentarios" th:field="*{comentarios}" class="form-control" rows="3" placeholder="Indicaciones: ritmo, tempo, RIR, técnica..." required></textarea>
+                <div class="text-danger mt-1" th:if="${#fields.hasErrors('comentarios')}" th:errors="*{comentarios}"></div>
+            </div>
+
+            <!-- Descanso -->
+            <div class="col-md-8">
+                <label for="descanso" class="form-label">Descanso entre series</label>
+                <input type="text" id="descanso" th:field="*{descanso}" class="form-control" placeholder="Ej: 60-90 segundos o 2-3 min" />
+            </div>
+
+            <div class="col-12 d-flex justify-content-end">
+                <button type="submit" class="btn btn-success me-2">
+                    <i class="bi bi-save me-1"></i>
+                    <span th:text="${serie.id == null ? 'Guardar y continuar' : 'Guardar'}"></span>
+                </button>
+                <a th:href="@{'/series/detallar/' + ${serie.idEjercicioAsignado}}" class="btn btn-outline-secondary">Cancelar</a>
+            </div>
+        </form>
+    </div>
+
+    <script th:inline="javascript">
+        /*<![CDATA[*/
+        (function(){
+            var input = document.getElementById('orden');
+            if(!input || input.readOnly) return; // sólo edición
+            var max = parseInt(input.getAttribute('max'),10) || 1;
+            var errorSpan = document.getElementById('ordenError');
+            function showError(msg){ if(errorSpan){ errorSpan.textContent = msg; errorSpan.style.display='block'; } }
+            function hideError(){ if(errorSpan){ errorSpan.textContent=''; errorSpan.style.display='none'; } }
+            input.addEventListener('input', function(e){
+                var v = parseInt(e.target.value,10);
+                if(isNaN(v) || v < 1){ e.target.value = 1; hideError(); return; }
+                if(v > max){ e.target.value = max; showError('El orden de la serie no puede ser mayor a ' + max); }
+                else { hideError(); }
+            });
+        })();
+        /*]]>*/
+    </script>
+</section>
+</body>
+</html>

@@ -87,14 +87,19 @@ public class DiaController {
     @PostMapping("/dias/guardar")
     public String guardarDia(@ModelAttribute DiaDTO diaDTO, RedirectAttributes redirectAttributes) {
         boolean esNuevo = diaDTO.getIdDia() == null;
-        diaService.createDia(diaDTO);
+        DiaDTO saved = diaService.createDia(diaDTO);
         if (esNuevo) {
-            redirectAttributes.addFlashAttribute("success", "Día creado correctamente. Ahora agrega los días.");
-            return "redirect:/ejes/detallar/" + diaDTO.getIdDia();
+            if (saved == null || saved.getIdDia() == null) {
+                redirectAttributes.addFlashAttribute("error", "No se pudo crear el día. Intenta nuevamente.");
+                return "redirect:/dias/detallar/" + (diaDTO.getIdSemana() != null ? diaDTO.getIdSemana() : "");
+            }
+            redirectAttributes.addFlashAttribute("success", "Día creado correctamente. Ahora asigna los ejercicios.");
+            return "redirect:/ejes/detallar/" + saved.getIdDia();
         } else {
             redirectAttributes.addFlashAttribute("success", "Día actualizado correctamente.");
         }
-        return "redirect:/dias/detallar/" + diaDTO.getIdSemana();
+        Long idSemana = saved != null && saved.getIdSemana() != null ? saved.getIdSemana() : diaDTO.getIdSemana();
+        return "redirect:/dias/detallar/" + idSemana;
     }
 
     @PostMapping("/dias/eliminar/{idDia}")

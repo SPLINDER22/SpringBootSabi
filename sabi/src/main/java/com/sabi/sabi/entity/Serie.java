@@ -33,8 +33,7 @@ public class Serie {
     private Double peso;
 
     // Descanso en segundos (opcional)
-    @Min(value = 0, message = "El descanso no puede ser negativo")
-    private Long descanso;
+    private String descanso;
 
     // Intensidad estandarizada
     @Enumerated(EnumType.STRING)
