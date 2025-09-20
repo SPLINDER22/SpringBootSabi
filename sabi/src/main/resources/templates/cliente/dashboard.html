@@ -48,11 +48,11 @@
                     </div>
                     <div class="info-item" style="font-size: 1.5rem; display: flex; align-items: center;">
                         <span class="info-label" style="margin-right: 10px;">😴 Horas de sueño:</span>
-                        <span class="info-value" th:text="${diagnosticoActual.sueno + ' horas'}" style="font-weight: bold;">-- horas</span>
+                        <span class="info-value" th:text="${diagnosticoActual.horasSueno != null ? diagnosticoActual.horasSueno + ' horas' : '-- horas'}" style="font-weight: bold;">-- horas</span>
                     </div>
                     <div class="info-item" style="font-size: 1.5rem; display: flex; align-items: center;">
                         <span class="info-label" style="margin-right: 10px;">🍎 Alimentación:</span>
-                        <span class="info-value" th:text="${diagnosticoActual.alimentacion}" style="font-weight: bold;">--</span>
+                        <span class="info-value" th:text="${diagnosticoActual.habitosAlimenticios != null ? diagnosticoActual.habitosAlimenticios : '--'}" style="font-weight: bold;">--</span>
                     </div>
                     <div class="info-item">
                         <span class="info-label">Comparación con el diagnóstico anterior:</span>

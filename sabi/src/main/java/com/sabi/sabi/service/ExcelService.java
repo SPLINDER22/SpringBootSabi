@@ -32,7 +32,7 @@ public class ExcelService {
                 row.createCell(1).setCellValue(diagnostico.getPeso());
                 row.createCell(2).setCellValue(diagnostico.getEstatura());
                 row.createCell(3).setCellValue(calcularIMC(diagnostico));
-                row.createCell(4).setCellValue(diagnostico.getSueno());
+                row.createCell(4).setCellValue(diagnostico.getHorasSueno());
                 row.createCell(5).setCellValue(diagnostico.getAlimentacion());
             }
 
@@ -43,12 +43,42 @@ public class ExcelService {
         }
     }
 
-    public byte[] generarExcelDiagnostico(DiagnosticoDTO diagnostico) {
+    public byte[] generarExcelDiagnostico(DiagnosticoDTO diagnostico, String nombreCliente, byte[] logoBytes) {
         try (Workbook workbook = new XSSFWorkbook(); ByteArrayOutputStream out = new ByteArrayOutputStream()) {
             Sheet sheet = workbook.createSheet("Diagnóstico");
 
-            // Crear encabezados
-            Row headerRow = sheet.createRow(0);
+            int rowNum = 0;
+
+            // Insertar logo si está disponible
+            if (logoBytes != null) {
+                int pictureIdx = workbook.addPicture(logoBytes, Workbook.PICTURE_TYPE_PNG);
+                CreationHelper helper = workbook.getCreationHelper();
+                Drawing<?> drawing = sheet.createDrawingPatriarch();
+                ClientAnchor anchor = helper.createClientAnchor();
+                anchor.setCol1(0);
+                anchor.setRow1(rowNum);
+                Picture pict = drawing.createPicture(anchor, pictureIdx);
+                pict.resize(2, 2);
+                rowNum += 3;
+            }
+
+            // Nombre y fecha
+            Row nombreRow = sheet.createRow(rowNum++);
+            Cell nombreCell = nombreRow.createCell(0);
+            nombreCell.setCellValue("Nombre del Cliente:");
+            nombreCell.setCellStyle(crearEstiloEncabezado(workbook));
+            nombreRow.createCell(1).setCellValue(nombreCliente);
+
+            Row fechaRow = sheet.createRow(rowNum++);
+            Cell fechaCell = fechaRow.createCell(0);
+            fechaCell.setCellValue("Fecha del Diagnóstico:");
+            fechaCell.setCellStyle(crearEstiloEncabezado(workbook));
+            fechaRow.createCell(1).setCellValue(diagnostico.getFecha() != null ? diagnostico.getFecha().toString() : "");
+
+            rowNum++; // Espacio
+
+            // Encabezados de tabla
+            Row headerRow = sheet.createRow(rowNum++);
             String[] columnas = {"Campo", "Valor"};
             for (int i = 0; i < columnas.length; i++) {
                 Cell cell = headerRow.createCell(i);
@@ -56,22 +86,51 @@ public class ExcelService {
                 cell.setCellStyle(crearEstiloEncabezado(workbook));
             }
 
-            // Llenar datos
+            // Llenar datos principales
             String[][] datos = {
-                {"Fecha", diagnostico.getFecha().toString()},
-                {"Peso", String.valueOf(diagnostico.getPeso())},
-                {"Estatura", String.valueOf(diagnostico.getEstatura())},
+                {"Peso", diagnostico.getPeso() != null ? String.valueOf(diagnostico.getPeso()) : ""},
+                {"Estatura", diagnostico.getEstatura() != null ? String.valueOf(diagnostico.getEstatura()) : ""},
                 {"IMC", String.valueOf(calcularIMC(diagnostico))},
-                {"Horas de Sueño", String.valueOf(diagnostico.getSueno())},
-                {"Alimentación", diagnostico.getAlimentacion()}
+                {"Horas de Sueño", diagnostico.getHorasSueno() != null ? String.valueOf(diagnostico.getHorasSueno()) : ""},
+                {"Alimentación", diagnostico.getAlimentacion() != null ? diagnostico.getAlimentacion() : ""}
             };
 
-            int rowNum = 1;
+            CellStyle styleCampo = workbook.createCellStyle();
+            Font fontCampo = workbook.createFont();
+            fontCampo.setColor(IndexedColors.DARK_BLUE.getIndex());
+            fontCampo.setBold(true);
+            styleCampo.setFont(fontCampo);
+            styleCampo.setFillForegroundColor(IndexedColors.LIGHT_TURQUOISE.getIndex());
+            styleCampo.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+            styleCampo.setBorderBottom(BorderStyle.THIN);
+            styleCampo.setBorderTop(BorderStyle.THIN);
+            styleCampo.setBorderLeft(BorderStyle.THIN);
+            styleCampo.setBorderRight(BorderStyle.THIN);
+
+            CellStyle styleValor = workbook.createCellStyle();
+            Font fontValor = workbook.createFont();
+            fontValor.setColor(IndexedColors.DARK_GREEN.getIndex());
+            styleValor.setFont(fontValor);
+            styleValor.setFillForegroundColor(IndexedColors.LIGHT_YELLOW.getIndex());
+            styleValor.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+            styleValor.setBorderBottom(BorderStyle.THIN);
+            styleValor.setBorderTop(BorderStyle.THIN);
+            styleValor.setBorderLeft(BorderStyle.THIN);
+            styleValor.setBorderRight(BorderStyle.THIN);
+
             for (String[] fila : datos) {
                 Row row = sheet.createRow(rowNum++);
-                row.createCell(0).setCellValue(fila[0]);
-                row.createCell(1).setCellValue(fila[1]);
+                Cell cellCampo = row.createCell(0);
+                cellCampo.setCellValue(fila[0]);
+                cellCampo.setCellStyle(styleCampo);
+                Cell cellValor = row.createCell(1);
+                cellValor.setCellValue(fila[1]);
+                cellValor.setCellStyle(styleValor);
             }
+
+            // Ajustar ancho de columnas
+            sheet.autoSizeColumn(0);
+            sheet.autoSizeColumn(1);
 
             workbook.write(out);
             return out.toByteArray();

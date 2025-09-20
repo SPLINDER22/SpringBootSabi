@@ -47,7 +47,8 @@ public class DiagnosticoDTO {
 
     private Boolean estado = true;
 
-    public Long getSueno() {
+
+    public Long getHorasSueno() {
         return horasSueno;
     }
 

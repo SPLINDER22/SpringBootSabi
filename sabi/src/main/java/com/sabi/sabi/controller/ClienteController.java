@@ -153,8 +153,29 @@ public class ClienteController {
         // Obtener el diagnóstico específico
         DiagnosticoDTO diagnostico = diagnosticoService.getDiagnosticoById(idDiagnostico);
 
+        // Obtener el nombre del cliente
+        String nombreCliente = "";
+        if (diagnostico != null && diagnostico.getIdCliente() != null) {
+            try {
+                var cliente = clienteService.getClienteById(diagnostico.getIdCliente());
+                nombreCliente = cliente != null && cliente.getNombre() != null ? cliente.getNombre() : "";
+            } catch (Exception e) {
+                nombreCliente = "";
+            }
+        }
+
+        // Leer el logo como bytes
+        byte[] logoBytes = null;
+        try (java.io.InputStream is = getClass().getResourceAsStream("/static/img/logoF.png")) {
+            if (is != null) {
+                logoBytes = is.readAllBytes();
+            }
+        } catch (Exception e) {
+            logoBytes = null;
+        }
+
         // Generar el archivo Excel
-        byte[] archivoExcel = excelService.generarExcelDiagnostico(diagnostico);
+        byte[] archivoExcel = excelService.generarExcelDiagnostico(diagnostico, nombreCliente, logoBytes);
 
         // Configurar cabeceras de la respuesta
         HttpHeaders headers = new HttpHeaders();
