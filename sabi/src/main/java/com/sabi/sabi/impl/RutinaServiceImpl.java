@@ -1,18 +1,17 @@
 package com.sabi.sabi.impl;
 
 import com.sabi.sabi.dto.RutinaDTO;
-import com.sabi.sabi.entity.Cliente;
-import com.sabi.sabi.entity.Entrenador;
-import com.sabi.sabi.entity.Rutina;
-import com.sabi.sabi.repository.ClienteRepository;
-import com.sabi.sabi.repository.EntrenadorRepository;
-import com.sabi.sabi.repository.RutinaRepository;
+import com.sabi.sabi.entity.*;
+import com.sabi.sabi.entity.enums.EstadoRutina;
+import com.sabi.sabi.repository.*;
 import com.sabi.sabi.service.RutinaService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class RutinaServiceImpl implements RutinaService {
@@ -24,73 +23,205 @@ public class RutinaServiceImpl implements RutinaService {
     private EntrenadorRepository entrenadorRepository;
     @Autowired
     private ClienteRepository clienteRepository;
+    @Autowired
+    private SemanaRepository semanaRepository;
+    @Autowired
+    private DiaRepository diaRepository;
+    @Autowired
+    private EjercicioAsignadoRepository ejercicioAsignadoRepository;
+    @Autowired
+    private SerieRepository serieRepository;
+
+    // Helper centralizado para mapear entidad -> DTO (id vs idRutina)
+    private RutinaDTO mapToDTO(Rutina r) {
+        if (r == null) return null;
+        RutinaDTO dto = modelMapper.map(r, RutinaDTO.class);
+        dto.setIdRutina(r.getId());
+        if (r.getCliente() != null) dto.setIdCliente(r.getCliente().getId());
+        if (r.getEntrenador() != null) dto.setIdEntrenador(r.getEntrenador().getId());
+        return dto;
+    }
+
+    private void applyDtoIdToEntity(RutinaDTO dto, Rutina entidad) {
+        if (dto.getIdRutina() != null) entidad.setId(dto.getIdRutina());
+    }
 
     @Override
     public List<RutinaDTO> getAllRutinas() {
-        List<Rutina> rutinas = rutinaRepository.findAll();
-        return rutinas.stream()
-                .map(rutina -> modelMapper.map(rutina, RutinaDTO.class))
-                .toList();
+        return rutinaRepository.findAll().stream().map(this::mapToDTO).toList();
     }
 
     @Override
     public List<RutinaDTO> getAllActiveRutinas() {
-        List<Rutina> rutinas = rutinaRepository.findByEstadoTrue();
-        return rutinas.stream()
-                .map(rutina -> modelMapper.map(rutina, RutinaDTO.class))
-                .toList();
+        return rutinaRepository.findByEstadoTrue().stream().map(this::mapToDTO).toList();
     }
 
     @Override
     public List<RutinaDTO> getRutinasPorUsuario(Long usuarioId) {
-        List<Rutina> rutinas = rutinaRepository.getRutinasPorUsuario(usuarioId);
-        return rutinas.stream()
-                .map(r -> modelMapper.map(r, RutinaDTO.class))
+        return rutinaRepository.getRutinasPorUsuario(usuarioId).stream().map(this::mapToDTO).toList();
+    }
+
+    @Override
+    public List<Rutina> findByClienteAndEstado(Cliente cliente) {
+        return rutinaRepository.findByClienteAndEstado(cliente); // uso puntual externo si hace falta
+    }
+
+    @Override
+    public RutinaDTO getRutinaActivaCliente(Long clienteId) {
+        if (clienteId == null) return null;
+        return rutinaRepository.findActiveByClienteId(clienteId).map(this::mapToDTO).orElse(null);
+    }
+
+    @Override
+    public List<RutinaDTO> getRutinasGlobales() {
+        return rutinaRepository.findByClienteIsNullAndEntrenadorIsNullAndEstadoTrue()
+                .stream()
+                .map(this::mapToDTO)
                 .toList();
+    }
+
+    @Override
+    @Transactional
+    public void adoptarRutina(long idRutina, long idCliente) {
+        Cliente cliente = clienteRepository.findById(idCliente)
+                .orElseThrow(() -> new RuntimeException("Cliente no encontrado: " + idCliente));
+
+        Rutina origen = rutinaRepository.findById(idRutina)
+                .orElseThrow(() -> new RuntimeException("Rutina no encontrada: " + idRutina));
+
+        rutinaRepository.findActiveByClienteId(idCliente).ifPresent(prev -> {
+            prev.setEstadoRutina(EstadoRutina.FINALIZADA);
+            rutinaRepository.save(prev);
+        });
+
+        Rutina nueva = new Rutina();
+        nueva.setId(null);
+        nueva.setNombre(origen.getNombre());
+        nueva.setObjetivo(origen.getObjetivo());
+        nueva.setDescripcion(origen.getDescripcion());
+        nueva.setFechaCreacion(origen.getFechaCreacion());
+        nueva.setEstadoRutina(EstadoRutina.ACTIVA);
+        nueva.setNumeroSemanas(origen.getNumeroSemanas());
+        nueva.setCliente(cliente);
+        nueva.setEntrenador(origen.getEntrenador());
+        nueva.setEstado(true);
+        nueva.setSemanas(null);
+        nueva = rutinaRepository.save(nueva);
+
+        List<Semana> semanasOrigen = semanaRepository.getSemanasRutina(origen.getId());
+        if (semanasOrigen != null) {
+            for (Semana sOri : semanasOrigen) {
+                if (sOri == null || Boolean.FALSE.equals(sOri.getEstado())) continue;
+                Semana sNueva = new Semana();
+                sNueva.setId(null);
+                sNueva.setNumeroSemana(sOri.getNumeroSemana());
+                sNueva.setDescripcion(sOri.getDescripcion());
+                sNueva.setNumeroDias(sOri.getNumeroDias());
+                sNueva.setRutina(nueva);
+                sNueva.setEstado(true);
+                sNueva.setDias(null);
+                sNueva = semanaRepository.save(sNueva);
+
+                List<Dia> diasOrigen = diaRepository.getDiasSemana(sOri.getId());
+                if (diasOrigen != null) {
+                    for (Dia dOri : diasOrigen) {
+                        if (dOri == null || Boolean.FALSE.equals(dOri.getEstado())) continue;
+                        Dia dNuevo = new Dia();
+                        dNuevo.setId(null);
+                        dNuevo.setNumeroDia(dOri.getNumeroDia());
+                        dNuevo.setDescripcion(dOri.getDescripcion());
+                        dNuevo.setNumeroEjercicios(dOri.getNumeroEjercicios());
+                        dNuevo.setSemana(sNueva);
+                        dNuevo.setEstado(true);
+                        dNuevo.setEjerciciosAsignados(null);
+                        dNuevo = diaRepository.save(dNuevo);
+
+                        List<EjercicioAsignado> ejesOrigen = ejercicioAsignadoRepository.findByDia(dOri);
+                        if (ejesOrigen != null) {
+                            for (EjercicioAsignado ejeOri : ejesOrigen) {
+                                if (ejeOri == null || Boolean.FALSE.equals(ejeOri.getEstado())) continue;
+                                EjercicioAsignado ejeNuevo = new EjercicioAsignado();
+                                ejeNuevo.setIdEjercicioAsignado(null);
+                                ejeNuevo.setOrden(ejeOri.getOrden());
+                                ejeNuevo.setComentarios(ejeOri.getComentarios());
+                                ejeNuevo.setNumeroSeries(ejeOri.getNumeroSeries());
+                                ejeNuevo.setDia(dNuevo);
+                                ejeNuevo.setEjercicio(ejeOri.getEjercicio());
+                                ejeNuevo.setSeries(null);
+                                ejeNuevo.setUrlVideoCliente(null);
+                                ejeNuevo.setEstado(true);
+                                ejeNuevo = ejercicioAsignadoRepository.save(ejeNuevo);
+
+                                List<Serie> seriesOrigen = serieRepository.findByEjercicioAsignado(ejeOri);
+                                if (seriesOrigen != null) {
+                                    for (Serie serOri : seriesOrigen) {
+                                        if (serOri == null || Boolean.FALSE.equals(serOri.getEstado())) continue;
+                                        Serie serNueva = new Serie();
+                                        serNueva.setId(null);
+                                        serNueva.setOrden(serOri.getOrden());
+                                        serNueva.setRepeticiones(serOri.getRepeticiones());
+                                        serNueva.setPeso(serOri.getPeso());
+                                        serNueva.setDescanso(serOri.getDescanso());
+                                        serNueva.setIntensidad(serOri.getIntensidad());
+                                        serNueva.setComentarios(serOri.getComentarios());
+                                        serNueva.setEjercicioAsignado(ejeNuevo);
+                                        serNueva.setEstado(true);
+                                        serieRepository.save(serNueva);
+                                    }
+                                }
+                                ejercicioAsignadoRepository.save(ejeNuevo);
+                            }
+                        }
+                        diaRepository.save(dNuevo);
+                    }
+                }
+                semanaRepository.save(sNueva);
+            }
+        }
+        rutinaRepository.save(nueva);
     }
 
     @Override
     public RutinaDTO getRutinaById(long id) {
         Rutina rutina = rutinaRepository.findById(id)
-                .stream()
-                .findFirst()
                 .orElseThrow(() -> new RuntimeException("Rutina not found with id: " + id));
-        return modelMapper.map(rutina, RutinaDTO.class);
+        return mapToDTO(rutina);
     }
 
     @Override
     public RutinaDTO createRutina(RutinaDTO rutinaDTO) {
         Rutina rutina = modelMapper.map(rutinaDTO, Rutina.class);
-        if (rutina.getId() != null && rutinaRepository.findById(rutina.getId()).isPresent()){
-            updateRutina(rutina.getId(), rutinaDTO);
+        applyDtoIdToEntity(rutinaDTO, rutina);
+        if (rutina.getId() != null && rutinaRepository.findById(rutina.getId()).isPresent()) {
+            return updateRutina(rutina.getId(), rutinaDTO);
         }
         if (rutinaDTO.getIdCliente() != null) {
             Cliente cliente = clienteRepository.findById(rutinaDTO.getIdCliente())
                     .orElseThrow(() -> new RuntimeException("Cliente not found with id: " + rutinaDTO.getIdCliente()));
             rutina.setCliente(cliente);
+            if (rutinaDTO.getEstadoRutina() == EstadoRutina.ACTIVA) {
+                rutinaRepository.findActiveByClienteId(cliente.getId()).ifPresent(prev -> {
+                    prev.setEstadoRutina(EstadoRutina.FINALIZADA);
+                    rutinaRepository.save(prev);
+                });
+            }
         }
         if (rutinaDTO.getIdEntrenador() != null) {
             Entrenador entrenador = entrenadorRepository.findById(rutinaDTO.getIdEntrenador())
                     .orElseThrow(() -> new RuntimeException("Entrenador not found with id: " + rutinaDTO.getIdEntrenador()));
             rutina.setEntrenador(entrenador);
         }
-        // Asignar fecha de creación si no viene en el DTO
         if (rutina.getFechaCreacion() == null) {
             rutina.setFechaCreacion(java.time.LocalDate.now());
         }
         rutina = rutinaRepository.save(rutina);
-        return modelMapper.map(rutina, RutinaDTO.class);
+        return mapToDTO(rutina);
     }
 
     @Override
     public RutinaDTO updateRutina(long id, RutinaDTO rutinaDTO) {
         Rutina existingRutina = rutinaRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Rutina not found with id: " + id));
-        if (rutinaDTO.getIdCliente() != null) {
-            Cliente cliente = clienteRepository.findById(rutinaDTO.getIdCliente())
-                    .orElseThrow(() -> new RuntimeException("Cliente not found with id: " + rutinaDTO.getIdCliente()));
-            existingRutina.setCliente(cliente);
-        }
         if (rutinaDTO.getIdEntrenador() != null) {
             Entrenador entrenador = entrenadorRepository.findById(rutinaDTO.getIdEntrenador())
                     .orElseThrow(() -> new RuntimeException("Entrenador not found with id: " + rutinaDTO.getIdEntrenador()));
@@ -99,7 +230,6 @@ public class RutinaServiceImpl implements RutinaService {
         existingRutina.setNombre(rutinaDTO.getNombre());
         existingRutina.setObjetivo(rutinaDTO.getObjetivo());
         existingRutina.setDescripcion(rutinaDTO.getDescripcion());
-        // No sobreescribir fechaCreacion si viene null (el formulario no la envía)
         if (rutinaDTO.getFechaCreacion() != null) {
             existingRutina.setFechaCreacion(rutinaDTO.getFechaCreacion());
         }
@@ -109,9 +239,8 @@ public class RutinaServiceImpl implements RutinaService {
         if (rutinaDTO.getNumeroSemanas() != null) {
             existingRutina.setNumeroSemanas(rutinaDTO.getNumeroSemanas());
         }
-
         existingRutina = rutinaRepository.save(existingRutina);
-        return modelMapper.map(existingRutina, RutinaDTO.class);
+        return mapToDTO(existingRutina);
     }
 
     @Override

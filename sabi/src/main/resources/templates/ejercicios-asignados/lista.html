@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<html lang="es" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
 <head>
     <meta charset="UTF-8">
     <title>Ejercicios Asignados</title>
@@ -46,8 +46,14 @@
             <td th:text="${eje.comentarios}" class="small"></td>
             <td th:text="${eje.numeroSeries}"></td>
             <td>
+                <div sec:authorize="hasAnyRole('CLIENTE')">
+                    <a th:href="@{'/series/detallar/' + ${eje.idEjercicioAsignado}}" class="btn btn-sm btn-info">
+                        <i class="fas fa-list"></i> Ver Series
+                    </a>
+                </div>
+
                 <!-- Contenedor flex compatible Bootstrap 4 sin gap -->
-                <div class="d-flex flex-wrap align-items-center action-buttons">
+                <div sec:authorize="hasAnyRole('ENTRENADOR')" class="d-flex flex-wrap align-items-center action-buttons">
                     <a th:href="@{'/series/detallar/' + ${eje.idEjercicioAsignado}}" class="btn btn-sm btn-info">
                         <i class="fas fa-list"></i> Ver Series
                     </a>

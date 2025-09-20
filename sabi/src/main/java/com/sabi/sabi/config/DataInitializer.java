@@ -43,6 +43,7 @@ public class DataInitializer implements CommandLineRunner {
         crearEntrenadorSiNoExiste("Entrenador", "entrenador@sabi.com", "1234567");
         crearEjerciciosSiNoExisten();
         crearRutinaDeEjemplo();
+        crearRutinaGlobalLibre(); // Nueva rutina global sin cliente ni entrenador ni estadoRutina
 
         // Mostrar en consola un resumen de los usuarios creados / existentes
         System.out.println("");
@@ -162,13 +163,11 @@ public class DataInitializer implements CommandLineRunner {
         if (ejercicio == null) return;
         // Crear rutina
         Rutina rutina = Rutina.builder()
-                .nombre("Rutina de ejemplo")
+                .nombre("Rutina del entrenador")
                 .objetivo("Hipertrofia")
                 .descripcion("Rutina de prueba para desarrollo.")
                 .fechaCreacion(java.time.LocalDate.now())
-                .estadoRutina(EstadoRutina.ACTIVA)
                 .numeroSemanas(1L)
-                .cliente(cliente)
                 .entrenador(entrenador)
                 .estado(true)
                 .build();
@@ -209,6 +208,76 @@ public class DataInitializer implements CommandLineRunner {
                 .descanso("60 - 90 segundos")
                 .intensidad(null)
                 .comentarios("Peso moderado")
+                .ejercicioAsignado(ejercicioAsignado)
+                .estado(true)
+                .build();
+        serieRepository.save(serie);
+    }
+
+    private void crearRutinaGlobalLibre() {
+        // Verificar si ya existe para no duplicar
+        final String nombreRutina = "Rutina Global Base";
+        boolean existe = rutinaRepository.findAll().stream()
+                .anyMatch(r -> nombreRutina.equalsIgnoreCase(r.getNombre()));
+        if (existe) return;
+
+        // Tomar un ejercicio global existente (si no hay, abortar)
+        Ejercicio ejercicioGlobal = ejercicioRepository.findAll().stream()
+                .filter(e -> e.getTipo().name().equals("GLOBAL"))
+                .findFirst()
+                .orElse(null);
+        if (ejercicioGlobal == null) return; // No se puede crear sin al menos un ejercicio global
+
+        // Crear rutina sin cliente, sin entrenador y sin estadoRutina explícito
+        Rutina rutina = Rutina.builder()
+                .nombre(nombreRutina)
+                .objetivo("General")
+                .descripcion("Rutina global base sin asignar.")
+                .fechaCreacion(java.time.LocalDate.now())
+                .numeroSemanas(1L)
+                .estado(true)
+                .build();
+        rutinaRepository.save(rutina);
+
+        // Crear semana asociada
+        Semana semana = Semana.builder()
+                .numeroSemana(1L)
+                .descripcion("Semana 1 - Global")
+                .numeroDias(1L)
+                .rutina(rutina)
+                .estado(true)
+                .build();
+        semanaRepository.save(semana);
+
+        // Crear día
+        Dia dia = Dia.builder()
+                .numeroDia(1L)
+                .descripcion("Día 1: Trabajo general")
+                .numeroEjercicios(1L)
+                .semana(semana)
+                .estado(true)
+                .build();
+        diaRepository.save(dia);
+
+        // Crear ejercicio asignado
+        EjercicioAsignado ejercicioAsignado = EjercicioAsignado.builder()
+                .orden(1L)
+                .comentarios("Mantener técnica controlada")
+                .numeroSeries(1L)
+                .dia(dia)
+                .ejercicio(ejercicioGlobal)
+                .estado(true)
+                .build();
+        ejercicioAsignadoRepository.save(ejercicioAsignado);
+
+        // Crear serie base
+        Serie serie = Serie.builder()
+                .orden(1L)
+                .repeticiones(10L)
+                .peso(0.0)
+                .descanso("60 segundos")
+                .intensidad(null) // sin intensidad definida
+                .comentarios("Serie introductoria")
                 .ejercicioAsignado(ejercicioAsignado)
                 .estado(true)
                 .build();
