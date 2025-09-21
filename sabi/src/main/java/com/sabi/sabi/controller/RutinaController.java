@@ -54,18 +54,35 @@ public class RutinaController {
     public String adoptarRutina(@PathVariable Long idRutina,
                                  @AuthenticationPrincipal UserDetails userDetails,
                                  RedirectAttributes redirectAttributes) {
+        if (userDetails == null) return "redirect:/auth/login";
         Usuario usuario = usuarioService.obtenerPorEmail(userDetails.getUsername());
-
-        RutinaDTO rutinaDTO = rutinaService.getRutinaById(idRutina);
-        RutinaDTO activa = rutinaService.getRutinaActivaCliente(usuario.getId());
-        if (activa != null && activa.getIdRutina() != null) {
-            redirectAttributes.addFlashAttribute("error", "Ya tienes una rutina activa. Solo puedes tener una a la vez.");
+        // Verificar si ya tiene una activa (defensivo; el servicio ya finaliza la previa si existiera, pero preservamos la regla si quieres bloquear)
+        RutinaDTO activaAntes = rutinaService.getRutinaActivaCliente(usuario.getId());
+        if (activaAntes != null && activaAntes.getIdRutina() != null) {
+            redirectAttributes.addFlashAttribute("error", "Ya tienes una rutina activa. Finalízala para adoptar otra.");
             return "redirect:/rutina/cliente";
         }
-        // Adoptar la rutina
+        // Adoptar (clona y activa la nueva)
         rutinaService.adoptarRutina(idRutina, usuario.getId());
-        redirectAttributes.addFlashAttribute("success", "Rutina adoptada correctamente. Ahora puedes ver sus semanas.");
-        return "redirect:/semanas/detallar/" + idRutina;
+        // Obtener ahora la nueva activa (la clonada)
+        RutinaDTO activaNueva = rutinaService.getRutinaActivaCliente(usuario.getId());
+        if (activaNueva == null || activaNueva.getIdRutina() == null) {
+            redirectAttributes.addFlashAttribute("error", "No se pudo determinar la rutina adoptada. Intenta nuevamente.");
+            return "redirect:/rutina/cliente";
+        }
+        redirectAttributes.addFlashAttribute("success", "Rutina adoptada correctamente. Ahora puedes gestionar sus semanas.");
+        return "redirect:/semanas/detallar/" + activaNueva.getIdRutina();
+    }
+
+    @PostMapping("/rutinas/finalizar/{idRutina}")
+    public String finalizarRutina(@PathVariable Long idRutina,
+                                  @AuthenticationPrincipal UserDetails userDetails,
+                                  RedirectAttributes redirectAttributes) {
+        if (userDetails == null) return "redirect:/auth/login";
+        Usuario usuario = usuarioService.obtenerPorEmail(userDetails.getUsername());
+        rutinaService.finalizarRutinaCliente(idRutina, usuario.getId());
+        redirectAttributes.addFlashAttribute("success", "Rutina finalizada. Ya puedes elegir otra.");
+        return "redirect:/rutina/cliente";
     }
 
     @GetMapping("/rutinas")

@@ -23,6 +23,10 @@ public interface RutinaService {
 
     boolean desactivateRutina(long id);
 
+    @Deprecated
+    void finalizarRutinaCliente(long idRutina);
+    void finalizarRutinaCliente(long idRutina, long idCliente);
+
     RutinaDTO getRutinaActivaCliente(Long clienteId);
     List<RutinaDTO> getRutinasGlobales();
 

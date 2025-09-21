@@ -182,6 +182,14 @@ public class SemanaServiceImpl implements SemanaService {
     }
 
     @Override
+    public void alterCheck(long id) {
+        Semana existingSemana = semanaRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Semana not found with id: " + id));
+        existingSemana.setChecked(!existingSemana.getChecked());
+        semanaRepository.save(existingSemana);
+    }
+
+    @Override
     public boolean desactivateSemana(long id) {
         Semana existingSemana = semanaRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Semana not found with id: " + id));

@@ -129,4 +129,17 @@ public class EjercicioAsignadoController {
         redirectAttributes.addFlashAttribute("success", "Ejercicio eliminado correctamente.");
         return "redirect:/ejes/detallar/" + ejeDTO.getIdDia();
     }
+
+    // Nuevo endpoint para alternar estado de completado del ejercicio asignado
+    @GetMapping("/ejes/check/{idEje}")
+    public String toggleChecked(@PathVariable Long idEje, RedirectAttributes redirectAttributes) {
+        try {
+            var eje = ejercicioAsignadoService.toggleChecked(idEje);
+            redirectAttributes.addFlashAttribute("success", eje.getChecked() ? "Ejercicio marcado como completado." : "Ejercicio marcado como pendiente.");
+            return "redirect:/ejes/detallar/" + eje.getIdDia();
+        } catch (RuntimeException ex) {
+            redirectAttributes.addFlashAttribute("error", "No se pudo actualizar el estado del ejercicio.");
+            return "redirect:/rutinas";
+        }
+    }
 }

@@ -19,5 +19,7 @@ public interface SemanaService {
 
     boolean deleteSemana(long id);
 
+    void alterCheck(long id);
+
     boolean desactivateSemana(long id);
 }

@@ -66,3 +66,33 @@
 .form-select.is-valid:focus, .was-validated .form-select:valid:focus {
     box-shadow: 0 0 0 .2rem rgba(40,167,69,.25);
 }
+
+/* === Reutilizables listas / acciones === */
+.action-buttons { display:flex; flex-wrap:wrap; align-items:center; }
+.action-buttons > * { margin-right:.4rem; }
+.action-buttons > *:last-child { margin-right:0; }
+.action-buttons form { display:inline-block; margin:0; }
+.action-buttons .btn i { margin-right:.25rem; }
+
+/* Botón finalizar rutina (cliente) */
+.btn-finalizar-rutina { display:inline-flex; align-items:center; font-weight:500; padding:.5rem .9rem; line-height:1.2; border-width:1px; box-shadow:0 1px 2px rgba(0,0,0,.08); }
+.btn-finalizar-rutina i { margin-right:.4rem; }
+.btn-finalizar-rutina:hover { filter:brightness(.95); }
+.btn-finalizar-rutina:active { transform:translateY(1px); }
+
+@media (max-width:576px){
+  .btn-finalizar-rutina { width:100%; margin-top:.5rem; justify-content:center; }
+}
+
+/* Badges de estado (completado / pendiente) */
+.status-badge {display:inline-flex;align-items:center;font-size:.75rem;padding:.30rem .55rem;border-radius:1rem;font-weight:500;border:1px solid transparent;letter-spacing:.2px}
+.badge-complete { background:#e6ffed; border-color:#b2f2bb; color:#166534; }
+.badge-pending { background:#f8f9fa; border-color:#d9dde1; color:#6c757d; }
+.status-badge i { font-size:.9rem; margin-right:.35rem; }
+
+/* Botón para marcar / desmarcar (toggle completado) */
+.btn-toggle-completa { min-width:110px; }
+.btn-toggle-completa i { margin-right:.25rem; }
+@media (max-width:576px){
+  .btn-toggle-completa { width:100%; margin-bottom:.4rem; }
+}

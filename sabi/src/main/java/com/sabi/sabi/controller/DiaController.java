@@ -115,4 +115,16 @@ public class DiaController {
         redirectAttributes.addFlashAttribute("success", "Día eliminado correctamente.");
         return "redirect:/dias/detallar/" + diaDTO.getIdSemana();
     }
+
+    @GetMapping("/dias/check/{idDia}")
+    public String toggleChecked(@PathVariable Long idDia, RedirectAttributes redirectAttributes) {
+        try {
+            var dia = diaService.toggleChecked(idDia);
+            redirectAttributes.addFlashAttribute("success", dia.getChecked() ? "Día marcado como completado." : "Día marcado como pendiente.");
+            return "redirect:/dias/detallar/" + dia.getIdSemana();
+        } catch (RuntimeException ex) {
+            redirectAttributes.addFlashAttribute("error", "No se pudo actualizar el estado del día.");
+            return "redirect:/rutinas";
+        }
+    }
 }
