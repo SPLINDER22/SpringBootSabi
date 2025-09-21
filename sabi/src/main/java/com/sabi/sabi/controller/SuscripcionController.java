@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.sabi.sabi.dto.SuscripcionDTO;
 import com.sabi.sabi.service.ClienteService;
@@ -47,6 +48,12 @@ public class SuscripcionController {
                 .distinct()
                 .collect(Collectors.toMap(id -> id, id -> entrenadorService.getEntrenadorById(id).getNombre()));
         model.addAttribute("nombresEntrenadores", nombresEntrenadores);
+    Map<Long, String> nombresClientes = suscripciones.stream()
+        .map(SuscripcionDTO::getIdCliente)
+        .filter(Objects::nonNull)
+        .distinct()
+        .collect(Collectors.toMap(id -> id, id -> clienteService.getClienteById(id).getNombre()));
+    model.addAttribute("nombresClientes", nombresClientes);
         model.addAttribute("idUsuarioActual", usuario.getId());
         return "suscripciones/lista";
     }
@@ -80,17 +87,31 @@ public class SuscripcionController {
 
     @PostMapping("/suscripciones/guardar")
     public String crearSuscripcion(@ModelAttribute SuscripcionDTO suscripcionDTO,
-                                   @AuthenticationPrincipal UserDetails userDetails) {
+                                   @AuthenticationPrincipal UserDetails userDetails,
+                                   @RequestParam(value = "redirectTo", required = false) String redirectTo) {
         if (userDetails == null) {
             return "redirect:/auth/login";
         }
         // Si viene ID (update)
         if (suscripcionDTO.getIdSuscripcion() != null) {
+            // Preservar idCliente y idEntrenador del registro existente
+            SuscripcionDTO existente = suscripcionService.getSuscripcionById(suscripcionDTO.getIdSuscripcion());
+            if (existente != null) {
+                suscripcionDTO.setIdCliente(existente.getIdCliente());
+                suscripcionDTO.setIdEntrenador(existente.getIdEntrenador());
+                // Si se colocan ambas fechas, cambiar a COTIZADA automáticamente
+                if (suscripcionDTO.getFechaInicio() != null && suscripcionDTO.getFechaFin() != null) {
+                    suscripcionDTO.setEstadoSuscripcion(com.sabi.sabi.entity.enums.EstadoSuscripcion.COTIZADA);
+                } else {
+                    // Mantener el estado anterior si no se cumplen condiciones
+                    suscripcionDTO.setEstadoSuscripcion(existente.getEstadoSuscripcion());
+                }
+            }
             suscripcionService.updateSuscripcion(suscripcionDTO.getIdSuscripcion(), suscripcionDTO);
         } else {
             suscripcionService.createSuscripcion(suscripcionDTO);
         }
-        return "redirect:/suscripciones";
+        return "redirect:" + (redirectTo != null && !redirectTo.isEmpty() ? redirectTo : "/suscripciones");
     }
 
 
@@ -110,16 +131,13 @@ public class SuscripcionController {
 
     @PostMapping("/suscripciones/rechazar/{id}")
     public String rechazarSuscripcion(@PathVariable Long id,
-                                      @AuthenticationPrincipal UserDetails userDetails) {
+                                      @AuthenticationPrincipal UserDetails userDetails,
+                                      @RequestParam(value = "redirectTo", required = false) String redirectTo) {
         if (userDetails == null) {
             return "redirect:/auth/login";
         }
-        var suscripcion = suscripcionService.getSuscripcionById(id);
-        if (suscripcion != null) {
-            suscripcion.setEstadoSuscripcion(com.sabi.sabi.entity.enums.EstadoSuscripcion.RECHAZADA);
-            suscripcionService.updateSuscripcion(id, suscripcion);
-        }
-        return "redirect:/suscripciones";
+        suscripcionService.cancelarSuscripcion(id);
+        return "redirect:" + (redirectTo != null && !redirectTo.isEmpty() ? redirectTo : "/suscripciones");
     }
 
     @PostMapping("/suscripciones/eliminar/{id}")

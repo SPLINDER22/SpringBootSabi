@@ -3,17 +3,19 @@ package com.sabi.sabi.controller;
 import com.sabi.sabi.dto.DiagnosticoDTO;
 import com.sabi.sabi.dto.EntrenadorDTO;
 import com.sabi.sabi.dto.RutinaDTO;
+import com.sabi.sabi.dto.SuscripcionDTO;
+import com.sabi.sabi.service.SuscripcionService;
+import com.sabi.sabi.service.EntrenadorService;
 import com.sabi.sabi.service.ClienteService;
 import com.sabi.sabi.service.DiagnosticoService;
-import com.sabi.sabi.service.ExcelService;
 import com.sabi.sabi.service.ExcelService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.validation.BindingResult;
 import jakarta.validation.Valid;
@@ -37,6 +39,12 @@ public class ClienteController {
 
     @Autowired
     private ExcelService excelService;
+
+    @Autowired
+    private SuscripcionService suscripcionService;
+
+    @Autowired
+    private EntrenadorService entrenadorService;
 
     @GetMapping("/cliente/dashboard")
     public String clienteDashboard(Model model) {
@@ -81,6 +89,49 @@ public class ClienteController {
         model.addAttribute("entrenadores", entrenadores);
         model.addAttribute("tieneDiagnostico", tieneDiagnostico);
         return "cliente/listaEntrenadores";
+    }
+
+    @GetMapping("/cliente/suscripcion")
+    public String clienteSuscripcionActual(Model model) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        CustomUserDetails userDetails = (CustomUserDetails) auth.getPrincipal();
+        Long clienteId = userDetails.getUsuario().getId();
+        SuscripcionDTO actual = suscripcionService.getSuscripcionActualByClienteId(clienteId);
+        model.addAttribute("suscripcion", actual);
+        if (actual != null && actual.getIdEntrenador() != null) {
+            var entrenador = entrenadorService.getEntrenadorById(actual.getIdEntrenador());
+            model.addAttribute("nombreEntrenador", entrenador != null ? entrenador.getNombre() : null);
+        }
+        return "cliente/suscripcion";
+    }
+
+    @GetMapping("/cliente/suscripcion/historial")
+    public String clienteSuscripcionHistorial(Model model) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        CustomUserDetails userDetails = (CustomUserDetails) auth.getPrincipal();
+        Long clienteId = userDetails.getUsuario().getId();
+        List<SuscripcionDTO> historial = suscripcionService.getHistorialByClienteId(clienteId);
+        model.addAttribute("suscripciones", historial);
+        // Mapear nombres de entrenadores para la vista
+        var nombresEntrenadores = historial.stream()
+                .map(SuscripcionDTO::getIdEntrenador)
+                .filter(java.util.Objects::nonNull)
+                .distinct()
+                .collect(java.util.stream.Collectors.toMap(
+                        id -> id,
+                        id -> {
+                            var e = entrenadorService.getEntrenadorById(id);
+                            return e != null ? e.getNombre() : null;
+                        }
+                ));
+        model.addAttribute("nombresEntrenadores", nombresEntrenadores);
+        return "cliente/suscripcion-historial";
+    }
+
+    @PostMapping("/cliente/suscripcion/cancelar/{id}")
+    public String cancelarSuscripcionCliente(@PathVariable("id") Long id) {
+        suscripcionService.cancelarSuscripcion(id);
+        return "redirect:/cliente/suscripcion";
     }
 
     @GetMapping("/cliente/diagnostico/historial")

@@ -87,6 +87,7 @@ public class RutinaController {
 
     @GetMapping("/rutinas")
     public String listarRutinas(@AuthenticationPrincipal UserDetails userDetails, Model model) {
+        
         if (userDetails == null) {
             return "redirect:/auth/login";
         }

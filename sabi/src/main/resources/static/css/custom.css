@@ -1,0 +1,3 @@
+/* Custom overrides to ensure true black text where needed */
+/* Make text-dark behave like Bootstrap's original (pure dark) */
+.text-dark { color: #212529 !important; }
