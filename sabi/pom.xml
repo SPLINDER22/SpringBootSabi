@@ -32,6 +32,12 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 	</properties>
     <dependencies>
+        <!-- Charts for PDF reports -->
+        <dependency>
+            <groupId>org.knowm.xchart</groupId>
+            <artifactId>xchart</artifactId>
+            <version>3.8.6</version>
+        </dependency>
         <!-- Spring Boot Starters -->
         <!-- Spring Boot Mail -->
         <dependency>
