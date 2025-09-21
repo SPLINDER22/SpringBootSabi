@@ -37,6 +37,8 @@ public class Semana {
     @OneToMany(mappedBy = "semana", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Dia> dias;
 
+    private Boolean checked = false;
+
     @Column(name = "estado", nullable = false)
     private Boolean estado = true;
 }

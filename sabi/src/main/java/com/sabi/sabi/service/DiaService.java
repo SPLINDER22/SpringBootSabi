@@ -19,4 +19,6 @@ public interface DiaService {
     boolean deleteDia(long id);
 
     boolean desactivateDia(long id);
+
+    DiaDTO toggleChecked(long idDia);
 }

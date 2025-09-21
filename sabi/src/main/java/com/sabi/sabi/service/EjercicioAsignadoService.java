@@ -19,4 +19,6 @@ public interface EjercicioAsignadoService {
     boolean deleteEjercicioAsignado(long id);
 
     boolean desactivateEjercicioAsignado(long id);
+
+    EjercicioAsignadoDTO toggleChecked(long idEjercicioAsignado);
 }

@@ -2,15 +2,8 @@
 <html lang="es" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
 <head>
     <meta charset="UTF-8">
-    <title>Dias</title>
-    <style>
-        .action-buttons { display:flex; flex-wrap:wrap; align-items:center; }
-        .action-buttons > * { margin-right:.4rem; }
-        .action-buttons > *:last-child { margin-right:0; }
-        .action-buttons form { display:inline-block; margin:0; }
-        .action-buttons .btn i { margin-right:.25rem; }
-        .table thead th { white-space:nowrap; }
-    </style>
+    <title>Días</title>
+    <!-- Se eliminan estilos inline porque ahora están en contenido.css -->
 </head>
 <body th:replace="layout/layout :: layout('Lista de Días', ~{::section})">
 <section th:fragment="section">
@@ -22,7 +15,7 @@
             <a th:if="${idRutina != null}" th:href="@{'/semanas/detallar/' + ${idRutina}}" class="btn btn-outline-secondary">
                 <i class="fas fa-arrow-left"></i> Volver a Semanas
             </a>
-            <a th:if="${semana != null && semana.idSemana != null}" th:href="@{'/dias/crear/' + ${semana.idSemana}}" class="btn btn-success">
+            <a sec:authorize="hasAnyRole('ENTRENADOR')" th:if="${semana != null && semana.idSemana != null}" th:href="@{'/dias/crear/' + ${semana.idSemana}}" class="btn btn-success">
                 <i class="fas fa-plus"></i> Nuevo Día
             </a>
         </div>
@@ -32,8 +25,9 @@
         <thead class="table-light">
         <tr>
             <th style="width:10%"># Día</th>
-            <th style="width:52%">Descripción</th>
-            <th style="width:8%">N° Ejercicios</th>
+            <th style="width:48%">Descripción</th>
+            <th style="width:12%">N° Ejercicios</th>
+            <th sec:authorize="hasAnyRole('CLIENTE')" style="width:8%">Completado</th>
             <th style="width:30%">Acciones</th>
         </tr>
         </thead>
@@ -42,13 +36,26 @@
             <td th:text="${dia.numeroDia}"></td>
             <td th:text="${dia.descripcion}"></td>
             <td th:text="${dia.numeroEjercicios}"></td>
+            <td sec:authorize="hasAnyRole('CLIENTE')">
+                <span th:class="${dia.checked} ? 'status-badge badge-complete' : 'status-badge badge-pending'">
+                    <i th:class="${dia.checked} ? 'fas fa-check-circle' : 'far fa-circle'"></i>
+                    <span th:text="${dia.checked} ? 'Completado' : 'Pendiente'"></span>
+                </span>
+            </td>
             <td>
-                <div sec:authorize="hasAnyRole('CLIENTE')">
+                <!-- Vista cliente -->
+                <div sec:authorize="hasAnyRole('CLIENTE')" class="action-buttons">
+                    <a th:href="@{'/dias/check/' + ${dia.id}}"
+                       th:class="${dia.checked} ? 'btn btn-sm btn-outline-warning btn-toggle-completa' : 'btn btn-sm btn-outline-success btn-toggle-completa'"
+                       th:title="${dia.checked} ? 'Desmarcar día' : 'Marcar día como completado'">
+                        <i th:class="${dia.checked} ? 'fas fa-undo' : 'fas fa-check'"></i>
+                        <span th:text="${dia.checked} ? 'Desmarcar' : 'Marcar'"></span>
+                    </a>
                     <a th:href="@{'/ejes/detallar/' + ${dia.id}}" class="btn btn-sm btn-info">
                         <i class="fas fa-dumbbell"></i> Ver Ejercicios
                     </a>
                 </div>
-
+                <!-- Vista entrenador -->
                 <div sec:authorize="hasAnyRole('ENTRENADOR')" class="action-buttons">
                     <a th:href="@{'/ejes/detallar/' + ${dia.id}}" class="btn btn-sm btn-info">
                         <i class="fas fa-dumbbell"></i> Ver Ejercicios
@@ -65,7 +72,12 @@
                 </div>
             </td>
         </tr>
-        <tr th:if="${dias == null || #lists.isEmpty(dias)}">
+        <!-- Fila vacía cliente -->
+        <tr sec:authorize="hasAnyRole('CLIENTE')" th:if="${dias == null || #lists.isEmpty(dias)}">
+            <td colspan="5" class="text-center text-muted py-4">No hay días registrados todavía.</td>
+        </tr>
+        <!-- Fila vacía entrenador -->
+        <tr sec:authorize="hasAnyRole('ENTRENADOR')" th:if="${dias == null || #lists.isEmpty(dias)}">
             <td colspan="4" class="text-center text-muted py-4">No hay días registrados todavía.</td>
         </tr>
         </tbody>

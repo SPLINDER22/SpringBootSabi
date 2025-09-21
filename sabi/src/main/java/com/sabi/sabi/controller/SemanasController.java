@@ -88,4 +88,19 @@ public class SemanasController {
         redirectAttributes.addFlashAttribute("success", "Semana eliminada correctamente.");
         return "redirect:/semanas/detallar/" + idRutina;
     }
+
+    @GetMapping("/semanas/check/{idSemana}")
+    public String checkSemana(@PathVariable Long idSemana, RedirectAttributes redirectAttributes) {
+        SemanaDTO semanaDTO = null;
+        try {
+            semanaDTO = semanaService.getSemanaById(idSemana);
+        } catch (RuntimeException ex) {
+            redirectAttributes.addFlashAttribute("error", "La semana no existe.");
+            return "redirect:/rutinas";
+        }
+        Long idRutina = semanaDTO.getIdRutina();
+        semanaService.alterCheck(idSemana);
+        redirectAttributes.addFlashAttribute("success", "Estado de la semana cambiado correctamente.");
+        return "redirect:/semanas/detallar/" + idRutina;
+    }
 }

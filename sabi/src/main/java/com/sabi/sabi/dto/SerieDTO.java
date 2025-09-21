@@ -32,5 +32,7 @@ public class SerieDTO {
     // Relación con EjercicioAsignado
     private Long idEjercicioAsignado;
 
+    private Boolean checked = false;
+
     private Boolean estado = true;
 }

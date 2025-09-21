@@ -24,5 +24,7 @@ public class SemanaDTO {
     // Relación con Días
     private List<Long> idDias;
 
+    private Boolean checked = false;
+
     private Boolean estado = true;
 }

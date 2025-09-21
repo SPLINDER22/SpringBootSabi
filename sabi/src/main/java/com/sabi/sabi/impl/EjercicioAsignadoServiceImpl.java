@@ -36,6 +36,7 @@ public class EjercicioAsignadoServiceImpl implements EjercicioAsignadoService {
         dto.setIdDia(e.getDia()!=null? e.getDia().getId():null);
         dto.setIdEjercicio(e.getEjercicio()!=null? e.getEjercicio().getId():null);
         dto.setUrlVideoCliente(e.getUrlVideoCliente());
+        dto.setChecked(e.getChecked()); // nuevo mapeo
         dto.setEstado(e.getEstado());
         return dto;
     }
@@ -165,7 +166,6 @@ public class EjercicioAsignadoServiceImpl implements EjercicioAsignadoService {
             }
         }
 
-        // Cambiar ejercicio sólo si se envía uno nuevo
         if (ejercicioAsignadoDTO.getIdEjercicio() != null &&
                 (existingEje.getEjercicio() == null || !ejercicioAsignadoDTO.getIdEjercicio().equals(existingEje.getEjercicio().getId()))) {
             Ejercicio ejercicio = ejercicioRepository.findById(ejercicioAsignadoDTO.getIdEjercicio())
@@ -186,7 +186,6 @@ public class EjercicioAsignadoServiceImpl implements EjercicioAsignadoService {
         Dia dia = ejercicioAsignado.getDia();
         Long posEliminada = ejercicioAsignado.getOrden();
 
-        // Eliminar SOLO el ejercicio asignado, no el día completo
         ejercicioAsignadoRepository.delete(ejercicioAsignado);
 
         if (dia != null) {
@@ -215,5 +214,14 @@ public class EjercicioAsignadoServiceImpl implements EjercicioAsignadoService {
         ejercicioAsignado.setEstado(!ejercicioAsignado.getEstado());
         ejercicioAsignadoRepository.save(ejercicioAsignado);
         return true;
+    }
+
+    @Override
+    public EjercicioAsignadoDTO toggleChecked(long idEjercicioAsignado) {
+        EjercicioAsignado ejercicioAsignado = ejercicioAsignadoRepository.findById(idEjercicioAsignado)
+                .orElseThrow(() -> new RuntimeException("EjercicioAsignado not found with id: " + idEjercicioAsignado));
+        ejercicioAsignado.setChecked(ejercicioAsignado.getChecked() == null ? Boolean.TRUE : !ejercicioAsignado.getChecked());
+        ejercicioAsignadoRepository.save(ejercicioAsignado);
+        return mapManual(ejercicioAsignado);
     }
 }

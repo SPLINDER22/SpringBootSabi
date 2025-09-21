@@ -31,5 +31,7 @@ public class EjercicioAsignadoDTO {
     // URL opcional del video subido por el cliente
     private String urlVideoCliente;
 
+    private Boolean checked = false;
+
     private Boolean estado = true;
 }

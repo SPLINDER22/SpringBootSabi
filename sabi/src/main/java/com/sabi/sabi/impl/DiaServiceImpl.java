@@ -182,4 +182,13 @@ public class DiaServiceImpl implements DiaService {
         diaRepository.save(dia);
         return true;
     }
+
+    @Override
+    public DiaDTO toggleChecked(long idDia) {
+        Dia dia = diaRepository.findById(idDia)
+                .orElseThrow(() -> new RuntimeException("Dia not found with id: " + idDia));
+        dia.setChecked(dia.getChecked() == null ? Boolean.TRUE : !dia.getChecked());
+        diaRepository.save(dia);
+        return modelMapper.map(dia, DiaDTO.class);
+    }
 }

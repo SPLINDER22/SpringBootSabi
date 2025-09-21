@@ -30,11 +30,12 @@
     <table class="table table-bordered table-hover shadow-sm bg-white">
         <thead class="table-light">
         <tr>
-            <th style="width:10%">#</th>
-            <th style="width:17%">Ejercicio</th>
-            <th style="width:35%">Comentarios</th>
+            <th style="width:8%">#</th>
+            <th style="width:16%">Ejercicio</th>
+            <th style="width:33%">Comentarios</th>
             <th style="width:8%">Series</th>
-            <th style="width:30%">Acciones</th>
+            <th sec:authorize="hasAnyRole('CLIENTE')" style="width:10%">Completado</th>
+            <th style="width:25%">Acciones</th>
         </tr>
         </thead>
         <tbody>
@@ -45,14 +46,27 @@
             </td>
             <td th:text="${eje.comentarios}" class="small"></td>
             <td th:text="${eje.numeroSeries}"></td>
+            <td sec:authorize="hasAnyRole('CLIENTE')">
+                <span th:class="${eje.checked} ? 'status-badge badge-complete' : 'status-badge badge-pending'">
+                    <i th:class="${eje.checked} ? 'fas fa-check-circle' : 'far fa-circle'"></i>
+                    <span th:text="${eje.checked} ? 'Completado' : 'Pendiente'"></span>
+                </span>
+            </td>
             <td>
-                <div sec:authorize="hasAnyRole('CLIENTE')">
+                <!-- Vista cliente -->
+                <div sec:authorize="hasAnyRole('CLIENTE')" class="action-buttons">
+                    <a th:href="@{'/ejes/check/' + ${eje.idEjercicioAsignado}}"
+                       th:class="${eje.checked} ? 'btn btn-sm btn-outline-warning btn-toggle-completa' : 'btn btn-sm btn-outline-success btn-toggle-completa'"
+                       th:title="${eje.checked} ? 'Desmarcar ejercicio' : 'Marcar ejercicio como completado'">
+                        <i th:class="${eje.checked} ? 'fas fa-undo' : 'fas fa-check'"></i>
+                        <span th:text="${eje.checked} ? 'Desmarcar' : 'Marcar'"></span>
+                    </a>
                     <a th:href="@{'/series/detallar/' + ${eje.idEjercicioAsignado}}" class="btn btn-sm btn-info">
                         <i class="fas fa-list"></i> Ver Series
                     </a>
                 </div>
 
-                <!-- Contenedor flex compatible Bootstrap 4 sin gap -->
+                <!-- Vista entrenador -->
                 <div sec:authorize="hasAnyRole('ENTRENADOR')" class="d-flex flex-wrap align-items-center action-buttons">
                     <a th:href="@{'/series/detallar/' + ${eje.idEjercicioAsignado}}" class="btn btn-sm btn-info">
                         <i class="fas fa-list"></i> Ver Series
@@ -69,7 +83,12 @@
                 </div>
             </td>
         </tr>
-        <tr th:if="${ejes == null || #lists.isEmpty(ejes)}">
+        <!-- Fila vacía cliente -->
+        <tr sec:authorize="hasAnyRole('CLIENTE')" th:if="${ejes == null || #lists.isEmpty(ejes)}">
+            <td colspan="6" class="text-center text-muted py-4">No hay ejercicios asignados todavía.</td>
+        </tr>
+        <!-- Fila vacía entrenador -->
+        <tr sec:authorize="hasAnyRole('ENTRENADOR')" th:if="${ejes == null || #lists.isEmpty(ejes)}">
             <td colspan="5" class="text-center text-muted py-4">No hay ejercicios asignados todavía.</td>
         </tr>
         </tbody>

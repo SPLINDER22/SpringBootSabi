@@ -27,6 +27,16 @@
         @media (max-width: 576px) {
             .btn-finalizar-rutina { width:100%; margin-top:.5rem; justify-content:center; }
         }
+
+        .status-badge {display:inline-flex;align-items:center;font-size:.75rem;padding:.30rem .55rem;border-radius:1rem;font-weight:500;border:1px solid transparent;letter-spacing:.2px}
+        .badge-complete{background:#e6ffed;border-color:#b2f2bb;color:#166534}
+        .badge-pending{background:#f8f9fa;border-color:#d9dde1;color:#6c757d}
+        .status-badge i{font-size:.9rem;margin-right:.35rem}
+        .btn-toggle-completa i{margin-right:.25rem}
+        .btn-toggle-completa{min-width:110px}
+        @media (max-width: 576px){
+            .btn-toggle-completa{width:100%;margin-bottom:.4rem}
+        }
     </style>
 </head>
 <body th:replace="layout/layout :: layout('Lista de Semanas', ~{::section})">
@@ -60,7 +70,8 @@
         <tr>
             <th style="width:10%"># Semana</th>
             <th style="width:52%">Descripción</th>
-            <th style="width:8%">N° Días</th>
+            <th style="width:4%">N° Días</th>
+            <th sec:authorize="hasAnyRole('CLIENTE')" style="width:8%">Completada</th>
             <th style="width:30%">Acciones</th>
         </tr>
         </thead>
@@ -69,10 +80,22 @@
             <td th:text="${semana.numeroSemana}"></td>
             <td th:text="${semana.descripcion}"></td>
             <td th:text="${semana.numeroDias}"></td>
+            <td sec:authorize="hasAnyRole('CLIENTE')">
+                <span th:class="${semana.checked} ? 'status-badge badge-complete' : 'status-badge badge-pending'">
+                    <i th:class="${semana.checked} ? 'fas fa-check-circle' : 'far fa-circle'"></i>
+                    <span th:text="${semana.checked} ? 'Completada' : 'Pendiente'"></span>
+                </span>
+            </td>
             <td>
                 <div sec:authorize="hasAnyRole('CLIENTE')">
+                    <a th:href="@{'/semanas/check/' + ${semana.id}}"
+                       th:class="${semana.checked}? 'btn btn-sm btn-outline-warning btn-toggle-completa' : 'btn btn-sm btn-outline-success btn-toggle-completa'"
+                       th:title="${semana.checked}? 'Desmarcar semana' : 'Marcar semana como completada'">
+                        <i th:class="${semana.checked}? 'fas fa-undo' : 'fas fa-check'"></i>
+                        <span th:text="${semana.checked}? 'Desmarcar' : 'Marcar'"></span>
+                    </a>
                     <a th:href="@{'/dias/detallar/' + ${semana.id}}" class="btn btn-sm btn-info">
-                        <i class="fas fa-calendar-day"></i> Ver Dias
+                        <i class="fas fa-calendar-day"></i> Ver Días
                     </a>
                 </div>
                 <div sec:authorize="hasAnyRole('ENTRENADOR')" class="action-buttons">
@@ -91,7 +114,12 @@
                 </div>
             </td>
         </tr>
-        <tr th:if="${semanas == null || #lists.isEmpty(semanas)}">
+        <!-- Fila vacía para cliente -->
+        <tr sec:authorize="hasAnyRole('CLIENTE')" th:if="${semanas == null || #lists.isEmpty(semanas)}">
+            <td colspan="5" class="text-center text-muted py-4">No hay semanas registradas todavía.</td>
+        </tr>
+        <!-- Fila vacía para entrenador -->
+        <tr sec:authorize="hasAnyRole('ENTRENADOR')" th:if="${semanas == null || #lists.isEmpty(semanas)}">
             <td colspan="4" class="text-center text-muted py-4">No hay semanas registradas todavía.</td>
         </tr>
         </tbody>
