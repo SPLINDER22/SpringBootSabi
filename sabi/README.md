@@ -224,4 +224,34 @@ Este proyecto está bajo la licencia MIT. Ver el archivo LICENSE para más detal
   <span style="color:#2ECC40; font-weight:bold;">Santiago Castro</span>
 </div>
 
-📧 Contacto | 🌐 Website | 📚 Documentación
+
+---
+
+## Cumplimiento de requisitos funcionales
+
+1. **Cumplimiento de reglas de negocio e historias de usuario**
+  - El sistema implementa reglas como: un solo entrenador activo por cliente, rutinas asignadas, estados de suscripción, gestión de diagnósticos, etc.
+  - Las historias de usuario están reflejadas en los flujos y casos de uso documentados y en los controladores/servicios.
+  - Ejemplo: `SuscripcionServiceImpl` valida que un cliente no tenga más de una suscripción activa.
+
+2. **Uso de patrones GoF**
+  - Se usan patrones como:
+    - *Builder*: en entidades como `Rutina`, `Diagnostico`, `Serie` (`@Builder` de Lombok).
+    - *Service*: separación de lógica de negocio en servicios (`ClienteService`, `RutinaService`, etc.).
+    - *Singleton*: Beans de configuración como `MailConfig` y `DataInitializer` (Spring maneja la instancia única).
+    - *Strategy/Template*: Spring Security y los servicios usan inyección de dependencias y polimorfismo.
+
+3. **Carga inicial de datos**
+  - El archivo `DataInitializer.java` carga datos de ejemplo al iniciar la app: crea usuarios, rutinas, ejercicios, etc.
+  - Se crean clientes, entrenadores, rutinas globales y de ejemplo automáticamente.
+
+4. **Envío masivo de correos**
+  - Implementado en `EmailService` y expuesto en el formulario de `enviar-correo-clientes.html` solo para entrenadores.
+  - Usa `JavaMailSender` y configuración SMTP en `MailConfig`.
+
+5. **Generación de reportes estadísticos en PDF**
+  - El servicio `ReportePdfServiceImpl` genera reportes PDF de suscripciones.
+  - El endpoint `/entrenador/suscripciones/reporte.pdf` permite descargar el reporte.
+  - Usa la librería iText (Lowagie) para PDF.
+
+---
