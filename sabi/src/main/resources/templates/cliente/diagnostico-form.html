@@ -10,6 +10,10 @@ o<!DOCTYPE html>
 <section th:fragment="section">
 <div class="container py-4">
     <h2 class="mb-4">Mi Diagnóstico</h2>
+    <div th:if="${mensajeObligatorio}" class="alert alert-warning d-flex align-items-center" role="alert" style="font-size:1.1rem;">
+        <i class="fa-solid fa-triangle-exclamation me-2"></i>
+        <span th:text="${mensajeObligatorio}"></span>
+    </div>
     <form th:action="@{/diagnostico/crear}" method="post" class="needs-validation" novalidate>
          <!-- Obligatorios -->
         <div class="categoria">

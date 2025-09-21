@@ -56,8 +56,8 @@ public class ClienteController {
         CustomUserDetails userDetails = (CustomUserDetails) auth.getPrincipal();
         Long clienteId = userDetails.getUsuario().getId();
         DiagnosticoDTO diagnosticoActual = clienteService.getDiagnosticoActualByClienteId(clienteId);
-         if (diagnosticoActual == null) {
-            return "redirect:/cliente/diagnostico/crear";
+        if (diagnosticoActual == null) {
+            return "redirect:/cliente/diagnostico/crear?motivo=obligatorio";
         }
         boolean tieneDiagnostico = diagnosticoActual != null;
         List<RutinaDTO> rutinas = clienteService.getRutinasByClienteId(clienteId);
@@ -74,7 +74,7 @@ public class ClienteController {
         Long clienteId = userDetails.getUsuario().getId();
         DiagnosticoDTO diagnosticoActual = clienteService.getDiagnosticoActualByClienteId(clienteId);
         if (diagnosticoActual == null) {
-            return "redirect:/cliente/diagnostico/crear";
+            return "redirect:/cliente/diagnostico/crear?motivo=obligatorio";
         }
         boolean tieneDiagnostico = diagnosticoActual != null;
         List<EntrenadorDTO> entrenadores = clienteService.getAllEntrenadores();
@@ -90,7 +90,7 @@ public class ClienteController {
         Long clienteId = userDetails.getUsuario().getId();
         DiagnosticoDTO diagnosticoActual = clienteService.getDiagnosticoActualByClienteId(clienteId);
         if (diagnosticoActual == null) {
-            return "redirect:/cliente/diagnostico/crear";
+            return "redirect:/cliente/diagnostico/crear?motivo=obligatorio";
         }
         List<DiagnosticoDTO> diagnosticos = clienteService.getHistorialDiagnosticosByClienteId(clienteId);
         model.addAttribute("diagnosticos", diagnosticos);
@@ -98,8 +98,11 @@ public class ClienteController {
     }
 
     @GetMapping("/cliente/diagnostico/crear")
-    public String mostrarFormularioDiagnostico(Model model) {
+    public String mostrarFormularioDiagnostico(Model model, @RequestParam(value = "motivo", required = false) String motivo) {
         model.addAttribute("diagnostico", new DiagnosticoDTO());
+        if (motivo != null && motivo.equals("obligatorio")) {
+            model.addAttribute("mensajeObligatorio", "Debes completar tu diagnóstico para acceder al resto de la plataforma.");
+        }
         return "cliente/diagnostico-form";
     }
 
