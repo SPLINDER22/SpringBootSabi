@@ -83,12 +83,16 @@ public class RutinaServiceImpl implements RutinaService {
     @Override
     @Transactional
     public void adoptarRutina(long idRutina, long idCliente) {
+        if (idRutina == 0L || idCliente == 0L) {
+            throw new IllegalArgumentException("Ids no pueden ser cero");
+        }
         Cliente cliente = clienteRepository.findById(idCliente)
                 .orElseThrow(() -> new RuntimeException("Cliente no encontrado: " + idCliente));
-
         Rutina origen = rutinaRepository.findById(idRutina)
                 .orElseThrow(() -> new RuntimeException("Rutina no encontrada: " + idRutina));
-
+        if (origen.getCliente() != null && !origen.getCliente().getId().equals(idCliente)) {
+            throw new IllegalArgumentException("La rutina origen pertenece a otro cliente");
+        }
         rutinaRepository.findActiveByClienteId(idCliente).ifPresent(prev -> {
             prev.setEstadoRutina(EstadoRutina.FINALIZADA);
             rutinaRepository.save(prev);
@@ -259,5 +263,35 @@ public class RutinaServiceImpl implements RutinaService {
         rutina.setEstado(!rutina.getEstado());
         rutinaRepository.save(rutina);
         return true;
+    }
+
+    @Override
+    @Deprecated
+    public void finalizarRutinaCliente(long idRutina) {
+        // Deprecated: no valida cliente. Mantener compatibilidad mínima.
+        Rutina rutina = rutinaRepository.findById(idRutina)
+                .orElseThrow(() -> new RuntimeException("Rutina not found with id: " + idRutina));
+        rutina.setEstadoRutina(EstadoRutina.FINALIZADA);
+        rutinaRepository.save(rutina);
+    }
+
+    @Override
+    @Transactional
+    public void finalizarRutinaCliente(long idRutina, long idCliente) {
+        // Finaliza sólo si la rutina corresponde al cliente y está activa.
+        Rutina rutina = rutinaRepository.findById(idRutina)
+                .orElseThrow(() -> new RuntimeException("Rutina no encontrada: " + idRutina));
+        if (rutina.getCliente() == null || !rutina.getCliente().getId().equals(idCliente)) {
+            // Si la id enviada no corresponde, intentar finalizar la activa real del cliente.
+            rutinaRepository.findActiveByClienteId(idCliente).ifPresent(r -> {
+                r.setEstadoRutina(EstadoRutina.FINALIZADA);
+                rutinaRepository.save(r);
+            });
+            return;
+        }
+        if (rutina.getEstadoRutina() != EstadoRutina.FINALIZADA) {
+            rutina.setEstadoRutina(EstadoRutina.FINALIZADA);
+            rutinaRepository.save(rutina);
+        }
     }
 }
