@@ -4,6 +4,7 @@ import com.sabi.sabi.dto.SuscripcionDTO;
 import com.sabi.sabi.entity.Cliente;
 import com.sabi.sabi.entity.Entrenador;
 import com.sabi.sabi.entity.Suscripcion;
+import com.sabi.sabi.entity.enums.EstadoSuscripcion;
 import com.sabi.sabi.repository.ClienteRepository;
 import com.sabi.sabi.repository.EntrenadorRepository;
 import com.sabi.sabi.repository.SuscripcionRepository;
@@ -13,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class SuscripcionServiceImpl implements SuscripcionService {
@@ -60,6 +62,11 @@ public class SuscripcionServiceImpl implements SuscripcionService {
             Cliente cliente = clienteRepository.findById(suscripcionDTO.getIdCliente())
                     .orElseThrow(() -> new RuntimeException("Cliente not found with id: " + suscripcionDTO.getIdCliente()));
             suscripcion.setCliente(cliente);
+            // Enforce single active subscription for this client
+            boolean hasActive = suscripcionRepository.existsByCliente_IdAndEstadoTrueAndEstadoSuscripcionIsNot(cliente.getId(), EstadoSuscripcion.RECHAZADA);
+            if (hasActive) {
+                throw new RuntimeException("El cliente ya tiene una suscripción activa.");
+            }
         }
         if (suscripcionDTO.getIdEntrenador() != null) {
             Entrenador entrenador = entrenadorRepository.findById(suscripcionDTO.getIdEntrenador())
@@ -109,5 +116,35 @@ public class SuscripcionServiceImpl implements SuscripcionService {
         suscripcion.setEstado(!suscripcion.getEstado());
         suscripcionRepository.save(suscripcion);
         return true;
+    }
+
+    @Override
+    public SuscripcionDTO getSuscripcionActualByClienteId(Long clienteId) {
+        return suscripcionRepository
+                .findTopByCliente_IdAndEstadoTrueAndEstadoSuscripcionIsNotOrderByIdDesc(clienteId, EstadoSuscripcion.RECHAZADA)
+                .map(s -> modelMapper.map(s, SuscripcionDTO.class))
+                .orElse(null);
+    }
+
+    @Override
+    public List<SuscripcionDTO> getHistorialByClienteId(Long clienteId) {
+        return suscripcionRepository
+                .findByCliente_IdAndEstadoTrueAndEstadoSuscripcion(clienteId, EstadoSuscripcion.RECHAZADA)
+                .stream()
+                .map(s -> modelMapper.map(s, SuscripcionDTO.class))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public void cancelarSuscripcion(Long id) {
+        Suscripcion suscripcion = suscripcionRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Suscripcion not found with id: " + id));
+        suscripcion.setEstadoSuscripcion(EstadoSuscripcion.RECHAZADA);
+        suscripcionRepository.save(suscripcion);
+    }
+
+    @Override
+    public boolean existsSuscripcionActivaByClienteId(Long clienteId) {
+        return suscripcionRepository.existsByCliente_IdAndEstadoTrueAndEstadoSuscripcionIsNot(clienteId, EstadoSuscripcion.RECHAZADA);
     }
 }

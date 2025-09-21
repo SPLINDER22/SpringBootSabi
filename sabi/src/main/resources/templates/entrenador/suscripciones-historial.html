@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>Historial de Suscripciones (Entrenador)</title>
+</head>
+
+<body th:replace="layout/layout :: layout('Historial de suscripciones', ~{::section})">
+    <section th:fragment="section">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1 class="h3 text-dark mb-0">Historial de suscripciones</h1>
+            <a th:href="@{/entrenador/suscripciones}" class="btn btn-outline-secondary btn-lg">
+                <i class="fas fa-arrow-left me-1"></i> Volver a suscripciones
+            </a>
+        </div>
+        <div class="container">
+            <div class="row g-4">
+                <div th:if="${#lists.isEmpty(suscripciones)}" class="col-12 d-flex justify-content-center">
+                    <div class="alert alert-light border text-center w-50 mt-5" role="alert">
+                        <strong>No hay suscripciones rechazadas en el historial.</strong>
+                        <div class="mt-3">
+                            <a th:href="@{/entrenador/suscripciones}" class="btn btn-outline-primary">Volver</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div th:each="suscripcion : ${suscripciones}" class="col-12 col-md-6 mb-4">
+                    <div class="card w-100 shadow-lg border-primary rounded-4 text-center">
+                        <div class="card-header bg-primary">
+                            <h5 class="fw-semibold mb-0">Suscripción #<span
+                                    th:text="${suscripcion.idSuscripcion}">ID</span></h5>
+                        </div>
+                        <div class="card-body py-4">
+                            <div class="d-flex flex-column align-items-center mb-3">
+                                <h4 class="card-title fw-semibold mb-1">Entrenador: <strong
+                                        th:text="${nombresEntrenadores[suscripcion.idEntrenador]} ?: 'Entrenador'">Entrenador</strong>
+                                </h4>
+                                <div class="mb-2">
+                                    <span class="text-dark">Cliente: </span>
+                                    <strong
+                                        th:text="${nombresClientes != null ? (nombresClientes[suscripcion.idCliente] ?: 'Nombre Cliente') : 'Nombre Cliente'}">Nombre
+                                        Cliente</strong>
+                                </div>
+                                <span class="text-dark mb-1">Estado de la suscripción</span>
+                                <span class="badge rounded-pill px-3 py-2 text-uppercase fs-6"
+                                    th:text="${suscripcion.estadoSuscripcion}"
+                                    th:classappend="${suscripcion.estadoSuscripcion == 'ACEPTADA' ? ' bg-success' : (suscripcion.estadoSuscripcion == 'COTIZADA' ? ' bg-info text-dark' : (suscripcion.estadoSuscripcion == 'RECHAZADA' ? ' bg-danger' : (suscripcion.estadoSuscripcion == 'PENDIENTE' ? ' bg-warning text-dark' : (suscripcion.estadoSuscripcion == 'CANCELADA' ? ' bg-secondary' : ' bg-light text-dark'))))}">
+                                    Estado
+                                </span>
+                            </div>
+
+                            <div class="row g-3 g-md-3 justify-content-center">
+                                <div class="col-12">
+                                    <div class="d-flex flex-column align-items-center p-2">
+                                        <div class="fs-6 text-dark mb-1"><i
+                                                class="fas fa-calendar-alt text-primary me-2"></i> Plazo</div>
+                                        <div class="fw-semibold fs-6"
+                                            th:text="${suscripcion.plazo != null && !#strings.isEmpty(suscripcion.plazo) ? suscripcion.plazo : 'Por Definirse'}">
+                                            Por Definirse</div>
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <div class="row g-3">
+                                        <div class="col-6">
+                                            <div class="d-flex flex-column align-items-center p-2">
+                                                <div class="fs-6 text-dark mb-1">
+                                                    <i class="fas fa-play text-primary me-2"></i> Fecha de Inicio
+                                                </div>
+                                                <div class="fw-semibold fs-6"
+                                                    th:text="${suscripcion.fechaInicio != null ? #temporals.format(suscripcion.fechaInicio, 'yyyy-MM-dd') : 'Por Definirse'}">
+                                                    Por Definirse</div>
+                                            </div>
+                                        </div>
+                                        <div class="col-6">
+                                            <div class="d-flex flex-column align-items-center p-2">
+                                                <div class="fs-6 text-dark mb-1">
+                                                    <i class="fas fa-flag-checkered text-primary me-2"></i> Fecha de Fin
+                                                </div>
+                                                <div class="fw-semibold fs-6"
+                                                    th:text="${suscripcion.fechaFin != null ? #temporals.format(suscripcion.fechaFin, 'yyyy-MM-dd') : 'Por Definirse'}">
+                                                    Por Definirse</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-footer bg-primary pt-3 pb-3">
+                            <div class="d-flex justify-content-center">
+                                <a th:href="@{/entrenador/suscripciones}" class="btn btn-light btn-sm">Volver a
+                                    suscripciones</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+</body>
+
+</html>
