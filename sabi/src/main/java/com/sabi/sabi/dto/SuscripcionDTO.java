@@ -15,6 +15,8 @@ public class SuscripcionDTO {
 
     private String plazo; // ej. "1 mes", "3 meses"
 
+    private Double precio;
+
     private LocalDate fechaInicio;
     private LocalDate fechaFin;
 

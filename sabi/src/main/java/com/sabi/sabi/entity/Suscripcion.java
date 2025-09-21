@@ -19,6 +19,9 @@ public class Suscripcion {
 
     private String plazo; // ej. "1 mes", "3 meses"
 
+    @Column(name = "precio", nullable = true)
+    private Double precio;
+
     private LocalDate fechaInicio;
     private LocalDate fechaFin;
 
@@ -35,6 +38,7 @@ public class Suscripcion {
     @JoinColumn(name = "entrenador_id", nullable = false)
     private Entrenador entrenador;
 
+    @Builder.Default
     @Column(name = "estado", nullable = false)
     private Boolean estado = true;
 }
