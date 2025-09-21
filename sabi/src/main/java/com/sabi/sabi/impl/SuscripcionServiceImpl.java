@@ -58,6 +58,8 @@ public class SuscripcionServiceImpl implements SuscripcionService {
         if (suscripcion.getId() != null && suscripcionRepository.findById(suscripcion.getId()).isPresent()){
             updateSuscripcion(suscripcion.getId(), suscripcionDTO);
         }
+        // Asegurar que el precio del DTO se refleje
+        suscripcion.setPrecio(suscripcionDTO.getPrecio());
         if (suscripcionDTO.getIdCliente() != null) {
             Cliente cliente = clienteRepository.findById(suscripcionDTO.getIdCliente())
                     .orElseThrow(() -> new RuntimeException("Cliente not found with id: " + suscripcionDTO.getIdCliente()));
@@ -91,7 +93,7 @@ public class SuscripcionServiceImpl implements SuscripcionService {
                     .orElseThrow(() -> new RuntimeException("Entrenador not found with id: " + suscripcionDTO.getIdEntrenador()));
             existingSuscripcion.setEntrenador(entrenador);
         }
-        existingSuscripcion.setPlazo(suscripcionDTO.getPlazo());
+    existingSuscripcion.setPrecio(suscripcionDTO.getPrecio());
         existingSuscripcion.setFechaInicio(suscripcionDTO.getFechaInicio());
         existingSuscripcion.setFechaFin(suscripcionDTO.getFechaFin());
         existingSuscripcion.setEstadoSuscripcion(suscripcionDTO.getEstadoSuscripcion());

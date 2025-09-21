@@ -17,8 +17,6 @@ public class Suscripcion {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String plazo; // ej. "1 mes", "3 meses"
-
     @Column(name = "precio", nullable = true)
     private Double precio;
 

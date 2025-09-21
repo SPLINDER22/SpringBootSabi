@@ -13,8 +13,6 @@ import java.time.LocalDate;
 public class SuscripcionDTO {
     private Long idSuscripcion;
 
-    private String plazo; // ej. "1 mes", "3 meses"
-
     private Double precio;
 
     private LocalDate fechaInicio;
