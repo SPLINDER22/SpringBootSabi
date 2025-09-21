@@ -122,4 +122,59 @@ public class EjercicioController {
         }
         return "redirect:/ejercicios";
     }
+
+    // ------------------ NUEVA VISTA DETALLE SOLO LECTURA ------------------
+    @GetMapping("/ejercicios/detalle/{id}")
+    public String detalleEjercicio(@PathVariable Long id,
+                                   @AuthenticationPrincipal UserDetails userDetails,
+                                   Model model,
+                                   @RequestParam(value = "fromEges", required = false) Boolean fromEjesParamTypo, // tolerar posible typo en enlaces existentes
+                                   @RequestParam(value = "fromEjes", required = false) Boolean fromEjes,
+                                   @RequestParam(value = "idDia", required = false) Long idDia) {
+        if (userDetails == null) {
+            return "redirect:/auth/login";
+        }
+        EjercicioDTO ejercicio = ejercicioService.getEjercicioById(id);
+        if (ejercicio == null) {
+            return "redirect:/ejercicios?error=notfound";
+        }
+        boolean ctxFromEjes = Boolean.TRUE.equals(fromEjes) || Boolean.TRUE.equals(fromEjesParamTypo);
+        String embed = buildYoutubeEmbed(ejercicio.getUrlVideo());
+        model.addAttribute("ejercicio", ejercicio);
+        model.addAttribute("embedUrlVideo", embed);
+        model.addAttribute("fromEjes", ctxFromEjes);
+        model.addAttribute("idDia", idDia);
+        return "ejercicios/detalle";
+    }
+
+    private String buildYoutubeEmbed(String raw) {
+        if (raw == null || raw.isBlank()) return null;
+        String url = raw.trim();
+        // Si ya es un embed
+        if (url.contains("/embed/")) return url;
+        try {
+            // Shorts
+            if (url.contains("shorts/")) {
+                String id = url.substring(url.indexOf("shorts/") + 7);
+                int q = id.indexOf('?');
+                if (q > -1) id = id.substring(0, q);
+                return "https://www.youtube.com/embed/" + id;
+            }
+            // youtu.be
+            if (url.contains("youtu.be/")) {
+                String id = url.substring(url.indexOf("youtu.be/") + 9);
+                int q = id.indexOf('?');
+                if (q > -1) id = id.substring(0, q);
+                return "https://www.youtube.com/embed/" + id;
+            }
+            // watch?v=
+            if (url.contains("watch?v=")) {
+                String id = url.substring(url.indexOf("watch?v=") + 8);
+                int amp = id.indexOf('&');
+                if (amp > -1) id = id.substring(0, amp);
+                return "https://www.youtube.com/embed/" + id;
+            }
+        } catch (Exception ignored) { }
+        return url; // fallback
+    }
 }
