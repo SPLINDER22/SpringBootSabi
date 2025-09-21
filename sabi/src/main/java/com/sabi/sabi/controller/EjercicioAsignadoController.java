@@ -31,8 +31,16 @@ public class EjercicioAsignadoController {
     @Autowired
     private UsuarioService usuarioService;
 
+    private boolean hasRole(UserDetails userDetails, String role) {
+        if (userDetails == null) return false;
+        return userDetails.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_" + role) || a.getAuthority().equals(role));
+    }
+
     @GetMapping("/ejes/detallar/{idDia}")
-    public String detallarDia(@PathVariable Long idDia, Model model, RedirectAttributes redirectAttributes) {
+    public String detallarDia(@PathVariable Long idDia,
+                              @org.springframework.web.bind.annotation.RequestParam(value = "readonly", required = false) Boolean readonly,
+                              @AuthenticationPrincipal UserDetails userDetails,
+                              Model model, RedirectAttributes redirectAttributes) {
         DiaDTO diaDTO;
         try {
             diaDTO = diaService.getDiaById(idDia);
@@ -41,17 +49,24 @@ public class EjercicioAsignadoController {
             return "redirect:/dias/detallar/" + idDia;
         }
         List<?> ejes = ejercicioAsignadoService.getEjesDia(idDia);
+        boolean esCliente = hasRole(userDetails, "CLIENTE");
+        boolean readonlyEffective = esCliente || Boolean.TRUE.equals(readonly);
         model.addAttribute("ejes", ejes);
         model.addAttribute("totalEjes", ejes.size());
         model.addAttribute("dia", diaDTO);
         if (diaDTO != null) {
             model.addAttribute("idSemana", diaDTO.getIdSemana());
         }
+        model.addAttribute("readonly", readonlyEffective);
         return "ejercicios-asignados/lista";
     }
 
     @GetMapping("/ejes/crear/{idDia}")
-    public String crearEjeView(@AuthenticationPrincipal UserDetails userDetails, @PathVariable Long idDia, Model model, RedirectAttributes redirectAttributes) {
+    public String crearEjeView(@AuthenticationPrincipal UserDetails userDetails,
+                               @PathVariable Long idDia, Model model, RedirectAttributes redirectAttributes) {
+        if (hasRole(userDetails, "CLIENTE")) {
+            return "redirect:/ejes/detallar/" + idDia + "?readonly=true";
+        }
         DiaDTO diaDTO;
         try {
             diaDTO = diaService.getDiaById(idDia);
@@ -78,7 +93,13 @@ public class EjercicioAsignadoController {
     }
 
     @GetMapping("/ejes/editar/{idEje}")
-    public String editarEjeView(@PathVariable Long idEje, Model model, RedirectAttributes redirectAttributes, @AuthenticationPrincipal UserDetails userDetails) {
+    public String editarEjeView(@PathVariable Long idEje, Model model, RedirectAttributes redirectAttributes,
+                                 @AuthenticationPrincipal UserDetails userDetails) {
+        if (hasRole(userDetails, "CLIENTE")) {
+            EjercicioAsignadoDTO ejeDTO;
+            try { ejeDTO = ejercicioAsignadoService.getEjercicioAsignadoById(idEje); } catch (RuntimeException ex) { return "redirect:/rutinas"; }
+            return "redirect:/ejes/detallar/" + ejeDTO.getIdDia() + "?readonly=true";
+        }
         EjercicioAsignadoDTO ejeDTO;
         try {
             ejeDTO = ejercicioAsignadoService.getEjercicioAsignadoById(idEje);
@@ -104,7 +125,12 @@ public class EjercicioAsignadoController {
     }
 
     @PostMapping("/ejes/guardar")
-    public String guardarEje(@ModelAttribute EjercicioAsignadoDTO ejeDTO, RedirectAttributes redirectAttributes) {
+    public String guardarEje(@ModelAttribute EjercicioAsignadoDTO ejeDTO,
+                             @AuthenticationPrincipal UserDetails userDetails,
+                             RedirectAttributes redirectAttributes) {
+        if (hasRole(userDetails, "CLIENTE")) {
+            return "redirect:/ejes/detallar/" + ejeDTO.getIdDia() + "?readonly=true";
+        }
         boolean esNuevo = ejeDTO.getIdEjercicioAsignado() == null;
         EjercicioAsignadoDTO guardado = ejercicioAsignadoService.createEjercicioAsignado(ejeDTO);
         if (esNuevo) {
@@ -117,7 +143,14 @@ public class EjercicioAsignadoController {
     }
 
     @PostMapping("/ejes/eliminar/{idEje}")
-    public String eliminarDia(@PathVariable Long idEje, RedirectAttributes redirectAttributes) {
+    public String eliminarDia(@PathVariable Long idEje,
+                               @AuthenticationPrincipal UserDetails userDetails,
+                               RedirectAttributes redirectAttributes) {
+        if (hasRole(userDetails, "CLIENTE")) {
+            EjercicioAsignadoDTO ejeDTO;
+            try { ejeDTO = ejercicioAsignadoService.getEjercicioAsignadoById(idEje); } catch (RuntimeException ex) { return "redirect:/rutinas"; }
+            return "redirect:/ejes/detallar/" + ejeDTO.getIdDia() + "?readonly=true";
+        }
         EjercicioAsignadoDTO ejeDTO;
         try {
             ejeDTO = ejercicioAsignadoService.getEjercicioAsignadoById(idEje);
@@ -132,7 +165,14 @@ public class EjercicioAsignadoController {
 
     // Nuevo endpoint para alternar estado de completado del ejercicio asignado
     @GetMapping("/ejes/check/{idEje}")
-    public String toggleChecked(@PathVariable Long idEje, RedirectAttributes redirectAttributes) {
+    public String toggleChecked(@PathVariable Long idEje,
+                                 @AuthenticationPrincipal UserDetails userDetails,
+                                 RedirectAttributes redirectAttributes) {
+        if (hasRole(userDetails, "CLIENTE")) {
+            EjercicioAsignadoDTO ejeDTO;
+            try { ejeDTO = ejercicioAsignadoService.getEjercicioAsignadoById(idEje); } catch (RuntimeException ex) { return "redirect:/rutinas"; }
+            return "redirect:/ejes/detallar/" + ejeDTO.getIdDia() + "?readonly=true";
+        }
         try {
             var eje = ejercicioAsignadoService.toggleChecked(idEje);
             redirectAttributes.addFlashAttribute("success", eje.getChecked() ? "Ejercicio marcado como completado." : "Ejercicio marcado como pendiente.");

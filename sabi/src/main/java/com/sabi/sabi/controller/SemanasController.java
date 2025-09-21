@@ -9,6 +9,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.List;
 
@@ -19,18 +21,34 @@ public class SemanasController {
     @Autowired
     private RutinaService rutinaService;
 
+    private boolean hasRole(UserDetails userDetails, String role) {
+        if (userDetails == null) return false;
+        return userDetails.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_" + role) || a.getAuthority().equals(role));
+    }
+
     @GetMapping("/semanas/detallar/{idRutina}")
-    public String detallarSemanas(@PathVariable Long idRutina, Model model) {
+    public String detallarSemanas(@PathVariable Long idRutina,
+                                  @RequestParam(value = "readonly", required = false) Boolean readonly,
+                                  @AuthenticationPrincipal UserDetails userDetails,
+                                  Model model) {
         RutinaDTO rutinaDTO = rutinaService.getRutinaById(idRutina);
         List<?> semanas = semanaService.getSemanasRutina(idRutina);
+        boolean esCliente = hasRole(userDetails, "CLIENTE");
+        boolean readonlyEffective = esCliente || Boolean.TRUE.equals(readonly);
         model.addAttribute("semanas", semanas);
         model.addAttribute("totalSemanas", semanas.size());
         model.addAttribute("rutina", rutinaDTO);
+        model.addAttribute("readonly", readonlyEffective);
         return "semanas/lista";
     }
 
     @GetMapping("/semanas/crear/{idRutina}")
-    public String crearSemanaView(@PathVariable Long idRutina, Model model) {
+    public String crearSemanaView(@PathVariable Long idRutina,
+                                  @AuthenticationPrincipal UserDetails userDetails,
+                                  Model model) {
+        if (hasRole(userDetails, "CLIENTE")) {
+            return "redirect:/semanas/detallar/" + idRutina + "?readonly=true";
+        }
         RutinaDTO rutinaDTO = rutinaService.getRutinaById(idRutina);
         var semanas = semanaService.getSemanasRutina(idRutina);
         int total = semanas != null ? semanas.size() : 0;
@@ -45,7 +63,16 @@ public class SemanasController {
     }
 
     @GetMapping("/semanas/editar/{idSemana}")
-    public String editarSemanaView(@PathVariable Long idSemana, Model model, RedirectAttributes redirectAttributes) {
+    public String editarSemanaView(@PathVariable Long idSemana,
+                                   @AuthenticationPrincipal UserDetails userDetails,
+                                   Model model, RedirectAttributes redirectAttributes) {
+        if (hasRole(userDetails, "CLIENTE")) {
+            SemanaDTO semanaDTO = semanaService.getSemanaById(idSemana);
+            if (semanaDTO != null) {
+                return "redirect:/semanas/detallar/" + semanaDTO.getIdRutina() + "?readonly=true";
+            }
+            return "redirect:/rutinas";
+        }
         SemanaDTO semanaDTO = semanaService.getSemanaById(idSemana);
         if (semanaDTO == null) {
             redirectAttributes.addFlashAttribute("error", "La semana no existe.");
@@ -62,7 +89,12 @@ public class SemanasController {
     }
 
     @PostMapping("/semanas/guardar")
-    public String guardarSemana(@ModelAttribute SemanaDTO semanaDTO, RedirectAttributes redirectAttributes) {
+    public String guardarSemana(@ModelAttribute SemanaDTO semanaDTO,
+                                @AuthenticationPrincipal UserDetails userDetails,
+                                RedirectAttributes redirectAttributes) {
+        if (hasRole(userDetails, "CLIENTE")) {
+            return "redirect:/semanas/detallar/" + semanaDTO.getIdRutina() + "?readonly=true";
+        }
         if (semanaDTO.getIdSemana() == null) {
             SemanaDTO creada = semanaService.createSemana(semanaDTO);
             redirectAttributes.addFlashAttribute("success", "Semana creada correctamente. Ahora agrega los días.");
@@ -75,7 +107,14 @@ public class SemanasController {
     }
 
     @PostMapping("/semanas/eliminar/{idSemana}")
-    public String eliminarSemana(@PathVariable Long idSemana, RedirectAttributes redirectAttributes) {
+    public String eliminarSemana(@PathVariable Long idSemana,
+                                 @AuthenticationPrincipal UserDetails userDetails,
+                                 RedirectAttributes redirectAttributes) {
+        if (hasRole(userDetails, "CLIENTE")) {
+            SemanaDTO semanaDTO = null;
+            try { semanaDTO = semanaService.getSemanaById(idSemana); } catch (RuntimeException ignored) {}
+            return "redirect:/semanas/detallar/" + (semanaDTO != null ? semanaDTO.getIdRutina() : "") + "?readonly=true";
+        }
         SemanaDTO semanaDTO = null;
         try {
             semanaDTO = semanaService.getSemanaById(idSemana);
@@ -90,7 +129,14 @@ public class SemanasController {
     }
 
     @GetMapping("/semanas/check/{idSemana}")
-    public String checkSemana(@PathVariable Long idSemana, RedirectAttributes redirectAttributes) {
+    public String checkSemana(@PathVariable Long idSemana,
+                               @AuthenticationPrincipal UserDetails userDetails,
+                               RedirectAttributes redirectAttributes) {
+        if (hasRole(userDetails, "CLIENTE")) {
+            SemanaDTO semanaDTO = null;
+            try { semanaDTO = semanaService.getSemanaById(idSemana); } catch (RuntimeException ignored) {}
+            return "redirect:/semanas/detallar/" + (semanaDTO != null ? semanaDTO.getIdRutina() : "") + "?readonly=true";
+        }
         SemanaDTO semanaDTO = null;
         try {
             semanaDTO = semanaService.getSemanaById(idSemana);
