@@ -61,14 +61,14 @@
                         <i th:class="${eje.checked} ? 'fas fa-undo' : 'fas fa-check'"></i>
                         <span th:text="${eje.checked} ? 'Desmarcar' : 'Marcar'"></span>
                     </a>
-                    <a th:href="@{'/series/detallar/' + ${eje.idEjercicioAsignado}}" class="btn btn-sm btn-info">
+                    <a th:href="@{'/registros-series/' + ${eje.idEjercicioAsignado}}" class="btn btn-sm btn-info">
                         <i class="fas fa-list"></i> Ver Series
                     </a>
                 </div>
 
                 <!-- Vista entrenador -->
                 <div sec:authorize="hasAnyRole('ENTRENADOR')" class="d-flex flex-wrap align-items-center action-buttons">
-                    <a th:href="@{'/series/detallar/' + ${eje.idEjercicioAsignado}}" class="btn btn-sm btn-info">
+                    <a th:href="@{'/registros-series/' + ${eje.idEjercicioAsignado}}" class="btn btn-sm btn-info">
                         <i class="fas fa-list"></i> Ver Series
                     </a>
                     <a th:href="@{'/ejes/editar/' + ${eje.idEjercicioAsignado}}" class="btn btn-sm btn-primary">

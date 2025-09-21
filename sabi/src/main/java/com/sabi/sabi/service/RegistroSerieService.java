@@ -17,4 +17,6 @@ public interface RegistroSerieService {
     boolean deleteRegistroSerie(long id);
 
     boolean desactivateRegistroSerie(long id);
+
+    RegistroSerieDTO saveOrUpdateRegistroSerie(RegistroSerieDTO registroSerieDTO);
 }
