@@ -42,7 +42,7 @@
         <tr th:each="eje : ${ejes}">
             <td th:text="${eje.orden}"></td>
             <td>
-                <a th:href="@{'/ejercicios/editar/' + ${eje.ejercicio.id}}" th:text="${eje.ejercicio.nombre}" class="text-decoration-none fw-semibold"></a>
+                <a th:href="@{'/ejercicios/detalle/' + ${eje.ejercicio.id} (fromEges=true, idDia=${dia != null ? dia.idDia : null})}" th:text="${eje.ejercicio.nombre}" class="text-decoration-none fw-semibold"></a>
             </td>
             <td th:text="${eje.comentarios}" class="small"></td>
             <td th:text="${eje.numeroSeries}"></td>

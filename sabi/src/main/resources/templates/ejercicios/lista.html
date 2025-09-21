@@ -10,6 +10,8 @@
         .action-buttons form { display:inline-block; margin:0; }
         .action-buttons .btn i { margin-right:.25rem; }
         .table thead th { white-space:nowrap; }
+        a.nombre-ejercicio { font-weight:600; text-decoration:none; }
+        a.nombre-ejercicio:hover { text-decoration:underline; }
     </style>
 </head>
 <body th:replace="layout/layout :: layout('Lista de ejercicios', ~{::section})">
@@ -42,7 +44,11 @@
         <tbody>
         <tr th:each="ejercicio : ${ejercicios}">
             <td th:text="${ejercicio.idEjercicio}"></td>
-            <td th:text="${ejercicio.nombre}"></td>
+            <td>
+                <a class="nombre-ejercicio"
+                   th:href="@{'/ejercicios/detalle/' + ${ejercicio.idEjercicio} (fromEjes=${fromEjes}, idDia=${idDia})}"
+                   th:text="${ejercicio.nombre}"></a>
+            </td>
             <td th:text="${ejercicio.descripcion}" class="small"></td>
             <td th:text="${ejercicio.idUsuario != null and ejercicio.idUsuario == idUsuarioActual ? 'De tu propiedad' : 'Sabi'}"></td>
             <td>
