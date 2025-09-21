@@ -1,5 +1,8 @@
 package com.sabi.sabi.config;
 
+import com.sabi.sabi.entity.Diagnostico;
+import com.sabi.sabi.entity.enums.NivelExperiencia;
+import com.sabi.sabi.repository.DiagnosticoRepository;
 import com.sabi.sabi.entity.Cliente;
 import com.sabi.sabi.entity.Ejercicio;
 import com.sabi.sabi.entity.Entrenador;
@@ -28,35 +31,37 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class DataInitializer implements CommandLineRunner {
 
-    private final UsuarioRepository usuarioRepository;
-    private final EjercicioRepository ejercicioRepository;
-    private final PasswordEncoder passwordEncoder;
-    private final RutinaRepository rutinaRepository;
-    private final SemanaRepository semanaRepository;
-    private final DiaRepository diaRepository;
-    private final EjercicioAsignadoRepository ejercicioAsignadoRepository;
-    private final SerieRepository serieRepository;
+        private final UsuarioRepository usuarioRepository;
+        private final EjercicioRepository ejercicioRepository;
+        private final PasswordEncoder passwordEncoder;
+        private final RutinaRepository rutinaRepository;
+        private final SemanaRepository semanaRepository;
+        private final DiaRepository diaRepository;
+        private final EjercicioAsignadoRepository ejercicioAsignadoRepository;
+        private final SerieRepository serieRepository;
+        private final DiagnosticoRepository diagnosticoRepository;
 
-    @Override
-    public void run(String... args) {
-        crearClienteSiNoExiste("Cliente", "cliente@sabi.com", "1234567");
-        crearEntrenadorSiNoExiste("Entrenador", "entrenador@sabi.com", "1234567");
-        crearEjerciciosSiNoExisten();
-        crearRutinaDeEjemplo();
-        crearRutinaGlobalLibre(); // Nueva rutina global sin cliente ni entrenador ni estadoRutina
+        @Override
+        public void run(String... args) {
+                crearClienteSiNoExiste("Cliente", "cliente@sabi.com", "1234567");
+                crearEntrenadorSiNoExiste("Entrenador", "entrenador@sabi.com", "1234567");
+                crearEjerciciosSiNoExisten();
+                crearRutinaDeEjemplo();
+                crearRutinaGlobalLibre(); // Nueva rutina global sin cliente ni entrenador ni estadoRutina
 
-        // Mostrar en consola un resumen de los usuarios creados / existentes
-        System.out.println("");
-        System.out.println("Resumen de usuarios iniciales:");
-        System.out.println("");
-        System.out.println("Cliente - cliente@sabi.com - Contraseña (raw): 1234567");
-        System.out.println("entrenador - entrenador@sabi.com - Contraseña (raw): 1234567");
-        System.out.println("");
-    }
+                // Mostrar en consola un resumen de los usuarios creados / existentes
+                System.out.println("");
+                System.out.println("Resumen de usuarios iniciales:");
+                System.out.println("");
+                System.out.println("Cliente - cliente@sabi.com - Contraseña (raw): 1234567");
+                System.out.println("entrenador - entrenador@sabi.com - Contraseña (raw): 1234567");
+                System.out.println("");
+        }
 
     private void crearClienteSiNoExiste(String nombre, String email, String rawPassword) {
+        Cliente cliente;
         if (usuarioRepository.findByEmail(email).isEmpty()) {
-            Cliente cliente = Cliente.builder()
+            cliente = Cliente.builder()
                     .nombre(nombre)
                     .email(email)
                     .contraseña(passwordEncoder.encode(rawPassword))
@@ -69,7 +74,27 @@ public class DataInitializer implements CommandLineRunner {
             usuarioRepository.save(cliente);
             System.out.println("Usuario creado: " + nombre + " | " + email + " | contraseña (raw): " + rawPassword);
         } else {
+            cliente = (Cliente) usuarioRepository.findByEmail(email).get();
             System.out.println("Usuario ya existe: " + email + " (no se muestra contraseña raw)");
+        }
+        // Crear diagnóstico obligatorio si no existe
+        if (diagnosticoRepository.findByClienteIdAndEstadoTrue(cliente.getId()).isEmpty()) {
+            Diagnostico diagnostico = Diagnostico.builder()
+                    .cliente(cliente)
+                    .fecha(java.time.LocalDate.now())
+                    .peso(70.0)
+                    .estatura(170.0)
+                    .nivelExperiencia(NivelExperiencia.PRINCIPIANTE)
+                    .disponibilidadTiempo("3 veces por semana, 45 min")
+                    .accesoRecursos("casa")
+                    .lesiones("ninguna")
+                    .condicionesMedicas("ninguna")
+                    .horasSueno(8L)
+                    .habitosAlimenticios("Dieta balanceada")
+                    .estado(true)
+                    .build();
+            diagnosticoRepository.save(diagnostico);
+            System.out.println("Diagnóstico creado para cliente: " + email);
         }
     }
 
