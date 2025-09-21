@@ -1,4 +1,4 @@
-# SABI - Plataforma Integral de Entrenamiento Personal
+# SABI - Salud Y Bienestar 
 
 <div align="center">
   <img src="https://img.shields.io/badge/Java-21-orange?style=for-the-badge&logo=java" alt="Java 21"/>
@@ -15,9 +15,8 @@ SABI es una plataforma integral de gestión de entrenamientos y bienestar que co
 
 ✨ Características Principales
 👥 Sistema Multi-Rol
-Clientes: Usuarios que buscan entrenamiento personalizado
-Entrenadores: Profesionales que crean y supervisan rutinas
-Administradores: Gestión completa del sistema
+Clientes: Usuarios que buscan entrenamiento personalizado y gestionan su progreso
+Entrenadores: Profesionales que crean, asignan y supervisan rutinas
 💪 Gestión de Entrenamientos
 Creación de rutinas personalizadas por semanas y días
 Biblioteca de ejercicios con videos e instrucciones
@@ -29,11 +28,6 @@ Evaluaciones de salud inicial
 Seguimiento de peso, altura y medidas corporales
 Historial médico y lesiones previas
 Objetivos de entrenamiento personalizados
-📊 Panel de Administración
-Dashboard con estadísticas en tiempo real
-Gestión completa de usuarios
-Búsqueda avanzada con múltiples filtros
-Reportes y análisis de uso
 💳 Gestión de Suscripciones
 Múltiples planes de suscripción
 Gestión de pagos y renovaciones
@@ -61,35 +55,42 @@ Spring Boot DevTools (Hot reload)
 Specification API (Consultas dinámicas)
 Bean Validation (Validación de datos)
 📁 Estructura del Proyecto
-SabiSpringSolo/
-├── src/main/java/com/app/Sabi/
+sabi/
+├── src/main/java/com/sabi/sabi/
 │   ├── controller/           # Controladores REST y MVC
-│   │   ├── AdminController.java
 │   │   ├── ClienteController.java
 │   │   └── EntrenadorController.java
 │   ├── entity/              # Entidades JPA
-│   │   ├── Usuario.java
-│   │   ├── Cliente.java
-│   │   ├── Entrenador.java
-│   │   ├── Rutina.java
-│   │   └── Ejercicio.java
 │   ├── dto/                 # Data Transfer Objects
 │   ├── repository/          # Repositorios JPA
 │   ├── service/             # Interfaces de servicios
 │   ├── impl/                # Implementaciones de servicios
-│   ├── spec/                # Especificaciones para consultas
+│   ├── security/            # Seguridad y autenticación
+│   ├── config/              # Configuración general
 │   └── SabiApplication.java # Clase principal
 ├── src/main/resources/
 │   ├── templates/           # Plantillas Thymeleaf
-│   │   ├── admin/
+│   │   ├── auth/
 │   │   ├── cliente/
 │   │   ├── entrenador/
-│   │   └── autentificacion/
+│   │   ├── dias/
+│   │   ├── ejercicios/
+│   │   ├── ejercicios-asignados/
+│   │   ├── rutinas/
+│   │   ├── semanas/
+│   │   ├── series/
+│   │   ├── suscripciones/
+│   │   ├── fragments/
+│   │   ├── layout/
+│   │   └── error.html, index.html
 │   ├── static/              # Recursos estáticos
 │   │   ├── css/
 │   │   ├── js/
-│   │   └── img/
-│   └── application.properties
+│   │   ├── img/
+│   │   └── vendor/
+│   ├── application.properties
+│   ├── application-h2.properties
+│   └── application-mysql.properties
 └── README.md
 🚀 Instalación y Configuración
 Prerequisitos
@@ -122,32 +123,44 @@ server.port=8080
 ./mvnw spring-boot:run
 5. Acceder al Sistema
 URL: http://localhost:8080
-Admin por defecto: admin@sabi.com / admin123
 📱 Funcionalidades por Rol
 🧑‍💼 Para Clientes
+- Registro y autenticación
+- Diagnóstico inicial y seguimiento de salud
+- Selección y solicitud de entrenador
+- Visualización y seguimiento de rutinas asignadas
+- Registro de entrenamientos y progreso
+
 🏋️‍♂️ Para Entrenadores
-⚙️ Para Administradores
+- Gestión de perfil profesional
+- Visualización de diagnósticos de clientes
+- Creación y asignación de rutinas personalizadas
+- Seguimiento del progreso de clientes
+
 🔄 API Endpoints
 Autenticación
-POST   /login                    # Iniciar sesión
-POST   /registro                 # Crear cuenta
-POST   /logout                   # Cerrar sesión
-Administración
-GET    /admin/dashboard          # Panel principal
-GET    /admin/usuarios           # Gestión de usuarios
-GET    /admin/usuarios/buscar    # Búsqueda avanzada
-POST   /admin/usuarios/{id}/toggle-estado  # Activar/desactivar
+POST   /auth/login                    # Iniciar sesión
+POST   /auth/registro                 # Crear cuenta
+POST   /auth/logout                   # Cerrar sesión
+
 Cliente
-GET    /cliente/dashboard        # Panel del cliente
-GET    /cliente/rutinas          # Ver rutinas asignadas
-GET    /cliente/progreso         # Estadísticas de progreso
-POST   /cliente/entrenamientos   # Registrar entrenamiento
+GET    /cliente/dashboard             # Panel del cliente
+GET    /cliente/rutinas               # Ver rutinas asignadas
+GET    /cliente/listaEntrenadores     # Ver lista de entrenadores
+GET    /cliente/diagnostico/historial # Historial de diagnósticos
+POST   /cliente/diagnostico/guardar   # Guardar diagnóstico
+POST   /cliente/entrenamientos        # Registrar entrenamiento
+
 Entrenador
-GET    /entrenador/dashboard     # Panel del entrenador
-GET    /entrenador/clientes      # Lista de clientes
-POST   /entrenador/rutinas       # Crear rutina
-PUT    /entrenador/ejercicios/{id}  # Actualizar ejercicio
+GET    /entrenador/dashboard          # Panel del entrenador
+GET    /entrenadores                  # Lista de entrenadores activos
+POST   /entrenadores/solicitar/{id}   # Solicitar entrenador (cliente)
+POST   /entrenador/rutinas            # Crear rutina
+PUT    /entrenador/ejercicios/{id}    # Actualizar ejercicio
 🎯 Casos de Uso Principales
+
+📥 <b>Exportación de Datos</b>
+El sistema permite descargar diagnósticos, clientes y rutinas en formato <b>PDF</b> o <b>Excel</b> gracias a la integración de dependencias especializadas para generación de archivos. Esta funcionalidad facilita la gestión y respaldo de información relevante para usuarios y entrenadores.
 📊 Flujo del Cliente
 Registro → Crear cuenta con información básica
 Diagnóstico → Completar evaluación inicial de salud
@@ -162,19 +175,13 @@ Evaluación → Analizar diagnósticos de clientes
 Rutinas → Crear planes personalizados
 Seguimiento → Monitorear progreso de clientes
 Ajustes → Modificar rutinas según resultados
-🛡️ Flujo Administrativo
-Monitoreo → Revisar métricas del sistema
-Usuarios → Gestionar cuentas y permisos
-Contenido → Moderar ejercicios y rutinas
-Reportes → Generar análisis de negocio
-Configuración → Ajustar parámetros del sistema
-📊 Módulos del Sistema
+ Módulos del Sistema
 Módulo	Funcionalidad Principal
-🔐 Autenticación	Login/Logout seguro, control de acceso basado en roles
+🔐 Autenticación	Login/Logout seguro, control de acceso basado en roles (Cliente, Entrenador)
 👤 Usuarios	Perfiles detallados, información personal, historial
 🏃‍♀️ Entrenamientos	Rutinas, ejercicios, series, progreso, calendario
-📈 Analytics	Estadísticas, progreso individual, métricas de engagement
-📱 Notificaciones	Alertas en tiempo real, recordatorios, comunicación
+📈 Analytics	Estadísticas y progreso individual
+📱 Notificaciones	Alertas y recordatorios
 🚦 Estados del Sistema
 Estados de Usuario
 Activo → Puede usar todas las funciones
@@ -208,6 +215,13 @@ Abre un Pull Request
 📄 Licencia
 Este proyecto está bajo la licencia MIT. Ver el archivo LICENSE para más detalles.
 
-Desarrollado con ❤️ por el equipo SABI
+
+<div align="center">
+  <b>Desarrollado con ❤️ por el equipo SABI</b>
+  <br><br>
+  <span style="color:#0074D9; font-weight:bold;">William Espinel</span><br>
+  <span style="color:#FFDC00; font-weight:bold;">Andres Mena</span><br>
+  <span style="color:#2ECC40; font-weight:bold;">Santiago Castro</span>
+</div>
 
 📧 Contacto | 🌐 Website | 📚 Documentación

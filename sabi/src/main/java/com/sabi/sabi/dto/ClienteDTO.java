@@ -12,6 +12,7 @@ import java.util.List;
 @Setter
 public class ClienteDTO extends UsuarioDTO {
 
+
     private String objetivos;
 
     private LocalDate fechaNacimiento;
@@ -19,6 +20,8 @@ public class ClienteDTO extends UsuarioDTO {
     private String sexo;
 
     private String telefono;
+
+    private String ciudad;
 
     // Relaciones solo por IDs
     private List<Long> idDiagnosticos;

@@ -56,8 +56,8 @@ public class ClienteController {
         CustomUserDetails userDetails = (CustomUserDetails) auth.getPrincipal();
         Long clienteId = userDetails.getUsuario().getId();
         DiagnosticoDTO diagnosticoActual = clienteService.getDiagnosticoActualByClienteId(clienteId);
-         if (diagnosticoActual == null) {
-            return "redirect:/cliente/diagnostico/crear";
+        if (diagnosticoActual == null) {
+            return "redirect:/cliente/diagnostico/crear?motivo=obligatorio";
         }
         boolean tieneDiagnostico = diagnosticoActual != null;
         List<RutinaDTO> rutinas = clienteService.getRutinasByClienteId(clienteId);
@@ -74,7 +74,7 @@ public class ClienteController {
         Long clienteId = userDetails.getUsuario().getId();
         DiagnosticoDTO diagnosticoActual = clienteService.getDiagnosticoActualByClienteId(clienteId);
         if (diagnosticoActual == null) {
-            return "redirect:/cliente/diagnostico/crear";
+            return "redirect:/cliente/diagnostico/crear?motivo=obligatorio";
         }
         boolean tieneDiagnostico = diagnosticoActual != null;
         List<EntrenadorDTO> entrenadores = clienteService.getAllEntrenadores();
@@ -90,7 +90,7 @@ public class ClienteController {
         Long clienteId = userDetails.getUsuario().getId();
         DiagnosticoDTO diagnosticoActual = clienteService.getDiagnosticoActualByClienteId(clienteId);
         if (diagnosticoActual == null) {
-            return "redirect:/cliente/diagnostico/crear";
+            return "redirect:/cliente/diagnostico/crear?motivo=obligatorio";
         }
         List<DiagnosticoDTO> diagnosticos = clienteService.getHistorialDiagnosticosByClienteId(clienteId);
         model.addAttribute("diagnosticos", diagnosticos);
@@ -98,8 +98,11 @@ public class ClienteController {
     }
 
     @GetMapping("/cliente/diagnostico/crear")
-    public String mostrarFormularioDiagnostico(Model model) {
+    public String mostrarFormularioDiagnostico(Model model, @RequestParam(value = "motivo", required = false) String motivo) {
         model.addAttribute("diagnostico", new DiagnosticoDTO());
+        if (motivo != null && motivo.equals("obligatorio")) {
+            model.addAttribute("mensajeObligatorio", "Debes completar tu diagnóstico para acceder al resto de la plataforma.");
+        }
         return "cliente/diagnostico-form";
     }
 
@@ -153,8 +156,29 @@ public class ClienteController {
         // Obtener el diagnóstico específico
         DiagnosticoDTO diagnostico = diagnosticoService.getDiagnosticoById(idDiagnostico);
 
+        // Obtener el nombre del cliente
+        String nombreCliente = "";
+        if (diagnostico != null && diagnostico.getIdCliente() != null) {
+            try {
+                var cliente = clienteService.getClienteById(diagnostico.getIdCliente());
+                nombreCliente = cliente != null && cliente.getNombre() != null ? cliente.getNombre() : "";
+            } catch (Exception e) {
+                nombreCliente = "";
+            }
+        }
+
+        // Leer el logo como bytes
+        byte[] logoBytes = null;
+        try (java.io.InputStream is = getClass().getResourceAsStream("/static/img/logoF.png")) {
+            if (is != null) {
+                logoBytes = is.readAllBytes();
+            }
+        } catch (Exception e) {
+            logoBytes = null;
+        }
+
         // Generar el archivo Excel
-        byte[] archivoExcel = excelService.generarExcelDiagnostico(diagnostico);
+        byte[] archivoExcel = excelService.generarExcelDiagnostico(diagnostico, nombreCliente, logoBytes);
 
         // Configurar cabeceras de la respuesta
         HttpHeaders headers = new HttpHeaders();
@@ -162,5 +186,9 @@ public class ClienteController {
         headers.setContentDisposition(ContentDisposition.attachment().filename("diagnostico_" + idDiagnostico + ".xlsx").build());
 
         return ResponseEntity.ok().headers(headers).body(archivoExcel);
+    }
+    @GetMapping("/perfil")
+    public String perfilUsuario() {
+        return "perfil";
     }
 }

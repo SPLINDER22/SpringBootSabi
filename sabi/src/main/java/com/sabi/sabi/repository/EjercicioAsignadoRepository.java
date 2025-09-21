@@ -1,5 +1,6 @@
 package com.sabi.sabi.repository;
 
+import com.sabi.sabi.entity.Dia;
 import com.sabi.sabi.entity.EjercicioAsignado;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -13,4 +14,6 @@ public interface EjercicioAsignadoRepository extends JpaRepository<EjercicioAsig
 
     @Query("SELECT e FROM EjercicioAsignado e JOIN FETCH e.ejercicio WHERE e.dia.id = :idDia AND e.estado = true ORDER BY e.orden ASC")
     List<EjercicioAsignado> getEjesDia(Long idDia);
+
+    List<EjercicioAsignado> findByDia(Dia dia);
 }

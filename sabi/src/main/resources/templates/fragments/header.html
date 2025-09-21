@@ -43,7 +43,7 @@
                     <!--th:src="@{/img/default-profile.png}">-->
                 </a>
                 <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="userDropdown">
-                    <a class="dropdown-item" href="#">
+                    <a class="dropdown-item" th:href="@{/perfil}">
                         <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
                         Perfil
                     </a>
@@ -132,7 +132,7 @@
                 </a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" th:href="@{/rutinas}">
+                <a class="nav-link" th:href="@{/rutina/cliente}">
                     <i class="fas fa-fw fa-calendar-check"></i>
                     <span class="text-primary">Mi Rutina</span>
                 </a>
@@ -153,3 +153,4 @@
         </div>
     </ul>
 </div>
+

@@ -2,6 +2,7 @@ package com.sabi.sabi.repository;
 
 import com.sabi.sabi.dto.DiaDTO;
 import com.sabi.sabi.entity.Dia;
+import com.sabi.sabi.entity.Semana;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -14,4 +15,6 @@ public interface DiaRepository extends JpaRepository<Dia,Long> {
 
     @Query("SELECT d FROM Dia d WHERE d.semana.id = :idSemana AND d.estado = true ORDER BY d.numeroDia ASC")
     List<Dia> getDiasSemana(Long idSemana);
+
+    Dia findBySemana(Semana semana);
 }

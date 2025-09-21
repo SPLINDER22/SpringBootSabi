@@ -1,0 +1,56 @@
+body {
+  background: linear-gradient(135deg, #e3f2fd 0%, #f8fafc 100%);
+  min-height: 100vh;
+  margin: 0;
+  font-family: 'Segoe UI', Arial, sans-serif;
+}
+.error-container {
+  max-width: 480px;
+  margin: 80px auto;
+  background: #fff;
+  border-radius: 1.2em;
+  box-shadow: 0 6px 32px rgba(44,62,80,0.10);
+  padding: 2.5rem 2rem 2rem 2rem;
+  text-align: center;
+  border: 1px solid #e0e0e0;
+}
+.error-title {
+  color: #1976d2;
+  font-size: 2.2rem;
+  margin-bottom: 0.5em;
+  font-weight: 700;
+}
+.error-code {
+  font-size: 1.5rem;
+  color: #f44336;
+  margin-bottom: 0.2em;
+  font-weight: 600;
+}
+.error-message {
+  color: #555;
+  margin-bottom: 1.2em;
+  font-size: 1.1rem;
+}
+.error-details {
+  background: #f0f4f8;
+  border-radius: 0.7em;
+  padding: 0.8em 1em;
+  margin-bottom: 1.2em;
+  color: #333;
+  font-size: 0.98rem;
+}
+.error-btn {
+  background: #2a7ae4;
+  color: #fff;
+  border: none;
+  border-radius: 0.5em;
+  padding: 0.7em 2em;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+  margin-top: 1.2em;
+}
+.error-btn:hover {
+  background: #1976d2;
+}

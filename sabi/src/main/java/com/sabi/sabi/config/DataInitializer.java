@@ -1,5 +1,8 @@
 package com.sabi.sabi.config;
 
+import com.sabi.sabi.entity.Diagnostico;
+import com.sabi.sabi.entity.enums.NivelExperiencia;
+import com.sabi.sabi.repository.DiagnosticoRepository;
 import com.sabi.sabi.entity.Cliente;
 import com.sabi.sabi.entity.Ejercicio;
 import com.sabi.sabi.entity.Entrenador;
@@ -28,34 +31,37 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class DataInitializer implements CommandLineRunner {
 
-    private final UsuarioRepository usuarioRepository;
-    private final EjercicioRepository ejercicioRepository;
-    private final PasswordEncoder passwordEncoder;
-    private final RutinaRepository rutinaRepository;
-    private final SemanaRepository semanaRepository;
-    private final DiaRepository diaRepository;
-    private final EjercicioAsignadoRepository ejercicioAsignadoRepository;
-    private final SerieRepository serieRepository;
+        private final UsuarioRepository usuarioRepository;
+        private final EjercicioRepository ejercicioRepository;
+        private final PasswordEncoder passwordEncoder;
+        private final RutinaRepository rutinaRepository;
+        private final SemanaRepository semanaRepository;
+        private final DiaRepository diaRepository;
+        private final EjercicioAsignadoRepository ejercicioAsignadoRepository;
+        private final SerieRepository serieRepository;
+        private final DiagnosticoRepository diagnosticoRepository;
 
-    @Override
-    public void run(String... args) {
-        crearClienteSiNoExiste("Cliente", "cliente@sabi.com", "1234567");
-        crearEntrenadorSiNoExiste("Entrenador", "entrenador@sabi.com", "1234567");
-        crearEjerciciosSiNoExisten();
-        crearRutinaDeEjemplo();
+        @Override
+        public void run(String... args) {
+                crearClienteSiNoExiste("Cliente", "cliente@sabi.com", "1234567");
+                crearEntrenadorSiNoExiste("Entrenador", "entrenador@sabi.com", "1234567");
+                crearEjerciciosSiNoExisten();
+                crearRutinaDeEjemplo();
+                crearRutinaGlobalLibre(); // Nueva rutina global sin cliente ni entrenador ni estadoRutina
 
-        // Mostrar en consola un resumen de los usuarios creados / existentes
-        System.out.println("");
-        System.out.println("Resumen de usuarios iniciales:");
-        System.out.println("");
-        System.out.println("Cliente - cliente@sabi.com - Contraseña (raw): 1234567");
-        System.out.println("entrenador - entrenador@sabi.com - Contraseña (raw): 1234567");
-        System.out.println("");
-    }
+                // Mostrar en consola un resumen de los usuarios creados / existentes
+                System.out.println("");
+                System.out.println("Resumen de usuarios iniciales:");
+                System.out.println("");
+                System.out.println("Cliente - cliente@sabi.com - Contraseña (raw): 1234567");
+                System.out.println("entrenador - entrenador@sabi.com - Contraseña (raw): 1234567");
+                System.out.println("");
+        }
 
     private void crearClienteSiNoExiste(String nombre, String email, String rawPassword) {
+        Cliente cliente;
         if (usuarioRepository.findByEmail(email).isEmpty()) {
-            Cliente cliente = Cliente.builder()
+            cliente = Cliente.builder()
                     .nombre(nombre)
                     .email(email)
                     .contraseña(passwordEncoder.encode(rawPassword))
@@ -68,7 +74,27 @@ public class DataInitializer implements CommandLineRunner {
             usuarioRepository.save(cliente);
             System.out.println("Usuario creado: " + nombre + " | " + email + " | contraseña (raw): " + rawPassword);
         } else {
+            cliente = (Cliente) usuarioRepository.findByEmail(email).get();
             System.out.println("Usuario ya existe: " + email + " (no se muestra contraseña raw)");
+        }
+        // Crear diagnóstico obligatorio si no existe
+        if (diagnosticoRepository.findByClienteIdAndEstadoTrue(cliente.getId()).isEmpty()) {
+            Diagnostico diagnostico = Diagnostico.builder()
+                    .cliente(cliente)
+                    .fecha(java.time.LocalDate.now())
+                    .peso(70.0)
+                    .estatura(170.0)
+                    .nivelExperiencia(NivelExperiencia.PRINCIPIANTE)
+                    .disponibilidadTiempo("3 veces por semana, 45 min")
+                    .accesoRecursos("casa")
+                    .lesiones("ninguna")
+                    .condicionesMedicas("ninguna")
+                    .horasSueno(8L)
+                    .habitosAlimenticios("Dieta balanceada")
+                    .estado(true)
+                    .build();
+            diagnosticoRepository.save(diagnostico);
+            System.out.println("Diagnóstico creado para cliente: " + email);
         }
     }
 
@@ -162,13 +188,11 @@ public class DataInitializer implements CommandLineRunner {
         if (ejercicio == null) return;
         // Crear rutina
         Rutina rutina = Rutina.builder()
-                .nombre("Rutina de ejemplo")
+                .nombre("Rutina del entrenador")
                 .objetivo("Hipertrofia")
                 .descripcion("Rutina de prueba para desarrollo.")
                 .fechaCreacion(java.time.LocalDate.now())
-                .estadoRutina(EstadoRutina.ACTIVA)
                 .numeroSemanas(1L)
-                .cliente(cliente)
                 .entrenador(entrenador)
                 .estado(true)
                 .build();
@@ -209,6 +233,76 @@ public class DataInitializer implements CommandLineRunner {
                 .descanso("60 - 90 segundos")
                 .intensidad(null)
                 .comentarios("Peso moderado")
+                .ejercicioAsignado(ejercicioAsignado)
+                .estado(true)
+                .build();
+        serieRepository.save(serie);
+    }
+
+    private void crearRutinaGlobalLibre() {
+        // Verificar si ya existe para no duplicar
+        final String nombreRutina = "Rutina Global Base";
+        boolean existe = rutinaRepository.findAll().stream()
+                .anyMatch(r -> nombreRutina.equalsIgnoreCase(r.getNombre()));
+        if (existe) return;
+
+        // Tomar un ejercicio global existente (si no hay, abortar)
+        Ejercicio ejercicioGlobal = ejercicioRepository.findAll().stream()
+                .filter(e -> e.getTipo().name().equals("GLOBAL"))
+                .findFirst()
+                .orElse(null);
+        if (ejercicioGlobal == null) return; // No se puede crear sin al menos un ejercicio global
+
+        // Crear rutina sin cliente, sin entrenador y sin estadoRutina explícito
+        Rutina rutina = Rutina.builder()
+                .nombre(nombreRutina)
+                .objetivo("General")
+                .descripcion("Rutina global base sin asignar.")
+                .fechaCreacion(java.time.LocalDate.now())
+                .numeroSemanas(1L)
+                .estado(true)
+                .build();
+        rutinaRepository.save(rutina);
+
+        // Crear semana asociada
+        Semana semana = Semana.builder()
+                .numeroSemana(1L)
+                .descripcion("Semana 1 - Global")
+                .numeroDias(1L)
+                .rutina(rutina)
+                .estado(true)
+                .build();
+        semanaRepository.save(semana);
+
+        // Crear día
+        Dia dia = Dia.builder()
+                .numeroDia(1L)
+                .descripcion("Día 1: Trabajo general")
+                .numeroEjercicios(1L)
+                .semana(semana)
+                .estado(true)
+                .build();
+        diaRepository.save(dia);
+
+        // Crear ejercicio asignado
+        EjercicioAsignado ejercicioAsignado = EjercicioAsignado.builder()
+                .orden(1L)
+                .comentarios("Mantener técnica controlada")
+                .numeroSeries(1L)
+                .dia(dia)
+                .ejercicio(ejercicioGlobal)
+                .estado(true)
+                .build();
+        ejercicioAsignadoRepository.save(ejercicioAsignado);
+
+        // Crear serie base
+        Serie serie = Serie.builder()
+                .orden(1L)
+                .repeticiones(10L)
+                .peso(0.0)
+                .descanso("60 segundos")
+                .intensidad(null) // sin intensidad definida
+                .comentarios("Serie introductoria")
                 .ejercicioAsignado(ejercicioAsignado)
                 .estado(true)
                 .build();

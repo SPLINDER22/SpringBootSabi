@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<html lang="es" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
 <head>
     <meta charset="UTF-8">
     <title>Series</title>
@@ -49,7 +49,7 @@
             <td th:text="${serie.intensidad}"></td>
             <td th:text="${serie.descanso}"></td>
             <td>
-                <div class="action-buttons">
+                <div sec:authorize="hasAnyRole('ENTRENADOR')" class="action-buttons">
                     <a th:href="@{'/series/editar/' + ${serie.id}}" class="btn btn-sm btn-primary">
                         <i class="fas fa-edit"></i> Editar
                     </a>

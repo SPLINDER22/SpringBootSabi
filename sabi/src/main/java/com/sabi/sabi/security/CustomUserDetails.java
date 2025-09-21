@@ -28,6 +28,26 @@ public class CustomUserDetails implements UserDetails {
         return usuario.getNombre();
     }
 
+    public String getTelefono() {
+        try {
+            java.lang.reflect.Method m = usuario.getClass().getMethod("getTelefono");
+            Object value = m.invoke(usuario);
+            return value != null ? value.toString() : null;
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    public String getCiudad() {
+        try {
+            java.lang.reflect.Method m = usuario.getClass().getMethod("getCiudad");
+            Object value = m.invoke(usuario);
+            return value != null ? value.toString() : null;
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(new SimpleGrantedAuthority("ROLE_" + usuario.getRol().name()));
@@ -54,4 +74,6 @@ public class CustomUserDetails implements UserDetails {
 
     @Override
     public boolean isEnabled() { return usuario.getEstado(); }
+
+    
 }

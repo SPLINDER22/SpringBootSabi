@@ -17,6 +17,7 @@ import java.util.List;
 @SuperBuilder
 public class Cliente extends Usuario {
 
+
     @Column(length = 255)
     private String objetivos;
 
@@ -29,6 +30,9 @@ public class Cliente extends Usuario {
 
     @Column(length = 20)
     private String telefono;
+
+    @Column(length = 60)
+    private String ciudad;
 
     // Relaciones
 

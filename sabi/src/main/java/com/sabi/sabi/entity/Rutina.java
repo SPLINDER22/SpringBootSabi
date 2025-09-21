@@ -45,9 +45,9 @@ public class Rutina {
     @JoinColumn(name = "cliente_id", nullable = true)
     private Cliente cliente;
 
-    // Relación con Entrenador
+    // Relación con Entrenador (ahora opcional para permitir rutinas globales sin asignar)
     @ManyToOne
-    @JoinColumn(name = "entrenador_id", nullable = false)
+    @JoinColumn(name = "entrenador_id", nullable = true)
     private Entrenador entrenador;
 
     // Relación con Semanas

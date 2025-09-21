@@ -1,0 +1,58 @@
+/* Animaciones y estilos para historial de diagnósticos */
+.historial-card {
+  background: linear-gradient(135deg, #2563eb 0%, #60a5fa 100%);
+  color: #fff;
+  border-radius: 18px;
+  box-shadow: 0 4px 24px 0 rgba(30, 41, 59, 0.12);
+  margin-bottom: 2rem;
+  padding: 2rem 2.5rem;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.historial-card:hover {
+  transform: translateY(-6px) scale(1.02);
+  box-shadow: 0 8px 32px 0 rgba(30, 41, 59, 0.18);
+}
+.historial-table th, .historial-table td {
+  font-size: 1.15rem;
+  vertical-align: middle;
+}
+.historial-table th {
+  background: #1e293b;
+  color: #fff;
+  border: none;
+}
+.historial-table tr {
+  background: #fff;
+  transition: background 0.2s;
+}
+.historial-table tr:hover {
+  background: #f1f5f9;
+}
+.btn-descargar {
+  background: #22c55e;
+  color: #fff;
+  border-radius: 8px;
+  font-weight: 600;
+  transition: background 0.2s, transform 0.2s;
+}
+.btn-descargar:hover {
+  background: #16a34a;
+  transform: scale(1.07);
+}
+.modal-header.bg-primary {
+  background: linear-gradient(90deg, #2563eb 0%, #60a5fa 100%);
+  color: #fff;
+}
+.logo-modal-sabi {
+  width: 60px;
+  height: 60px;
+  object-fit: contain;
+  margin-right: 1rem;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px 0 rgba(30, 41, 59, 0.15);
+  background: #fff;
+}
+@media (max-width: 600px) {
+  .historial-card { padding: 1rem; }
+  .logo-modal-sabi { width: 40px; height: 40px; }
+}
