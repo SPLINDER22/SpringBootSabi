@@ -86,8 +86,10 @@ public class RutinaController {
     }
 
     @GetMapping("/rutinas")
-    public String listarRutinas(@AuthenticationPrincipal UserDetails userDetails, Model model) {
-        
+    public String listarRutinas(@AuthenticationPrincipal UserDetails userDetails,
+                                @RequestParam(value = "asignar", required = false) Boolean asignar,
+                                @RequestParam(value = "idCliente", required = false) Long idCliente,
+                                Model model) {
         if (userDetails == null) {
             return "redirect:/auth/login";
         }
@@ -97,14 +99,43 @@ public class RutinaController {
         } catch (RuntimeException ex) {
             return "redirect:/auth/login";
         }
-        // Validar que el usuario sea entrenador
+        // Si no es entrenador, redirigir flujo cliente existente
         if (usuario.getRol() == null || !usuario.getRol().name().equalsIgnoreCase("ENTRENADOR")) {
             return "redirect:/rutina/cliente";
         }
         model.addAttribute("rutinas", rutinaService.getRutinasPorUsuario(usuario.getId()));
         model.addAttribute("idUsuarioActual", usuario.getId());
         model.addAttribute("isCliente", false);
+        // Modo asignar rutina a un cliente (desde suscripción aceptada)
+        boolean modoAsignar = Boolean.TRUE.equals(asignar) && idCliente != null;
+        model.addAttribute("modoAsignar", modoAsignar);
+        model.addAttribute("idClienteAsignacion", idCliente);
         return "rutinas/lista";
+    }
+
+    @PostMapping("/rutinas/asignar/{idRutina}")
+    public String asignarRutinaACliente(@PathVariable Long idRutina,
+                                        @RequestParam(name = "idCliente") Long idCliente,
+                                        @AuthenticationPrincipal UserDetails userDetails,
+                                        RedirectAttributes redirectAttributes) {
+        if (userDetails == null) return "redirect:/auth/login";
+        Usuario entrenador = usuarioService.obtenerPorEmail(userDetails.getUsername());
+        if (entrenador.getRol() == null || !entrenador.getRol().name().equalsIgnoreCase("ENTRENADOR")) {
+            redirectAttributes.addFlashAttribute("error", "No autorizado.");
+            return "redirect:/rutinas";
+        }
+        if (idCliente == null) {
+            redirectAttributes.addFlashAttribute("error", "Cliente no especificado.");
+            return "redirect:/rutinas";
+        }
+        try {
+            rutinaService.adoptarRutina(idRutina, idCliente);
+            redirectAttributes.addFlashAttribute("success", "Rutina asignada y clonada correctamente para el cliente.");
+            return "redirect:/entrenador/suscripciones";
+        } catch (Exception ex) {
+            redirectAttributes.addFlashAttribute("error", "No se pudo asignar la rutina: " + ex.getMessage());
+            return "redirect:/rutinas?asignar=true&idCliente=" + idCliente;
+        }
     }
 
     @GetMapping("/rutinas/nueva")

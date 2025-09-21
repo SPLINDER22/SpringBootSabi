@@ -105,8 +105,8 @@
                                         <i class="fas fa-edit me-1"></i> Editar
                                     </button>
                                     <a th:if="${suscripcion.estadoSuscripcion == T(com.sabi.sabi.entity.enums.EstadoSuscripcion).ACEPTADA}"
-                                        th:href="@{/}"
-                                        class="btn btn-success flex-fill">
+                                       th:href="@{/rutinas(asignar=true, idCliente=${suscripcion.idCliente})}"
+                                       class="btn btn-success flex-fill">
                                         <i class="fas fa-dumbbell me-1"></i> Asignar rutina
                                     </a>
                                     <a th:if="${suscripcion.estadoSuscripcion == T(com.sabi.sabi.entity.enums.EstadoSuscripcion).ACEPTADA}"
