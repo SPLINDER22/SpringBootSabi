@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Enviar Correo a Clientes</title>
+</head>
+<body th:replace="layout/layout :: layout('Enviar Correo a Clientes', ~{::section})">
+<section th:fragment="section">
+    <h1 class="h3 mb-4 text-gray-800">Enviar Correo a Clientes</h1>
+    <form th:action="@{/entrenador/enviar-correo-clientes}" method="post">
+        <div class="form-group">
+            <label for="asunto">Asunto</label>
+            <input type="text" class="form-control" id="asunto" name="asunto" required>
+        </div>
+        <div class="form-group">
+            <label for="mensaje">Mensaje</label>
+            <textarea class="form-control" id="mensaje" name="mensaje" rows="5" required></textarea>
+        </div>
+        <div class="form-group">
+            <label for="idsClientes">Selecciona los clientes</label>
+            <select class="form-control" id="idsClientes" name="idsClientes" multiple required>
+                <option th:each="cliente : ${clientes}" th:value="${cliente.id}" th:text="${cliente.nombre + ' (' + cliente.email + ')'}"></option>
+            </select>
+        </div>
+        <button type="submit" class="btn btn-primary">Enviar Correo</button>
+    </form>
+</section>
+</body>
+</html>

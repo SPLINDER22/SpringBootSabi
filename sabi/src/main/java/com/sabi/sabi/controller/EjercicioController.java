@@ -10,11 +10,17 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
+import java.time.Instant;
+import java.util.Locale;
+import java.util.UUID;
 
 @Controller
 public class EjercicioController {
@@ -84,18 +90,48 @@ public class EjercicioController {
     public String crearEjercicio(@ModelAttribute EjercicioDTO ejercicioDTO,
                                  @AuthenticationPrincipal UserDetails userDetails,
                                  @RequestParam(value = "fromEjes", required = false) Boolean fromEjes,
-                                 @RequestParam(value = "idDia", required = false) Long idDia) {
+                                 @RequestParam(value = "idDia", required = false) Long idDia,
+                                 @RequestParam(value = "imagenFile", required = false) MultipartFile imagenFile,
+                                 @RequestParam(value = "existingImagen", required = false) String existingImagen) {
         if (userDetails == null) {
             return "redirect:/auth/login";
         }
         Usuario usuario = usuarioService.obtenerPorEmail(userDetails.getUsername());
-        // Si viene ID (update), validar propiedad
-        if (ejercicioDTO.getIdEjercicio() != null) {
+        if (ejercicioDTO.getIdEjercicio() != null) { // update
             EjercicioDTO existente = ejercicioService.getEjercicioById(ejercicioDTO.getIdEjercicio());
             if (existente.getIdUsuario() == null || !existente.getIdUsuario().equals(usuario.getId())) {
                 return "redirect:/ejercicios?error=forbidden";
             }
         }
+
+        // Subida de imagen local
+        if (imagenFile != null && !imagenFile.isEmpty()) {
+            String contentType = imagenFile.getContentType();
+            if (contentType != null && contentType.toLowerCase(Locale.ROOT).startsWith("image/")) {
+                String nuevoNombre = generarNombreSeguro(imagenFile.getOriginalFilename());
+                try {
+                    Path uploadDir = Paths.get("src", "main", "resources", "static", "img", "ejercicios");
+                    if (!Files.exists(uploadDir)) {
+                        Files.createDirectories(uploadDir);
+                    }
+                    Path destino = uploadDir.resolve(nuevoNombre);
+                    Files.copy(imagenFile.getInputStream(), destino, StandardCopyOption.REPLACE_EXISTING);
+                    ejercicioDTO.setUrlImagen("/img/ejercicios/" + nuevoNombre);
+                } catch (IOException ex) {
+                    if (existingImagen != null && !existingImagen.isBlank()) {
+                        ejercicioDTO.setUrlImagen(existingImagen);
+                    }
+                }
+            } else {
+                // Tipo no válido, conservar existente si había
+                if (existingImagen != null && !existingImagen.isBlank()) {
+                    ejercicioDTO.setUrlImagen(existingImagen);
+                }
+            }
+        } else if (existingImagen != null && !existingImagen.isBlank()) {
+            ejercicioDTO.setUrlImagen(existingImagen); // mantener
+        }
+
         ejercicioService.createEjercicio(ejercicioDTO, usuario.getId());
         if (Boolean.TRUE.equals(fromEjes) && idDia != null) {
             return "redirect:/ejercicios?fromEjes=true&idDia=" + idDia;
@@ -176,5 +212,14 @@ public class EjercicioController {
             }
         } catch (Exception ignored) { }
         return url; // fallback
+    }
+
+    private String generarNombreSeguro(String original) {
+        if (original == null) original = "imagen";
+        String base = original.replaceAll("[^a-zA-Z0-9._-]", "_");
+        int dot = base.lastIndexOf('.');
+        String ext = (dot > -1) ? base.substring(dot).toLowerCase(Locale.ROOT) : "";
+        if (ext.length() > 8) ext = ext.substring(0,8); // limitar extensión anómala
+        return UUID.randomUUID() + "_" + Instant.now().toEpochMilli() + ext;
     }
 }

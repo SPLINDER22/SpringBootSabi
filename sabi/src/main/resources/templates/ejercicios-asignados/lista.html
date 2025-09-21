@@ -9,19 +9,26 @@
         .action-buttons > *:last-child { margin-right: 0; }
         .action-buttons form { display: inline-block; }
         .action-buttons .btn i { margin-right: .25rem; }
+
+        .status-badge {display:inline-flex;align-items:center;font-size:.75rem;padding:.30rem .55rem;border-radius:1rem;font-weight:500;border:1px solid transparent;letter-spacing:.2px}
+        .badge-complete{background:#e6ffed;border-color:#b2f2bb;color:#166534}
+        .badge-pending{background:#f8f9fa;border-color:#d9dde1;color:#6c757d}
     </style>
 </head>
 <body th:replace="layout/layout :: layout('Lista de Ejercicios Asignados', ~{::section})">
 <section th:fragment="section">
     <div class="d-flex justify-content-between align-items-center mb-3">
-        <h1 class="h3 mb-0 text-gray-800">
-            Ejercicios del Día <span th:text="${dia != null ? dia.numeroDia : 'N/A'}"></span>
-        </h1>
+        <div>
+            <h1 class="h3 mb-0 text-gray-800">
+                Ejercicios del Día <span th:text="${dia != null ? dia.numeroDia : 'N/A'}"></span>
+            </h1>
+            <div th:if="${readonly}" class="mt-2"><span class="badge bg-secondary"><i class="fas fa-eye me-1"></i>Modo lectura (progreso)</span></div>
+        </div>
         <div class="btn-group">
-            <a th:if="${idSemana != null}" th:href="@{'/dias/detallar/' + ${idSemana}}" class="btn btn-outline-secondary">
+            <a th:if="${idSemana != null}" th:href="@{/dias/detallar/{idSemana}(idSemana=${idSemana}, readonly=${readonly})}" class="btn btn-outline-secondary">
                 <i class="fas fa-arrow-left"></i> Volver a Días
             </a>
-            <a th:if="${dia != null && dia.idDia != null}" th:href="@{'/ejes/crear/' + ${dia.idDia}}" class="btn btn-success">
+            <a sec:authorize="hasAnyRole('ENTRENADOR')" th:if="${!readonly && dia != null && dia.idDia != null}" th:href="@{/ejes/crear/{idDia}(idDia=${dia.idDia})}" class="btn btn-success">
                 <i class="fas fa-plus"></i> Nuevo Ejercicio
             </a>
         </div>
@@ -34,7 +41,7 @@
             <th style="width:16%">Ejercicio</th>
             <th style="width:33%">Comentarios</th>
             <th style="width:8%">Series</th>
-            <th sec:authorize="hasAnyRole('CLIENTE')" style="width:10%">Completado</th>
+            <th sec:authorize="hasAnyRole('CLIENTE')" th:if="${!readonly}" style="width:10%">Completado</th>
             <th style="width:25%">Acciones</th>
         </tr>
         </thead>
@@ -42,86 +49,78 @@
         <tr th:each="eje : ${ejes}">
             <td th:text="${eje.orden}"></td>
             <td>
-                <a th:href="@{'/ejercicios/detalle/' + ${eje.ejercicio.id} (fromEges=true, idDia=${dia != null ? dia.idDia : null})}" th:text="${eje.ejercicio.nombre}" class="text-decoration-none fw-semibold"></a>
+                <a th:href="@{/ejercicios/detalle/{id}(id=${eje.ejercicio.id}, fromEges=true, idDia=${dia != null ? dia.idDia : null})}" th:text="${eje.ejercicio.nombre}" class="text-decoration-none fw-semibold"></a>
             </td>
             <td th:text="${eje.comentarios}" class="small"></td>
             <td th:text="${eje.numeroSeries}"></td>
-            <td sec:authorize="hasAnyRole('CLIENTE')">
+            <td sec:authorize="hasAnyRole('CLIENTE')" th:if="${!readonly}">
                 <span th:class="${eje.checked} ? 'status-badge badge-complete' : 'status-badge badge-pending'">
                     <i th:class="${eje.checked} ? 'fas fa-check-circle' : 'far fa-circle'"></i>
                     <span th:text="${eje.checked} ? 'Completado' : 'Pendiente'"></span>
                 </span>
             </td>
             <td>
-                <!-- Vista cliente -->
-                <div sec:authorize="hasAnyRole('CLIENTE')" class="action-buttons">
-                    <a th:href="@{'/ejes/check/' + ${eje.idEjercicioAsignado}}"
+                <!-- Vista cliente editable -->
+                <div sec:authorize="hasAnyRole('CLIENTE')" class="action-buttons" th:if="${!readonly}">
+                    <a th:href="@{/ejes/check/{idEje}(idEje=${eje.idEjercicioAsignado})}"
                        th:class="${eje.checked} ? 'btn btn-sm btn-outline-warning btn-toggle-completa' : 'btn btn-sm btn-outline-success btn-toggle-completa'"
                        th:title="${eje.checked} ? 'Desmarcar ejercicio' : 'Marcar ejercicio como completado'">
                         <i th:class="${eje.checked} ? 'fas fa-undo' : 'fas fa-check'"></i>
                         <span th:text="${eje.checked} ? 'Desmarcar' : 'Marcar'"></span>
                     </a>
-                    <a th:href="@{'/series/detallar/' + ${eje.idEjercicioAsignado}}" class="btn btn-sm btn-info">
+                    <a th:href="@{/registros-series/{idEje}(idEje=${eje.idEjercicioAsignado}, readonly=${readonly})}" class="btn btn-sm btn-info">
                         <i class="fas fa-list"></i> Ver Series
                     </a>
                 </div>
-
-                <!-- Vista entrenador -->
-                <div sec:authorize="hasAnyRole('ENTRENADOR')" class="d-flex flex-wrap align-items-center action-buttons">
-                    <a th:href="@{'/series/detallar/' + ${eje.idEjercicioAsignado}}" class="btn btn-sm btn-info">
+                <!-- Vista cliente lectura (sin toggle) -->
+                <div sec:authorize="hasAnyRole('CLIENTE')" th:if="${readonly}" class="action-buttons">
+                    <a th:href="@{/registros-series/{idEje}(idEje=${eje.idEjercicioAsignado}, readonly=${readonly})}" class="btn btn-sm btn-info">
                         <i class="fas fa-list"></i> Ver Series
                     </a>
-                    <a th:href="@{'/ejes/editar/' + ${eje.idEjercicioAsignado}}" class="btn btn-sm btn-primary">
+                </div>
+                <!-- Vista entrenador editable -->
+                <div sec:authorize="hasAnyRole('ENTRENADOR')" class="d-flex flex-wrap align-items-center action-buttons" th:if="${!readonly}">
+                    <a th:href="@{/registros-series/{idEje}(idEje=${eje.idEjercicioAsignado}, readonly=${readonly})}" class="btn btn-sm btn-info">
+                        <i class="fas fa-list"></i> Ver Series
+                    </a>
+                    <a th:href="@{/ejes/editar/{idEje}(idEje=${eje.idEjercicioAsignado})}" class="btn btn-sm btn-primary">
                         <i class="fas fa-edit"></i> Editar
                     </a>
-                    <form th:action="@{'/ejes/eliminar/' + ${eje.idEjercicioAsignado}}" method="post" class="m-0" onsubmit="return confirm('¿Eliminar ejercicio asignado?')">
+                    <form th:action="@{/ejes/eliminar/{idEje}(idEje=${eje.idEjercicioAsignado})}" method="post" class="m-0" onsubmit="return confirm('¿Eliminar ejercicio asignado?')">
                         <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
                         <button type="submit" class="btn btn-sm btn-danger">
                             <i class="fas fa-trash"></i> Eliminar
                         </button>
                     </form>
                 </div>
+                <!-- Vista entrenador lectura -->
+                <div sec:authorize="hasAnyRole('ENTRENADOR')" th:if="${readonly}" class="action-buttons">
+                    <a th:href="@{/registros-series/{idEje}(idEje=${eje.idEjercicioAsignado}, readonly=${readonly})}" class="btn btn-sm btn-info">
+                        <i class="fas fa-list"></i> Ver Series
+                    </a>
+                </div>
             </td>
         </tr>
-        <!-- Fila vacía cliente -->
-        <tr sec:authorize="hasAnyRole('CLIENTE')" th:if="${ejes == null || #lists.isEmpty(ejes)}">
+        <!-- Fila vacía cliente editable -->
+        <tr sec:authorize="hasAnyRole('CLIENTE')" th:if="${!readonly && (ejes == null || #lists.isEmpty(ejes))}">
             <td colspan="6" class="text-center text-muted py-4">No hay ejercicios asignados todavía.</td>
         </tr>
-        <!-- Fila vacía entrenador -->
-        <tr sec:authorize="hasAnyRole('ENTRENADOR')" th:if="${ejes == null || #lists.isEmpty(ejes)}">
+        <!-- Fila vacía cliente lectura (sin columna completado) -->
+        <tr sec:authorize="hasAnyRole('CLIENTE')" th:if="${readonly && (ejes == null || #lists.isEmpty(ejes))}">
+            <td colspan="5" class="text-center text-muted py-4">No hay ejercicios asignados todavía.</td>
+        </tr>
+        <!-- Fila vacía entrenador editable -->
+        <tr sec:authorize="hasAnyRole('ENTRENADOR')" th:if="${!readonly && (ejes == null || #lists.isEmpty(ejes))}">
+            <td colspan="5" class="text-center text-muted py-4">No hay ejercicios asignados todavía.</td>
+        </tr>
+        <!-- Fila vacía entrenador lectura -->
+        <tr sec:authorize="hasAnyRole('ENTRENADOR')" th:if="${readonly && (ejes == null || #lists.isEmpty(ejes))}">
             <td colspan="5" class="text-center text-muted py-4">No hay ejercicios asignados todavía.</td>
         </tr>
         </tbody>
     </table>
 
-    <script th:inline="javascript">
-        /*<![CDATA[*/
-        (function(){
-            const modal = document.getElementById('modalDetalleEjercicio');
-            if(!modal) return;
-            $('#modalDetalleEjercicio').on('show.bs.modal', function (event) {
-                const btn = event.relatedTarget;
-                if(!btn) return;
-                const nombre = btn.getAttribute('data-nombre') || '-';
-                const desc = btn.getAttribute('data-descripcion') || '-';
-                const grupo = btn.getAttribute('data-grupo') || '-';
-                const equipo = btn.getAttribute('data-equipo') || '-';
-                const video = btn.getAttribute('data-video');
-                modal.querySelector('#tituloEjercicio').textContent = nombre;
-                modal.querySelector('#detNombre').textContent = nombre;
-                modal.querySelector('#detDescripcion').textContent = desc;
-                modal.querySelector('#detGrupo').textContent = grupo;
-                modal.querySelector('#detEquipo').textContent = equipo || '-';
-                const videoEl = modal.querySelector('#detVideo');
-                if(video){
-                    videoEl.innerHTML = '<a href="'+video+'" target="_blank" rel="noopener">Ver Video</a>';
-                } else {
-                    videoEl.textContent = '-';
-                }
-            });
-        })();
-        /*]]>*/
-    </script>
+    <!-- Se mantiene el script existente si aplica (removido si no se usa) -->
 </section>
 </body>
 </html>

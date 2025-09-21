@@ -7,6 +7,7 @@ import com.sabi.sabi.service.UsuarioService;
 import com.sabi.sabi.dto.SuscripcionDTO;
 import com.sabi.sabi.entity.enums.EstadoSuscripcion;
 import com.sabi.sabi.service.ClienteService;
+import com.sabi.sabi.service.RutinaService; // añadido
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,6 +36,9 @@ public class EntrenadorController {
     @Autowired
     private ReportePdfService reportePdfService;
 
+    @Autowired
+    private RutinaService rutinaService; // nuevo
+
     @GetMapping("/entrenador/dashboard")
     public String entrenadorDashboard() {
         return "entrenador/dashboard";
@@ -53,10 +57,10 @@ public class EntrenadorController {
         }
         var usuario = usuarioService.obtenerPorEmail(userDetails.getUsername());
         var todas = suscripcionService.getAllSuscripciones();
-    var suscripciones = todas.stream()
-        .filter(s -> s.getIdEntrenador() != null && s.getIdEntrenador().equals(usuario.getId()))
-        .filter(s -> s.getEstadoSuscripcion() != com.sabi.sabi.entity.enums.EstadoSuscripcion.RECHAZADA)
-                .collect(Collectors.toList());
+        var suscripciones = todas.stream()
+            .filter(s -> s.getIdEntrenador() != null && s.getIdEntrenador().equals(usuario.getId()))
+            .filter(s -> s.getEstadoSuscripcion() != com.sabi.sabi.entity.enums.EstadoSuscripcion.RECHAZADA)
+            .collect(Collectors.toList());
         model.addAttribute("suscripciones", suscripciones);
         Map<Long, String> nombresEntrenadores = suscripciones.stream()
                 .map(SuscripcionDTO::getIdEntrenador)
@@ -70,6 +74,22 @@ public class EntrenadorController {
                 .distinct()
                 .collect(Collectors.toMap(id -> id, id -> clienteService.getClienteById(id).getNombre()));
         model.addAttribute("nombresClientes", nombresClientes);
+
+        // Mapa de rutinas activas por cliente (para mostrar "Ver progreso")
+        Map<Long, Long> rutinasActivasClientes = suscripciones.stream()
+                .map(SuscripcionDTO::getIdCliente)
+                .filter(Objects::nonNull)
+                .distinct()
+                .map(idCliente -> {
+                    var r = rutinaService.getRutinaActivaCliente(idCliente);
+                    return (r != null && r.getIdRutina() != null) ? Map.entry(idCliente, r.getIdRutina()) : null;
+                })
+                .filter(Objects::nonNull)
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+        model.addAttribute("rutinasActivasClientes", rutinasActivasClientes);
+        // Log simple para depuración (se puede remover luego)
+        System.out.println("[EntrenadorController] rutinasActivasClientes=" + rutinasActivasClientes);
+
         return "entrenador/suscripciones";
     }
 
@@ -118,12 +138,10 @@ public class EntrenadorController {
             return "redirect:/auth/login";
         }
         var usuario = usuarioService.obtenerPorEmail(userDetails.getUsername());
-        // Evitar múltiples suscripciones activas
         if (suscripcionService.existsSuscripcionActivaByClienteId(usuario.getId())) {
             redirectAttributes.addFlashAttribute("error", "No puedes solicitar un entrenador porque ya tienes una suscripción activa con otro entrenador.");
             return "redirect:/cliente/suscripcion";
         }
-        // Crear la suscripción asociando cliente y entrenador
         SuscripcionDTO suscripcionDTO = new SuscripcionDTO();
         suscripcionDTO.setIdCliente(usuario.getId());
         suscripcionDTO.setIdEntrenador(idEntrenador);

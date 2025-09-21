@@ -181,14 +181,15 @@ public class DataInitializer implements CommandLineRunner {
         Cliente cliente = (Cliente) usuarioRepository.findByEmail("cliente@sabi.com").orElse(null);
         Entrenador entrenador = (Entrenador) usuarioRepository.findByEmail("entrenador@sabi.com").orElse(null);
         if (cliente == null || entrenador == null) return;
-        // Verificar si ya existe la rutina
-        if (rutinaRepository.findAll().stream().anyMatch(r -> r.getNombre().equals("Rutina de ejemplo"))) return;
+        // Verificar si ya existe la rutina (nombre consistente con el que se crea)
+        final String nombreRutina = "Rutina del entrenador";
+        if (rutinaRepository.findAll().stream().anyMatch(r -> nombreRutina.equals(r.getNombre()))) return;
         // Obtener ejercicio global
         Ejercicio ejercicio = ejercicioRepository.findAll().stream().filter(e -> e.getTipo().name().equals("GLOBAL")).findFirst().orElse(null);
         if (ejercicio == null) return;
         // Crear rutina
         Rutina rutina = Rutina.builder()
-                .nombre("Rutina del entrenador")
+                .nombre(nombreRutina)
                 .objetivo("Hipertrofia")
                 .descripcion("Rutina de prueba para desarrollo.")
                 .fechaCreacion(java.time.LocalDate.now())
@@ -210,23 +211,23 @@ public class DataInitializer implements CommandLineRunner {
         Dia dia = Dia.builder()
                 .numeroDia(1L)
                 .descripcion("Día 1: Piernas y glúteos")
-                .numeroEjercicios(1l)
+                .numeroEjercicios(1L)
                 .semana(semana)
                 .estado(true)
                 .build();
         diaRepository.save(dia);
-        // Crear ejercicio asignado
+        // Crear ejercicio asignado con 2 series
         EjercicioAsignado ejercicioAsignado = EjercicioAsignado.builder()
                 .orden(1L)
                 .comentarios("Ejecutar con buena técnica")
-                .numeroSeries(1L)
+                .numeroSeries(2L)
                 .dia(dia)
                 .ejercicio(ejercicio)
                 .estado(true)
                 .build();
         ejercicioAsignadoRepository.save(ejercicioAsignado);
-        // Crear serie
-        Serie serie = Serie.builder()
+        // Serie 1
+        Serie serie1 = Serie.builder()
                 .orden(1L)
                 .repeticiones(12L)
                 .peso(60.0)
@@ -236,7 +237,19 @@ public class DataInitializer implements CommandLineRunner {
                 .ejercicioAsignado(ejercicioAsignado)
                 .estado(true)
                 .build();
-        serieRepository.save(serie);
+        serieRepository.save(serie1);
+        // Serie 2 (ligera variación)
+        Serie serie2 = Serie.builder()
+                .orden(2L)
+                .repeticiones(10L)
+                .peso(65.0)
+                .descanso("90 segundos")
+                .intensidad(null)
+                .comentarios("Aumentar ligeramente el peso")
+                .ejercicioAsignado(ejercicioAsignado)
+                .estado(true)
+                .build();
+        serieRepository.save(serie2);
     }
 
     private void crearRutinaGlobalLibre() {

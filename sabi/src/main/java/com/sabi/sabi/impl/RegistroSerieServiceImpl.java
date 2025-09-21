@@ -10,6 +10,9 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.List;
 
 @Service
@@ -20,6 +23,8 @@ public class RegistroSerieServiceImpl implements RegistroSerieService {
     private ModelMapper modelMapper;
     @Autowired
     private SerieRepository serieRepository;
+
+    private static final Logger log = LoggerFactory.getLogger(RegistroSerieServiceImpl.class);
 
     @Override
     public List<RegistroSerieDTO> getAllRegistroSeries() {
@@ -96,5 +101,53 @@ public class RegistroSerieServiceImpl implements RegistroSerieService {
         registroSerie.setEstado(!registroSerie.getEstado());
         registroSerieRepository.save(registroSerie);
         return true;
+    }
+
+    @Override
+    public RegistroSerieDTO saveOrUpdateRegistroSerie(RegistroSerieDTO registroSerieDTO) {
+        if (registroSerieDTO.getIdSerie() == null) {
+            throw new IllegalArgumentException("Id de serie requerido");
+        }
+        // Asegurar fecha ejecucion
+        if (registroSerieDTO.getFechaEjecucion() == null) {
+            registroSerieDTO.setFechaEjecucion(java.time.LocalDateTime.now());
+        }
+        Serie serie = serieRepository.findById(registroSerieDTO.getIdSerie())
+                .orElseThrow(() -> new RuntimeException("Serie not found with id: " + registroSerieDTO.getIdSerie()));
+
+        RegistroSerie entity = null;
+        // Si viene id intentar cargar
+        if (registroSerieDTO.getIdRegistroSerie() != null) {
+            entity = registroSerieRepository.findById(registroSerieDTO.getIdRegistroSerie()).orElse(null);
+            if (entity == null) {
+                log.debug("[RegistroSerie saveOrUpdate] Id {} no existe, se creará nuevo registro para serie {}", registroSerieDTO.getIdRegistroSerie(), registroSerieDTO.getIdSerie());
+            }
+        }
+        // Si no se obtuvo entidad por id, buscar por serie (único registro por serie)
+        if (entity == null) {
+            entity = registroSerieRepository.findFirstBySerie_Id(registroSerieDTO.getIdSerie()).orElse(null);
+        }
+        boolean creating = (entity == null);
+        if (creating) {
+            entity = new RegistroSerie();
+            entity.setSerie(serie);
+        } else {
+            // Reasignar serie por si acaso (normalmente no cambia)
+            entity.setSerie(serie);
+        }
+        entity.setRepeticionesReales(registroSerieDTO.getRepeticionesReales());
+        entity.setPesoReal(registroSerieDTO.getPesoReal());
+        entity.setDescansoReal(registroSerieDTO.getDescansoReal());
+        entity.setFechaEjecucion(registroSerieDTO.getFechaEjecucion());
+        entity.setComentariosCliente(registroSerieDTO.getComentariosCliente());
+        if (entity.getEstado() == null) entity.setEstado(true);
+
+        entity = registroSerieRepository.save(entity);
+        log.debug("[RegistroSerie saveOrUpdate] {} registro id={} serie={} reps={} peso={} descanso={}",
+                (creating?"CREADO":"ACTUALIZADO"), entity.getId(), serie.getId(), entity.getRepeticionesReales(), entity.getPesoReal(), entity.getDescansoReal());
+
+        RegistroSerieDTO resp = modelMapper.map(entity, RegistroSerieDTO.class);
+        resp.setIdSerie(serie.getId());
+        return resp;
     }
 }

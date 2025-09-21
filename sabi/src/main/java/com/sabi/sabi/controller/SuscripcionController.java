@@ -16,6 +16,7 @@ import com.sabi.sabi.service.ClienteService;
 import com.sabi.sabi.service.EntrenadorService;
 import com.sabi.sabi.service.SuscripcionService;
 import com.sabi.sabi.service.UsuarioService;
+import com.sabi.sabi.service.RutinaService;
 import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -29,10 +30,10 @@ public class SuscripcionController {
     private EntrenadorService entrenadorService;
     @Autowired
     private ClienteService clienteService;
-
-
     @Autowired
     private UsuarioService usuarioService;
+    @Autowired
+    private RutinaService rutinaService; // nuevo
 
     @GetMapping("/suscripciones")
     public String listarSuscripciones(@AuthenticationPrincipal UserDetails userDetails, Model model) {
@@ -48,12 +49,24 @@ public class SuscripcionController {
                 .distinct()
                 .collect(Collectors.toMap(id -> id, id -> entrenadorService.getEntrenadorById(id).getNombre()));
         model.addAttribute("nombresEntrenadores", nombresEntrenadores);
-    Map<Long, String> nombresClientes = suscripciones.stream()
-        .map(SuscripcionDTO::getIdCliente)
-        .filter(Objects::nonNull)
-        .distinct()
-        .collect(Collectors.toMap(id -> id, id -> clienteService.getClienteById(id).getNombre()));
-    model.addAttribute("nombresClientes", nombresClientes);
+        Map<Long, String> nombresClientes = suscripciones.stream()
+                .map(SuscripcionDTO::getIdCliente)
+                .filter(Objects::nonNull)
+                .distinct()
+                .collect(Collectors.toMap(id -> id, id -> clienteService.getClienteById(id).getNombre()));
+        model.addAttribute("nombresClientes", nombresClientes);
+        // Mapa de rutina activa por cliente (si existe)
+        Map<Long, Long> rutinasActivasClientes = suscripciones.stream()
+                .map(SuscripcionDTO::getIdCliente)
+                .filter(Objects::nonNull)
+                .distinct()
+                .map(idCliente -> {
+                    var r = rutinaService.getRutinaActivaCliente(idCliente);
+                    return r != null && r.getIdRutina() != null ? Map.entry(idCliente, r.getIdRutina()) : null;
+                })
+                .filter(Objects::nonNull)
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+        model.addAttribute("rutinasActivasClientes", rutinasActivasClientes);
         model.addAttribute("idUsuarioActual", usuario.getId());
         return "suscripciones/lista";
     }

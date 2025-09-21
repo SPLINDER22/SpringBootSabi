@@ -27,8 +27,7 @@
                         Cuando tengas alguna, aquí se mostrarán.
                     </div>
                 </div>
-                <div th:each="suscripcion, iterStat : ${suscripciones}" th:if="${!#lists.isEmpty(suscripciones)}"
-                    class="col-12 col-md-6 mb-4">
+                <div th:each="suscripcion : ${suscripciones}" class="col-12 col-md-6 mb-4">
                     <div class="card w-100 shadow-lg border-primary rounded-4 text-center">
                         <div class="card-header text-dark bg-primary">
                             <h5 class="fw-semibold mb-0">Detalles de la Suscripción</h5>
@@ -86,6 +85,7 @@
                         <div class="card-footer bg-primary pt-3 pb-3">
                             <div class="d-flex flex-wrap gap-2 w-100 justify-content-center">
                                 <div class="d-flex gap-2 w-100">
+                                    <!-- Botón editar -->
                                     <button type="button" class="btn btn-light flex-fill btn-editar-suscripcion"
                                         data-toggle="modal" data-target="#modalEditarSuscripcion"
                                         th:disabled="${suscripcion.estadoSuscripcion == T(com.sabi.sabi.entity.enums.EstadoSuscripcion).ACEPTADA}"
@@ -97,6 +97,20 @@
                                                  data-estado=${suscripcion.estadoSuscripcion}">
                                         <i class="fas fa-edit me-1"></i> Editar
                                     </button>
+                                    <!-- Botón rutina (Asignar o Ver progreso) -->
+                                    <div th:if="${suscripcion.estadoSuscripcion == T(com.sabi.sabi.entity.enums.EstadoSuscripcion).ACEPTADA}" class="flex-fill">
+                                        <a th:if="${rutinasActivasClientes != null and rutinasActivasClientes.containsKey(suscripcion.idCliente)}"
+                                           th:href="@{'/semanas/detallar/' + ${rutinasActivasClientes[suscripcion.idCliente]} + '?readonly=true'}"
+                                           class="btn btn-primary w-100">
+                                            <i class="fas fa-chart-line me-1"></i> Ver progreso
+                                        </a>
+                                        <a th:if="${rutinasActivasClientes == null || !rutinasActivasClientes.containsKey(suscripcion.idCliente)}"
+                                           th:href="@{/rutinas(asignar=true, idCliente=${suscripcion.idCliente})}"
+                                           class="btn btn-success w-100">
+                                            <i class="fas fa-dumbbell me-1"></i> Asignar rutina
+                                        </a>
+                                    </div>
+                                    <!-- Botón diagnóstico (sin cambios, visible solo aceptada) -->
                                     <a th:if="${suscripcion.estadoSuscripcion == T(com.sabi.sabi.entity.enums.EstadoSuscripcion).ACEPTADA}"
                                         th:href="@{/}"
                                         class="btn btn-success flex-fill">
@@ -109,14 +123,13 @@
                                         class="btn btn-info text-white flex-fill">
                                         <i class="fas fa-notes-medical me-1"></i> Ver diagnóstico
                                     </a>
+                                    <!-- Botón rechazar (pendiente) -->
                                     <form th:if="${suscripcion.estadoSuscripcion == T(com.sabi.sabi.entity.enums.EstadoSuscripcion).PENDIENTE}"
-                                        th:action="@{/suscripciones/rechazar/{id}(id=${suscripcion.idSuscripcion})}"
-                                        method="post" class="flex-fill mb-0">
-                                        <input type="hidden" th:name="${_csrf.parameterName}"
-                                            th:value="${_csrf.token}" />
+                                          th:action="@{/suscripciones/rechazar/{id}(id=${suscripcion.idSuscripcion})}"
+                                          method="post" class="flex-fill mb-0">
+                                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
                                         <input type="hidden" name="redirectTo" value="/entrenador/suscripciones" />
-                                        <button type="submit" class="btn btn-danger w-100"><i
-                                                class="fas fa-times-circle me-1"></i> Rechazar</button>
+                                        <button type="submit" class="btn btn-danger w-100"><i class="fas fa-times-circle me-1"></i> Rechazar</button>
                                     </form>
                                 </div>
                             </div>
