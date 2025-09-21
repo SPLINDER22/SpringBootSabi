@@ -117,7 +117,8 @@ public class SuscripcionController {
 
     @PostMapping("/suscripciones/pagar/{id}")
     public String pagarSuscripcion(@PathVariable Long id,
-                                   @AuthenticationPrincipal UserDetails userDetails) {
+                                   @AuthenticationPrincipal UserDetails userDetails,
+                                   @RequestParam(value = "redirectTo", required = false) String redirectTo) {
         if (userDetails == null) {
             return "redirect:/auth/login";
         }
@@ -126,7 +127,7 @@ public class SuscripcionController {
             suscripcion.setEstadoSuscripcion(com.sabi.sabi.entity.enums.EstadoSuscripcion.ACEPTADA);
             suscripcionService.updateSuscripcion(id, suscripcion);
         }
-        return "redirect:/suscripciones";
+        return "redirect:" + (redirectTo != null && !redirectTo.isEmpty() ? redirectTo : "/suscripciones");
     }
 
     @PostMapping("/suscripciones/rechazar/{id}")

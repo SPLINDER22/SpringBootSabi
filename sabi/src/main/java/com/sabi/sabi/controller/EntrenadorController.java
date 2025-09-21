@@ -2,6 +2,7 @@ package com.sabi.sabi.controller;
 
 import com.sabi.sabi.service.EntrenadorService;
 import com.sabi.sabi.service.SuscripcionService;
+import com.sabi.sabi.service.ReportePdfService;
 import com.sabi.sabi.service.UsuarioService;
 import com.sabi.sabi.dto.SuscripcionDTO;
 import com.sabi.sabi.entity.enums.EstadoSuscripcion;
@@ -30,6 +31,9 @@ public class EntrenadorController {
 
     @Autowired
     private ClienteService clienteService;
+
+    @Autowired
+    private ReportePdfService reportePdfService;
 
     @GetMapping("/entrenador/dashboard")
     public String entrenadorDashboard() {
@@ -94,6 +98,16 @@ public class EntrenadorController {
                 .collect(Collectors.toMap(id -> id, id -> clienteService.getClienteById(id).getNombre()));
         model.addAttribute("nombresClientes", nombresClientes);
         return "entrenador/suscripciones-historial";
+    }
+
+    @GetMapping("/entrenador/suscripciones/reporte.pdf")
+    public org.springframework.http.ResponseEntity<byte[]> descargarReporteSuscripciones() {
+        var baos = reportePdfService.generarReporteSuscripciones();
+        byte[] pdf = baos.toByteArray();
+        var headers = new org.springframework.http.HttpHeaders();
+        headers.setContentType(org.springframework.http.MediaType.APPLICATION_PDF);
+        headers.set("Content-Disposition", "attachment; filename=Reporte_Suscripciones.pdf");
+        return org.springframework.http.ResponseEntity.ok().headers(headers).body(pdf);
     }
 
     @org.springframework.web.bind.annotation.PostMapping("/entrenadores/solicitar/{idEntrenador}")
