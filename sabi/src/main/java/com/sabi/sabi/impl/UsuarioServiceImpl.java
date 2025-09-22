@@ -7,9 +7,12 @@ import com.sabi.sabi.entity.Usuario;
 import com.sabi.sabi.entity.enums.Rol;
 import com.sabi.sabi.repository.UsuarioRepository;
 import com.sabi.sabi.service.UsuarioService;
+import jakarta.annotation.PostConstruct;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
@@ -19,6 +22,13 @@ public class UsuarioServiceImpl implements UsuarioService {
     private UsuarioRepository usuarioRepository;
     @Autowired
     private ModelMapper modelMapper;
+
+    private static final Logger logger = LoggerFactory.getLogger(UsuarioServiceImpl.class);
+
+    @PostConstruct
+    public void init() {
+        logger.debug("UsuarioServiceImpl se ha inicializado correctamente.");
+    }
 
     @Override
     public List<UsuarioDTO> getAllUsuarios() {
