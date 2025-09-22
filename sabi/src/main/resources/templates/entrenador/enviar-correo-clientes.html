@@ -6,26 +6,37 @@
 </head>
 <body th:replace="layout/layout :: layout('Enviar Correo a Clientes', ~{::section})">
 <section th:fragment="section">
-    <h1 class="h3 mb-4 text-gray-800">Enviar Correo a Clientes</h1>
-    <div th:if="${success}" class="alert alert-success" role="alert" th:text="${success}"></div>
-    <div th:if="${error}" class="alert alert-danger" role="alert" th:text="${error}"></div>
-    <form th:action="@{/entrenador/enviar-correo-clientes}" method="post">
-        <div class="form-group">
-            <label for="asunto">Asunto</label>
-            <input type="text" class="form-control" id="asunto" name="asunto" required>
+    <div class="container d-flex justify-content-center align-items-center" style="min-height: 80vh;">
+        <div class="card shadow-lg border-primary w-100" style="max-width: 500px;">
+            <div class="card-header bg-primary text-white text-center">
+                <h2 class="h4 mb-0"><i class="fas fa-envelope me-2"></i>Enviar Correo a Clientes</h2>
+            </div>
+            <div class="card-body p-4">
+                <div th:if="${success}" class="alert alert-success" role="alert" th:text="${success}"></div>
+                <div th:if="${error}" class="alert alert-danger" role="alert" th:text="${error}"></div>
+                <form th:action="@{/entrenador/enviar-correo-clientes}" method="post">
+                    <div class="mb-3">
+                        <label for="asunto" class="form-label"><i class="fas fa-heading me-1"></i> Asunto</label>
+                        <input type="text" class="form-control" id="asunto" name="asunto" required placeholder="Motivo del correo">
+                    </div>
+                    <div class="mb-3">
+                        <label for="mensaje" class="form-label"><i class="fas fa-align-left me-1"></i> Mensaje</label>
+                        <textarea class="form-control" id="mensaje" name="mensaje" rows="5" required placeholder="Escribe el mensaje aquí..."></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="idsClientes" class="form-label"><i class="fas fa-users me-1"></i> Selecciona los clientes</label>
+                        <select class="form-select" id="idsClientes" name="idsClientes" multiple required size="6">
+                            <option th:each="cliente : ${clientes}" th:value="${cliente.id}" th:text="${cliente.nombre + ' (' + cliente.email + ')'}"></option>
+                        </select>
+                        <small class="form-text text-muted">Puedes seleccionar uno o varios clientes manteniendo presionada la tecla Ctrl o Shift.</small>
+                    </div>
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-primary btn-lg"><i class="fas fa-paper-plane me-1"></i> Enviar Correo</button>
+                    </div>
+                </form>
+            </div>
         </div>
-        <div class="form-group">
-            <label for="mensaje">Mensaje</label>
-            <textarea class="form-control" id="mensaje" name="mensaje" rows="5" required></textarea>
-        </div>
-        <div class="form-group">
-            <label for="idsClientes">Selecciona los clientes</label>
-            <select class="form-control" id="idsClientes" name="idsClientes" multiple required>
-                <option th:each="cliente : ${clientes}" th:value="${cliente.id}" th:text="${cliente.nombre + ' (' + cliente.email + ')'}"></option>
-            </select>
-        </div>
-        <button type="submit" class="btn btn-primary">Enviar Correo</button>
-    </form>
+    </div>
 </section>
 </body>
 </html>

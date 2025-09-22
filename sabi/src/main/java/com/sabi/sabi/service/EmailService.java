@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import java.util.List;
 
@@ -15,6 +16,7 @@ public class EmailService {
     @Value("${spring.mail.username}")
     private String fromAddress;
 
+    @Async
     public void sendEmail(String subject, String message, List<String> recipients) {
         String footer = "\n\n---\nEste correo fue enviado por medio de la app de Sabi.";
         SimpleMailMessage mailMessage = new SimpleMailMessage();

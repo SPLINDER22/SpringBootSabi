@@ -5,13 +5,44 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Registro - SABI</title>
     <!-- Usar estilos del login para que el diseño sea idéntico -->
-    <link rel="stylesheet" th:href="@{/css/login.css}">
-    <link rel="stylesheet" th:href="@{/css/registro.css}">
+        <link rel="stylesheet" th:href="@{/css/login.css}">
+        <link rel="stylesheet" th:href="@{/css/registro.css}">
+        <style>
+            .form-select, select.form-select {
+                border-radius: 0.75rem !important;
+                box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+                border: 1.5px solid #bfc9d1;
+                background-color: #f8f9fa;
+                font-size: 1.1rem;
+                margin-bottom: 1rem;
+                transition: border-color 0.2s, box-shadow 0.2s;
+            }
+            .form-select:focus {
+                border-color: #2563eb;
+                box-shadow: 0 0 0 3px rgba(37,99,235,0.12);
+                background: #fff;
+            }
+            .login-form-section {
+                background: #fff;
+                border-radius: 1.5rem;
+                box-shadow: 0 8px 32px rgba(37,99,235,0.08);
+                padding: 48px 36px;
+            }
+            .login-title {
+                margin-bottom: 2.5rem;
+            }
+            .login-button {
+                border-radius: 0.75rem;
+                font-size: 1.1rem;
+                padding: 0.75rem 0;
+                margin-top: 1.2rem;
+            }
+        </style>
     <link rel="icon" type="image/png" th:href="@{/img/logoF.png}">
 </head>
 <body>
 <div class="login-container">
-    <div class="login-form-section">
+    <div class="login-form-section mx-auto" style="max-width: 480px; width: 100%;">
         <h1 class="login-title">Crear Cuenta</h1>
 
         <!-- Mensajes de error/éxito -->
@@ -29,16 +60,12 @@
             <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
 
             <div class="form-group">
-                <label for="nombre"><i class="fas fa-user"></i> Nombres</label>
-                <input type="text" name="nombre" id="nombre" placeholder="Tu nombre" required th:value="${usuario != null ? usuario.nombre : ''}">
+                <label for="nombre"><i class="fas fa-user"></i> Nombre completo</label>
+                <input type="text" name="nombre" id="nombre" placeholder="Ej: Juan Pérez" required th:value="${usuario != null ? usuario.nombre : ''}" class="form-control">
             </div>
             <div class="form-group">
-                <label for="apellido"><i class="fas fa-user"></i> Apellidos</label>
-                <input type="text" name="apellido" id="apellido" placeholder="Tu apellido" required>
-            </div>
-            <div class="form-group">
-                <label for="genero"><i class="fas fa-venus-mars"></i> Género</label>
-                <select name="genero" id="genero" required>
+                <label for="genero"><i class="fas fa-venus-mars"></i> Sexo</label>
+                <select name="genero" id="genero" required class="form-select form-select-lg mb-3">
                     <option value="">Seleccionar</option>
                     <option value="MASCULINO">Masculino</option>
                     <option value="FEMENINO">Femenino</option>
@@ -51,11 +78,11 @@
             </div>
             <div class="form-group">
                 <label for="departamento"><i class="fas fa-map"></i> Departamento</label>
-                <select name="departamento" id="departamento" required>
+                <select name="departamento" id="departamento" required class="form-select form-select-lg mb-3">
                     <option value="">Seleccionar</option>
                     <option value="ANTIOQUIA">Antioquia</option>
                     <option value="CUNDINAMARCA">Cundinamarca</option>
-                    <option value="BOGOTA">Bogota</option>
+                    <option value="BOGOTA">Bogotá</option>
                     <option value="VALLE_DEL_CAUCA">Valle del Cauca</option>
                     <option value="ATLANTICO">Atlántico</option>
                     <option value="BOLIVAR">Bolívar</option>
@@ -65,13 +92,13 @@
             </div>
             <div class="form-group">
                 <label for="ciudad"><i class="fas fa-city"></i> Ciudad</label>
-                <select name="ciudad" id="ciudad" required>
+                <select name="ciudad" id="ciudad" required class="form-select form-select-lg mb-3">
                     <option value="">Primero selecciona departamento</option>
                 </select>
             </div>
             <div class="form-group">
                 <label for="tipoDocumento"><i class="fas fa-id-card"></i> Tipo de Documento</label>
-                <select name="tipoDocumento" id="tipoDocumento" required>
+                <select name="tipoDocumento" id="tipoDocumento" required class="form-select form-select-lg mb-3">
                     <option value="">Seleccionar</option>
                     <option value="CC">Cédula de Ciudadanía</option>
                     <option value="TI">Tarjeta de Identidad</option>

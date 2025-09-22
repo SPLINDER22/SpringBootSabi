@@ -95,6 +95,17 @@ public class EntrenadorController {
                 .filter(Objects::nonNull)
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
         model.addAttribute("rutinasActivasClientes", rutinasActivasClientes);
+
+    // Mapa de diagnóstico actual por cliente
+    Map<Long, com.sabi.sabi.dto.DiagnosticoDTO> diagnosticosActuales = suscripciones.stream()
+        .map(SuscripcionDTO::getIdCliente)
+        .filter(Objects::nonNull)
+        .distinct()
+        .collect(Collectors.toMap(
+            id -> id,
+            id -> clienteService.getDiagnosticoActualByClienteId(id)
+        ));
+    model.addAttribute("diagnosticosActuales", diagnosticosActuales);
         // Log simple para depuración (se puede remover luego)
         System.out.println("[EntrenadorController] rutinasActivasClientes=" + rutinasActivasClientes);
 
@@ -129,8 +140,20 @@ public class EntrenadorController {
     }
 
     @GetMapping("/entrenador/enviar-correo-clientes")
-    public String mostrarFormularioCorreo(Model model) {
-        model.addAttribute("clientes", clienteService.getAllActiveClientes());
+    public String mostrarFormularioCorreo(@AuthenticationPrincipal UserDetails userDetails, Model model) {
+        if (userDetails == null) {
+            return "redirect:/auth/login";
+        }
+        var usuario = usuarioService.obtenerPorEmail(userDetails.getUsername());
+        var suscripciones = suscripcionService.getAllActiveSuscripciones().stream()
+            .filter(s -> s.getIdEntrenador() != null && s.getIdEntrenador().equals(usuario.getId()))
+            .filter(s -> s.getEstadoSuscripcion() != com.sabi.sabi.entity.enums.EstadoSuscripcion.RECHAZADA)
+            .collect(Collectors.toList());
+        List<com.sabi.sabi.dto.ClienteDTO> clientes = suscripciones.stream()
+            .map(s -> clienteService.getClienteById(s.getIdCliente()))
+            .distinct()
+            .toList();
+        model.addAttribute("clientes", clientes);
         return "entrenador/enviar-correo-clientes";
     }
 
