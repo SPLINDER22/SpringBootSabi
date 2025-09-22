@@ -8,6 +8,7 @@ import com.sabi.sabi.dto.SuscripcionDTO;
 import com.sabi.sabi.entity.enums.EstadoSuscripcion;
 import com.sabi.sabi.service.ClienteService;
 import com.sabi.sabi.service.RutinaService; // añadido
+import com.sabi.sabi.service.EmailService;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +16,10 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -38,6 +43,9 @@ public class EntrenadorController {
 
     @Autowired
     private RutinaService rutinaService; // nuevo
+
+    @Autowired
+    private EmailService emailService;
 
     @GetMapping("/entrenador/dashboard")
     public String entrenadorDashboard() {
@@ -118,6 +126,25 @@ public class EntrenadorController {
                 .collect(Collectors.toMap(id -> id, id -> clienteService.getClienteById(id).getNombre()));
         model.addAttribute("nombresClientes", nombresClientes);
         return "entrenador/suscripciones-historial";
+    }
+
+    @GetMapping("/entrenador/enviar-correo-clientes")
+    public String mostrarFormularioCorreo(Model model) {
+        model.addAttribute("clientes", clienteService.getAllActiveClientes());
+        return "entrenador/enviar-correo-clientes";
+    }
+
+    @PostMapping("/entrenador/enviar-correo-clientes")
+    public String enviarCorreoClientes(@RequestParam String asunto,
+                                        @RequestParam String mensaje,
+                                        @RequestParam List<Long> idsClientes,
+                                        RedirectAttributes redirectAttributes) {
+        List<String> correos = idsClientes.stream()
+                .map(id -> clienteService.getClienteById(id).getEmail())
+                .collect(Collectors.toList());
+        emailService.sendEmail(asunto, mensaje, correos);
+        redirectAttributes.addFlashAttribute("success", "Correos enviados exitosamente.");
+        return "redirect:/entrenador/enviar-correo-clientes";
     }
 
     @GetMapping("/entrenador/suscripciones/reporte.pdf")
