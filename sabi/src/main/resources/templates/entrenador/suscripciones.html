@@ -46,38 +46,30 @@
                             </div>
 
                             <div class="row g-3 g-md-3 justify-content-center">
-                                <div class="col-12">
-                                    <div class="row g-3">
-                                        <div class="col-12 col-md-6">
-                                            <div class="d-flex flex-column align-items-center p-2">
-                                                <div class="fs-6 text-dark mb-1"><i class="fas fa-dollar-sign text-primary me-2"></i> Precio</div>
-                                                <div class="fw-semibold fs-6" th:text="${suscripcion.precio != null ? #numbers.formatDecimal(suscripcion.precio, 1, 'COMMA', 2, 'POINT') : 'Por Definirse'}">Por Definirse</div>
-                                            </div>
-                                        </div>
+                                <div class="col-12 col-md-4">
+                                    <div class="d-flex flex-column align-items-center p-2">
+                                        <div class="fs-6 text-dark mb-1"><i class="fas fa-dollar-sign text-primary me-2"></i> Precio</div>
+                                        <div class="fw-semibold fs-6" th:text="${suscripcion.precio != null ? #numbers.formatDecimal(suscripcion.precio, 1, 'COMMA', 2, 'POINT') : 'Por Definirse'}">Por Definirse</div>
                                     </div>
                                 </div>
-                                <div class="col-12">
-                                    <div class="row g-3">
-                                        <div class="col-6">
-                                            <div class="d-flex flex-column align-items-center p-2">
-                                                <div class="fs-6 text-dark mb-1">
-                                                    <i class="fas fa-play text-primary me-2"></i> Fecha de Inicio
-                                                </div>
-                                                <div class="fw-semibold fs-6"
-                                                    th:text="${suscripcion.fechaInicio != null ? #temporals.format(suscripcion.fechaInicio, 'yyyy-MM-dd') : 'Por Definirse'}">
-                                                    Por Definirse</div>
-                                            </div>
+                                <div class="col-12 col-md-4">
+                                    <div class="d-flex flex-column align-items-center p-2">
+                                        <div class="fs-6 text-dark mb-1">
+                                            <i class="fas fa-play text-primary me-2"></i> Fecha de Inicio
                                         </div>
-                                        <div class="col-6">
-                                            <div class="d-flex flex-column align-items-center p-2">
-                                                <div class="fs-6 text-dark mb-1">
-                                                    <i class="fas fa-flag-checkered text-primary me-2"></i> Fecha de Fin
-                                                </div>
-                                                <div class="fw-semibold fs-6"
-                                                    th:text="${suscripcion.fechaFin != null ? #temporals.format(suscripcion.fechaFin, 'yyyy-MM-dd') : 'Por Definirse'}">
-                                                    Por Definirse</div>
-                                            </div>
+                                        <div class="fw-semibold fs-6"
+                                            th:text="${suscripcion.fechaInicio != null ? #temporals.format(suscripcion.fechaInicio, 'yyyy-MM-dd') : 'Por Definirse'}">
+                                            Por Definirse</div>
+                                    </div>
+                                </div>
+                                <div class="col-12 col-md-4">
+                                    <div class="d-flex flex-column align-items-center p-2">
+                                        <div class="fs-6 text-dark mb-1">
+                                            <i class="fas fa-flag-checkered text-primary me-2"></i> Fecha de Fin
                                         </div>
+                                        <div class="fw-semibold fs-6"
+                                            th:text="${suscripcion.fechaFin != null ? #temporals.format(suscripcion.fechaFin, 'yyyy-MM-dd') : 'Por Definirse'}">
+                                            Por Definirse</div>
                                     </div>
                                 </div>
                             </div>
@@ -92,6 +84,7 @@
                                         th:attr="data-id=${suscripcion.idSuscripcion},
                                                  data-cliente=${suscripcion.idCliente},
                                                  data-entrenador=${suscripcion.idEntrenador},
+                                                 data-precio=${suscripcion.precio},
                                                  data-fechainicio=${suscripcion.fechaInicio},
                                                  data-fechafin=${suscripcion.fechaFin},
                                                  data-estado=${suscripcion.estadoSuscripcion}">
@@ -110,12 +103,7 @@
                                             <i class="fas fa-dumbbell me-1"></i> Asignar rutina
                                         </a>
                                     </div>
-                                    <!-- Botón diagnóstico (sin cambios, visible solo aceptada) -->
-                                    <a th:if="${suscripcion.estadoSuscripcion == T(com.sabi.sabi.entity.enums.EstadoSuscripcion).ACEPTADA}"
-                                        th:href="@{/}"
-                                        class="btn btn-success flex-fill">
-                                        <i class="fas fa-dumbbell me-1"></i> Asignar rutina
-                                    </a>
+                                    <!-- Botón diagnóstico -->
                                     <a th:if="${suscripcion.estadoSuscripcion == T(com.sabi.sabi.entity.enums.EstadoSuscripcion).ACEPTADA
                                                or suscripcion.estadoSuscripcion == T(com.sabi.sabi.entity.enums.EstadoSuscripcion).COTIZADA
                                                or suscripcion.estadoSuscripcion == T(com.sabi.sabi.entity.enums.EstadoSuscripcion).PENDIENTE}"
