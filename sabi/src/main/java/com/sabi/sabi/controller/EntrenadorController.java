@@ -18,6 +18,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.List;
 import java.util.Map;
@@ -112,6 +113,20 @@ public class EntrenadorController {
         return "entrenador/suscripciones";
     }
 
+    @org.springframework.web.bind.annotation.GetMapping("/api/entrenador/diagnostico/cliente/{clienteId}")
+    @org.springframework.web.bind.annotation.ResponseBody
+    public org.springframework.http.ResponseEntity<?> obtenerDiagnosticoActual(@org.springframework.web.bind.annotation.PathVariable Long clienteId) {
+        try {
+            com.sabi.sabi.dto.DiagnosticoDTO diagnosticoActual = clienteService.getDiagnosticoActualByClienteId(clienteId);
+            if (diagnosticoActual == null) {
+                return org.springframework.http.ResponseEntity.ok().body(java.util.Collections.singletonMap("message", "No hay diagnostico"));
+            }
+            return org.springframework.http.ResponseEntity.ok(diagnosticoActual);
+        } catch (Exception e) {
+            return org.springframework.http.ResponseEntity.status(500).body(java.util.Collections.singletonMap("error", e.getMessage()));
+        }
+    }
+
     @GetMapping("/entrenador/suscripciones/historial")
     public String historialSuscripcionesEntrenador(@AuthenticationPrincipal UserDetails userDetails, Model model) {
         if (userDetails == null) {
@@ -202,5 +217,21 @@ public class EntrenadorController {
         suscripcionDTO.setEstadoSuscripcion(EstadoSuscripcion.PENDIENTE);
         suscripcionService.createSuscripcion(suscripcionDTO);
         return "redirect:/cliente/suscripcion";
+    }
+
+    @GetMapping("/entrenador/diagnostico/vista/{clienteId}")
+    public String verDiagnostico(@PathVariable Long clienteId, Model model) {
+        try {
+            com.sabi.sabi.dto.DiagnosticoDTO diagnostico = clienteService.getDiagnosticoActualByClienteId(clienteId);
+            if (diagnostico == null) {
+                model.addAttribute("error", "No se encontró un diagnóstico para este cliente.");
+                return "error";
+            }
+            model.addAttribute("diagnostico", diagnostico);
+            return "entrenador/ver-diagnostico";
+        } catch (Exception e) {
+            model.addAttribute("error", "Ocurrió un error al cargar el diagnóstico: " + e.getMessage());
+            return "error";
+        }
     }
 }

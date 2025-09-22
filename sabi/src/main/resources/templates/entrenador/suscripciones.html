@@ -19,6 +19,36 @@
                 </a>
             </div>
         </div>
+        <!-- Modal Ver Diagnóstico -->
+        <div class="modal fade" id="modalDiagnostico" tabindex="-1" aria-labelledby="modalDiagnosticoLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="modalDiagnosticoLabel">Último Diagnóstico</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p><strong>Fecha:</strong> <span id="diagnosticoFecha"></span></p>
+                        <p><strong>Peso:</strong> <span id="diagnosticoPeso"></span> kg</p>
+                        <p><strong>Estatura:</strong> <span id="diagnosticoEstatura"></span> cm</p>
+                        <p><strong>Nivel de Experiencia:</strong> <span id="diagnosticoNivelExperiencia"></span></p>
+                        <p><strong>Disponibilidad de Tiempo:</strong> <span id="diagnosticoDisponibilidad"></span></p>
+                        <p><strong>Acceso a Recursos:</strong> <span id="diagnosticoRecursos"></span></p>
+                        <p><strong>Lesiones:</strong> <span id="diagnosticoLesiones"></span></p>
+                        <p><strong>Condiciones Médicas:</strong> <span id="diagnosticoCondiciones"></span></p>
+                        <p><strong>Porcentaje de Grasa Corporal:</strong> <span id="diagnosticoGrasa"></span>%</p>
+                        <p><strong>Circunferencia Cintura:</strong> <span id="diagnosticoCintura"></span> cm</p>
+                        <p><strong>Circunferencia Cadera:</strong> <span id="diagnosticoCadera"></span> cm</p>
+                        <p><strong>Frecuencia Cardiaca en Reposo:</strong> <span id="diagnosticoFrecuencia"></span> bpm</p>
+                        <p><strong>Presión Arterial:</strong> <span id="diagnosticoPresion"></span></p>
+                        <p><strong>Hábitos Alimenticios:</strong> <span id="diagnosticoHabitos"></span></p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
         <div class="container">
             <div class="row g-4">
                 <div th:if="${#lists.isEmpty(suscripciones)}" class="col-12 d-flex justify-content-center">
@@ -103,11 +133,11 @@
                                             <i class="fas fa-dumbbell me-1"></i> Asignar rutina
                                         </a>
                                     </div>
-                                    <!-- Botón diagnóstico -->
-                                    <a th:if="${suscripcion.estadoSuscripcion == T(com.sabi.sabi.entity.enums.EstadoSuscripcion).ACEPTADA
-                                               or suscripcion.estadoSuscripcion == T(com.sabi.sabi.entity.enums.EstadoSuscripcion).COTIZADA
-                                               or suscripcion.estadoSuscripcion == T(com.sabi.sabi.entity.enums.EstadoSuscripcion).PENDIENTE}"
-                                        th:href="@{/}"
+                                    <!-- Botón diagnóstico: abre modal con último diagnóstico -->
+                                    <a th:if="${suscripcion.idCliente != null && (suscripcion.estadoSuscripcion == T(com.sabi.sabi.entity.enums.EstadoSuscripcion).ACEPTADA
+                                                   or suscripcion.estadoSuscripcion == T(com.sabi.sabi.entity.enums.EstadoSuscripcion).COTIZADA
+                                                   or suscripcion.estadoSuscripcion == T(com.sabi.sabi.entity.enums.EstadoSuscripcion).PENDIENTE)}"
+                                        th:href="@{/entrenador/diagnostico/vista/{clienteId}(clienteId=${suscripcion.idCliente})}"
                                         class="btn btn-info text-white flex-fill">
                                         <i class="fas fa-notes-medical me-1"></i> Ver diagnóstico
                                     </a>
@@ -191,6 +221,43 @@
                         $('#modalEditarSuscripcion').appendTo('body').modal('show');
                     } else {
                         console.error('Bootstrap modal plugin not available. Verify bootstrap JS is loaded.');
+                    }
+                });
+            });
+        </script>
+        <script>
+            document.querySelectorAll('.btn-ver-diagnostico').forEach(button => {
+                button.addEventListener('click', async () => {
+                    const clienteId = button.getAttribute('data-cliente-id');
+                    try {
+                        const response = await fetch(`/api/entrenador/diagnostico/${clienteId}`);
+                        if (!response.ok) {
+                            throw new Error('Error al obtener el diagnóstico');
+                        }
+                        const diagnostico = await response.json();
+
+                        // Rellenar el modal con los datos del diagnóstico
+                        document.getElementById('diagnosticoFecha').textContent = diagnostico.fecha || 'N/A';
+                        document.getElementById('diagnosticoPeso').textContent = diagnostico.peso || 'N/A';
+                        document.getElementById('diagnosticoEstatura').textContent = diagnostico.estatura || 'N/A';
+                        document.getElementById('diagnosticoNivelExperiencia').textContent = diagnostico.nivelExperiencia || 'N/A';
+                        document.getElementById('diagnosticoDisponibilidad').textContent = diagnostico.disponibilidadTiempo || 'N/A';
+                        document.getElementById('diagnosticoRecursos').textContent = diagnostico.accesoRecursos || 'N/A';
+                        document.getElementById('diagnosticoLesiones').textContent = diagnostico.lesiones || 'N/A';
+                        document.getElementById('diagnosticoCondiciones').textContent = diagnostico.condicionesMedicas || 'N/A';
+                        document.getElementById('diagnosticoGrasa').textContent = diagnostico.porcentajeGrasaCorporal || 'N/A';
+                        document.getElementById('diagnosticoCintura').textContent = diagnostico.circunferenciaCintura || 'N/A';
+                        document.getElementById('diagnosticoCadera').textContent = diagnostico.circunferenciaCadera || 'N/A';
+                        document.getElementById('diagnosticoFrecuencia').textContent = diagnostico.frecuenciaCardiacaReposo || 'N/A';
+                        document.getElementById('diagnosticoPresion').textContent = diagnostico.presionArterial || 'N/A';
+                        document.getElementById('diagnosticoHabitos').textContent = diagnostico.habitosAlimenticios || 'N/A';
+
+                        // Mostrar el modal
+                        const modal = new bootstrap.Modal(document.getElementById('modalDiagnostico'));
+                        modal.show();
+                    } catch (error) {
+                        console.error(error);
+                        alert('Hubo un error al cargar el diagnóstico.');
                     }
                 });
             });
