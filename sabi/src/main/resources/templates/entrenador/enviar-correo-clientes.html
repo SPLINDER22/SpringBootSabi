@@ -7,6 +7,8 @@
 <body th:replace="layout/layout :: layout('Enviar Correo a Clientes', ~{::section})">
 <section th:fragment="section">
     <h1 class="h3 mb-4 text-gray-800">Enviar Correo a Clientes</h1>
+    <div th:if="${success}" class="alert alert-success" role="alert" th:text="${success}"></div>
+    <div th:if="${error}" class="alert alert-danger" role="alert" th:text="${error}"></div>
     <form th:action="@{/entrenador/enviar-correo-clientes}" method="post">
         <div class="form-group">
             <label for="asunto">Asunto</label>

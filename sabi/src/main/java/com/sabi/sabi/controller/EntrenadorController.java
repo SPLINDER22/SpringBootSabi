@@ -142,8 +142,12 @@ public class EntrenadorController {
         List<String> correos = idsClientes.stream()
                 .map(id -> clienteService.getClienteById(id).getEmail())
                 .collect(Collectors.toList());
-        emailService.sendEmail(asunto, mensaje, correos);
-        redirectAttributes.addFlashAttribute("success", "Correos enviados exitosamente.");
+        try {
+            emailService.sendEmail(asunto, mensaje, correos);
+            redirectAttributes.addFlashAttribute("success", "Correos enviados exitosamente.");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "No se pudieron enviar los correos: " + e.getMessage());
+        }
         return "redirect:/entrenador/enviar-correo-clientes";
     }
 
