@@ -43,8 +43,8 @@ public class DataInitializer implements CommandLineRunner {
 
         @Override
         public void run(String... args) {
-                crearClienteSiNoExiste("Cliente", "cliente@sabi.com", "1234567");
-                crearEntrenadorSiNoExiste("Entrenador", "entrenador@sabi.com", "1234567");
+                crearClienteSiNoExiste("Carlos Colmenares", "cliente@sabi.com", "1234567");
+                crearEntrenadorSiNoExiste("Ernesto Espinel", "entrenador@sabi.com", "1234567");
                 crearEjerciciosSiNoExisten();
                 crearRutinaDeEjemplo();
                 crearRutinaGlobalLibre(); // Nueva rutina global sin cliente ni entrenador ni estadoRutina
@@ -118,11 +118,17 @@ public class DataInitializer implements CommandLineRunner {
     }
 
     private void crearEjerciciosSiNoExisten() {
-        // Ejercicio global (no asignado a ningún usuario)
+        // Ejercicios globales (no asignados a ningún usuario)
         crearEjercicioGlobalSiNoExiste(
                 "Sentadilla con barra",
                 "Ejercicio compuesto para piernas y glúteos.",
                 "Piernas",
+                "Barra"
+        );
+        crearEjercicioGlobalSiNoExiste(
+                "Press de banca",
+                "Ejercicio compuesto para pectoral, tríceps y hombros.",
+                "Pecho",
                 "Barra"
         );
 
@@ -184,72 +190,80 @@ public class DataInitializer implements CommandLineRunner {
         // Verificar si ya existe la rutina (nombre consistente con el que se crea)
         final String nombreRutina = "Rutina del entrenador";
         if (rutinaRepository.findAll().stream().anyMatch(r -> nombreRutina.equals(r.getNombre()))) return;
-        // Obtener ejercicio global
-        Ejercicio ejercicio = ejercicioRepository.findAll().stream().filter(e -> e.getTipo().name().equals("GLOBAL")).findFirst().orElse(null);
-        if (ejercicio == null) return;
-        // Crear rutina
+        // Obtener ejercicios globales necesarios
+        Ejercicio sentadilla = ejercicioRepository.findAll().stream()
+                .filter(e -> e.getTipo().name().equals("GLOBAL") && e.getNombre().equalsIgnoreCase("Sentadilla con barra"))
+                .findFirst().orElse(null);
+        Ejercicio pressBanca = ejercicioRepository.findAll().stream()
+                .filter(e -> e.getTipo().name().equals("GLOBAL") && e.getNombre().equalsIgnoreCase("Press de banca"))
+                .findFirst().orElse(null);
+        if (sentadilla == null || pressBanca == null) return; // No crear si faltan ejercicios base
+
+        // Crear rutina con 2 semanas
         Rutina rutina = Rutina.builder()
                 .nombre(nombreRutina)
                 .objetivo("Hipertrofia")
-                .descripcion("Rutina de prueba para desarrollo.")
+                .descripcion("Rutina de prueba para desarrollo con 2 semanas, 2 días y 2 ejercicios por día.")
                 .fechaCreacion(java.time.LocalDate.now())
-                .numeroSemanas(1L)
+                .numeroSemanas(2L)
                 .entrenador(entrenador)
                 .estado(true)
                 .build();
         rutinaRepository.save(rutina);
-        // Crear semana
-        Semana semana = Semana.builder()
-                .numeroSemana(1L)
-                .descripcion("Semana 1 de la rutina de ejemplo")
-                .numeroDias(1L)
-                .rutina(rutina)
-                .estado(true)
-                .build();
-        semanaRepository.save(semana);
-        // Crear día
-        Dia dia = Dia.builder()
-                .numeroDia(1L)
-                .descripcion("Día 1: Piernas y glúteos")
-                .numeroEjercicios(1L)
-                .semana(semana)
-                .estado(true)
-                .build();
-        diaRepository.save(dia);
-        // Crear ejercicio asignado con 2 series
-        EjercicioAsignado ejercicioAsignado = EjercicioAsignado.builder()
-                .orden(1L)
-                .comentarios("Ejecutar con buena técnica")
-                .numeroSeries(2L)
-                .dia(dia)
-                .ejercicio(ejercicio)
-                .estado(true)
-                .build();
-        ejercicioAsignadoRepository.save(ejercicioAsignado);
-        // Serie 1
-        Serie serie1 = Serie.builder()
-                .orden(1L)
-                .repeticiones(12L)
-                .peso(60.0)
-                .descanso("60 - 90 segundos")
-                .intensidad(null)
-                .comentarios("Peso moderado")
-                .ejercicioAsignado(ejercicioAsignado)
-                .estado(true)
-                .build();
-        serieRepository.save(serie1);
-        // Serie 2 (ligera variación)
-        Serie serie2 = Serie.builder()
-                .orden(2L)
-                .repeticiones(10L)
-                .peso(65.0)
-                .descanso("90 segundos")
-                .intensidad(null)
-                .comentarios("Aumentar ligeramente el peso")
-                .ejercicioAsignado(ejercicioAsignado)
-                .estado(true)
-                .build();
-        serieRepository.save(serie2);
+
+        // Crear 2 semanas
+        for (long numSemana = 1L; numSemana <= 2L; numSemana++) {
+            Semana semana = Semana.builder()
+                    .numeroSemana(numSemana)
+                    .descripcion("Semana " + numSemana + " de la rutina de ejemplo")
+                    .numeroDias(2L)
+                    .rutina(rutina)
+                    .estado(true)
+                    .build();
+            semanaRepository.save(semana);
+
+            // Crear 2 días por semana
+            for (long numDia = 1L; numDia <= 2L; numDia++) {
+                Dia dia = Dia.builder()
+                        .numeroDia(numDia)
+                        .descripcion("Semana " + numSemana + " - Día " + numDia + ": Sentadilla y Press de banca")
+                        .numeroEjercicios(2L)
+                        .semana(semana)
+                        .estado(true)
+                        .build();
+                diaRepository.save(dia);
+
+                Ejercicio[] ejerciciosDelDia = {sentadilla, pressBanca};
+                long ordenEjercicio = 1L;
+                for (Ejercicio ejercicio : ejerciciosDelDia) {
+                    EjercicioAsignado ejercicioAsignado = EjercicioAsignado.builder()
+                            .orden(ordenEjercicio)
+                            .comentarios("Mantener buena técnica")
+                            .numeroSeries(2L)
+                            .dia(dia)
+                            .ejercicio(ejercicio)
+                            .estado(true)
+                            .build();
+                    ejercicioAsignadoRepository.save(ejercicioAsignado);
+
+                    // Crear 2 series por ejercicio asignado
+                    for (long numSerie = 1L; numSerie <= 2L; numSerie++) {
+                        Serie serie = Serie.builder()
+                                .orden(numSerie)
+                                .repeticiones(numSerie == 1 ? 12L : 10L)
+                                .peso(ejercicio.getNombre().toLowerCase().contains("sentadilla") ? (numSerie == 1 ? 60.0 : 65.0) : (numSerie == 1 ? 40.0 : 45.0))
+                                .descanso("60 - 90 segundos")
+                                .intensidad(null)
+                                .comentarios(numSerie == 1 ? "Serie de entrada" : "Aumentar ligeramente el peso")
+                                .ejercicioAsignado(ejercicioAsignado)
+                                .estado(true)
+                                .build();
+                        serieRepository.save(serie);
+                    }
+                    ordenEjercicio++;
+                }
+            }
+        }
     }
 
     private void crearRutinaGlobalLibre() {
