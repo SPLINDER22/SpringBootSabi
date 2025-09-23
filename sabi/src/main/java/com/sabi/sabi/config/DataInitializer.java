@@ -123,13 +123,15 @@ public class DataInitializer implements CommandLineRunner {
                 "Sentadilla con barra",
                 "Ejercicio compuesto para piernas y glúteos.",
                 "Piernas",
-                "Barra"
+                "Barra",
+                "https://www.youtube.com/embed/Z00Rl4raGkM?si=IxiQDy__iJVOeu2b"
         );
         crearEjercicioGlobalSiNoExiste(
                 "Press de banca",
                 "Ejercicio compuesto para pectoral, tríceps y hombros.",
                 "Pecho",
-                "Barra"
+                "Barra",
+                "https://www.youtube.com/embed/TAH8RxOS0VI?si=tSCIs2gf8pQ4uEb-"
         );
 
         // Ejercicio privado (asignado a un usuario existente)
@@ -145,14 +147,14 @@ public class DataInitializer implements CommandLineRunner {
         );
     }
 
-
-    private void crearEjercicioGlobalSiNoExiste(String nombre, String descripcion, String grupoMuscular, String equipo) {
+    private void crearEjercicioGlobalSiNoExiste(String nombre, String descripcion, String grupoMuscular, String equipo, String video) {
         if (!ejercicioRepository.existsByNombreAndTipo(nombre, TipoEjercicio.GLOBAL)) {
             Ejercicio e = Ejercicio.builder()
                     .nombre(nombre)
                     .descripcion(descripcion)
                     .grupoMuscular(grupoMuscular)
                     .equipo(equipo)
+                    .urlVideo(video)
                     .tipo(TipoEjercicio.GLOBAL)
                     .estado(true)
                     .build();

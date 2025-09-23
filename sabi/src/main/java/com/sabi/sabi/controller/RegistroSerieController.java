@@ -30,9 +30,16 @@ public class RegistroSerieController {
 
     @GetMapping("/registros-series/{idEjercicioAsignado}")
     public String verRegistroSeries(@PathVariable Long idEjercicioAsignado,
+                                    @RequestParam(value = "readonly", required = false) Boolean readonly,
                                     @AuthenticationPrincipal UserDetails userDetails,
                                     Model model) {
         if (userDetails == null) return "redirect:/auth/login";
+        // Si es ENTRENADOR y no viene en modo readonly, redirigir a gestión de series
+        boolean esEntrenador = userDetails.getAuthorities().stream()
+                .anyMatch(a -> a.getAuthority() != null && a.getAuthority().contains("ENTRENADOR"));
+        if (esEntrenador && (readonly == null || !readonly)) {
+            return "redirect:/series/detallar/" + idEjercicioAsignado;
+        }
         try {
             EjercicioAsignado asignado = ejercicioAsignadoRepository.findById(idEjercicioAsignado)
                     .orElseThrow(() -> new RuntimeException("Ejercicio asignado no encontrado"));
@@ -67,6 +74,7 @@ public class RegistroSerieController {
             model.addAttribute("registrosMap", registrosMap);
             model.addAttribute("ejercicioAsignado", asignado);
             model.addAttribute("idDia", idDia);
+            model.addAttribute("readonly", true); // Forzamos readonly para la vista de registros
         } catch (Exception ex) {
             log.error("Error cargando registros de series", ex);
             model.addAttribute("error", "No se pudo cargar la vista de registros");
@@ -86,13 +94,13 @@ public class RegistroSerieController {
             if (registroSerieDTO.getFechaEjecucion() == null) registroSerieDTO.setFechaEjecucion(LocalDateTime.now());
             registroSerieService.saveOrUpdateRegistroSerie(registroSerieDTO);
             ra.addFlashAttribute("success", "Registro guardado");
-            return "redirect:/registros-series/" + serie.getEjercicioAsignado().getIdEjercicioAsignado();
+            return "redirect:/registros-series/" + serie.getEjercicioAsignado().getIdEjercicioAsignado() + "?readonly=true";
         } catch (Exception ex) {
             ra.addFlashAttribute("error", "No se pudo guardar");
             if (registroSerieDTO.getIdSerie() != null) {
                 try {
                     var serie = serieRepository.findById(registroSerieDTO.getIdSerie()).orElse(null);
-                    if (serie != null) return "redirect:/registros-series/" + serie.getEjercicioAsignado().getIdEjercicioAsignado();
+                    if (serie != null) return "redirect:/registros-series/" + serie.getEjercicioAsignado().getIdEjercicioAsignado() + "?readonly=true";
                 } catch (Exception ignore) {}
             }
             return "redirect:/ejercicios";
@@ -104,6 +112,6 @@ public class RegistroSerieController {
         var serie = serieRepository.findById(idSerie).orElseThrow(() -> new RuntimeException("Serie no encontrada"));
         registroSerieRepository.findFirstBySerie_Id(idSerie).ifPresent(r -> registroSerieRepository.deleteById(r.getId()));
         ra.addFlashAttribute("success", "Registro limpiado");
-        return "redirect:/registros-series/" + serie.getEjercicioAsignado().getIdEjercicioAsignado();
+        return "redirect:/registros-series/" + serie.getEjercicioAsignado().getIdEjercicioAsignado() + "?readonly=true";
     }
 }
