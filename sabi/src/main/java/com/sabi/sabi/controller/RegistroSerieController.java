@@ -34,9 +34,9 @@ public class RegistroSerieController {
                                     @AuthenticationPrincipal UserDetails userDetails,
                                     Model model) {
         if (userDetails == null) return "redirect:/auth/login";
-        // Si es ENTRENADOR y no viene en modo readonly, redirigir a gestión de series
         boolean esEntrenador = userDetails.getAuthorities().stream()
                 .anyMatch(a -> a.getAuthority() != null && a.getAuthority().contains("ENTRENADOR"));
+        // Entrenador en modo creación => redirigir a gestión de series (no registros)
         if (esEntrenador && (readonly == null || !readonly)) {
             return "redirect:/series/detallar/" + idEjercicioAsignado;
         }
@@ -74,7 +74,8 @@ public class RegistroSerieController {
             model.addAttribute("registrosMap", registrosMap);
             model.addAttribute("ejercicioAsignado", asignado);
             model.addAttribute("idDia", idDia);
-            model.addAttribute("readonly", true); // Forzamos readonly para la vista de registros
+            // readonly solo es true si explícitamente se pide o si es entrenador (progreso). Cliente normal mantiene editable.
+            model.addAttribute("readonly", esEntrenador || Boolean.TRUE.equals(readonly));
         } catch (Exception ex) {
             log.error("Error cargando registros de series", ex);
             model.addAttribute("error", "No se pudo cargar la vista de registros");
@@ -83,7 +84,9 @@ public class RegistroSerieController {
     }
 
     @PostMapping("/registros-series/guardar")
-    public String guardarRegistro(@ModelAttribute RegistroSerieDTO registroSerieDTO, RedirectAttributes ra) {
+    public String guardarRegistro(@ModelAttribute RegistroSerieDTO registroSerieDTO,
+                                  @AuthenticationPrincipal UserDetails userDetails,
+                                  RedirectAttributes ra) {
         try {
             if (registroSerieDTO.getIdSerie() == null) {
                 ra.addFlashAttribute("error", "Serie no especificada");
@@ -94,13 +97,19 @@ public class RegistroSerieController {
             if (registroSerieDTO.getFechaEjecucion() == null) registroSerieDTO.setFechaEjecucion(LocalDateTime.now());
             registroSerieService.saveOrUpdateRegistroSerie(registroSerieDTO);
             ra.addFlashAttribute("success", "Registro guardado");
-            return "redirect:/registros-series/" + serie.getEjercicioAsignado().getIdEjercicioAsignado() + "?readonly=true";
+            boolean esEntrenador = userDetails != null && userDetails.getAuthorities().stream().anyMatch(a -> a.getAuthority() != null && a.getAuthority().contains("ENTRENADOR"));
+            String sufijo = esEntrenador ? "?readonly=true" : "";
+            return "redirect:/registros-series/" + serie.getEjercicioAsignado().getIdEjercicioAsignado() + sufijo;
         } catch (Exception ex) {
             ra.addFlashAttribute("error", "No se pudo guardar");
             if (registroSerieDTO.getIdSerie() != null) {
                 try {
                     var serie = serieRepository.findById(registroSerieDTO.getIdSerie()).orElse(null);
-                    if (serie != null) return "redirect:/registros-series/" + serie.getEjercicioAsignado().getIdEjercicioAsignado() + "?readonly=true";
+                    if (serie != null) {
+                        boolean esEntrenador = userDetails != null && userDetails.getAuthorities().stream().anyMatch(a -> a.getAuthority() != null && a.getAuthority().contains("ENTRENADOR"));
+                        String sufijo = esEntrenador ? "?readonly=true" : "";
+                        return "redirect:/registros-series/" + serie.getEjercicioAsignado().getIdEjercicioAsignado() + sufijo;
+                    }
                 } catch (Exception ignore) {}
             }
             return "redirect:/ejercicios";
@@ -108,10 +117,14 @@ public class RegistroSerieController {
     }
 
     @PostMapping("/registros-series/limpiar")
-    public String limpiarRegistro(@RequestParam Long idSerie, RedirectAttributes ra) {
+    public String limpiarRegistro(@RequestParam Long idSerie,
+                                  @AuthenticationPrincipal UserDetails userDetails,
+                                  RedirectAttributes ra) {
         var serie = serieRepository.findById(idSerie).orElseThrow(() -> new RuntimeException("Serie no encontrada"));
         registroSerieRepository.findFirstBySerie_Id(idSerie).ifPresent(r -> registroSerieRepository.deleteById(r.getId()));
         ra.addFlashAttribute("success", "Registro limpiado");
-        return "redirect:/registros-series/" + serie.getEjercicioAsignado().getIdEjercicioAsignado() + "?readonly=true";
+        boolean esEntrenador = userDetails != null && userDetails.getAuthorities().stream().anyMatch(a -> a.getAuthority() != null && a.getAuthority().contains("ENTRENADOR"));
+        String sufijo = esEntrenador ? "?readonly=true" : "";
+        return "redirect:/registros-series/" + serie.getEjercicioAsignado().getIdEjercicioAsignado() + sufijo;
     }
 }

@@ -33,8 +33,9 @@ public class SemanasController {
                                   Model model) {
         RutinaDTO rutinaDTO = rutinaService.getRutinaById(idRutina);
         List<?> semanas = semanaService.getSemanasRutina(idRutina);
-        boolean esCliente = hasRole(userDetails, "CLIENTE");
-        boolean readonlyEffective = esCliente || Boolean.TRUE.equals(readonly);
+        boolean esEntrenador = hasRole(userDetails, "ENTRENADOR");
+        // Cliente ya no va en modo readonly por defecto: sólo modo readonly cuando el ENTRENADOR consulta con flag
+        boolean readonlyEffective = esEntrenador && Boolean.TRUE.equals(readonly);
         model.addAttribute("semanas", semanas);
         model.addAttribute("totalSemanas", semanas.size());
         model.addAttribute("rutina", rutinaDTO);
@@ -46,8 +47,8 @@ public class SemanasController {
     public String crearSemanaView(@PathVariable Long idRutina,
                                   @AuthenticationPrincipal UserDetails userDetails,
                                   Model model) {
-        if (hasRole(userDetails, "CLIENTE")) {
-            return "redirect:/semanas/detallar/" + idRutina + "?readonly=true";
+        if (hasRole(userDetails, "CLIENTE")) { // cliente no crea semanas
+            return "redirect:/semanas/detallar/" + idRutina; // sin readonly
         }
         RutinaDTO rutinaDTO = rutinaService.getRutinaById(idRutina);
         var semanas = semanaService.getSemanasRutina(idRutina);
@@ -66,10 +67,10 @@ public class SemanasController {
     public String editarSemanaView(@PathVariable Long idSemana,
                                    @AuthenticationPrincipal UserDetails userDetails,
                                    Model model, RedirectAttributes redirectAttributes) {
-        if (hasRole(userDetails, "CLIENTE")) {
+        if (hasRole(userDetails, "CLIENTE")) { // cliente no edita semanas
             SemanaDTO semanaDTO = semanaService.getSemanaById(idSemana);
             if (semanaDTO != null) {
-                return "redirect:/semanas/detallar/" + semanaDTO.getIdRutina() + "?readonly=true";
+                return "redirect:/semanas/detallar/" + semanaDTO.getIdRutina();
             }
             return "redirect:/rutinas";
         }
@@ -93,7 +94,7 @@ public class SemanasController {
                                 @AuthenticationPrincipal UserDetails userDetails,
                                 RedirectAttributes redirectAttributes) {
         if (hasRole(userDetails, "CLIENTE")) {
-            return "redirect:/semanas/detallar/" + semanaDTO.getIdRutina() + "?readonly=true";
+            return "redirect:/semanas/detallar/" + semanaDTO.getIdRutina();
         }
         if (semanaDTO.getIdSemana() == null) {
             SemanaDTO creada = semanaService.createSemana(semanaDTO);
@@ -110,10 +111,10 @@ public class SemanasController {
     public String eliminarSemana(@PathVariable Long idSemana,
                                  @AuthenticationPrincipal UserDetails userDetails,
                                  RedirectAttributes redirectAttributes) {
-        if (hasRole(userDetails, "CLIENTE")) {
+        if (hasRole(userDetails, "CLIENTE")) { // cliente no elimina semanas
             SemanaDTO semanaDTO = null;
             try { semanaDTO = semanaService.getSemanaById(idSemana); } catch (RuntimeException ignored) {}
-            return "redirect:/semanas/detallar/" + (semanaDTO != null ? semanaDTO.getIdRutina() : "") + "?readonly=true";
+            return "redirect:/semanas/detallar/" + (semanaDTO != null ? semanaDTO.getIdRutina() : "");
         }
         SemanaDTO semanaDTO = null;
         try {
@@ -132,12 +133,13 @@ public class SemanasController {
     public String checkSemana(@PathVariable Long idSemana,
                                @AuthenticationPrincipal UserDetails userDetails,
                                RedirectAttributes redirectAttributes) {
-        if (hasRole(userDetails, "CLIENTE")) {
-            SemanaDTO semanaDTO = null;
-            try { semanaDTO = semanaService.getSemanaById(idSemana); } catch (RuntimeException ignored) {}
-            return "redirect:/semanas/detallar/" + (semanaDTO != null ? semanaDTO.getIdRutina() : "") + "?readonly=true";
+        // Ahora sólo CLIENTE puede marcar completada / pendiente.
+        if (!hasRole(userDetails, "CLIENTE")) {
+            SemanaDTO semanaDTO;
+            try { semanaDTO = semanaService.getSemanaById(idSemana); } catch (RuntimeException ex) { return "redirect:/rutinas"; }
+            return "redirect:/semanas/detallar/" + semanaDTO.getIdRutina() + "?readonly=true"; // entrenador visualizando
         }
-        SemanaDTO semanaDTO = null;
+        SemanaDTO semanaDTO;
         try {
             semanaDTO = semanaService.getSemanaById(idSemana);
         } catch (RuntimeException ex) {

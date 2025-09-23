@@ -49,8 +49,9 @@ public class EjercicioAsignadoController {
             return "redirect:/dias/detallar/" + idDia;
         }
         List<?> ejes = ejercicioAsignadoService.getEjesDia(idDia);
-        boolean esCliente = hasRole(userDetails, "CLIENTE");
-        boolean readonlyEffective = esCliente || Boolean.TRUE.equals(readonly);
+        boolean esEntrenador = hasRole(userDetails, "ENTRENADOR");
+        // Ahora: sólo se activa readonly si viene explicitamente el parámetro o si el que mira es un entrenador en modo progreso
+        boolean readonlyEffective = Boolean.TRUE.equals(readonly) && esEntrenador;
         model.addAttribute("ejes", ejes);
         model.addAttribute("totalEjes", ejes.size());
         model.addAttribute("dia", diaDTO);
@@ -65,7 +66,7 @@ public class EjercicioAsignadoController {
     public String crearEjeView(@AuthenticationPrincipal UserDetails userDetails,
                                @PathVariable Long idDia, Model model, RedirectAttributes redirectAttributes) {
         if (hasRole(userDetails, "CLIENTE")) {
-            return "redirect:/ejes/detallar/" + idDia + "?readonly=true";
+            return "redirect:/ejes/detallar/" + idDia; // ya no forzamos readonly
         }
         DiaDTO diaDTO;
         try {
@@ -98,7 +99,7 @@ public class EjercicioAsignadoController {
         if (hasRole(userDetails, "CLIENTE")) {
             EjercicioAsignadoDTO ejeDTO;
             try { ejeDTO = ejercicioAsignadoService.getEjercicioAsignadoById(idEje); } catch (RuntimeException ex) { return "redirect:/rutinas"; }
-            return "redirect:/ejes/detallar/" + ejeDTO.getIdDia() + "?readonly=true";
+            return "redirect:/ejes/detallar/" + ejeDTO.getIdDia();
         }
         EjercicioAsignadoDTO ejeDTO;
         try {
@@ -129,7 +130,7 @@ public class EjercicioAsignadoController {
                              @AuthenticationPrincipal UserDetails userDetails,
                              RedirectAttributes redirectAttributes) {
         if (hasRole(userDetails, "CLIENTE")) {
-            return "redirect:/ejes/detallar/" + ejeDTO.getIdDia() + "?readonly=true";
+            return "redirect:/ejes/detallar/" + ejeDTO.getIdDia();
         }
         boolean esNuevo = ejeDTO.getIdEjercicioAsignado() == null;
         EjercicioAsignadoDTO guardado = ejercicioAsignadoService.createEjercicioAsignado(ejeDTO);
@@ -149,7 +150,7 @@ public class EjercicioAsignadoController {
         if (hasRole(userDetails, "CLIENTE")) {
             EjercicioAsignadoDTO ejeDTO;
             try { ejeDTO = ejercicioAsignadoService.getEjercicioAsignadoById(idEje); } catch (RuntimeException ex) { return "redirect:/rutinas"; }
-            return "redirect:/ejes/detallar/" + ejeDTO.getIdDia() + "?readonly=true";
+            return "redirect:/ejes/detallar/" + ejeDTO.getIdDia();
         }
         EjercicioAsignadoDTO ejeDTO;
         try {
@@ -163,12 +164,12 @@ public class EjercicioAsignadoController {
         return "redirect:/ejes/detallar/" + ejeDTO.getIdDia();
     }
 
-    // Nuevo endpoint para alternar estado de completado del ejercicio asignado
+    // El cliente ahora SÍ puede togglear; el entrenador no (se mantiene sólo como gestión estructural)
     @GetMapping("/ejes/check/{idEje}")
     public String toggleChecked(@PathVariable Long idEje,
                                  @AuthenticationPrincipal UserDetails userDetails,
                                  RedirectAttributes redirectAttributes) {
-        if (hasRole(userDetails, "CLIENTE")) {
+        if (!hasRole(userDetails, "CLIENTE")) { // no cliente: redirigir a vista sin acción
             EjercicioAsignadoDTO ejeDTO;
             try { ejeDTO = ejercicioAsignadoService.getEjercicioAsignadoById(idEje); } catch (RuntimeException ex) { return "redirect:/rutinas"; }
             return "redirect:/ejes/detallar/" + ejeDTO.getIdDia() + "?readonly=true";
