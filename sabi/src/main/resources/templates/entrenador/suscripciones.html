@@ -161,7 +161,7 @@
             aria-hidden="true" role="dialog">
             <div class="modal-dialog">
                 <div class="modal-content">
-                    <form th:action="@{/suscripciones/guardar}" method="post">
+                    <form th:action="@{/suscripciones/guardar}" method="post" id="form-editar-suscripcion" novalidate>
                         <div class="modal-header">
                             <h5 class="modal-title" id="modalEditarSuscripcionLabel">Editar Suscripción</h5>
                             <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar"><span
@@ -174,17 +174,23 @@
                                 <div class="col-md-6 mb-3">
                                     <label for="modal-precio" class="form-label">Precio</label>
                                     <input type="number" step="0.01" min="0" class="form-control" id="modal-precio"
-                                        name="precio">
+                                        name="precio" required>
+                                    <div class="invalid-feedback">El precio es obligatorio.</div>
+                                    <div class="valid-feedback">Precio válido.</div>
                                 </div>
                             </div>
                             <div class="row">
                                 <div class="col-md-6 mb-3">
                                     <label for="modal-fechainicio" class="form-label">Fecha Inicio</label>
-                                    <input type="date" class="form-control" id="modal-fechainicio" name="fechaInicio">
+                                    <input type="date" class="form-control" id="modal-fechainicio" name="fechaInicio" required>
+                                    <div class="invalid-feedback" id="msg-fechainicio">Seleccione una fecha de inicio válida.</div>
+                                    <div class="valid-feedback">Fecha de inicio válida.</div>
                                 </div>
                                 <div class="col-md-6 mb-3">
                                     <label for="modal-fechafin" class="form-label">Fecha Fin</label>
-                                    <input type="date" class="form-control" id="modal-fechafin" name="fechaFin">
+                                    <input type="date" class="form-control" id="modal-fechafin" name="fechaFin" required>
+                                    <div class="invalid-feedback" id="msg-fechafin">Seleccione una fecha de fin válida.</div>
+                                    <div class="valid-feedback">Fecha de fin válida.</div>
                                 </div>
                             </div>
 
@@ -214,8 +220,10 @@
                     $('#modal-idSuscripcion').val(button.data('id'));
                     // Se eliminan cliente y entrenador del formulario; no se editan aquí
                     $('#modal-precio').val(button.data('precio') || '');
-                    $('#modal-fechainicio').val(button.data('fechainicio') || '');
-                    $('#modal-fechafin').val(button.data('fechafin') || '');
+                    const fechainicioRaw = button.data('fechainicio') || '';
+                    const fechafinRaw = button.data('fechafin') || '';
+                    $('#modal-fechainicio').val(normalizeDateValue(fechainicioRaw));
+                    $('#modal-fechafin').val(normalizeDateValue(fechafinRaw));
                     if (typeof $('#modalEditarSuscripcion').modal === 'function') {
                         // Mueve el modal al <body> para evitar problemas de stacking/overflow
                         $('#modalEditarSuscripcion').appendTo('body').modal('show');
@@ -223,7 +231,184 @@
                         console.error('Bootstrap modal plugin not available. Verify bootstrap JS is loaded.');
                     }
                 });
+                // Ajuste de límites y estados cuando se muestre el modal
+                $('#modalEditarSuscripcion').on('shown.bs.modal', function () {
+                    try {
+                        initFechaMinHoy();
+                        actualizarLimitesFechaFin();
+                        // Limpiar estados previos y validar con valores actuales
+                        ['#modal-precio', '#modal-fechainicio', '#modal-fechafin'].forEach(sel => {
+                            const el = document.querySelector(sel);
+                            if (!el) return;
+                            el.classList.remove('is-valid', 'is-invalid');
+                        });
+                        validarTodo(false);
+                    } catch (err) {
+                        console.error('Error inicializando validaciones:', err);
+                    }
+                });
             });
+        </script>
+        <script>
+            // ======= Utilidades de fechas =======
+            function toYMD(date) {
+                const y = date.getFullYear();
+                const m = String(date.getMonth() + 1).padStart(2, '0');
+                const d = String(date.getDate()).padStart(2, '0');
+                return `${y}-${m}-${d}`;
+            }
+            function normalizeDateValue(str) {
+                if (!str) return '';
+                const s = String(str);
+                const onlyDate = s.includes('T') ? s.split('T')[0] : s;
+                return /^\d{4}-\d{2}-\d{2}$/.test(onlyDate) ? onlyDate : '';
+            }
+            function parseYMD(str) {
+                if (!str) return null;
+                const [y, m, d] = str.split('-').map(Number);
+                if (!y || !m || !d) return null;
+                const dt = new Date(y, m - 1, d);
+                if (dt.getFullYear() !== y || dt.getMonth() !== m - 1 || dt.getDate() !== d) return null;
+                return dt;
+            }
+            function addDays(date, days) {
+                const dt = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+                dt.setDate(dt.getDate() + days);
+                return dt;
+            }
+            function todayLocal() {
+                const now = new Date();
+                return new Date(now.getFullYear(), now.getMonth(), now.getDate());
+            }
+
+            // ======= Configurar límites en inputs =======
+            function initFechaMinHoy() {
+                const inicio = document.getElementById('modal-fechainicio');
+                if (inicio) {
+                    inicio.min = toYMD(todayLocal());
+                }
+            }
+            function actualizarLimitesFechaFin() {
+                const inicio = document.getElementById('modal-fechainicio');
+                const fin = document.getElementById('modal-fechafin');
+                if (!inicio || !fin) return;
+                const dtInicio = parseYMD(inicio.value);
+                if (dtInicio) {
+                    const minFin = addDays(dtInicio, 1);
+                    const maxFin = addDays(dtInicio, 365);
+                    fin.min = toYMD(minFin);
+                    fin.max = toYMD(maxFin);
+                } else {
+                    fin.removeAttribute('min');
+                    fin.removeAttribute('max');
+                }
+            }
+
+            // ======= Validaciones y feedback =======
+            function setValidity(el, isValid, msgEl, msg) {
+                if (!el) return false;
+                el.classList.remove('is-valid', 'is-invalid');
+                if (isValid) {
+                    el.classList.add('is-valid');
+                    if (msgEl) msgEl.textContent = '';
+                } else {
+                    el.classList.add('is-invalid');
+                    if (msgEl && msg) msgEl.textContent = msg;
+                }
+                return isValid;
+            }
+
+            function validarPrecio() {
+                const precio = document.getElementById('modal-precio');
+                if (!precio) return true;
+                const val = precio.value;
+                const isValid = val !== '' && !isNaN(val);
+                return setValidity(precio, isValid, null, null);
+            }
+
+            function validarFechas() {
+                const inicio = document.getElementById('modal-fechainicio');
+                const fin = document.getElementById('modal-fechafin');
+                const msgIni = document.getElementById('msg-fechainicio');
+                const msgFin = document.getElementById('msg-fechafin');
+                if (!inicio || !fin) return true;
+
+                const dtHoy = todayLocal();
+                const dtInicio = parseYMD(inicio.value);
+                const dtFin = parseYMD(fin.value);
+
+                let okInicio = true;
+                let okFin = true;
+
+                // Regla: si hay inicio, debe ser >= hoy
+                if (!inicio.value) {
+                    okInicio = setValidity(inicio, false, msgIni, 'Seleccione una fecha de inicio.');
+                } else if (dtInicio) {
+                    if (dtInicio < dtHoy) {
+                        okInicio = setValidity(inicio, false, msgIni, 'La fecha de inicio no puede ser anterior a hoy.');
+                    } else {
+                        okInicio = setValidity(inicio, true, msgIni, '');
+                    }
+                }
+
+                // Reglas para fin: solo si existe fecha fin o inicio
+                if (!fin.value) {
+                    okFin = setValidity(fin, false, msgFin, 'Seleccione una fecha de fin (mínimo +1 día desde inicio).');
+                } else if (dtFin && dtInicio) {
+                    const minFin = addDays(dtInicio, 1);
+                    const maxFin = addDays(dtInicio, 365);
+                    if (dtFin < minFin) {
+                        okFin = setValidity(fin, false, msgFin, 'La fecha de fin debe ser al menos 1 día después de la fecha de inicio.');
+                    } else if (dtFin > maxFin) {
+                        okFin = setValidity(fin, false, msgFin, 'La fecha de fin no puede exceder 1 año desde la fecha de inicio.');
+                    } else {
+                        okFin = setValidity(fin, true, msgFin, '');
+                    }
+                }
+
+                return okInicio && okFin;
+            }
+
+            function validarTodo(showAlerts) {
+                actualizarLimitesFechaFin();
+                const okPrecio = validarPrecio();
+                const okFechas = validarFechas();
+                const ok = okPrecio && okFechas;
+                if (!ok && showAlerts) {
+                    // Opcional: focus en primer inválido
+                    const firstInvalid = document.querySelector('#form-editar-suscripcion .is-invalid');
+                    if (firstInvalid) firstInvalid.focus();
+                }
+                return ok;
+            }
+
+            // Eventos de entrada
+            document.addEventListener('input', function (e) {
+                const id = e.target && e.target.id;
+                if (id === 'modal-precio') {
+                    validarPrecio();
+                }
+            });
+            document.addEventListener('change', function (e) {
+                const id = e.target && e.target.id;
+                if (id === 'modal-fechainicio') {
+                    actualizarLimitesFechaFin();
+                    validarFechas();
+                } else if (id === 'modal-fechafin') {
+                    validarFechas();
+                }
+            });
+
+            // Interceptar submit
+            document.addEventListener('submit', function (e) {
+                const form = e.target;
+                if (form && form.id === 'form-editar-suscripcion') {
+                    if (!validarTodo(true)) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                    }
+                }
+            }, true);
         </script>
         <script>
             document.querySelectorAll('.btn-ver-diagnostico').forEach(button => {
