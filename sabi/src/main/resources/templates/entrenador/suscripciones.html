@@ -49,6 +49,46 @@
                 </div>
             </div>
         </div>
+
+        <!-- Modal Ver Descripción del Cliente -->
+        <div class="modal fade" id="modalDescripcionCliente" tabindex="-1" aria-labelledby="modalDescripcionClienteLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header bg-primary text-white">
+                        <h5 class="modal-title" id="modalDescripcionClienteLabel">
+                            <i class="fas fa-user-circle me-2"></i>Información del Cliente
+                        </h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="text-center mb-3">
+                            <img id="modalClienteFoto" src="/img/fotoPerfil.png" alt="Foto del cliente"
+                                 class="rounded-circle" style="width: 100px; height: 100px; object-fit: cover; border: 3px solid #007bff;">
+                            <h4 id="modalClienteNombre" class="mt-2 mb-0">Nombre del Cliente</h4>
+                            <p id="modalClienteEmail" class="text-muted mb-0"><i class="fas fa-envelope me-1"></i>email@example.com</p>
+                        </div>
+                        <hr>
+                        <div id="modalClienteObjetivoContainer" style="display: none;">
+                            <h6 class="text-primary"><i class="fas fa-bullseye me-2"></i>Objetivo</h6>
+                            <p id="modalClienteObjetivo" class="bg-light p-3 rounded"></p>
+                        </div>
+                        <div id="modalClienteDescripcionContainer" style="display: none;">
+                            <h6 class="text-primary"><i class="fas fa-comment-dots me-2"></i>Descripción Personal</h6>
+                            <p id="modalClienteDescripcion" class="bg-light p-3 rounded"></p>
+                        </div>
+                        <div id="modalSinInfoAdicional" style="display: none;" class="alert alert-info">
+                            <i class="fas fa-info-circle me-2"></i>El cliente aún no ha agregado información adicional en su perfil.
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                        <a id="modalVerDiagnosticoCompleto" href="#" class="btn btn-primary">
+                            <i class="fas fa-file-medical me-1"></i>Ver Diagnóstico Completo
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
         <div class="container">
             <div class="row g-4">
                 <div th:if="${#lists.isEmpty(suscripciones)}" class="col-12 d-flex justify-content-center">
@@ -141,6 +181,15 @@
                                         class="btn btn-info text-white flex-fill">
                                         <i class="fas fa-notes-medical me-1"></i> Ver diagnóstico
                                     </a>
+                                    <!-- Botón info del cliente: abre modal compacto -->
+                                    <button th:if="${suscripcion.idCliente != null}"
+                                            type="button"
+                                            class="btn btn-outline-primary flex-fill btn-ver-info-cliente"
+                                            data-bs-toggle="modal"
+                                            data-bs-target="#modalDescripcionCliente"
+                                            th:attr="data-cliente-id=${suscripcion.idCliente}">
+                                        <i class="fas fa-info-circle me-1"></i> Info del Cliente
+                                    </button>
                                     <!-- Botón rechazar (pendiente) -->
                                     <form th:if="${suscripcion.estadoSuscripcion == T(com.sabi.sabi.entity.enums.EstadoSuscripcion).PENDIENTE}"
                                           th:action="@{/suscripciones/rechazar/{id}(id=${suscripcion.idSuscripcion})}"
@@ -443,6 +492,59 @@
                     } catch (error) {
                         console.error(error);
                         alert('Hubo un error al cargar el diagnóstico.');
+                    }
+                });
+            });
+        </script>
+        <script>
+            // Script para cargar info del cliente en modal compacto
+            document.querySelectorAll('.btn-ver-info-cliente').forEach(btn => {
+                btn.addEventListener('click', async function() {
+                    const clienteId = this.getAttribute('data-cliente-id');
+                    if (!clienteId) return;
+
+                    try {
+                        const response = await fetch(`/api/entrenador/cliente/${clienteId}/info`);
+                        if (!response.ok) throw new Error('Error al cargar información');
+
+                        const info = await response.json();
+
+                        // Actualizar modal
+                        document.getElementById('modalClienteFoto').src = info.fotoPerfilUrl;
+                        document.getElementById('modalClienteNombre').textContent = info.nombre;
+                        document.getElementById('modalClienteEmail').textContent = info.email;
+
+                        // Mostrar u ocultar secciones según disponibilidad
+                        const objetivoContainer = document.getElementById('modalClienteObjetivoContainer');
+                        const descripcionContainer = document.getElementById('modalClienteDescripcionContainer');
+                        const sinInfo = document.getElementById('modalSinInfoAdicional');
+
+                        let tieneInfo = false;
+
+                        if (info.objetivo && info.objetivo.trim() !== '') {
+                            document.getElementById('modalClienteObjetivo').textContent = info.objetivo;
+                            objetivoContainer.style.display = 'block';
+                            tieneInfo = true;
+                        } else {
+                            objetivoContainer.style.display = 'none';
+                        }
+
+                        if (info.descripcion && info.descripcion.trim() !== '') {
+                            document.getElementById('modalClienteDescripcion').textContent = info.descripcion;
+                            descripcionContainer.style.display = 'block';
+                            tieneInfo = true;
+                        } else {
+                            descripcionContainer.style.display = 'none';
+                        }
+
+                        sinInfo.style.display = tieneInfo ? 'none' : 'block';
+
+                        // Actualizar link a diagnóstico completo
+                        document.getElementById('modalVerDiagnosticoCompleto').href = `/entrenador/diagnostico/vista/${info.id}`;
+
+                    } catch (error) {
+                        console.error('Error:', error);
+                        alert('Error al cargar la información del cliente');
                     }
                 });
             });

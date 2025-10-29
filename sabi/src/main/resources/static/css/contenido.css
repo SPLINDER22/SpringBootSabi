@@ -96,3 +96,200 @@
 @media (max-width:576px){
   .btn-toggle-completa { width:100%; margin-bottom:.4rem; }
 }
+
+/* === Responsive Global Improvements === */
+
+/* Mejoras para tablets y mobiles */
+@media (max-width: 992px) {
+    /* Ajustar padding de contenedores */
+    .container-fluid {
+        padding-left: 1rem;
+        padding-right: 1rem;
+    }
+
+    /* Tablas responsive */
+    .table-responsive {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    /* Cards mas compactas */
+    .card {
+        margin-bottom: 1rem;
+    }
+
+    .card-body {
+        padding: 1rem;
+    }
+}
+
+/* Mejoras para pantallas pequenas (móviles) */
+@media (max-width: 768px) {
+    /* Tipografia mas pequena pero legible */
+    body {
+        font-size: 0.95rem;
+    }
+
+    h1 { font-size: 1.75rem; }
+    h2 { font-size: 1.5rem; }
+    h3 { font-size: 1.25rem; }
+    h4 { font-size: 1.1rem; }
+
+    /* Botones full width en movil */
+    .btn-block-mobile {
+        display: block;
+        width: 100%;
+        margin-bottom: 0.5rem;
+    }
+
+    /* Formularios mas espaciados */
+    .form-group {
+        margin-bottom: 1rem;
+    }
+
+    /* Imagenes responsive */
+    img {
+        max-width: 100%;
+        height: auto;
+    }
+
+    /* Modales full screen en movil */
+    .modal-dialog {
+        margin: 0.5rem;
+    }
+
+    .modal-fullscreen-sm-down {
+        width: 100vw;
+        max-width: none;
+        height: 100%;
+        margin: 0;
+    }
+
+    /* Navbar ajustes */
+    .navbar {
+        padding: 0.5rem 1rem;
+    }
+
+    /* Sidebar ajustes */
+    .sidebar {
+        width: 100% !important;
+    }
+
+    /* Tables stack en movil */
+    .table-mobile-stack {
+        display: block;
+        width: 100%;
+    }
+
+    .table-mobile-stack thead {
+        display: none;
+    }
+
+    .table-mobile-stack tr {
+        display: block;
+        margin-bottom: 1rem;
+        border: 1px solid #dee2e6;
+        border-radius: 0.25rem;
+    }
+
+    .table-mobile-stack td {
+        display: block;
+        text-align: right;
+        padding: 0.5rem;
+        border: none;
+    }
+
+    .table-mobile-stack td::before {
+        content: attr(data-label);
+        float: left;
+        font-weight: bold;
+    }
+
+    /* Grid ajustes */
+    .row.g-3 {
+        row-gap: 1rem;
+    }
+}
+
+/* Mejoras para pantallas muy pequenas */
+@media (max-width: 576px) {
+    /* Container completo */
+    .container,
+    .container-fluid {
+        padding-left: 0.75rem;
+        padding-right: 0.75rem;
+    }
+
+    /* Cards sin bordes laterales */
+    .card {
+        border-radius: 0;
+        border-left: none;
+        border-right: none;
+    }
+
+    /* Botones mas grandes para touch */
+    .btn {
+        padding: 0.5rem 1rem;
+        font-size: 1rem;
+    }
+
+    .btn-sm {
+        padding: 0.4rem 0.8rem;
+    }
+
+    /* Form controls mas grandes */
+    .form-control,
+    .form-select {
+        font-size: 1rem;
+        padding: 0.6rem 0.75rem;
+    }
+}
+
+/* Mejoras para landscape en moviles */
+@media (max-height: 500px) and (orientation: landscape) {
+    .modal-dialog {
+        max-height: 90vh;
+        overflow-y: auto;
+    }
+
+    .sidebar {
+        max-height: 100vh;
+        overflow-y: auto;
+    }
+}
+
+/* Print styles */
+@media print {
+    .sidebar,
+    .navbar,
+    .btn,
+    footer {
+        display: none !important;
+    }
+
+    .container-fluid,
+    .container {
+        width: 100%;
+        max-width: none;
+    }
+
+    body {
+        font-size: 12pt;
+    }
+}
+
+/* Accesibilidad - Reducir movimiento */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+
+/* Dark mode support (opcional) */
+@media (prefers-color-scheme: dark) {
+    /* Aqui se podrian agregar estilos para modo oscuro */
+}

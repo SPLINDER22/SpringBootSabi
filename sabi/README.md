@@ -234,6 +234,41 @@ Este proyecto está bajo la licencia MIT. Ver el archivo LICENSE para más detal
   - Las historias de usuario están reflejadas en los flujos y casos de uso documentados y en los controladores/servicios.
   - Ejemplo: `SuscripcionServiceImpl` valida que un cliente no tenga más de una suscripción activa.
 
+---
+
+## 📚 DOCUMENTACIÓN DE MEJORAS Y NUEVAS FUNCIONALIDADES
+
+### 🗓️ Historial de Actualizaciones - Octubre 2025
+
+---
+
+## ✨ ACTUALIZACIÓN COMPLETA DEL SISTEMA (28/10/2025)
+
+### 🎯 Resumen General
+Se implementaron **7 grandes mejoras** que transforman completamente la experiencia de usuario.
+
+### Mejoras Implementadas:
+
+#### 1. Sistema de Diagnósticos Ampliado (11 nuevos campos opcionales)
+#### 2. Vista Profesional del Diagnóstico para Entrenadores  
+#### 3. Foto de Perfil Dinámica
+#### 4. Diseño Completamente Responsive
+#### 5. Comparativa de Diagnósticos con Estadísticas
+#### 6. IMC con Interpretación Visual  
+#### 7. Modales Informativos Compactos
+
+Para documentación detallada, ver archivos:
+- `MEJORAS_COMPLETAS_SISTEMA.md`
+- `COMPARATIVA_DIAGNOSTICOS_IMC.md`
+- `MODALES_INFORMACION_IMPLEMENTADOS.md`
+- `RESUMEN_FINAL_TODAS_IMPLEMENTACIONES.md`
+
+---
+
+<div align="center">
+  <b>🎉 SABI - Versión 1.5.0 - Octubre 2025 🎉</b>
+</div>
+
 2. **Uso de patrones GoF**
   - Se usan patrones como:
     - *Builder*: en entidades como `Rutina`, `Diagnostico`, `Serie` (`@Builder` de Lombok).

@@ -39,7 +39,8 @@
                     aria-haspopup="true" aria-expanded="false">
                     <span class="mr-2 d-none d-lg-inline text-gray-600 small"
                         th:text="${#authentication.principal.nombre} ?: ${#authentication.name}">Usuario</span>
-                    <img class="img-profile rounded-circle" alt="perfil" th:src="@{/img/fotoPerfil.png}">
+                    <img class="img-profile rounded-circle" alt="perfil"
+                         th:src="${#authentication.principal.usuario?.fotoPerfilUrl != null ? #authentication.principal.usuario.fotoPerfilUrl : '/img/fotoPerfil.png'}">
                 </a>
                 <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="userDropdown">
                     <a class="dropdown-item" th:href="@{/perfil}">

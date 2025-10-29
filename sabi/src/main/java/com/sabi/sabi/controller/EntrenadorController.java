@@ -14,11 +14,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.List;
 import java.util.Map;
@@ -222,16 +219,46 @@ public class EntrenadorController {
     @GetMapping("/entrenador/diagnostico/vista/{clienteId}")
     public String verDiagnostico(@PathVariable Long clienteId, Model model) {
         try {
+            // Obtener diagnostico actual del cliente
             com.sabi.sabi.dto.DiagnosticoDTO diagnostico = clienteService.getDiagnosticoActualByClienteId(clienteId);
             if (diagnostico == null) {
-                model.addAttribute("error", "No se encontró un diagnóstico para este cliente.");
-                return "error";
+                model.addAttribute("error", "No se encontro un diagnostico para este cliente.");
+                return "entrenador/ver-diagnostico";
             }
+
+            // Obtener datos completos del cliente (para objetivo, descripcion, foto)
+            com.sabi.sabi.dto.ClienteDTO cliente = clienteService.getClienteById(clienteId);
+
             model.addAttribute("diagnostico", diagnostico);
+            model.addAttribute("cliente", cliente);
             return "entrenador/ver-diagnostico";
         } catch (Exception e) {
-            model.addAttribute("error", "Ocurrió un error al cargar el diagnóstico: " + e.getMessage());
-            return "error";
+            model.addAttribute("error", "Ocurrio un error al cargar el diagnostico: " + e.getMessage());
+            return "entrenador/ver-diagnostico";
+        }
+    }
+
+    @GetMapping("/api/entrenador/cliente/{clienteId}/info")
+    @ResponseBody
+    public org.springframework.http.ResponseEntity<?> obtenerInfoCliente(@PathVariable Long clienteId) {
+        try {
+            com.sabi.sabi.dto.ClienteDTO cliente = clienteService.getClienteById(clienteId);
+            if (cliente == null) {
+                return org.springframework.http.ResponseEntity.notFound().build();
+            }
+
+            // Crear un objeto con solo la info necesaria para el modal
+            java.util.Map<String, Object> info = new java.util.HashMap<>();
+            info.put("nombre", cliente.getNombre() + (cliente.getApellido() != null ? " " + cliente.getApellido() : ""));
+            info.put("email", cliente.getEmail());
+            info.put("fotoPerfilUrl", cliente.getFotoPerfilUrl() != null ? cliente.getFotoPerfilUrl() : "/img/fotoPerfil.png");
+            info.put("objetivo", cliente.getObjetivo());
+            info.put("descripcion", cliente.getDescripcion());
+            info.put("id", cliente.getId());
+
+            return org.springframework.http.ResponseEntity.ok(info);
+        } catch (Exception e) {
+            return org.springframework.http.ResponseEntity.status(500).body("Error: " + e.getMessage());
         }
     }
 }

@@ -13,6 +13,8 @@
     <link href="/css/sb-admin-2.min.css" rel="stylesheet">
     <link href="/css/contenido.css" rel="stylesheet"><!-- estilos globales reutilizables -->
     <link href="/css/custom.css" rel="stylesheet">
+    <!-- SweetAlert2 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
 </head>
 
 <body id="page-top">
@@ -74,11 +76,73 @@
 <script src="/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
 <script src="/vendor/jquery-easing/jquery.easing.min.js"></script>
 <script src="/js/sb-admin-2.min.js"></script>
+<!-- SweetAlert2 JS -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
     // Auto cerrar alertas luego de 4s
     setTimeout(function(){
         $('.alert.auto-dismiss').alert('close');
     },4000);
+
+    // Convertir alertas Bootstrap a SweetAlert2
+    document.addEventListener('DOMContentLoaded', function() {
+        // Success alerts
+        const successAlerts = document.querySelectorAll('.alert-success');
+        successAlerts.forEach(alert => {
+            if (!alert.classList.contains('no-sweet')) {
+                const message = alert.textContent.trim();
+                alert.style.display = 'none';
+                Swal.fire({
+                    icon: 'success',
+                    title: '¡Éxito!',
+                    text: message,
+                    timer: 3000,
+                    showConfirmButton: false,
+                    toast: true,
+                    position: 'top-end'
+                });
+            }
+        });
+
+        // Error alerts
+        const errorAlerts = document.querySelectorAll('.alert-danger');
+        errorAlerts.forEach(alert => {
+            if (!alert.classList.contains('no-sweet')) {
+                const message = alert.textContent.trim();
+                alert.style.display = 'none';
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: message,
+                    confirmButtonText: 'Entendido',
+                    confirmButtonColor: '#dc3545'
+                });
+            }
+        });
+
+        // Warning alerts
+        const warningAlerts = document.querySelectorAll('.alert-warning');
+        warningAlerts.forEach(alert => {
+            if (!alert.classList.contains('no-sweet')) {
+                const message = alert.textContent.trim();
+                alert.style.display = 'none';
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Advertencia',
+                    text: message,
+                    confirmButtonText: 'OK',
+                    confirmButtonColor: '#ffc107'
+                });
+            }
+        });
+
+        // Info alerts
+        const infoAlerts = document.querySelectorAll('.alert-info:not(.no-sweet)');
+        infoAlerts.forEach(alert => {
+            // Dejar las alertas de info normales, no convertir a Sweet
+        });
+    });
+
     // Fix para que el modal de perfil funcione con Bootstrap 5
     document.querySelectorAll('[data-bs-toggle="modal"]').forEach(function(btn) {
         btn.addEventListener('click', function(e) {

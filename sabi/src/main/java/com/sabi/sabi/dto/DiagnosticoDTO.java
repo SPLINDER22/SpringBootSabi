@@ -48,6 +48,19 @@ public class DiagnosticoDTO {
     private Long horasSueno;               // horas promedio
     private String habitosAlimenticios;       // descripción libre
 
+    // Campos adicionales utiles para el entrenador (OPCIONALES)
+    private String preferenciasEntrenamiento;
+    private String experienciaPreviaDeportes;
+    private Integer diasDisponiblesSemana;
+    private String horarioPreferido;
+    private String limitacionesFisicas;
+    private String motivacionPrincipal;
+    private String nivelEstres;
+    private String suplementosActuales;
+    private Boolean fumador;
+    private Boolean consumeAlcohol;
+    private String frecuenciaAlcohol;
+
     private Boolean estado = true;
 
 
