@@ -51,11 +51,26 @@ public class ClienteController {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         CustomUserDetails userDetails = (CustomUserDetails) auth.getPrincipal();
         Long clienteId = userDetails.getUsuario().getId();
+        // Obtener diagnostico actual
         DiagnosticoDTO diagnosticoActual = clienteService.getDiagnosticoActualByClienteId(clienteId);
         boolean tieneDiagnostico = diagnosticoActual != null;
+
+        // Obtener historial completo para comparativa
+        List<DiagnosticoDTO> historial = clienteService.getHistorialDiagnosticosByClienteId(clienteId);
+
+        // Obtener diagnostico anterior (el segundo mas reciente)
+        DiagnosticoDTO diagnosticoAnterior = null;
+        if (historial != null && historial.size() >= 2) {
+            // El historial viene ordenado por fecha DESC, entonces [0]=actual, [1]=anterior
+            diagnosticoAnterior = historial.get(1);
+        }
+
         model.addAttribute("tieneDiagnostico", tieneDiagnostico);
         model.addAttribute("diagnosticoActual", diagnosticoActual);
-        return "cliente/dashboard"; // templates/cliente/dashboard.html
+        model.addAttribute("diagnosticoAnterior", diagnosticoAnterior);
+        model.addAttribute("tieneComparativa", diagnosticoAnterior != null);
+
+        return "cliente/dashboard";
     }
 
     @GetMapping("/cliente/rutinas")

@@ -45,34 +45,128 @@
         </div>
         <div class="category-content">
             <div th:if="${diagnosticoActual != null}" class="diagnostic-info">
+                <!-- Informacion del diagnostico actual -->
                 <div class="info-grid">
                     <div class="info-item">
-                        <span class="info-label">Fecha del diagnóstico:</span>
+                        <span class="info-label">📅 Fecha del diagnostico:</span>
                         <span class="info-value" th:text="${#temporals.format(diagnosticoActual.fecha, 'dd/MM/yyyy')}">--</span>
                     </div>
                     <div class="info-item">
-                        <span class="info-label">Peso actual:</span>
+                        <span class="info-label">⚖️ Peso actual:</span>
                         <span class="info-value" th:text="${diagnosticoActual.peso + ' kg'}">-- kg</span>
                     </div>
                     <div class="info-item">
-                        <span class="info-label">Estatura:</span>
+                        <span class="info-label">📏 Estatura:</span>
                         <span class="info-value" th:text="${diagnosticoActual.estatura + ' cm'}">-- cm</span>
                     </div>
-                    <div class="info-item">
-                        <span class="info-label">IMC:</span>
-                        <span class="info-value" th:text="${diagnosticoActual.peso != null && diagnosticoActual.estatura != null ? T(java.lang.Math).round((diagnosticoActual.peso / ((diagnosticoActual.estatura/100)*(diagnosticoActual.estatura/100))) * 10) / 10.0 : '--'}">--</span>
+
+                    <!-- IMC con interpretacion -->
+                    <div class="info-item" style="grid-column: 1 / -1;">
+                        <div th:if="${diagnosticoActual.peso != null && diagnosticoActual.estatura != null}"
+                             th:with="imc=${T(java.lang.Math).round((diagnosticoActual.peso / ((diagnosticoActual.estatura/100)*(diagnosticoActual.estatura/100))) * 10) / 10.0}">
+                            <div class="imc-container">
+                                <div class="imc-value-box">
+                                    <span class="info-label">📊 IMC:</span>
+                                    <span class="imc-number" th:text="${imc}">--</span>
+                                </div>
+                                <div class="imc-interpretation">
+                                    <div th:if="${imc < 18.5}" class="imc-badge bajo-peso">
+                                        <i class="fas fa-info-circle"></i> Bajo peso
+                                    </div>
+                                    <div th:if="${imc >= 18.5 && imc < 25}" class="imc-badge peso-normal">
+                                        <i class="fas fa-check-circle"></i> Peso normal
+                                    </div>
+                                    <div th:if="${imc >= 25 && imc < 30}" class="imc-badge sobrepeso">
+                                        <i class="fas fa-exclamation-circle"></i> Sobrepeso
+                                    </div>
+                                    <div th:if="${imc >= 30 && imc < 35}" class="imc-badge obesidad-1">
+                                        <i class="fas fa-exclamation-triangle"></i> Obesidad Grado I
+                                    </div>
+                                    <div th:if="${imc >= 35 && imc < 40}" class="imc-badge obesidad-2">
+                                        <i class="fas fa-exclamation-triangle"></i> Obesidad Grado II
+                                    </div>
+                                    <div th:if="${imc >= 40}" class="imc-badge obesidad-3">
+                                        <i class="fas fa-exclamation-triangle"></i> Obesidad Grado III
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
+
                     <div class="info-item" style="font-size: 1.5rem; display: flex; align-items: center;">
-                        <span class="info-label" style="margin-right: 10px;">😴 Horas de sueño:</span>
+                        <span class="info-label" style="margin-right: 10px;">😴 Horas de sueno:</span>
                         <span class="info-value" th:text="${diagnosticoActual.horasSueno != null ? diagnosticoActual.horasSueno + ' horas' : '-- horas'}" style="font-weight: bold;">-- horas</span>
                     </div>
                     <div class="info-item" style="font-size: 1.5rem; display: flex; align-items: center;">
-                        <span class="info-label" style="margin-right: 10px;">🍎 Alimentación:</span>
+                        <span class="info-label" style="margin-right: 10px;">🍎 Alimentacion:</span>
                         <span class="info-value" th:text="${diagnosticoActual.habitosAlimenticios != null ? diagnosticoActual.habitosAlimenticios : '--'}" style="font-weight: bold;">--</span>
                     </div>
                 </div>
+
+                <!-- Comparativa con diagnostico anterior -->
+                <div th:if="${tieneComparativa}" class="comparativa-section mt-4">
+                    <h4 class="comparativa-title">📈 Comparativa con Diagnostico Anterior</h4>
+                    <div class="comparativa-grid">
+                        <!-- Comparacion de Peso -->
+                        <div class="comparativa-item"
+                             th:with="pesoActual=${diagnosticoActual.peso},
+                                      pesoAnterior=${diagnosticoAnterior.peso},
+                                      diferenciaPeso=${pesoActual != null && pesoAnterior != null ? T(java.lang.Math).round((pesoActual - pesoAnterior) * 10) / 10.0 : null}">
+                            <div class="comparativa-label">⚖️ Peso</div>
+                            <div class="comparativa-values">
+                                <span class="valor-anterior" th:text="${pesoAnterior + ' kg'}">-- kg</span>
+                                <i class="fas fa-arrow-right"></i>
+                                <span class="valor-actual" th:text="${pesoActual + ' kg'}">-- kg</span>
+                            </div>
+                            <div class="comparativa-cambio" th:if="${diferenciaPeso != null}">
+                                <span th:if="${diferenciaPeso > 0}" class="cambio-positivo">
+                                    <i class="fas fa-arrow-up"></i> +<span th:text="${diferenciaPeso}">0</span> kg
+                                </span>
+                                <span th:if="${diferenciaPeso < 0}" class="cambio-negativo">
+                                    <i class="fas fa-arrow-down"></i> <span th:text="${diferenciaPeso}">0</span> kg
+                                </span>
+                                <span th:if="${diferenciaPeso == 0}" class="cambio-neutro">
+                                    <i class="fas fa-equals"></i> Sin cambios
+                                </span>
+                            </div>
+                        </div>
+
+                        <!-- Comparacion de IMC -->
+                        <div class="comparativa-item"
+                             th:with="imcActual=${diagnosticoActual.peso != null && diagnosticoActual.estatura != null ? T(java.lang.Math).round((diagnosticoActual.peso / ((diagnosticoActual.estatura/100)*(diagnosticoActual.estatura/100))) * 10) / 10.0 : null},
+                                      imcAnterior=${diagnosticoAnterior.peso != null && diagnosticoAnterior.estatura != null ? T(java.lang.Math).round((diagnosticoAnterior.peso / ((diagnosticoAnterior.estatura/100)*(diagnosticoAnterior.estatura/100))) * 10) / 10.0 : null},
+                                      diferenciaIMC=${imcActual != null && imcAnterior != null ? T(java.lang.Math).round((imcActual - imcAnterior) * 10) / 10.0 : null}">
+                            <div class="comparativa-label">📊 IMC</div>
+                            <div class="comparativa-values">
+                                <span class="valor-anterior" th:text="${imcAnterior}">--</span>
+                                <i class="fas fa-arrow-right"></i>
+                                <span class="valor-actual" th:text="${imcActual}">--</span>
+                            </div>
+                            <div class="comparativa-cambio" th:if="${diferenciaIMC != null}">
+                                <span th:if="${diferenciaIMC > 0}" class="cambio-positivo">
+                                    <i class="fas fa-arrow-up"></i> +<span th:text="${diferenciaIMC}">0</span>
+                                </span>
+                                <span th:if="${diferenciaIMC < 0}" class="cambio-negativo">
+                                    <i class="fas fa-arrow-down"></i> <span th:text="${diferenciaIMC}">0</span>
+                                </span>
+                                <span th:if="${diferenciaIMC == 0}" class="cambio-neutro">
+                                    <i class="fas fa-equals"></i> Sin cambios
+                                </span>
+                            </div>
+                        </div>
+
+                        <!-- Fecha del diagnostico anterior -->
+                        <div class="comparativa-item" style="grid-column: 1 / -1;">
+                            <div class="comparativa-label">📅 Diagnostico anterior del:</div>
+                            <div class="comparativa-values">
+                                <span class="valor-anterior" th:text="${#temporals.format(diagnosticoAnterior.fecha, 'dd/MM/yyyy')}">--</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="category-actions mt-3">
-                    <a class="btn btn-outline-primary" th:href="@{/diagnostico/cliente}">Ver/Actualizar Diagnóstico</a>
+                    <a class="btn btn-outline-primary" th:href="@{/diagnostico/cliente}">Ver/Actualizar Diagnostico</a>
                 </div>
             </div>
             <div th:unless="${diagnosticoActual != null}"></div>
