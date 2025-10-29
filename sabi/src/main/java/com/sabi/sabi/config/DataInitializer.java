@@ -248,7 +248,7 @@ public class DataInitializer implements CommandLineRunner {
                     for (long numSerie = 1L; numSerie <= 2L; numSerie++) {
                         Serie serie = Serie.builder()
                                 .orden(numSerie)
-                                .repeticiones(numSerie == 1 ? 12L : 10L)
+                                .repeticiones(numSerie == 1 ? "12" : "10")
                                 .peso(ejercicio.getNombre().toLowerCase().contains("sentadilla") ? (numSerie == 1 ? 60.0 : 65.0) : (numSerie == 1 ? 40.0 : 45.0))
                                 .descanso("60 - 90 segundos")
                                 .intensidad(null)
@@ -323,7 +323,7 @@ public class DataInitializer implements CommandLineRunner {
         // Crear serie base
         Serie serie = Serie.builder()
                 .orden(1L)
-                .repeticiones(10L)
+                .repeticiones("10")
                 .peso(0.0)
                 .descanso("60 segundos")
                 .intensidad(null) // sin intensidad definida

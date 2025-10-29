@@ -24,9 +24,8 @@ public class Serie {
     @Min(value = 1, message = "El orden debe ser mayor o igual a 1")
     private Long orden;
 
-    // Repeticiones (opcional)
-    @Min(value = 1, message = "Las repeticiones deben ser al menos 1")
-    private Long repeticiones;
+    @NotNull(message = "El número de repeticiones es obligatorio")
+    private String repeticiones;
 
     // Peso en kg (opcional)
     @Min(value = 0, message = "El peso no puede ser negativo")

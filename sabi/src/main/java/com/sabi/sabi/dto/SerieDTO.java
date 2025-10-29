@@ -14,8 +14,8 @@ public class SerieDTO {
     // Orden dentro del ejercicio
     private Long orden;
 
-    // Repeticiones (opcional)
-    private Long repeticiones;
+    // Repeticiones (ahora cadena para permitir rangos como "8-12")
+    private String repeticiones;
 
     // Peso en kg (opcional)
     private Double peso;
