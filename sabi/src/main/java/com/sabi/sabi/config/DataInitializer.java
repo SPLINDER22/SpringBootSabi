@@ -14,7 +14,6 @@ import com.sabi.sabi.entity.EjercicioAsignado;
 import com.sabi.sabi.entity.Serie;
 import com.sabi.sabi.entity.enums.Rol;
 import com.sabi.sabi.entity.enums.TipoEjercicio;
-import com.sabi.sabi.entity.enums.EstadoRutina;
 import com.sabi.sabi.repository.EjercicioRepository;
 import com.sabi.sabi.repository.UsuarioRepository;
 import com.sabi.sabi.repository.RutinaRepository;
@@ -67,9 +66,7 @@ public class DataInitializer implements CommandLineRunner {
                     .contraseña(passwordEncoder.encode(rawPassword))
                     .rol(Rol.CLIENTE)
                     .estado(true)
-                    .objetivos("Mejorar resistencia")
-                    .sexo("M/F")
-                    .telefono("3144153367")
+                    .objetivo("Mejorar resistencia")
                     .build();
             usuarioRepository.save(cliente);
             System.out.println("Usuario creado: " + nombre + " | " + email + " | contraseña (raw): " + rawPassword);
@@ -106,8 +103,7 @@ public class DataInitializer implements CommandLineRunner {
                     .contraseña(passwordEncoder.encode(rawPassword))
                     .rol(Rol.ENTRENADOR)
                     .estado(true)
-                    .especialidades("Fuerza, HIIT")
-                    .experiencia("3 años entrenando atletas")
+                    .especialidad("Fuerza, HIIT")
                     .calificacionPromedio(0.0)
                     .build();
             usuarioRepository.save(entrenador);

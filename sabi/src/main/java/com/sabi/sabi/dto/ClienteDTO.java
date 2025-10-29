@@ -2,7 +2,6 @@ package com.sabi.sabi.dto;
 
 import lombok.*;
 
-import java.time.LocalDate;
 import java.util.List;
 
 @Data
@@ -10,18 +9,10 @@ import java.util.List;
 @NoArgsConstructor
 @Getter
 @Setter
+@EqualsAndHashCode(callSuper = false)
 public class ClienteDTO extends UsuarioDTO {
 
-
-    private String objetivos;
-
-    private LocalDate fechaNacimiento;
-
-    private String sexo;
-
-    private String telefono;
-
-    private String ciudad;
+    private String objetivo;  // Objetivo de fitness del cliente
 
     // Relaciones solo por IDs
     private List<Long> idDiagnosticos;

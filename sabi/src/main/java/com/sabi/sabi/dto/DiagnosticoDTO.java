@@ -19,6 +19,9 @@ public class DiagnosticoDTO {
 
     private Long idCliente;
 
+    // Campo para el objetivo del cliente al hacer el diagnóstico
+    private String objetivo;
+
     // Obligatorios
     private Double peso;                 // en kg
     private Double estatura;             // en cm

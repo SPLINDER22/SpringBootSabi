@@ -9,12 +9,11 @@ import java.util.List;
 @NoArgsConstructor
 @Getter
 @Setter
+@EqualsAndHashCode(callSuper = false)
 public class EntrenadorDTO extends UsuarioDTO{
     private Long idUsuario;
 
-    private String especialidades;
-
-    private String experiencia;
+    private String especialidad;
 
     private Double calificacionPromedio;
 

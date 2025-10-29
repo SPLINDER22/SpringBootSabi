@@ -75,17 +75,33 @@ public class UsuarioServiceImpl implements UsuarioService {
         if (rol == Rol.CLIENTE) {
             toSave = Cliente.builder()
                     .nombre(usuarioDTO.getNombre())
+                    .apellido(usuarioDTO.getApellido())
                     .email(usuarioDTO.getEmail())
-                    .contraseña(usuarioDTO.getContraseña()) // Cambiado desde 'getPassword' para consistencia con el idioma español
+                    .contraseña(usuarioDTO.getContraseña())
                     .rol(Rol.CLIENTE)
+                    .sexo(usuarioDTO.getSexo())
+                    .fechaNacimiento(usuarioDTO.getFechaNacimiento())
+                    .departamento(usuarioDTO.getDepartamento())
+                    .ciudad(usuarioDTO.getCiudad())
+                    .tipoDocumento(usuarioDTO.getTipoDocumento())
+                    .numeroDocumento(usuarioDTO.getNumeroDocumento())
+                    .telefono(usuarioDTO.getTelefono())
                     .estado(usuarioDTO.getEstado() != null ? usuarioDTO.getEstado() : true)
                     .build();
         } else if (rol == Rol.ENTRENADOR) {
             toSave = Entrenador.builder()
                     .nombre(usuarioDTO.getNombre())
+                    .apellido(usuarioDTO.getApellido())
                     .email(usuarioDTO.getEmail())
-                    .contraseña(usuarioDTO.getContraseña()) // Cambiado desde 'getPassword' para consistencia con el idioma español
+                    .contraseña(usuarioDTO.getContraseña())
                     .rol(Rol.ENTRENADOR)
+                    .sexo(usuarioDTO.getSexo())
+                    .fechaNacimiento(usuarioDTO.getFechaNacimiento())
+                    .departamento(usuarioDTO.getDepartamento())
+                    .ciudad(usuarioDTO.getCiudad())
+                    .tipoDocumento(usuarioDTO.getTipoDocumento())
+                    .numeroDocumento(usuarioDTO.getNumeroDocumento())
+                    .telefono(usuarioDTO.getTelefono())
                     .estado(usuarioDTO.getEstado() != null ? usuarioDTO.getEstado() : true)
                     .calificacionPromedio(0.0)
                     .build();
@@ -93,9 +109,17 @@ public class UsuarioServiceImpl implements UsuarioService {
             // Por defecto, crea usuario base
             toSave = Usuario.builder()
                     .nombre(usuarioDTO.getNombre())
+                    .apellido(usuarioDTO.getApellido())
                     .email(usuarioDTO.getEmail())
-                    .contraseña(usuarioDTO.getContraseña()) // Cambiado desde 'getPassword' para consistencia con el idioma español
+                    .contraseña(usuarioDTO.getContraseña())
                     .rol(rol != null ? rol : Rol.CLIENTE)
+                    .sexo(usuarioDTO.getSexo())
+                    .fechaNacimiento(usuarioDTO.getFechaNacimiento())
+                    .departamento(usuarioDTO.getDepartamento())
+                    .ciudad(usuarioDTO.getCiudad())
+                    .tipoDocumento(usuarioDTO.getTipoDocumento())
+                    .numeroDocumento(usuarioDTO.getNumeroDocumento())
+                    .telefono(usuarioDTO.getTelefono())
                     .estado(usuarioDTO.getEstado() != null ? usuarioDTO.getEstado() : true)
                     .build();
         }
@@ -130,7 +154,7 @@ public class UsuarioServiceImpl implements UsuarioService {
 
     @Override
     public boolean deleteUsuario(long id) {
-        if (!usuarioRepository.findById(id).isPresent()){
+        if (usuarioRepository.findById(id).isEmpty()){
             throw new RuntimeException("Usuario not found with id: " + id);
         }
         usuarioRepository.deleteById(id);

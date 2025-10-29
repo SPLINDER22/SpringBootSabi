@@ -56,9 +56,55 @@ public class EntrenadorServiceImpl implements EntrenadorService {
     public EntrenadorDTO updateEntrenador(long id, EntrenadorDTO entrenadorDTO) {
         Entrenador existingEntrenador = entrenadorRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Entrenador not found with id: " + id));
-        existingEntrenador.setEspecialidades(entrenadorDTO.getEspecialidades());
-        existingEntrenador.setExperiencia(entrenadorDTO.getExperiencia());
-        existingEntrenador.setCalificacionPromedio(entrenadorDTO.getCalificacionPromedio());
+
+        // --- Actualizar atributos de Usuario (heredados) ---
+        if (entrenadorDTO.getNombre() != null) {
+            existingEntrenador.setNombre(entrenadorDTO.getNombre());
+        }
+        if (entrenadorDTO.getApellido() != null) {
+            existingEntrenador.setApellido(entrenadorDTO.getApellido());
+        }
+        if (entrenadorDTO.getEmail() != null) {
+            existingEntrenador.setEmail(entrenadorDTO.getEmail());
+        }
+        if (entrenadorDTO.getSexo() != null) {
+            existingEntrenador.setSexo(entrenadorDTO.getSexo());
+        }
+        if (entrenadorDTO.getFechaNacimiento() != null) {
+            existingEntrenador.setFechaNacimiento(entrenadorDTO.getFechaNacimiento());
+        }
+        if (entrenadorDTO.getDepartamento() != null) {
+            existingEntrenador.setDepartamento(entrenadorDTO.getDepartamento());
+        }
+        if (entrenadorDTO.getCiudad() != null) {
+            existingEntrenador.setCiudad(entrenadorDTO.getCiudad());
+        }
+        if (entrenadorDTO.getTipoDocumento() != null) {
+            existingEntrenador.setTipoDocumento(entrenadorDTO.getTipoDocumento());
+        }
+        if (entrenadorDTO.getNumeroDocumento() != null) {
+            existingEntrenador.setNumeroDocumento(entrenadorDTO.getNumeroDocumento());
+        }
+        if (entrenadorDTO.getTelefono() != null) {
+            existingEntrenador.setTelefono(entrenadorDTO.getTelefono());
+        }
+        if (entrenadorDTO.getFotoPerfilUrl() != null) {
+            existingEntrenador.setFotoPerfilUrl(entrenadorDTO.getFotoPerfilUrl());
+        }
+        if (entrenadorDTO.getDescripcion() != null) {
+            existingEntrenador.setDescripcion(entrenadorDTO.getDescripcion());
+        }
+        if (entrenadorDTO.getEstado() != null) {
+            existingEntrenador.setEstado(entrenadorDTO.getEstado());
+        }
+
+        // --- Actualizar atributos específicos de Entrenador ---
+        if (entrenadorDTO.getEspecialidad() != null) {
+            existingEntrenador.setEspecialidad(entrenadorDTO.getEspecialidad());
+        }
+        if (entrenadorDTO.getCalificacionPromedio() != null) {
+            existingEntrenador.setCalificacionPromedio(entrenadorDTO.getCalificacionPromedio());
+        }
 
         existingEntrenador = entrenadorRepository.save(existingEntrenador);
         return modelMapper.map(existingEntrenador, EntrenadorDTO.class);

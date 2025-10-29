@@ -19,6 +19,13 @@ o<!DOCTYPE html>
         <div class="categoria">
             <div class="categoria-titulo">Datos físicos <span class="badge bg-danger">Obligatorio</span></div>
             <div class="row g-3 align-items-end">
+                <div class="col-md-12">
+                    <label for="objetivo" class="form-label">¿Cuál es tu objetivo?</label>
+                    <textarea class="form-control" id="objetivo" name="objetivo" rows="2" required placeholder="Ej: Perder peso, ganar masa muscular, mejorar resistencia..."
+                              th:text="${diagnosticoActual?.objetivo}"></textarea>
+                    <small class="text-muted">Describe qué quieres lograr con tu entrenamiento.</small>
+                    <div class="invalid-feedback">Este campo es obligatorio.</div>
+                </div>
                 <div class="col-md-4">
                     <label for="peso" class="form-label">Peso (kg)</label>
                     <input type="number" step="0.1" min="30" max="300" class="form-control" id="peso" name="peso" th:value="${diagnosticoActual?.peso}" required placeholder="Ej: 70.5">

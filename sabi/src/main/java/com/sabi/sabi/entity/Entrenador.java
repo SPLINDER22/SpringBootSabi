@@ -15,11 +15,7 @@ import java.util.List;
 @SuperBuilder
 public class Entrenador extends Usuario {
 
-    @Column(length = 255)
-    private String especialidades;
-
-    @Column(length = 500)
-    private String experiencia;
+    private String especialidad;
 
     @Column(name = "calificacion_promedio")
     private Double calificacionPromedio;

@@ -3,9 +3,7 @@ package com.sabi.sabi.entity;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
-import org.springframework.format.annotation.DateTimeFormat;
 
-import java.time.LocalDate;
 import java.util.List;
 
 @Entity
@@ -17,22 +15,8 @@ import java.util.List;
 @SuperBuilder
 public class Cliente extends Usuario {
 
-
-    @Column(length = 255)
-    private String objetivos;
-
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
-    @Column(name = "fecha_nacimiento")
-    private LocalDate fechaNacimiento;
-
-    @Column(length = 10)
-    private String sexo;
-
-    @Column(length = 20)
-    private String telefono;
-
-    @Column(length = 60)
-    private String ciudad;
+    @Column(length = 500)
+    private String objetivo;  // Campo específico del cliente para guardar su objetivo de fitness
 
     // Relaciones
 

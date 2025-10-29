@@ -12,7 +12,6 @@ import com.sabi.sabi.repository.ClienteRepository;
 import com.sabi.sabi.repository.DiagnosticoRepository;
 import com.sabi.sabi.repository.EntrenadorRepository;
 import com.sabi.sabi.repository.RutinaRepository;
-import com.sabi.sabi.repository.UsuarioRepository;
 import com.sabi.sabi.service.ClienteService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -73,15 +72,51 @@ public class ClienteServiceImpl implements ClienteService {
         Cliente existingCliente = clienteRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Cliente not found with id: " + id));
 
-        // --- Actualizar atributos de Usuario ---
-        existingCliente.setNombre(clienteDTO.getNombre());
-        existingCliente.setEmail(clienteDTO.getEmail());
-        existingCliente.setEstado(clienteDTO.getEstado());
+        // --- Actualizar atributos de Usuario (heredados) ---
+        if (clienteDTO.getNombre() != null) {
+            existingCliente.setNombre(clienteDTO.getNombre());
+        }
+        if (clienteDTO.getApellido() != null) {
+            existingCliente.setApellido(clienteDTO.getApellido());
+        }
+        if (clienteDTO.getEmail() != null) {
+            existingCliente.setEmail(clienteDTO.getEmail());
+        }
+        if (clienteDTO.getSexo() != null) {
+            existingCliente.setSexo(clienteDTO.getSexo());
+        }
+        if (clienteDTO.getFechaNacimiento() != null) {
+            existingCliente.setFechaNacimiento(clienteDTO.getFechaNacimiento());
+        }
+        if (clienteDTO.getDepartamento() != null) {
+            existingCliente.setDepartamento(clienteDTO.getDepartamento());
+        }
+        if (clienteDTO.getCiudad() != null) {
+            existingCliente.setCiudad(clienteDTO.getCiudad());
+        }
+        if (clienteDTO.getTipoDocumento() != null) {
+            existingCliente.setTipoDocumento(clienteDTO.getTipoDocumento());
+        }
+        if (clienteDTO.getNumeroDocumento() != null) {
+            existingCliente.setNumeroDocumento(clienteDTO.getNumeroDocumento());
+        }
+        if (clienteDTO.getTelefono() != null) {
+            existingCliente.setTelefono(clienteDTO.getTelefono());
+        }
+        if (clienteDTO.getFotoPerfilUrl() != null) {
+            existingCliente.setFotoPerfilUrl(clienteDTO.getFotoPerfilUrl());
+        }
+        if (clienteDTO.getDescripcion() != null) {
+            existingCliente.setDescripcion(clienteDTO.getDescripcion());
+        }
+        if (clienteDTO.getEstado() != null) {
+            existingCliente.setEstado(clienteDTO.getEstado());
+        }
 
-        existingCliente.setObjetivos(clienteDTO.getObjetivos());
-        existingCliente.setFechaNacimiento(clienteDTO.getFechaNacimiento());
-        existingCliente.setSexo(clienteDTO.getSexo());
-        existingCliente.setTelefono(clienteDTO.getTelefono());
+        // --- Actualizar atributos específicos de Cliente ---
+        if (clienteDTO.getObjetivo() != null) {
+            existingCliente.setObjetivo(clienteDTO.getObjetivo());
+        }
 
         Cliente updatedCliente = clienteRepository.save(existingCliente);
         return modelMapper.map(updatedCliente, ClienteDTO.class);
@@ -89,7 +124,7 @@ public class ClienteServiceImpl implements ClienteService {
 
     @Override
     public boolean deleteCliente(long id) {
-        if (!clienteRepository.findById(id).isPresent()) {
+        if (clienteRepository.findById(id).isEmpty()) {
             throw new RuntimeException("Cliente not found with id: " + id);
         }
         clienteRepository.deleteById(id);

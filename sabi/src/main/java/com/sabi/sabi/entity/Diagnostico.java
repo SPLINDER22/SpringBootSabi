@@ -26,6 +26,10 @@ public class Diagnostico {
     @JoinColumn(name = "cliente_id", nullable = false)
     private Cliente cliente;
 
+    // Campo para el objetivo del cliente
+    @Column(length = 500)
+    private String objetivo;
+
     // Obligatorios
     private Double peso;                 // en kg
     private Double estatura;             // en cm
@@ -53,6 +57,7 @@ public class Diagnostico {
     private Long horasSueno;               // horas promedio
     private String habitosAlimenticios;       // descripción libre
 
+    @Builder.Default
     @Column(name = "estado", nullable = false)
     private Boolean estado = true;
 }

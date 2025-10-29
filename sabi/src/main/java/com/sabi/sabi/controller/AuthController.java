@@ -48,24 +48,67 @@ public class AuthController {
     }
 
     @PostMapping("/registrar")
-    public String registrarUsuario(@ModelAttribute UsuarioDTO usuarioDTO) {
-        // Asignar rol temporal CLIENTE
-        usuarioDTO.setRol(Rol.CLIENTE);
+    public String registrarUsuario(@ModelAttribute UsuarioDTO usuarioDTO,
+                                   @RequestParam(required = false) String genero,
+                                   @RequestParam(required = false) String fechaNacimiento,
+                                   @RequestParam(required = false) String departamento,
+                                   @RequestParam(required = false) String ciudad,
+                                   @RequestParam(required = false) String tipoDocumento,
+                                   @RequestParam(required = false) String numeroDocumento,
+                                   @RequestParam(required = false) String telefono,
+                                   Model model) {
 
-        // Guardar raw contraseña para autenticación programática
-        String rawContraseña = usuarioDTO.getContraseña();
+        try {
+            // Convertir los parámetros String a los tipos enum correspondientes
+            if (genero != null && !genero.isEmpty()) {
+                usuarioDTO.setSexo(com.sabi.sabi.entity.enums.Sexo.valueOf(genero));
+            }
 
-        // Encriptar la contraseña antes de guardar
-        usuarioDTO.setContraseña(passwordEncoder.encode(rawContraseña));
+            if (fechaNacimiento != null && !fechaNacimiento.isEmpty()) {
+                usuarioDTO.setFechaNacimiento(java.time.LocalDate.parse(fechaNacimiento));
+            }
 
-        usuarioService.createUsuario(usuarioDTO);
+            if (departamento != null && !departamento.isEmpty()) {
+                usuarioDTO.setDepartamento(com.sabi.sabi.entity.enums.Departamento.valueOf(departamento));
+            }
 
-        // Autenticar al usuario automáticamente para que pueda seleccionar rol
-        UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(usuarioDTO.getEmail(), rawContraseña);
-        Authentication auth = authenticationManager.authenticate(authToken);
-        SecurityContextHolder.getContext().setAuthentication(auth);
+            if (ciudad != null && !ciudad.isEmpty()) {
+                usuarioDTO.setCiudad(ciudad);
+            }
 
-        return "redirect:/auth/seleccionar-rol";
+            if (tipoDocumento != null && !tipoDocumento.isEmpty()) {
+                usuarioDTO.setTipoDocumento(com.sabi.sabi.entity.enums.TipoDocumento.valueOf(tipoDocumento));
+            }
+
+            if (numeroDocumento != null && !numeroDocumento.isEmpty()) {
+                usuarioDTO.setNumeroDocumento(numeroDocumento);
+            }
+
+            if (telefono != null && !telefono.isEmpty()) {
+                usuarioDTO.setTelefono(telefono);
+            }
+
+            // Asignar rol temporal CLIENTE
+            usuarioDTO.setRol(Rol.CLIENTE);
+
+            // Guardar raw contraseña para autenticación programática
+            String rawContraseña = usuarioDTO.getContraseña();
+
+            // Encriptar la contraseña antes de guardar
+            usuarioDTO.setContraseña(passwordEncoder.encode(rawContraseña));
+
+            usuarioService.createUsuario(usuarioDTO);
+
+            // Autenticar al usuario automáticamente para que pueda seleccionar rol
+            UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(usuarioDTO.getEmail(), rawContraseña);
+            Authentication auth = authenticationManager.authenticate(authToken);
+            SecurityContextHolder.getContext().setAuthentication(auth);
+
+            return "redirect:/auth/seleccionar-rol";
+        } catch (Exception e) {
+            model.addAttribute("error", "Error al registrar usuario: " + e.getMessage());
+            return "auth/registro";
+        }
     }
 
     @GetMapping("/seleccionar-rol")

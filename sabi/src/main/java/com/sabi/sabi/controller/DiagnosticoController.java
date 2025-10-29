@@ -10,7 +10,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
-import java.time.LocalDateTime;
 
 @Controller
 @RequestMapping("/diagnostico")
@@ -37,7 +36,17 @@ public class DiagnosticoController {
         Long clienteId = clienteService.getClienteByEmail(userDetails.getUsername()).getId();
         diagnosticoDTO.setIdCliente(clienteId);
         diagnosticoDTO.setFecha(java.time.LocalDate.now()); // Asignar solo la fecha actual
+
+        // Guardar el diagnóstico
         diagnosticoService.createDiagnostico(diagnosticoDTO);
+
+        // Si el objetivo fue proporcionado, actualizarlo también en el perfil del cliente
+        if (diagnosticoDTO.getObjetivo() != null && !diagnosticoDTO.getObjetivo().isEmpty()) {
+            com.sabi.sabi.dto.ClienteDTO clienteDTO = clienteService.getClienteById(clienteId);
+            clienteDTO.setObjetivo(diagnosticoDTO.getObjetivo());
+            clienteService.updateCliente(clienteId, clienteDTO);
+        }
+
         return "redirect:/cliente/dashboard";
     }
 
