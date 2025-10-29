@@ -12,11 +12,7 @@ import com.sabi.sabi.service.ExcelService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.validation.BindingResult;
 import jakarta.validation.Valid;
 import org.springframework.security.core.Authentication;
@@ -26,6 +22,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.ContentDisposition;
+import org.springframework.http.HttpStatus;
 
 import java.util.List;
 
@@ -69,6 +66,7 @@ public class ClienteController {
         model.addAttribute("diagnosticoActual", diagnosticoActual);
         model.addAttribute("diagnosticoAnterior", diagnosticoAnterior);
         model.addAttribute("tieneComparativa", diagnosticoAnterior != null);
+        model.addAttribute("usuario", userDetails.getUsuario());
 
         return "cliente/dashboard";
     }
@@ -251,6 +249,37 @@ public class ClienteController {
         headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
         headers.setContentDisposition(ContentDisposition.attachment().filename("diagnostico_" + idDiagnostico + ".xlsx").build());
 
-        return ResponseEntity.ok().headers(headers).body(archivoExcel);
+        return new ResponseEntity<>(archivoExcel, headers, HttpStatus.OK);
+    }
+
+    @GetMapping("/api/cliente/entrenador/{entrenadorId}/info")
+    @ResponseBody
+    public org.springframework.http.ResponseEntity<?> obtenerInfoEntrenador(@PathVariable Long entrenadorId) {
+        try {
+            com.sabi.sabi.dto.EntrenadorDTO entrenador = entrenadorService.getEntrenadorById(entrenadorId);
+            if (entrenador == null) {
+                return org.springframework.http.ResponseEntity.notFound().build();
+            }
+
+            // Crear un objeto con solo la info necesaria para el modal
+            java.util.Map<String, Object> info = new java.util.HashMap<>();
+            String nombreCompleto = entrenador.getNombre();
+            if (entrenador.getApellido() != null && !entrenador.getApellido().isEmpty()) {
+                nombreCompleto += " " + entrenador.getApellido();
+            }
+            info.put("nombre", nombreCompleto);
+            info.put("email", entrenador.getEmail());
+            info.put("fotoPerfilUrl", entrenador.getFotoPerfilUrl() != null ? entrenador.getFotoPerfilUrl() : "/img/entrenador.jpg");
+            info.put("especialidades", entrenador.getEspecialidad());
+            info.put("experiencia", 0); // No hay campo de experiencia en DTO, poner 0 o null
+            info.put("calificacionPromedio", entrenador.getCalificacionPromedio() != null ? entrenador.getCalificacionPromedio() : 0.0);
+            info.put("telefono", entrenador.getTelefono());
+            info.put("descripcion", entrenador.getDescripcion());
+            info.put("id", entrenador.getId());
+
+            return org.springframework.http.ResponseEntity.ok(info);
+        } catch (Exception e) {
+            return org.springframework.http.ResponseEntity.status(500).body("Error: " + e.getMessage());
+        }
     }
 }
