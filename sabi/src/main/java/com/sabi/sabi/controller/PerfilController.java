@@ -94,36 +94,44 @@ public class PerfilController {
     }
 
     private String guardarFotoPerfil(MultipartFile file) throws IOException {
-        // Validar que sea una imagen
-        String contentType = file.getContentType();
-        if (contentType == null || !contentType.startsWith("image/")) {
-            throw new IOException("El archivo debe ser una imagen (JPEG, PNG, GIF, etc.)");
-        }
-
-        // Lista de extensiones válidas
+        // Obtener nombre y extensión del archivo original
         String originalFilename = file.getOriginalFilename();
         if (originalFilename == null || originalFilename.isEmpty()) {
             throw new IOException("Nombre de archivo inválido");
         }
 
+        // Extraer la extensión
         String extension = "";
         int lastDot = originalFilename.lastIndexOf('.');
         if (lastDot > 0) {
             extension = originalFilename.substring(lastDot).toLowerCase();
-        }
-
-        // Validar extensión (aceptar todos los formatos de imagen comunes)
-        String[] extensionesValidas = {".jpg", ".jpeg", ".png", ".gif", ".webp", ".bmp", ".svg", ".jfif"};
-        boolean extensionValida = false;
-        for (String ext : extensionesValidas) {
-            if (extension.equals(ext)) {
-                extensionValida = true;
-                break;
+        } else {
+            // Si no tiene extensión, intentar determinarla del content type
+            String contentType = file.getContentType();
+            if (contentType != null) {
+                if (contentType.contains("jpeg") || contentType.contains("jpg")) {
+                    extension = ".jpg";
+                } else if (contentType.contains("png")) {
+                    extension = ".png";
+                } else if (contentType.contains("gif")) {
+                    extension = ".gif";
+                } else if (contentType.contains("webp")) {
+                    extension = ".webp";
+                } else if (contentType.contains("bmp")) {
+                    extension = ".bmp";
+                }
             }
         }
 
-        if (!extensionValida && !extension.isEmpty()) {
-            throw new IOException("Formato de imagen no soportado. Usa: JPG, JPEG, PNG, GIF, WEBP, BMP, SVG o JFIF");
+        // Validar que el archivo no esté vacío
+        if (file.isEmpty()) {
+            throw new IOException("El archivo está vacío");
+        }
+
+        // Validar tamaño máximo (10MB para ser más permisivo)
+        long maxSize = 10 * 1024 * 1024; // 10MB
+        if (file.getSize() > maxSize) {
+            throw new IOException("El archivo es demasiado grande (máximo 10MB)");
         }
 
         // Crear directorio si no existe
@@ -132,7 +140,7 @@ public class PerfilController {
             Files.createDirectories(uploadDir);
         }
 
-        // Generar nombre único para el archivo manteniendo la extensión original
+        // Generar nombre único manteniendo la extensión original
         String fileName = UUID.randomUUID() + extension;
         Path filePath = uploadDir.resolve(fileName);
 

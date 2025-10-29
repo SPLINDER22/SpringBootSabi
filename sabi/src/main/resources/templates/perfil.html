@@ -220,7 +220,7 @@
 
                 <!-- Input oculto para foto -->
                 <input type="file" id="fotoInput" name="fotoPerfil"
-                       accept="image/jpeg,image/jpg,image/png,image/gif,image/webp,image/bmp,image/svg+xml,.jfif"
+                       accept="image/*"
                        style="display: none;"
                        onchange="validarYSubirImagen(this)">
 
@@ -229,7 +229,7 @@
                         <i class="fas fa-pen"></i> Descripción Personal
                     </label>
                     <small style="color: #666; display: block; margin-bottom: 0.5rem;">
-                        💡 Formatos de imagen aceptados: JPG, JPEG, PNG, GIF, WEBP, BMP, SVG, JFIF (máx. 5MB)
+                        💡 Sube cualquier imagen desde tu PC (máx. 10MB)
                     </small>
                     <textarea id="descripcion" name="descripcion" class="form-control" rows="4"
                               placeholder="Cuéntanos sobre ti..."
@@ -262,6 +262,38 @@
             </form>
         </div>
     </div>
+
+    <script>
+        function validarYSubirImagen(input) {
+            const file = input.files[0];
+
+            if (!file) {
+                return;
+            }
+
+            // Validar tamano (10MB maximo)
+            const maxSize = 10 * 1024 * 1024; // 10MB en bytes
+            if (file.size > maxSize) {
+                alert('La imagen es demasiado grande. El tamaño maximo es 10MB.\n\nTamaño actual: ' + (file.size / 1024 / 1024).toFixed(2) + 'MB');
+                input.value = ''; // Limpiar el input
+                return;
+            }
+
+            // Mostrar preview y enviar formulario
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                // Actualizar la imagen de preview
+                const img = document.querySelector('.perfil-img');
+                if (img) {
+                    img.src = e.target.result;
+                }
+
+                // Enviar el formulario automaticamente
+                input.form.submit();
+            };
+            reader.readAsDataURL(file);
+        }
+    </script>
 </section>
 </body>
 </html>
