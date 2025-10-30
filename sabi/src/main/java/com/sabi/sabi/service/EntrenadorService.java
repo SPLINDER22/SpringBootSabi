@@ -5,7 +5,11 @@ import com.sabi.sabi.dto.EntrenadorDTO;
 import java.util.List;
 
 public interface EntrenadorService {
+
     List<EntrenadorDTO> getEntrenadores();
+
+    List<EntrenadorDTO> buscarEntrenadores(String nombre);
+
     List<EntrenadorDTO> getAllActiveEntrenadores();
 
     EntrenadorDTO getEntrenadorById(long id);

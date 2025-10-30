@@ -89,18 +89,28 @@ public class ClienteController {
     }
 
     @GetMapping("/cliente/listaEntrenadores")
-    public String clienteListaEntrenadores(Model model) {
+    public String clienteListaEntrenadores(
+            @RequestParam(value = "nombre", required = false) String nombre,
+            Model model) {
+
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         CustomUserDetails userDetails = (CustomUserDetails) auth.getPrincipal();
         Long clienteId = userDetails.getUsuario().getId();
+
         DiagnosticoDTO diagnosticoActual = clienteService.getDiagnosticoActualByClienteId(clienteId);
         if (diagnosticoActual == null) {
             return "redirect:/cliente/diagnostico/crear?motivo=obligatorio";
         }
         boolean tieneDiagnostico = diagnosticoActual != null;
-        List<EntrenadorDTO> entrenadores = clienteService.getAllEntrenadores();
+
+        String criterio = (nombre != null) ? nombre.trim() : null;
+        List<EntrenadorDTO> entrenadores = (criterio == null || criterio.isEmpty())
+                ? entrenadorService.getAllActiveEntrenadores()
+                : entrenadorService.buscarEntrenadores(criterio);
+
         model.addAttribute("entrenadores", entrenadores);
         model.addAttribute("tieneDiagnostico", tieneDiagnostico);
+        model.addAttribute("nombre", nombre);
         return "cliente/listaEntrenadores";
     }
 
@@ -135,8 +145,7 @@ public class ClienteController {
                         id -> {
                             var e = entrenadorService.getEntrenadorById(id);
                             return e != null ? e.getNombre() : null;
-                        }
-                ));
+                        }));
         model.addAttribute("nombresEntrenadores", nombresEntrenadores);
         return "cliente/suscripcion-historial";
     }
@@ -162,18 +171,20 @@ public class ClienteController {
     }
 
     @GetMapping("/cliente/diagnostico/crear")
-    public String mostrarFormularioDiagnostico(Model model, @RequestParam(value = "motivo", required = false) String motivo) {
+    public String mostrarFormularioDiagnostico(Model model,
+            @RequestParam(value = "motivo", required = false) String motivo) {
         model.addAttribute("diagnostico", new DiagnosticoDTO());
         if (motivo != null && motivo.equals("obligatorio")) {
-            model.addAttribute("mensajeObligatorio", "Debes completar tu diagnóstico para acceder al resto de la plataforma.");
+            model.addAttribute("mensajeObligatorio",
+                    "Debes completar tu diagnóstico para acceder al resto de la plataforma.");
         }
         return "cliente/diagnostico-form";
     }
 
     @PostMapping("/cliente/diagnostico/guardar")
     public String guardarDiagnostico(@ModelAttribute("diagnostico") @Valid DiagnosticoDTO diagnosticoDTO,
-                                     BindingResult result,
-                                     Model model) {
+            BindingResult result,
+            Model model) {
         if (result.hasErrors()) {
             model.addAttribute("error", "Por favor corrige los errores del formulario.");
             return "cliente/diagnostico-form";
@@ -247,7 +258,8 @@ public class ClienteController {
         // Configurar cabeceras de la respuesta
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
-        headers.setContentDisposition(ContentDisposition.attachment().filename("diagnostico_" + idDiagnostico + ".xlsx").build());
+        headers.setContentDisposition(
+                ContentDisposition.attachment().filename("diagnostico_" + idDiagnostico + ".xlsx").build());
 
         return new ResponseEntity<>(archivoExcel, headers, HttpStatus.OK);
     }
@@ -269,10 +281,12 @@ public class ClienteController {
             }
             info.put("nombre", nombreCompleto);
             info.put("email", entrenador.getEmail());
-            info.put("fotoPerfilUrl", entrenador.getFotoPerfilUrl() != null ? entrenador.getFotoPerfilUrl() : "/img/entrenador.jpg");
+            info.put("fotoPerfilUrl",
+                    entrenador.getFotoPerfilUrl() != null ? entrenador.getFotoPerfilUrl() : "/img/entrenador.jpg");
             info.put("especialidades", entrenador.getEspecialidad());
             info.put("experiencia", 0); // No hay campo de experiencia en DTO, poner 0 o null
-            info.put("calificacionPromedio", entrenador.getCalificacionPromedio() != null ? entrenador.getCalificacionPromedio() : 0.0);
+            info.put("calificacionPromedio",
+                    entrenador.getCalificacionPromedio() != null ? entrenador.getCalificacionPromedio() : 0.0);
             info.put("telefono", entrenador.getTelefono());
             info.put("descripcion", entrenador.getDescripcion());
             info.put("id", entrenador.getId());

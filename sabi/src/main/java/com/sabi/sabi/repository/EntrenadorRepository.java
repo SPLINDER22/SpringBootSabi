@@ -9,4 +9,6 @@ import java.util.List;
 @Repository
 public interface EntrenadorRepository extends JpaRepository<Entrenador,Long> {
     List<Entrenador> findByEstadoTrue();
+
+    List<Entrenador> findByNombreContainingIgnoreCaseAndEstadoTrue(String nombre);
 }

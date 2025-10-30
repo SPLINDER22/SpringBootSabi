@@ -45,7 +45,7 @@ public class EntrenadorServiceImpl implements EntrenadorService {
     @Override
     public EntrenadorDTO createEntrenador(EntrenadorDTO entrenadorDTO) {
         Entrenador entrenador = modelMapper.map(entrenadorDTO, Entrenador.class);
-        if (entrenador.getId() != null && entrenadorRepository.findById(entrenador.getId()).isPresent()){
+        if (entrenador.getId() != null && entrenadorRepository.findById(entrenador.getId()).isPresent()) {
             updateEntrenador(entrenador.getId(), entrenadorDTO);
         }
         entrenador = entrenadorRepository.save(entrenador);
@@ -115,5 +115,14 @@ public class EntrenadorServiceImpl implements EntrenadorService {
         Entrenador existingEntrenador = entrenadorRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Entrenador not found with id: " + id));
         entrenadorRepository.delete(existingEntrenador);
+    }
+
+    @Override
+    public List<EntrenadorDTO> buscarEntrenadores(String nombre) {
+        List<Entrenador> list = entrenadorRepository
+                .findByNombreContainingIgnoreCaseAndEstadoTrue(nombre);
+        return list.stream()
+                .map(e -> modelMapper.map(e, EntrenadorDTO.class))
+                .toList();
     }
 }

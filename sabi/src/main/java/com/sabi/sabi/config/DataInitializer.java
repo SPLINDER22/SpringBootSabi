@@ -43,7 +43,16 @@ public class DataInitializer implements CommandLineRunner {
         @Override
         public void run(String... args) {
                 crearClienteSiNoExiste("Carlos Colmenares", "cliente@sabi.com", "1234567");
-                crearEntrenadorSiNoExiste("Ernesto Espinel", "entrenador@sabi.com", "1234567");
+                crearEntrenadorSiNoExiste("Hernesto Espinel", "entrenador@sabi.com", "1234567");
+                // Entrenadores adicionales de prueba
+                crearEntrenadorSiNoExiste("Ana García", "entrenador1@sabi.com", "1234567");
+                crearEntrenadorSiNoExiste("Luis Martínez", "entrenador2@sabi.com", "1234567");
+                crearEntrenadorSiNoExiste("María López", "entrenador3@sabi.com", "1234567");
+                crearEntrenadorSiNoExiste("Carlos Pérez", "entrenador4@sabi.com", "1234567");
+                crearEntrenadorSiNoExiste("Sofía Rodríguez", "entrenador5@sabi.com", "1234567");
+                crearEntrenadorSiNoExiste("Jorge Hernández", "entrenador6@sabi.com", "1234567");
+                crearEntrenadorSiNoExiste("Lucía Fernández", "entrenador7@sabi.com", "1234567");
+                crearEntrenadorSiNoExiste("Diego Gómez", "entrenador8@sabi.com", "1234567");
                 crearEjerciciosSiNoExisten();
                 crearRutinaDeEjemplo();
                 crearRutinaGlobalLibre(); // Nueva rutina global sin cliente ni entrenador ni estadoRutina
@@ -53,7 +62,15 @@ public class DataInitializer implements CommandLineRunner {
                 System.out.println("Resumen de usuarios iniciales:");
                 System.out.println("");
                 System.out.println("Cliente - cliente@sabi.com - Contraseña (raw): 1234567");
-                System.out.println("entrenador - entrenador@sabi.com - Contraseña (raw): 1234567");
+                System.out.println("Entrenador - entrenador@sabi.com - Contraseña (raw): 1234567");
+                System.out.println("Entrenador - entrenador1@sabi.com - Contraseña (raw): 1234567");
+                System.out.println("Entrenador - entrenador2@sabi.com - Contraseña (raw): 1234567");
+                System.out.println("Entrenador - entrenador3@sabi.com - Contraseña (raw): 1234567");
+                System.out.println("Entrenador - entrenador4@sabi.com - Contraseña (raw): 1234567");
+                System.out.println("Entrenador - entrenador5@sabi.com - Contraseña (raw): 1234567");
+                System.out.println("Entrenador - entrenador6@sabi.com - Contraseña (raw): 1234567");
+                System.out.println("Entrenador - entrenador7@sabi.com - Contraseña (raw): 1234567");
+                System.out.println("Entrenador - entrenador8@sabi.com - Contraseña (raw): 1234567");
                 System.out.println("");
         }
 
@@ -103,7 +120,7 @@ public class DataInitializer implements CommandLineRunner {
                     .contraseña(passwordEncoder.encode(rawPassword))
                     .rol(Rol.ENTRENADOR)
                     .estado(true)
-                    .especialidad("Fuerza, HIIT")
+                    .especialidad("Fitness general")
                     .calificacionPromedio(0.0)
                     .build();
             usuarioRepository.save(entrenador);
