@@ -10,6 +10,8 @@ public interface EntrenadorService {
 
     List<EntrenadorDTO> buscarEntrenadores(String nombre);
 
+    List<EntrenadorDTO> buscarEntrenadores(String nombre, String especialidad, Double minPuntuacion, Double maxPuntuacion);
+
     List<EntrenadorDTO> getAllActiveEntrenadores();
 
     EntrenadorDTO getEntrenadorById(long id);

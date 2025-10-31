@@ -12,8 +12,7 @@ import com.sabi.sabi.entity.Semana;
 import com.sabi.sabi.entity.Dia;
 import com.sabi.sabi.entity.EjercicioAsignado;
 import com.sabi.sabi.entity.Serie;
-import com.sabi.sabi.entity.enums.Rol;
-import com.sabi.sabi.entity.enums.TipoEjercicio;
+import com.sabi.sabi.entity.enums.*;
 import com.sabi.sabi.repository.EjercicioRepository;
 import com.sabi.sabi.repository.UsuarioRepository;
 import com.sabi.sabi.repository.RutinaRepository;
@@ -25,6 +24,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
+
+import java.time.LocalDate;
 
 @Component
 @RequiredArgsConstructor
@@ -43,16 +44,70 @@ public class DataInitializer implements CommandLineRunner {
         @Override
         public void run(String... args) {
                 crearClienteSiNoExiste("Carlos Colmenares", "cliente@sabi.com", "1234567");
-                crearEntrenadorSiNoExiste("Hernesto Espinel", "entrenador@sabi.com", "1234567");
-                // Entrenadores adicionales de prueba
-                crearEntrenadorSiNoExiste("Ana García", "entrenador1@sabi.com", "1234567");
-                crearEntrenadorSiNoExiste("Luis Martínez", "entrenador2@sabi.com", "1234567");
-                crearEntrenadorSiNoExiste("María López", "entrenador3@sabi.com", "1234567");
-                crearEntrenadorSiNoExiste("Carlos Pérez", "entrenador4@sabi.com", "1234567");
-                crearEntrenadorSiNoExiste("Sofía Rodríguez", "entrenador5@sabi.com", "1234567");
-                crearEntrenadorSiNoExiste("Jorge Hernández", "entrenador6@sabi.com", "1234567");
-                crearEntrenadorSiNoExiste("Lucía Fernández", "entrenador7@sabi.com", "1234567");
-                crearEntrenadorSiNoExiste("Diego Gómez", "entrenador8@sabi.com", "1234567");
+                // Entrenadores con datos más realistas (Colombia)
+                crearEntrenadorDetalladoSiNoExiste(
+                        "Ernesto", "Espinel", "entrenador@sabi.com", "1234567",
+                        Sexo.MASCULINO, LocalDate.of(1987, 5, 14), Departamento.CUNDINAMARCA, "Bogotá",
+                        TipoDocumento.CC, "1012456789", "3101234567",
+                        "Fuerza e hipertrofia", 4.6,
+                        "Entrenador con enfoque en fuerza e hipertrofia, planificación y técnica correcta."
+                );
+                crearEntrenadorDetalladoSiNoExiste(
+                        "Ana", "García", "entrenador1@sabi.com", "1234567",
+                        Sexo.FEMENINO, LocalDate.of(1990, 9, 22), Departamento.ANTIOQUIA, "Medellín",
+                        TipoDocumento.CC, "1033345698", "3129876543",
+                        "CrossFit y HIIT", 4.3,
+                        "Especialista en entrenamiento metabólico y acondicionamiento de alta intensidad."
+                );
+                crearEntrenadorDetalladoSiNoExiste(
+                        "Luis", "Martínez", "entrenador2@sabi.com", "1234567",
+                        Sexo.MASCULINO, LocalDate.of(1985, 3, 8), Departamento.VALLE_DEL_CAUCA, "Cali",
+                        TipoDocumento.CC, "1009876523", "3004567890",
+                        "Pérdida de peso y funcional", 4.1,
+                        "Acompañamiento integral para reducción de grasa y hábitos saludables."
+                );
+                crearEntrenadorDetalladoSiNoExiste(
+                        "María", "López", "entrenador3@sabi.com", "1234567",
+                        Sexo.FEMENINO, LocalDate.of(1992, 12, 11), Departamento.ATLANTICO, "Barranquilla",
+                        TipoDocumento.CC, "1015678923", "3011237894",
+                        "Funcional y movilidad", 4.4,
+                        "Trabajo de movilidad articular, estabilidad y funcionalidad para la vida diaria."
+                );
+                crearEntrenadorDetalladoSiNoExiste(
+                        "Carlos", "Pérez", "entrenador4@sabi.com", "1234567",
+                        Sexo.MASCULINO, LocalDate.of(1988, 7, 19), Departamento.SANTANDER, "Bucaramanga",
+                        TipoDocumento.CC, "1098765432", "3159988776",
+                        "Resistencia y running", 4.2,
+                        "Planificación de carreras 5K-21K, técnica de carrera y fortalecimiento específico."
+                );
+                crearEntrenadorDetalladoSiNoExiste(
+                        "Sofía", "Rodríguez", "entrenador5@sabi.com", "1234567",
+                        Sexo.FEMENINO, LocalDate.of(1995, 4, 30), Departamento.BOLIVAR, "Cartagena",
+                        TipoDocumento.CC, "1012349987", "3176655443",
+                        "Pilates y core", 4.5,
+                        "Fortalecimiento de core, postura y prevención de dolor lumbar con métodos de pilates."
+                );
+                crearEntrenadorDetalladoSiNoExiste(
+                        "Jorge", "Hernández", "entrenador6@sabi.com", "1234567",
+                        Sexo.MASCULINO, LocalDate.of(1984, 2, 2), Departamento.CUNDINAMARCA, "Chía",
+                        TipoDocumento.CC, "1004567812", "3114455667",
+                        "Halterofilia y olímpicos", 4.7,
+                        "Entrenamientos de levantamiento olímpico, técnica de arranque y envión."
+                );
+                crearEntrenadorDetalladoSiNoExiste(
+                        "Lucía", "Fernández", "entrenador7@sabi.com", "1234567",
+                        Sexo.FEMENINO, LocalDate.of(1993, 11, 5), Departamento.BOGOTA, "Bogotá",
+                        TipoDocumento.CC, "1023456780", "3193344556",
+                        "Yoga y movilidad", 4.0,
+                        "Sesiones de yoga enfocadas en flexibilidad, respiración y control postural."
+                );
+                crearEntrenadorDetalladoSiNoExiste(
+                        "Diego", "Gómez", "entrenador8@sabi.com", "1234567",
+                        Sexo.MASCULINO, LocalDate.of(1989, 1, 17), Departamento.ANTIOQUIA, "Envigado",
+                        TipoDocumento.CC, "1001234599", "3135566778",
+                        "Calistenia y street workout", 4.3,
+                        "Progresiones de calistenia, dominadas, fondos y trabajo de fuerza con peso corporal."
+                );
                 crearEjerciciosSiNoExisten();
                 crearRutinaDeEjemplo();
                 crearRutinaGlobalLibre(); // Nueva rutina global sin cliente ni entrenador ni estadoRutina
@@ -112,23 +167,58 @@ public class DataInitializer implements CommandLineRunner {
         }
     }
 
-    private void crearEntrenadorSiNoExiste(String nombre, String email, String rawPassword) {
-        if (usuarioRepository.findByEmail(email).isEmpty()) {
-            Entrenador entrenador = Entrenador.builder()
-                    .nombre(nombre)
-                    .email(email)
-                    .contraseña(passwordEncoder.encode(rawPassword))
-                    .rol(Rol.ENTRENADOR)
-                    .estado(true)
-                    .especialidad("Fitness general")
-                    .calificacionPromedio(0.0)
-                    .build();
-            usuarioRepository.save(entrenador);
-            System.out.println("Usuario creado: " + nombre + " | " + email + " | contraseña (raw): " + rawPassword);
-        } else {
-            System.out.println("Usuario ya existe: " + email + " (no se muestra contraseña raw)");
+        private void crearEntrenadorSiNoExiste(String nombre, String email, String rawPassword) {
+                // Método legado: se mantiene por compatibilidad pero no se usa para los 9 entrenadores
+                if (usuarioRepository.findByEmail(email).isEmpty()) {
+                        Entrenador entrenador = Entrenador.builder()
+                                        .nombre(nombre)
+                                        .email(email)
+                                        .contraseña(passwordEncoder.encode(rawPassword))
+                                        .rol(Rol.ENTRENADOR)
+                                        .estado(true)
+                                        .especialidad("Fitness general")
+                                        .calificacionPromedio(0.0)
+                                        .build();
+                        usuarioRepository.save(entrenador);
+                        System.out.println("Usuario creado: " + nombre + " | " + email + " | contraseña (raw): " + rawPassword);
+                } else {
+                        System.out.println("Usuario ya existe: " + email + " (no se muestra contraseña raw)");
+                }
         }
-    }
+
+        private void crearEntrenadorDetalladoSiNoExiste(
+                        String nombre, String apellido, String email, String rawPassword,
+                        Sexo sexo, LocalDate fechaNacimiento, Departamento departamento, String ciudad,
+                        TipoDocumento tipoDocumento, String numeroDocumento, String telefono,
+                        String especialidad, Double calificacionPromedio, String descripcion) {
+
+                if (usuarioRepository.findByEmail(email).isPresent()) {
+                        System.out.println("Usuario ya existe: " + email + " (no se muestra contraseña raw)");
+                        return;
+                }
+
+                Entrenador entrenador = Entrenador.builder()
+                                .nombre(nombre)
+                                .apellido(apellido)
+                                .email(email)
+                                .contraseña(passwordEncoder.encode(rawPassword))
+                                .rol(Rol.ENTRENADOR)
+                                .sexo(sexo)
+                                .fechaNacimiento(fechaNacimiento)
+                                .departamento(departamento)
+                                .ciudad(ciudad)
+                                .tipoDocumento(tipoDocumento)
+                                .numeroDocumento(numeroDocumento)
+                                .telefono(telefono)
+                                // fotoPerfilUrl: null (no usar en seed, se usará imagen por defecto)
+                                .descripcion(descripcion)
+                                .estado(true)
+                                .especialidad(especialidad)
+                                .calificacionPromedio(calificacionPromedio)
+                                .build();
+                usuarioRepository.save(entrenador);
+                System.out.println("Usuario creado: " + nombre + " " + apellido + " | " + email + " | contraseña (raw): " + rawPassword);
+        }
 
     private void crearEjerciciosSiNoExisten() {
         // Ejercicios globales (no asignados a ningún usuario)

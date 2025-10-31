@@ -10,15 +10,30 @@
     <section th:fragment="section">
         <h1 class="h3 mb-4 text-dark text-center">Entrenadores Disponibles</h1>
         <form action="#" th:action="@{/cliente/listaEntrenadores}" method="get" class="mb-4">
-            <div class="input-group">
-                <input type="text" name="nombre" class="form-control py-2 border-2 flex-grow-0" style="width: 320px;" placeholder="Buscar por nombre" th:value="${nombre}">
-                <div class="btn-group" role="group">
-                    <button class="btn btn-primary" type="submit">
-                        <i class="fas fa-search"></i>Buscar
-                    </button>
-                    <button type="button" class="btn btn-outline-secondary"
-                        th:onclick="|window.location='@{/cliente/listaEntrenadores}'|">Limpiar
-                    </button>
+            <div class="row g-2 align-items-end">
+                <div class="col-12 col-md-4">
+                    <label class="form-label mb-1">Nombre</label>
+                    <input type="text" name="nombre" class="form-control" placeholder="Buscar por nombre" th:value="${nombre}">
+                </div>
+                <div class="col-12 col-md-4">
+                    <label class="form-label mb-1">Especialidad</label>
+                    <input type="text" name="especialidad" class="form-control" placeholder="Ej: fuerza, yoga" th:value="${especialidad}">
+                </div>
+                <div class="col-6 col-md-2">
+                    <label class="form-label mb-1">Puntuación mín.</label>
+                    <input type="number" name="minPuntuacion" class="form-control" min="0" max="5" step="0.1" th:value="${minPuntuacion}">
+                </div>
+                <div class="col-6 col-md-2">
+                    <label class="form-label mb-1">Puntuación máx.</label>
+                    <input type="number" name="maxPuntuacion" class="form-control" min="0" max="5" step="0.1" th:value="${maxPuntuacion}">
+                </div>
+                <div class="col-12 mt-2">
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-primary" type="submit">
+                            <i class="fas fa-search"></i> Buscar
+                        </button>
+                        <a class="btn btn-outline-secondary" th:href="@{/cliente/listaEntrenadores}">Limpiar</a>
+                    </div>
                 </div>
             </div>
         </form>
@@ -30,10 +45,11 @@
                 <div class="modal-content">
                     <div class="modal-header bg-success text-white">
                         <h5 class="modal-title" id="modalInfoEntrenadorLabel">
-                            <i class="fas fa-user-tie me-2"></i>Información del Entrenador
+                            <i class="fas fa-user-tie me-2"></i> Información del Entrenador
                         </h5>
-                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
-                            aria-label="Close"></button>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
                     </div>
                     <div class="modal-body">
                         <div class="row">
@@ -49,39 +65,39 @@
                             </div>
                             <div class="col-md-8">
                                 <div class="mb-3">
-                                    <h6 class="text-success"><i class="fas fa-envelope me-2"></i>Email</h6>
+                                    <h6 class="text-success"><i class="fas fa-envelope me-2"></i> Email</h6>
                                     <p id="modalEntrenadorEmail" class="text-muted"></p>
                                 </div>
+                                <div class="mb-3">
+                                    <h6 class="text-success"><i class="fas fa-dumbbell me-2"></i> Especialidad</h6>
+                                    <p id="modalEntrenadorEspecialidades" class="text-muted"></p>
+                                </div>
                                 <div class="mb-3" id="modalEntrenadorTelefonoContainer" style="display: none;">
-                                    <h6 class="text-success"><i class="fas fa-phone me-2"></i>Teléfono</h6>
+                                    <h6 class="text-success"><i class="fas fa-phone me-2"></i> Teléfono</h6>
                                     <p id="modalEntrenadorTelefono" class="text-muted"></p>
                                 </div>
                                 <div class="mb-3">
-                                    <h6 class="text-success"><i class="fas fa-dumbbell me-2"></i>Especialidades</h6>
-                                    <p id="modalEntrenadorEspecialidades" class="text-muted"></p>
-                                </div>
-                                <div class="mb-3">
-                                    <h6 class="text-success"><i class="fas fa-trophy me-2"></i>Experiencia</h6>
+                                    <h6 class="text-success"><i class="fas fa-trophy me-2"></i> Experiencia</h6>
                                     <p id="modalEntrenadorExperiencia" class="text-muted"></p>
                                 </div>
                             </div>
                         </div>
                         <hr>
                         <div id="modalEntrenadorDescripcionContainer" style="display: none;">
-                            <h6 class="text-success"><i class="fas fa-comment-dots me-2"></i>Sobre el Entrenador</h6>
+                            <h6 class="text-success"><i class="fas fa-comment-dots me-2"></i> Sobre el Entrenador</h6>
                             <p id="modalEntrenadorDescripcion" class="bg-light p-3 rounded"></p>
                         </div>
                         <div id="modalSinDescripcion" style="display: none;" class="alert alert-info">
-                            <i class="fas fa-info-circle me-2"></i>El entrenador aún no ha agregado una descripción
+                            <i class="fas fa-info-circle me-2"></i> El entrenador aún no ha agregado una descripción
                             personal.
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
                         <form id="modalFormSolicitar" method="post" style="display: inline;">
                             <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
                             <button type="submit" class="btn btn-success">
-                                <i class="fas fa-paper-plane me-1"></i>Cotizar Suscripción
+                                <i class="fas fa-money-bill-wave me-1"></i> Cotizar Suscripción
                             </button>
                         </form>
                     </div>
@@ -90,21 +106,17 @@
         </div>
 
         <div class="container">
-            <div class="row justify-content-center" style="flex-wrap: wrap;">
-                <!-- Debug/estado: total de entrenadores renderizados -->
-                <div class="col-12 mb-2" th:if="${entrenadores != null}">
-                    <small class="text-muted">Total entrenadores: <span th:text="${#lists.size(entrenadores)}">0</span></small>
-                </div>
-                <div th:if="${#lists.isEmpty(entrenadores)}" class="col-12 d-flex justify-content-center">
+            <div class="row">
+                <div th:if="${#lists.isEmpty(entrenadores)}" class="col d-flex justify-content-center">
                     <div class="alert alert-info text-center w-50 mt-5" role="alert">
                         <strong>Aún no hay entrenadores disponibles</strong><br>
                         Cuando haya entrenadores, aquí se mostrarán.
                     </div>
                 </div>
-                <div th:each="entrenador, iterStat : ${entrenadores}"
-                    class="col-12 col-md-6 d-flex align-items-stretch mb-4">
-                    <div class="card w-100 shadow-lg border-primary rounded-4 p-3 text-dark">
-                        <div class="row g-3 align-items-center">
+                <th:block th:each="entrenador, iterStat : ${entrenadores}">
+                    <div class="col-12 col-md-6 mb-4">
+                        <div class="card w-100 shadow-lg border-primary rounded-4 p-2 text-dark">
+                            <div class="row align-items-center">
                             <div class="col-12 col-md-5">
                                 <div class="rounded-start rounded-top overflow-hidden"
                                     style="position: relative; width: 100%; padding-top: 100%;">
@@ -122,15 +134,16 @@
                                             <p class="card-text mb-2"><strong>Especialidad:</strong> <span
                                                     th:text="${entrenador.especialidad} ?: 'No especificado'"></span></p>
                                         </div>
-                                        <div class="col-12 col-sm-6">
-                                            <p class="card-text mb-2"><strong>Años de Experiencia:</strong> <span
-                                                    th:text="${entrenador.experiencia} ?: 'No especificado'"></span></p>
-                                            <div class="d-flex align-items-center mb-1"
-                                                th:with="cal=${entrenador.calificacionPromedio} ?: 0,
-                                                         full=${T(java.lang.Math).floor(cal)},
-                                                         frac=${cal - T(java.lang.Math).floor(cal)}">
-                                                <span class="me-2 small text-muted"
-                                                    th:text="${#numbers.formatDecimal(cal,1,1)}">0.0</span>
+                                        <div class="col-12 col-sm-6"
+                                             th:with="cal=${entrenador.calificacionPromedio} ?: 0,
+                                                      full=${T(java.lang.Math).floor(cal)},
+                                                      frac=${cal - T(java.lang.Math).floor(cal)}">
+                                            <p class="card-text mb-1">
+                                                <strong>Puntuación:</strong>
+                                                <span class="ms-1 small text-muted"
+                                                      th:text="${#numbers.formatDecimal(cal,1,1)}">0.0 </span>
+                                            </p>
+                                            <div class="d-flex align-items-center">
                                                 <span th:each="i : ${#numbers.sequence(1,5)}" class="me-1">
                                                     <i class="fas fa-star text-warning" th:if="${i <= full}"></i>
                                                     <i class="fas fa-star-half-alt text-warning" th:if="${i == full + 1 and frac >= 0.5}"></i>
@@ -139,96 +152,112 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="d-grid gap-2 mt-2">
-                                        <button type="button" class="btn btn-outline-success btn-ver-info-entrenador"
-                                            data-bs-toggle="modal" data-bs-target="#modalInfoEntrenador"
+                                    <div class="mt-2 text-center">
+                                        <button type="button" class="btn btn-outline-success btn-ver-info-entrenador mx-auto"
                                             th:attr="data-entrenador-id=${entrenador.id}">
-                                            <i class="fas fa-info-circle me-1"></i>Ver Información
+                                            <i class="fas fa-info-circle me-1"></i> Ver detalles
                                         </button>
-                                        <form
+                                        <form class="mt-2"
                                             th:action="@{/entrenadores/solicitar/{idEntrenador}(idEntrenador=${entrenador.id})}"
                                             method="post">
                                             <input type="hidden" th:name="${_csrf.parameterName}"
                                                 th:value="${_csrf.token}" />
                                             <button type="submit" class="btn btn-success w-100">
-                                                <i class="fas fa-paper-plane me-1"></i>Solicitar
+                                                <i class="fas fa-money-bill-wave me-1"></i> Cotizar
                                             </button>
                                         </form>
                                     </div>
                                 </div>
                             </div>
+                            </div>
                         </div>
                     </div>
-                </div>
+                </th:block>
             </div>
         </div>
 
         <script>
-            // Script para cargar info del entrenador en modal
+            // Script para cargar info del entrenador y abrir modal solo si carga OK
             document.querySelectorAll('.btn-ver-info-entrenador').forEach(btn => {
-                btn.addEventListener('click', async function () {
+                btn.addEventListener('click', async function (e) {
+                    e.preventDefault();
                     const entrenadorId = this.getAttribute('data-entrenador-id');
                     if (!entrenadorId) return;
 
+                    // Resetear contenido a un estado base antes de cargar
+                    document.getElementById('modalEntrenadorFoto').src = '/img/entrenador.jpg';
+                    document.getElementById('modalEntrenadorNombre').textContent = '';
+                    document.getElementById('modalEntrenadorEmail').textContent = '';
+                    document.getElementById('modalEntrenadorEspecialidades').textContent = '';
+                    document.getElementById('modalEntrenadorExperiencia').textContent = '';
+                    document.getElementById('modalEntrenadorCalificacion').textContent = '0.0';
+                    document.getElementById('modalEstrellas').innerHTML = '<i class="far fa-star text-warning"></i>'.repeat(5);
+                    document.getElementById('modalEntrenadorTelefono').textContent = '';
+                    document.getElementById('modalEntrenadorTelefonoContainer').style.display = 'none';
+                    document.getElementById('modalEntrenadorDescripcion').textContent = '';
+                    document.getElementById('modalEntrenadorDescripcionContainer').style.display = 'none';
+                    document.getElementById('modalSinDescripcion').style.display = 'none';
+
                     try {
-                        const response = await fetch(`/api/cliente/entrenador/${entrenadorId}/info`);
-                        if (!response.ok) throw new Error('Error al cargar información');
+                        const response = await fetch(`/api/cliente/entrenador/${entrenadorId}/info`, { credentials: 'same-origin' });
+                        if (!response.ok) {
+                            const txt = await response.text();
+                            console.error('Modal info fetch failed', response.status, txt);
+                            throw new Error('Error al cargar información');
+                        }
 
                         const info = await response.json();
 
-                        // Actualizar modal
+                        // Actualizar modal con datos reales
                         document.getElementById('modalEntrenadorFoto').src = info.fotoPerfilUrl || '/img/entrenador.jpg';
-                        document.getElementById('modalEntrenadorNombre').textContent = info.nombre;
-                        document.getElementById('modalEntrenadorEmail').textContent = info.email;
+                        document.getElementById('modalEntrenadorNombre').textContent = info.nombre || '';
+                        document.getElementById('modalEntrenadorEmail').textContent = info.email || '';
                         document.getElementById('modalEntrenadorEspecialidades').textContent = info.especialidades || 'No especificado';
-                        document.getElementById('modalEntrenadorExperiencia').textContent = info.experiencia ? info.experiencia + ' años' : 'No especificado';
+                        document.getElementById('modalEntrenadorExperiencia').textContent = (info.experiencia || 0) + ' años';
 
-                        // Calificación
-                        document.getElementById('modalEntrenadorCalificacion').textContent = info.calificacionPromedio ? info.calificacionPromedio.toFixed(1) : '0.0';
-
-                        // Estrellas
-                        const estrellasContainer = document.getElementById('modalEstrellas');
-                        const full = Math.floor(info.calificacionPromedio || 0);
-                        const frac = (info.calificacionPromedio || 0) - full;
+                        const cal = typeof info.calificacionPromedio === 'number' ? info.calificacionPromedio : 0;
+                        document.getElementById('modalEntrenadorCalificacion').textContent = cal.toFixed(1);
+                        const full = Math.floor(cal);
+                        const frac = cal - full;
                         let estrellasHTML = '';
                         for (let i = 1; i <= 5; i++) {
-                            if (i <= full) {
-                                estrellasHTML += '<i class="fas fa-star text-warning"></i>';
-                            } else if (i == full + 1 && frac >= 0.5) {
-                                estrellasHTML += '<i class="fas fa-star-half-alt text-warning"></i>';
-                            } else {
-                                estrellasHTML += '<i class="far fa-star text-warning"></i>';
-                            }
+                            if (i <= full) estrellasHTML += '<i class="fas fa-star text-warning"></i>';
+                            else if (i === full + 1 && frac >= 0.5) estrellasHTML += '<i class="fas fa-star-half-alt text-warning"></i>';
+                            else estrellasHTML += '<i class="far fa-star text-warning"></i>';
                         }
-                        estrellasContainer.innerHTML = estrellasHTML;
+                        document.getElementById('modalEstrellas').innerHTML = estrellasHTML;
 
-                        // Teléfono (opcional)
-                        const telefonoContainer = document.getElementById('modalEntrenadorTelefonoContainer');
-                        if (info.telefono && info.telefono.trim() !== '') {
-                            document.getElementById('modalEntrenadorTelefono').textContent = info.telefono;
-                            telefonoContainer.style.display = 'block';
+                        const telefono = (info.telefono || '').toString().trim();
+                        if (telefono) {
+                            document.getElementById('modalEntrenadorTelefono').textContent = telefono;
+                            document.getElementById('modalEntrenadorTelefonoContainer').style.display = 'block';
+                        }
+
+                        const desc = (info.descripcion || '').toString().trim();
+                        if (desc) {
+                            document.getElementById('modalEntrenadorDescripcion').textContent = desc;
+                            document.getElementById('modalEntrenadorDescripcionContainer').style.display = 'block';
                         } else {
-                            telefonoContainer.style.display = 'none';
+                            document.getElementById('modalSinDescripcion').style.display = 'block';
                         }
 
-                        // Descripción
-                        const descripcionContainer = document.getElementById('modalEntrenadorDescripcionContainer');
-                        const sinDescripcion = document.getElementById('modalSinDescripcion');
-
-                        if (info.descripcion && info.descripcion.trim() !== '') {
-                            document.getElementById('modalEntrenadorDescripcion').textContent = info.descripcion;
-                            descripcionContainer.style.display = 'block';
-                            sinDescripcion.style.display = 'none';
-                        } else {
-                            descripcionContainer.style.display = 'none';
-                            sinDescripcion.style.display = 'block';
-                        }
-
-                        // Actualizar formulario de solicitud
+                        // Actualizar formulario de cotización
                         document.getElementById('modalFormSolicitar').action = `/entrenadores/solicitar/${info.id}`;
 
+                        // Abrir modal solo si todo OK
+                        if (window.jQuery && typeof jQuery.fn.modal === 'function') {
+                            jQuery('#modalInfoEntrenador').modal('show');
+                        } else if (window.bootstrap && window.bootstrap.Modal) {
+                            const modal = document.getElementById('modalInfoEntrenador');
+                            const bsModal = window.bootstrap.Modal.getOrCreateInstance(modal);
+                            bsModal.show();
+                        } else {
+                            // fallback: simulate click if attributes exist
+                            document.getElementById('modalInfoEntrenador').style.display = 'block';
+                        }
+
                     } catch (error) {
-                        console.error('Error:', error);
+                        console.error('Error abriendo modal:', error);
                         alert('Error al cargar la información del entrenador');
                     }
                 });

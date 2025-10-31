@@ -125,4 +125,21 @@ public class EntrenadorServiceImpl implements EntrenadorService {
                 .map(e -> modelMapper.map(e, EntrenadorDTO.class))
                 .toList();
     }
+
+    @Override
+    public List<EntrenadorDTO> buscarEntrenadores(String nombre, String especialidad, Double minPuntuacion, Double maxPuntuacion) {
+        // Normalizar entradas vacías
+        String n = (nombre != null && !nombre.trim().isEmpty()) ? nombre.trim() : null;
+        String esp = (especialidad != null && !especialidad.trim().isEmpty()) ? especialidad.trim() : null;
+        Double min = (minPuntuacion != null && minPuntuacion >= 0) ? minPuntuacion : null;
+        Double max = (maxPuntuacion != null && maxPuntuacion >= 0) ? maxPuntuacion : null;
+        // Ajustar rango si está invertido
+        if (min != null && max != null && min > max) {
+            double tmp = min;
+            min = max;
+            max = tmp;
+        }
+        List<Entrenador> list = entrenadorRepository.searchActive(n, esp, min, max);
+        return list.stream().map(e -> modelMapper.map(e, EntrenadorDTO.class)).toList();
+    }
 }

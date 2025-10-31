@@ -1,3 +1,16 @@
 /* Custom overrides to ensure true black text where needed */
 /* Make text-dark behave like Bootstrap's original (pure dark) */
 .text-dark { color: #212529 !important; }
+
+/* Ensure grid rows always wrap (defensive against overrides) */
+.row { flex-wrap: wrap !important; }
+
+/* Fallback support for row-cols utilities in case theme/min CSS misses them */
+.row.row-cols-1 > * { flex: 0 0 100%; max-width: 100%; }
+@media (min-width: 768px) {
+	.row.row-cols-md-2 > * { flex: 0 0 50%; max-width: 50%; }
+}
+
+/* Prevent parent wrappers from clipping content unexpectedly */
+html, body { height: auto; overflow: auto !important; }
+#content, #content-wrapper { overflow-y: auto !important; overflow-x: visible !important; }

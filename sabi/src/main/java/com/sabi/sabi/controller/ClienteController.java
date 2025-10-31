@@ -90,8 +90,11 @@ public class ClienteController {
 
     @GetMapping("/cliente/listaEntrenadores")
     public String clienteListaEntrenadores(
-            @RequestParam(value = "nombre", required = false) String nombre,
-            Model model) {
+        @RequestParam(value = "nombre", required = false) String nombre,
+        @RequestParam(value = "especialidad", required = false) String especialidad,
+        @RequestParam(value = "minPuntuacion", required = false) Double minPuntuacion,
+        @RequestParam(value = "maxPuntuacion", required = false) Double maxPuntuacion,
+        Model model) {
 
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         CustomUserDetails userDetails = (CustomUserDetails) auth.getPrincipal();
@@ -103,14 +106,20 @@ public class ClienteController {
         }
         boolean tieneDiagnostico = diagnosticoActual != null;
 
-        String criterio = (nombre != null) ? nombre.trim() : null;
-        List<EntrenadorDTO> entrenadores = (criterio == null || criterio.isEmpty())
-                ? entrenadorService.getAllActiveEntrenadores()
-                : entrenadorService.buscarEntrenadores(criterio);
+    String criterio = (nombre != null) ? nombre.trim() : null;
+    String esp = (especialidad != null) ? especialidad.trim() : null;
+    boolean hasRange = (minPuntuacion != null && minPuntuacion >= 0) || (maxPuntuacion != null && maxPuntuacion >= 0);
+    boolean noFilters = (criterio == null || criterio.isEmpty()) && (esp == null || esp.isEmpty()) && !hasRange;
+    List<EntrenadorDTO> entrenadores = noFilters
+        ? entrenadorService.getAllActiveEntrenadores()
+        : entrenadorService.buscarEntrenadores(criterio, esp, minPuntuacion, maxPuntuacion);
 
         model.addAttribute("entrenadores", entrenadores);
         model.addAttribute("tieneDiagnostico", tieneDiagnostico);
         model.addAttribute("nombre", nombre);
+        model.addAttribute("especialidad", especialidad);
+        model.addAttribute("minPuntuacion", minPuntuacion);
+        model.addAttribute("maxPuntuacion", maxPuntuacion);
         return "cliente/listaEntrenadores";
     }
 
