@@ -1,2 +1,319 @@
 /* Archivo CSS vacío para evitar errores de recurso faltante */
 
+<<<<<<< Updated upstream
+=======
+/* Estilos globales para selects tipo Bootstrap 5 adaptados a Bootstrap 4 */
+.form-select {
+    display: block;
+    width: 100%;
+    padding: .375rem 2.25rem .375rem .75rem;
+    font-size: 1rem;
+    font-weight: 400;
+    line-height: 1.5;
+    color: #495057;
+    background-color: #fff;
+    background-clip: padding-box;
+    border: 1px solid #cedar1; /* valor provisional, será sobrescrito abajo */
+    border: 1px solid #ced4da;
+    border-radius: .25rem;
+    transition: border-color .15s ease-in-out, box-shadow .15s ease-in-out;
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23666' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right .75rem center;
+    background-size: 16px 12px;
+}
+.form-select:focus {
+    border-color: #80bdff;
+    outline: 0;
+    box-shadow: 0 0 0 .2rem rgba(0,123,255,.25);
+}
+.form-select[multiple],
+.form-select[size]:not([size="1"]) {
+    padding-right: .75rem;
+    background-image: none;
+}
+.form-select:disabled {
+    background-color: #e9ecef;
+    opacity: 1;
+}
+.form-select-sm {
+    padding: .25rem 1.75rem .25rem .5rem;
+    font-size: .875rem;
+    border-radius: .2rem;
+}
+.form-select-lg {
+    padding: .5rem 2.5rem .5rem 1rem;
+    font-size: 1.25rem;
+    border-radius: .3rem;
+}
+/* Estado inválido manual */
+.form-select.is-invalid, .was-validated .form-select:invalid {
+    border-color: #dc3545;
+    padding-right: calc(2.25rem + .75rem);
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='%23dc3545' viewBox='0 0 12 12'%3e%3cpath d='M11.536 9.76L6.845.72a1 1 0 0 0-1.69 0L.464 9.76A1 1 0 0 0 1.309 11.2h9.382a1 1 0 0 0 .845-1.44zM6 4v3M6 8h.01' stroke='%23dc3545' stroke-linecap='round' stroke-linejoin='round'/%3e%3c/svg%3e"), url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23666' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e");
+    background-position: right 1.75rem center, right .75rem center;
+    background-size: 16px 12px, 16px 12px;
+}
+.form-select.is-invalid:focus, .was-validated .form-select:invalid:focus {
+    box-shadow: 0 0 0 .2rem rgba(220,53,69,.25);
+}
+
+/* Estado válido manual */
+.form-select.is-valid, .was-validated .form-select:valid {
+    border-color: #28a745;
+}
+.form-select.is-valid:focus, .was-validated .form-select:valid:focus {
+    box-shadow: 0 0 0 .2rem rgba(40,167,69,.25);
+}
+
+/* === Reutilizables listas / acciones === */
+.action-buttons { display:flex; flex-wrap:wrap; align-items:center; }
+.action-buttons > * { margin-right:.4rem; }
+.action-buttons > *:last-child { margin-right:0; }
+.action-buttons form { display:inline-block; margin:0; }
+.action-buttons .btn i { margin-right:.25rem; }
+
+/* Botón finalizar rutina (cliente) */
+.btn-finalizar-rutina { display:inline-flex; align-items:center; font-weight:500; padding:.5rem .9rem; line-height:1.2; border-width:1px; box-shadow:0 1px 2px rgba(0,0,0,.08); }
+.btn-finalizar-rutina i { margin-right:.4rem; }
+.btn-finalizar-rutina:hover { filter:brightness(.95); }
+.btn-finalizar-rutina:active { transform:translateY(1px); }
+
+@media (max-width:576px){
+  .btn-finalizar-rutina { width:100%; margin-top:.5rem; justify-content:center; }
+}
+
+/* Badges de estado (completado / pendiente) */
+.status-badge {display:inline-flex;align-items:center;font-size:.75rem;padding:.30rem .55rem;border-radius:1rem;font-weight:500;border:1px solid transparent;letter-spacing:.2px}
+.badge-complete { background:#e6ffed; border-color:#b2f2bb; color:#166534; }
+.badge-pending { background:#f8f9fa; border-color:#d9dde1; color:#6c757d; }
+.status-badge i { font-size:.9rem; margin-right:.35rem; }
+
+/* Botón para marcar / desmarcar (toggle completado) */
+.btn-toggle-completa { min-width:110px; }
+.btn-toggle-completa i { margin-right:.25rem; }
+@media (max-width:576px){
+  .btn-toggle-completa { width:100%; margin-bottom:.4rem; }
+}
+
+/* === Responsive Global Improvements === */
+
+/* Mejoras para tablets y mobiles */
+@media (max-width: 992px) {
+    /* Ajustar padding de contenedores */
+    .container-fluid {
+        padding-left: 1rem;
+        padding-right: 1rem;
+    }
+
+    /* Tablas responsive */
+    .table-responsive {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    /* Cards mas compactas */
+    .card {
+        margin-bottom: 1rem;
+    }
+
+    .card-body {
+        padding: 1rem;
+    }
+}
+
+/* Mejoras para pantallas pequenas (móviles) */
+@media (max-width: 768px) {
+    /* Tipografia mas pequena pero legible */
+    body {
+        font-size: 0.95rem;
+    }
+
+    h1 { font-size: 1.75rem; }
+    h2 { font-size: 1.5rem; }
+    h3 { font-size: 1.25rem; }
+    h4 { font-size: 1.1rem; }
+
+    /* Botones full width en movil */
+    .btn-block-mobile {
+        display: block;
+        width: 100%;
+        margin-bottom: 0.5rem;
+    }
+
+    /* Formularios mas espaciados */
+    .form-group {
+        margin-bottom: 1rem;
+    }
+
+    /* Imagenes responsive */
+    img {
+        max-width: 100%;
+        height: auto;
+    }
+
+    /* Modales full screen en movil */
+    .modal-dialog {
+        margin: 0.5rem;
+    }
+
+    .modal-fullscreen-sm-down {
+        width: 100vw;
+        max-width: none;
+        height: 100%;
+        margin: 0;
+    }
+
+    /* Navbar ajustes */
+    .navbar {
+        padding: 0.5rem 1rem;
+    }
+
+    /* Sidebar ajustes */
+    .sidebar {
+        width: 100% !important;
+    }
+
+    /* Tables stack en movil */
+    .table-mobile-stack {
+        display: block;
+        width: 100%;
+    }
+
+    .table-mobile-stack thead {
+        display: none;
+    }
+
+    .table-mobile-stack tr {
+        display: block;
+        margin-bottom: 1rem;
+        border: 1px solid #dee2e6;
+        border-radius: 0.25rem;
+    }
+
+    .table-mobile-stack td {
+        display: block;
+        text-align: right;
+        padding: 0.5rem;
+        border: none;
+    }
+
+    .table-mobile-stack td::before {
+        content: attr(data-label);
+        float: left;
+        font-weight: bold;
+    }
+
+    /* Grid ajustes */
+    .row.g-3 {
+        row-gap: 1rem;
+    }
+}
+
+/* Mejoras para pantallas muy pequenas */
+@media (max-width: 576px) {
+    /* Container completo */
+    .container,
+    .container-fluid {
+        padding-left: 0.75rem;
+        padding-right: 0.75rem;
+    }
+
+    /* Cards sin bordes laterales */
+    .card {
+        border-radius: 0;
+        border-left: none;
+        border-right: none;
+    }
+
+    /* Botones mas grandes para touch */
+    .btn {
+        padding: 0.5rem 1rem;
+        font-size: 1rem;
+    }
+
+    .btn-sm {
+        padding: 0.4rem 0.8rem;
+    }
+
+    /* Form controls mas grandes */
+    .form-control,
+    .form-select {
+        font-size: 1rem;
+        padding: 0.6rem 0.75rem;
+    }
+}
+
+/* Mejoras para landscape en moviles */
+@media (max-height: 500px) and (orientation: landscape) {
+    .modal-dialog {
+        max-height: 90vh;
+        overflow-y: auto;
+    }
+
+    .sidebar {
+        max-height: 100vh;
+        overflow-y: auto;
+    }
+}
+
+/* Print styles */
+@media print {
+    .sidebar,
+    .navbar,
+    .btn,
+    footer {
+        display: none !important;
+    }
+
+    .container-fluid,
+    .container {
+        width: 100%;
+        max-width: none;
+    }
+
+    body {
+        font-size: 12pt;
+    }
+}
+
+/* Accesibilidad - Reducir movimiento */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+
+/* Dark mode support (opcional) */
+@media (prefers-color-scheme: dark) {
+    /* Aqui se podrian agregar estilos para modo oscuro */
+}
+
+/* Pestañas para semanas/días: estilo tipo navegador (pegadas) y resaltado activo */
+.tabs-row { display:flex; gap:0; flex-wrap:wrap; align-items:center; margin-bottom:.5rem; }
+.tab-btn {
+  padding:.45rem .85rem;
+  border:1px solid #ced4da;
+  background:#ffffff;
+  color:#495057;
+  text-decoration:none;
+  display:inline-block;
+  margin:0; /* quitar margen entre botones */
+  border-bottom-color: transparent; /* apariencia de solapado con contenido */
+  border-radius:.35rem .35rem 0 0; /* forma tipo pestaña */
+}
+/* Quitar el borde izquierdo de botones adyacentes para que luzcan unidos */
+.tab-btn + .tab-btn { border-left: none; }
+/* estilo activo (resalta semana o día actual) */
+.tab-btn.active { background:#0d6efd; color:#fff; border-color:#0d6efd; box-shadow: inset 0 -3px 0 rgba(0,0,0,0.06); }
+/* pequeño matiz distinto para identificar semanas activas si se desea */
+.tab-btn.active-week { background:#0b5ed7; color:#fff; }
+.tab-add { padding:.35rem .6rem; border-radius:.35rem; border:1px dashed #6c757d; background:#f8f9fa; color:#6c757d; margin-left:.25rem; }
+>>>>>>> Stashed changes

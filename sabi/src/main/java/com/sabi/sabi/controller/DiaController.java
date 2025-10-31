@@ -32,9 +32,28 @@ public class DiaController {
         model.addAttribute("dias", dias);
         model.addAttribute("totalDias", dias.size());
         model.addAttribute("semana", semanaDTO);
+        // Calcular un id de semana seguro para evitar NullPointerException en las plantillas
+        Long safeSemanaId = null;
         if (semanaDTO != null) {
             model.addAttribute("idRutina", semanaDTO.getIdRutina());
+<<<<<<< Updated upstream
         }
+=======
+            // Añadimos la lista de semanas de la rutina para renderizar las pestañas (si falla, la vista lo tolera)
+            try {
+                var semanasList = semanaService.getSemanasRutina(semanaDTO.getIdRutina());
+                model.addAttribute("semanas", semanasList);
+            } catch (RuntimeException ex) {
+                // No hacemos nada; la vista puede funcionar sin 'semanas'
+            }
+            // Usar getIdSemana() (es el nombre definido en SemanaDTO)
+            if (semanaDTO.getIdSemana() != null) safeSemanaId = semanaDTO.getIdSemana();
+         }
+        // Añadimos al modelo un id seguro y un selectedSemanaId para que la plantilla no evalúe propiedades sobre null
+        model.addAttribute("safeSemanaId", safeSemanaId);
+        model.addAttribute("selectedSemanaId", safeSemanaId);
+        model.addAttribute("readonly", readonlyEffective);
+>>>>>>> Stashed changes
         return "dias/lista";
     }
 
