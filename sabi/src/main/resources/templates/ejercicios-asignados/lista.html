@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <title>Ejercicios Asignados</title>
     <style>
-        /* Alineación horizontal consistente para Bootstrap 4 */
         .action-buttons > * { margin-right: .4rem; }
         .action-buttons > *:last-child { margin-right: 0; }
         .action-buttons form { display: inline-block; }
@@ -32,6 +31,33 @@
                 <i class="fas fa-plus"></i> Nuevo Ejercicio
             </a>
         </div>
+    </div>
+
+    <div class="semanas row">
+        <button class="col-md-2" th:each="se : ${semanas}"
+                th:classappend="${se.id == dia.idSemana} ? 'bg-info text-white' : ''">
+            <a th:href="@{'/dias/detallar/' + ${se.id}}" th:text="'Semana '+${se.numeroSemana}"
+               class="text-decoration-none text-reset"></a>
+        </button>
+        <button class="col-md-1">
+            <a sec:authorize="hasAnyRole('ENTRENADOR')"
+               th:href="@{'/semanas/crear/' + ${idRutina}}">
+                <i class="fas fa-plus"></i>
+            </a>
+        </button>
+    </div>
+    <div class="dias row">
+        <button class="col-md-2" th:each="d : ${dias}"
+                th:classappend="${d.id == dia.idDia} ? 'bg-info text-white' : ''">
+            <a th:href="@{'/ejes/detallar/' + ${d.id}}" th:text="'Dia '+${d.numeroDia}"
+               class="text-decoration-none text-reset"></a>
+        </button>
+        <button class="col-md-1">
+            <a sec:authorize="hasAnyRole('ENTRENADOR')"
+               th:href="@{'/dias/crear/' + ${dia.idSemana}}">
+                <i class="fas fa-plus"></i>
+            </a>
+        </button>
     </div>
 
     <table class="table table-bordered table-hover shadow-sm bg-white">

@@ -2,11 +2,9 @@ package com.sabi.sabi.controller;
 
 import com.sabi.sabi.dto.DiaDTO;
 import com.sabi.sabi.dto.EjercicioAsignadoDTO;
+import com.sabi.sabi.dto.SemanaDTO;
 import com.sabi.sabi.entity.Usuario;
-import com.sabi.sabi.service.DiaService;
-import com.sabi.sabi.service.EjercicioAsignadoService;
-import com.sabi.sabi.service.EjercicioService;
-import com.sabi.sabi.service.UsuarioService;
+import com.sabi.sabi.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -30,6 +28,8 @@ public class EjercicioAsignadoController {
     private EjercicioService ejercicioService;
     @Autowired
     private UsuarioService usuarioService;
+    @Autowired
+    private SemanaService semanaService;
 
     private boolean hasRole(UserDetails userDetails, String role) {
         if (userDetails == null) return false;
@@ -48,10 +48,17 @@ public class EjercicioAsignadoController {
             redirectAttributes.addFlashAttribute("error", "El dia especificado no existe.");
             return "redirect:/dias/detallar/" + idDia;
         }
+
+        SemanaDTO semanaDTO = semanaService.getSemanaById(diaDTO.getIdSemana());
+        List<?> semanas = semanaService.getSemanasRutina(semanaDTO.getIdRutina());
+        List<?> dias = diaService.getDiasSemana(semanaDTO.getIdSemana());
         List<?> ejes = ejercicioAsignadoService.getEjesDia(idDia);
         boolean esEntrenador = hasRole(userDetails, "ENTRENADOR");
-        // Ahora: sólo se activa readonly si viene explicitamente el parámetro o si el que mira es un entrenador en modo progreso
         boolean readonlyEffective = Boolean.TRUE.equals(readonly) && esEntrenador;
+
+        model.addAttribute("idRutina", semanaDTO.getIdRutina());
+        model.addAttribute("semanas", semanas);
+        model.addAttribute("dias", dias);
         model.addAttribute("ejes", ejes);
         model.addAttribute("totalEjes", ejes.size());
         model.addAttribute("dia", diaDTO);

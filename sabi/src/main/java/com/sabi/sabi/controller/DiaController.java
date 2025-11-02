@@ -39,8 +39,11 @@ public class DiaController {
             return "redirect:/rutinas";
         }
         List<?> dias = diaService.getDiasSemana(idSemana);
+
+        List<?> semanas = semanaService.getSemanasRutina(semanaDTO.getIdRutina());
         boolean esCliente = hasRole(userDetails, "CLIENTE");
         boolean readonlyEffective = esCliente || Boolean.TRUE.equals(readonly);
+        model.addAttribute("semanas", semanas);
         model.addAttribute("dias", dias);
         model.addAttribute("totalDias", dias.size());
         model.addAttribute("semana", semanaDTO);
