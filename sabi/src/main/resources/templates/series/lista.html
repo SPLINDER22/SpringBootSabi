@@ -22,10 +22,14 @@
             <span th:if="${readonly}" class="badge bg-secondary"><i class="fas fa-eye me-1"></i> Modo lectura (progreso)</span>
         </div>
         <div class="btn-group">
-            <a th:if="${idDia != null}" th:href="@{/ejes/detallar/{idDia}(idDia=${idDia}, readonly=${readonly})}" class="btn btn-outline-secondary">
+            <a th:if="${idDia != null}"
+               th:href="@{/ejes/detallar/{idDia}(idDia=${idDia}, readonly=${readonly != null ? readonly : false})}"
+               class="btn btn-outline-secondary">
                 <i class="fas fa-arrow-left"></i> Volver a Ejercicios Asignados
             </a>
-            <a th:if="${!readonly and ejercicioAsignado != null and ejercicioAsignado.idEjercicioAsignado != null}" th:href="@{'/series/crear/' + ${ejercicioAsignado.idEjercicioAsignado}}" class="btn btn-success">
+            <a th:if="${!readonly and ejercicioAsignado != null and ejercicioAsignado.idEjercicioAsignado != null}"
+               th:href="@{/series/crear/{id}(id=${ejercicioAsignado.idEjercicioAsignado})}"
+               class="btn btn-success">
                 <i class="fas fa-plus"></i> Nueva Serie
             </a>
         </div>
@@ -34,12 +38,13 @@
     <div class="semanas row">
         <button class="col-md-2" th:each="se : ${semanas}"
                 th:classappend="${(dia != null and dia.idSemana != null and se != null and se.id == dia.idSemana)} ? 'bg-info text-white' : ''">
-            <a th:href="@{/dias/detallar/{idSemana}(idSemana=${se.id}, readonly=${readonly})}" th:text="'Semana '+${se.numeroSemana}"
+            <a th:href="@{/dias/detallar/{idSemana}(idSemana=${se.id}, readonly=${readonly != null ? readonly : false})}"
+               th:text="'Semana '+${se.numeroSemana}"
                class="text-decoration-none text-reset"></a>
         </button>
         <button class="col-md-1">
             <a sec:authorize="hasAnyRole('ENTRENADOR')" th:if="${!readonly}"
-               th:href="@{'/semanas/crear/' + ${idRutina}}">
+               th:href="@{/semanas/crear/{idRutina}(idRutina=${idRutina})}">
                 <i class="fas fa-plus"></i>
             </a>
         </button>
@@ -47,12 +52,13 @@
     <div class="dias row">
         <button class="col-md-2" th:each="d : ${dias}"
                 th:classappend="${(dia != null and dia.idDia != null and d != null and d.id == dia.idDia)} ? 'bg-info text-white' : ''">
-            <a th:href="@{/ejes/detallar/{idDia}(idDia=${d.id}, readonly=${readonly})}" th:text="'Dia '+${d.numeroDia}"
+            <a th:href="@{/ejes/detallar/{idDia}(idDia=${d.id}, readonly=${readonly != null ? readonly : false})}"
+               th:text="'Dia '+${d.numeroDia}"
                class="text-decoration-none text-reset"></a>
         </button>
         <button class="col-md-1">
             <a sec:authorize="hasAnyRole('ENTRENADOR')" th:if="${!readonly and dia != null and dia.idSemana != null}"
-               th:href="@{'/dias/crear/' + ${dia.idSemana}}">
+               th:href="@{/dias/crear/{idSemana}(idSemana=${dia.idSemana})}">
                 <i class="fas fa-plus"></i>
             </a>
         </button>
@@ -60,13 +66,19 @@
     <div class="ejes row">
         <button class="col-md-2" th:each="e : ${ejes}"
                 th:classappend="${(e != null and ejercicioAsignado != null and e.idEjercicioAsignado != null and ejercicioAsignado.idEjercicioAsignado != null and e.idEjercicioAsignado.equals(ejercicioAsignado.idEjercicioAsignado))} ? 'bg-info text-white' : ''">
-            <a th:href="@{/series/detallar/{idEje}(idEje=${e != null ? e.idEjercicioAsignado : ''}, readonly=${readonly})}"
+            <!-- Sólo renderizar el enlace si 'e' existe y tiene id -->
+            <a th:if="${e != null and e.idEjercicioAsignado != null}"
+               th:href="@{/series/detallar/{idEje}(idEje=${e.idEjercicioAsignado}, readonly=${readonly != null ? readonly : false})}"
                th:text="${e != null and e.nombreEjercicio != null ? e.nombreEjercicio : 'Sin nombre'}"
                class="text-decoration-none text-reset"></a>
+            <!-- Si no hay 'e', mostrar texto sin enlace -->
+            <span th:if="${e == null or e.idEjercicioAsignado == null}"
+                  th:text="${e != null and e.nombreEjercicio != null ? e.nombreEjercicio : 'Sin nombre'}"
+                  class="text-decoration-none text-reset"></span>
         </button>
         <button class="col-md-1">
             <a sec:authorize="hasAnyRole('ENTRENADOR')" th:if="${!readonly and dia != null and dia.idDia != null}"
-               th:href="@{'/ejes/crear/' + ${dia.idDia}}">
+               th:href="@{/ejes/crear/{idDia}(idDia=${dia.idDia})}">
                 <i class="fas fa-plus"></i>
             </a>
         </button>
@@ -94,10 +106,10 @@
             <td th:text="${serie.descanso}"></td>
             <td>
                 <div sec:authorize="hasAnyRole('ENTRENADOR')" class="action-buttons" th:if="${!readonly}">
-                    <a th:href="@{'/series/editar/' + ${serie.id}}" class="btn btn-sm btn-primary">
+                    <a th:href="@{/series/editar/{id}(id=${serie.id})}" class="btn btn-sm btn-primary">
                         <i class="fas fa-edit"></i> Editar
                     </a>
-                    <form th:action="@{'/series/eliminar/' + ${serie.id}}" method="post" onsubmit="return confirm('¿Eliminar serie?')">
+                    <form th:action="@{/series/eliminar/{id}(id=${serie.id})}" method="post" onsubmit="return confirm('¿Eliminar serie?')">
                         <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
                         <button type="submit" class="btn btn-sm btn-danger">
                             <i class="fas fa-trash"></i> Eliminar
