@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Historial de Diagnósticos</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/diagnostico-form.css}">
+    <style>
+        .cliente-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        .cliente-foto {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            border: 5px solid white;
+            object-fit: cover;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+        .diagnostico-timeline {
+            position: relative;
+            padding-left: 30px;
+        }
+        .diagnostico-timeline::before {
+            content: '';
+            position: absolute;
+            left: 15px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: linear-gradient(to bottom, #667eea, #764ba2);
+        }
+        .diagnostico-item {
+            position: relative;
+            margin-bottom: 30px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        .diagnostico-item::before {
+            content: '';
+            position: absolute;
+            left: -22px;
+            top: 20px;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #667eea;
+            border: 3px solid white;
+            box-shadow: 0 0 10px rgba(0,0,0,0.3);
+        }
+        .diagnostico-item.actual::before {
+            background: #28a745;
+        }
+        .diagnostico-header {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            padding: 20px;
+            border-bottom: 2px solid #dee2e6;
+        }
+        .diagnostico-item.actual .diagnostico-header {
+            background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+            border-bottom: 2px solid #28a745;
+        }
+        .diagnostico-body {
+            padding: 20px;
+        }
+        .comparativa-box {
+            background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
+            border: 2px solid #ffc107;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        .metric-comparison {
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
+            gap: 15px;
+            align-items: center;
+            margin: 10px 0;
+        }
+        .metric-value {
+            text-align: center;
+            padding: 10px;
+            border-radius: 8px;
+            background: white;
+            font-weight: 600;
+        }
+        .metric-change {
+            text-align: center;
+            font-size: 1.2rem;
+        }
+        .metric-change.positive {
+            color: #28a745;
+        }
+        .metric-change.negative {
+            color: #dc3545;
+        }
+        .metric-change.neutral {
+            color: #6c757d;
+        }
+        .fotos-diagnostico {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 15px 0;
+        }
+        .foto-item {
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        .foto-item img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+        .foto-label {
+            background: #f8f9fa;
+            padding: 8px;
+            text-align: center;
+            font-weight: 600;
+            color: #495057;
+            font-size: 0.9rem;
+        }
+        .imc-badge {
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            display: inline-block;
+        }
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin: 15px 0;
+        }
+        .info-card {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+        }
+        .info-label {
+            font-weight: 600;
+            color: #495057;
+            margin-bottom: 5px;
+            font-size: 0.9rem;
+        }
+        .info-value {
+            color: #212529;
+            font-size: 1rem;
+        }
+        @media (max-width: 768px) {
+            .diagnostico-timeline {
+                padding-left: 15px;
+            }
+            .diagnostico-timeline::before {
+                left: 7px;
+            }
+            .diagnostico-item::before {
+                left: 1px;
+            }
+            .metric-comparison {
+                grid-template-columns: 1fr;
+                gap: 10px;
+            }
+        }
+    </style>
+</head>
+<body th:replace="layout/layout :: layout('Historial de Diagnósticos', ~{::section})">
+<section th:fragment="section">
+<div class="container-fluid py-4">
+    <div th:if="${error != null}" class="alert alert-danger" role="alert">
+        <i class="fa-solid fa-triangle-exclamation me-2"></i>
+        <span th:text="${error}"></span>
+    </div>
+
+    <div th:if="${cliente != null && historial != null}">
+        <!-- Header del Cliente -->
+        <div class="cliente-header">
+            <div class="row align-items-center">
+                <div class="col-md-2 text-center">
+                    <img th:src="${cliente.fotoPerfilUrl != null ? cliente.fotoPerfilUrl : '/img/fotoPerfil.png'}"
+                         class="cliente-foto" alt="Foto del cliente">
+                </div>
+                <div class="col-md-10">
+                    <h2><i class="fas fa-history"></i> Historial de Diagnósticos</h2>
+                    <h3><span th:text="${cliente.nombre + ' ' + (cliente.apellido != null ? cliente.apellido : '')}"></span></h3>
+                    <p class="mb-1"><i class="fas fa-envelope"></i> <span th:text="${cliente.email}"></span></p>
+                    <p class="mb-0"><i class="fas fa-chart-line"></i> Total de diagnósticos: <span th:text="${historial.size()}"></span></p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Comparativa Rápida (si hay más de un diagnóstico) -->
+        <div class="comparativa-box" th:if="${tieneComparativa}">
+            <h4><i class="fas fa-balance-scale"></i> Comparativa de Evolución</h4>
+            <p class="text-muted mb-3">Comparación entre el diagnóstico actual y el anterior</p>
+            
+            <div class="row">
+                <div class="col-md-4" th:with="pesoActual=${diagnosticoActual.peso}, pesoAnterior=${diagnosticoAnterior.peso}">
+                    <h6>⚖️ Peso</h6>
+                    <div class="metric-comparison" th:if="${pesoActual != null && pesoAnterior != null}">
+                        <div class="metric-value">
+                            <small>Anterior</small><br>
+                            <span th:text="${pesoAnterior + ' kg'}"></span>
+                        </div>
+                        <div class="metric-change" th:with="diferencia=${pesoActual - pesoAnterior}"
+                             th:classappend="${diferencia > 0} ? 'positive' : (${diferencia < 0} ? 'negative' : 'neutral')">
+                            <span th:if="${diferencia > 0}">↗️ +<span th:text="${#numbers.formatDecimal(diferencia, 1, 1)}"></span> kg</span>
+                            <span th:if="${diferencia < 0}">↘️ <span th:text="${#numbers.formatDecimal(diferencia, 1, 1)}"></span> kg</span>
+                            <span th:if="${diferencia == 0}">➡️ Sin cambio</span>
+                        </div>
+                        <div class="metric-value">
+                            <small>Actual</small><br>
+                            <span th:text="${pesoActual + ' kg'}"></span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-4" th:with="imcActual=${diagnosticoActual.peso != null && diagnosticoActual.estatura != null ? T(java.lang.Math).round((diagnosticoActual.peso / ((diagnosticoActual.estatura/100)*(diagnosticoActual.estatura/100))) * 10) / 10.0 : null}, imcAnterior=${diagnosticoAnterior.peso != null && diagnosticoAnterior.estatura != null ? T(java.lang.Math).round((diagnosticoAnterior.peso / ((diagnosticoAnterior.estatura/100)*(diagnosticoAnterior.estatura/100))) * 10) / 10.0 : null}">
+                    <h6>📊 IMC</h6>
+                    <div class="metric-comparison" th:if="${imcActual != null && imcAnterior != null}">
+                        <div class="metric-value">
+                            <small>Anterior</small><br>
+                            <span th:text="${imcAnterior}"></span>
+                        </div>
+                        <div class="metric-change" th:with="diferencia=${imcActual - imcAnterior}"
+                             th:classappend="${diferencia > 0} ? 'positive' : (${diferencia < 0} ? 'negative' : 'neutral')">
+                            <span th:if="${diferencia > 0}">↗️ +<span th:text="${#numbers.formatDecimal(diferencia, 1, 1)}"></span></span>
+                            <span th:if="${diferencia < 0}">↘️ <span th:text="${#numbers.formatDecimal(diferencia, 1, 1)}"></span></span>
+                            <span th:if="${diferencia == 0}">➡️ =</span>
+                        </div>
+                        <div class="metric-value">
+                            <small>Actual</small><br>
+                            <span th:text="${imcActual}"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-4" th:if="${diagnosticoActual.porcentajeGrasaCorporal != null && diagnosticoAnterior.porcentajeGrasaCorporal != null}" th:with="grasaActual=${diagnosticoActual.porcentajeGrasaCorporal}, grasaAnterior=${diagnosticoAnterior.porcentajeGrasaCorporal}">
+                    <h6>📊 % Grasa Corporal</h6>
+                    <div class="metric-comparison">
+                        <div class="metric-value">
+                            <small>Anterior</small><br>
+                            <span th:text="${grasaAnterior + '%'}"></span>
+                        </div>
+                        <div class="metric-change" th:with="diferencia=${grasaActual - grasaAnterior}"
+                             th:classappend="${diferencia < 0} ? 'positive' : (${diferencia > 0} ? 'negative' : 'neutral')">
+                            <span th:if="${diferencia > 0}">↗️ +<span th:text="${#numbers.formatDecimal(diferencia, 1, 1)}"></span>%</span>
+                            <span th:if="${diferencia < 0}">↘️ <span th:text="${#numbers.formatDecimal(diferencia, 1, 1)}"></span>%</span>
+                            <span th:if="${diferencia == 0}">➡️ =</span>
+                        </div>
+                        <div class="metric-value">
+                            <small>Actual</small><br>
+                            <span th:text="${grasaActual + '%'}"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Timeline de Diagnósticos -->
+        <div class="diagnostico-timeline">
+            <div th:each="diagnostico, stat : ${historial}" 
+                 class="diagnostico-item" 
+                 th:classappend="${stat.first} ? 'actual'">
+                
+                <div class="diagnostico-header">
+                    <div class="row align-items-center">
+                        <div class="col-md-8">
+                            <h5 class="mb-1">
+                                <i class="fas fa-calendar-alt"></i> 
+                                <span th:text="${#temporals.format(diagnostico.fecha, 'dd/MM/yyyy')}"></span>
+                                <span th:if="${stat.first}" class="badge bg-success ms-2">ACTUAL</span>
+                            </h5>
+                            <small class="text-muted">
+                                Diagnóstico #<span th:text="${historial.size() - stat.index}"></span>
+                                <span th:if="${diagnostico.fechaCreacion != null}"> - Creado el <span th:text="${#temporals.format(diagnostico.fechaCreacion, 'dd/MM/yyyy HH:mm')}"></span></span>
+                            </small>
+                        </div>
+                        <div class="col-md-4 text-end">
+                            <button class="btn btn-outline-primary btn-sm" type="button" 
+                                    th:data-bs-toggle="'collapse'" 
+                                    th:data-bs-target="${'#diagnostico-' + diagnostico.idDiagnostico}">
+                                <i class="fas fa-eye"></i> Ver detalles
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="collapse" th:id="${'diagnostico-' + diagnostico.idDiagnostico}" th:classappend="${stat.first} ? 'show'">
+                    <div class="diagnostico-body">
+                        
+                        <!-- Datos Básicos -->
+                        <div class="info-grid">
+                            <div class="info-card">
+                                <div class="info-label">⚖️ Peso</div>
+                                <div class="info-value" th:text="${diagnostico.peso + ' kg'}"></div>
+                            </div>
+                            <div class="info-card">
+                                <div class="info-label">📏 Estatura</div>
+                                <div class="info-value" th:text="${diagnostico.estatura + ' cm'}"></div>
+                            </div>
+                            <div class="info-card" th:with="imc=${diagnostico.peso != null && diagnostico.estatura != null ? T(java.lang.Math).round((diagnostico.peso / ((diagnostico.estatura/100)*(diagnostico.estatura/100))) * 10) / 10.0 : null}">
+                                <div class="info-label">📊 IMC</div>
+                                <div class="info-value">
+                                    <span th:text="${imc}"></span>
+                                    <div th:if="${imc != null}">
+                                        <span th:if="${imc < 18.5}" class="imc-badge" style="background: #dbeafe; color: #1e40af;">Bajo peso</span>
+                                        <span th:if="${imc >= 18.5 && imc < 25}" class="imc-badge" style="background: #d1fae5; color: #065f46;">Normal</span>
+                                        <span th:if="${imc >= 25 && imc < 30}" class="imc-badge" style="background: #fed7aa; color: #92400e;">Sobrepeso</span>
+                                        <span th:if="${imc >= 30}" class="imc-badge" style="background: #fecaca; color: #991b1b;">Obesidad</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="info-card">
+                                <div class="info-label">🎯 Nivel Experiencia</div>
+                                <div class="info-value" th:text="${diagnostico.nivelExperiencia}"></div>
+                            </div>
+                        </div>
+
+                        <!-- Objetivo (solo si está definido) -->
+                        <div th:if="${diagnostico.objetivo != null && !diagnostico.objetivo.isEmpty()}" class="alert alert-info">
+                            <h6><i class="fas fa-bullseye"></i> Objetivo</h6>
+                            <p class="mb-0" th:text="${diagnostico.objetivo}"></p>
+                        </div>
+
+                        <!-- Fotos del Diagnóstico -->
+                        <div th:if="${diagnostico.fotoFrontalUrl != null || diagnostico.fotoLateralUrl != null || diagnostico.fotoTraseraUrl != null}">
+                            <h6><i class="fas fa-images"></i> Fotos del Diagnóstico</h6>
+                            <div class="fotos-diagnostico">
+                                <div class="foto-item" th:if="${diagnostico.fotoFrontalUrl != null}">
+                                    <img th:src="${diagnostico.fotoFrontalUrl}" alt="Foto Frontal">
+                                    <div class="foto-label">📸 Frontal</div>
+                                </div>
+                                <div class="foto-item" th:if="${diagnostico.fotoLateralUrl != null}">
+                                    <img th:src="${diagnostico.fotoLateralUrl}" alt="Foto Lateral">
+                                    <div class="foto-label">📸 Lateral</div>
+                                </div>
+                                <div class="foto-item" th:if="${diagnostico.fotoTraseraUrl != null}">
+                                    <img th:src="${diagnostico.fotoTraseraUrl}" alt="Foto Trasera">
+                                    <div class="foto-label">📸 Trasera</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Información adicional -->
+                        <div th:if="${diagnostico.lesiones != null || diagnostico.condicionesMedicas != null || diagnostico.habitosAlimenticios != null}">
+                            <h6><i class="fas fa-info-circle"></i> Información Adicional</h6>
+                            <div class="info-grid">
+                                <div class="info-card" th:if="${diagnostico.lesiones != null && !diagnostico.lesiones.isEmpty()}">
+                                    <div class="info-label">🤕 Lesiones</div>
+                                    <div class="info-value" th:text="${diagnostico.lesiones}"></div>
+                                </div>
+                                <div class="info-card" th:if="${diagnostico.condicionesMedicas != null && !diagnostico.condicionesMedicas.isEmpty()}">
+                                    <div class="info-label">🏥 Condiciones Médicas</div>
+                                    <div class="info-value" th:text="${diagnostico.condicionesMedicas}"></div>
+                                </div>
+                                <div class="info-card" th:if="${diagnostico.habitosAlimenticios != null && !diagnostico.habitosAlimenticios.isEmpty()}">
+                                    <div class="info-label">🍎 Hábitos Alimenticios</div>
+                                    <div class="info-value" th:text="${diagnostico.habitosAlimenticios}"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="mt-4">
+        <a href="/entrenador/suscripciones" class="btn btn-secondary">
+            <i class="fas fa-arrow-left"></i> Volver a Suscripciones
+        </a>
+        <a th:href="@{/entrenador/diagnostico/vista/{clienteId}(clienteId=${cliente.id})}" class="btn btn-primary">
+            <i class="fas fa-eye"></i> Ver Diagnóstico Actual Completo
+        </a>
+        <a th:href="@{/rutinas/crear(clienteId=${cliente.id})}" class="btn btn-success">
+            <i class="fas fa-plus-circle"></i> Crear Rutina
+        </a>
+    </div>
+</div>
+</section>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
