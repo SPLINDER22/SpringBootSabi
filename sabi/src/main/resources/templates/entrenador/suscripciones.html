@@ -173,14 +173,20 @@
                                             <i class="fas fa-dumbbell me-1"></i> Asignar rutina
                                         </a>
                                     </div>
-                                    <!-- Botón diagnóstico: abre modal con último diagnóstico -->
-                                    <a th:if="${suscripcion.idCliente != null && (suscripcion.estadoSuscripcion == T(com.sabi.sabi.entity.enums.EstadoSuscripcion).ACEPTADA
+                                    <!-- Botones de diagnóstico -->
+                                    <div th:if="${suscripcion.idCliente != null && (suscripcion.estadoSuscripcion == T(com.sabi.sabi.entity.enums.EstadoSuscripcion).ACEPTADA
                                                    or suscripcion.estadoSuscripcion == T(com.sabi.sabi.entity.enums.EstadoSuscripcion).COTIZADA
                                                    or suscripcion.estadoSuscripcion == T(com.sabi.sabi.entity.enums.EstadoSuscripcion).PENDIENTE)}"
-                                        th:href="@{/entrenador/diagnostico/vista/{clienteId}(clienteId=${suscripcion.idCliente})}"
-                                        class="btn btn-info text-white flex-fill">
-                                        <i class="fas fa-notes-medical me-1"></i> Ver diagnóstico
-                                    </a>
+                                         class="d-flex gap-1 flex-fill">
+                                        <a th:href="@{/entrenador/diagnostico/vista/{clienteId}(clienteId=${suscripcion.idCliente})}"
+                                           class="btn btn-info text-white flex-fill" title="Ver diagnóstico actual completo">
+                                            <i class="fas fa-notes-medical me-1"></i> Diagnóstico
+                                        </a>
+                                        <a th:href="@{/entrenador/diagnostico/historial/{clienteId}(clienteId=${suscripcion.idCliente})}"
+                                           class="btn btn-outline-info flex-fill" title="Ver historial completo de diagnósticos">
+                                            <i class="fas fa-history me-1"></i> Historial
+                                        </a>
+                                    </div>
                                     <!-- Botón rechazar (pendiente) -->
                                     <form th:if="${suscripcion.estadoSuscripcion == T(com.sabi.sabi.entity.enums.EstadoSuscripcion).PENDIENTE}"
                                           th:action="@{/suscripciones/rechazar/{id}(id=${suscripcion.idSuscripcion})}"
