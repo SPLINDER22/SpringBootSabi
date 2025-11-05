@@ -190,30 +190,7 @@ public class ClienteController {
         return "cliente/diagnostico-form";
     }
 
-    @PostMapping("/cliente/diagnostico/guardar")
-    public String guardarDiagnostico(@ModelAttribute("diagnostico") @Valid DiagnosticoDTO diagnosticoDTO,
-            BindingResult result,
-            Model model) {
-        if (result.hasErrors()) {
-            model.addAttribute("error", "Por favor corrige los errores del formulario.");
-            return "cliente/diagnostico-form";
-        }
-        // Obtener el cliente autenticado
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        CustomUserDetails userDetails = (CustomUserDetails) auth.getPrincipal();
-        Long clienteId = userDetails.getUsuario().getId();
-        diagnosticoDTO.setIdCliente(clienteId);
-
-        // Guardar diagnóstico usando DiagnosticoService
-        try {
-            diagnosticoService.createDiagnostico(diagnosticoDTO);
-            model.addAttribute("success", "Diagnóstico guardado correctamente.");
-            return "redirect:/cliente/dashboard";
-        } catch (Exception e) {
-            model.addAttribute("error", "Error al guardar el diagnóstico: " + e.getMessage());
-            return "cliente/diagnostico-form";
-        }
-    }
+    // Método eliminado: se usa /diagnostico/crear que maneja fotos correctamente
 
     @GetMapping("/cliente/diagnostico/descargar")
     public ResponseEntity<byte[]> descargarHistorialDiagnosticos() {

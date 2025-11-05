@@ -37,52 +37,83 @@ public class DiagnosticoController {
         Long clienteId = clienteService.getClienteByEmail(userDetails.getUsername()).getId();
         DiagnosticoDTO diagnosticoActual = clienteService.getDiagnosticoActualByClienteId(clienteId);
         List<DiagnosticoDTO> historial = clienteService.getHistorialDiagnosticosByClienteId(clienteId);
+        
         model.addAttribute("diagnosticoActual", diagnosticoActual);
         model.addAttribute("historial", historial);
+        
+        // Pasar el diagnóstico para el formulario - nuevo para creación, existente para actualización
+        if (diagnosticoActual != null) {
+            model.addAttribute("diagnostico", diagnosticoActual);
+        } else {
+            model.addAttribute("diagnostico", new DiagnosticoDTO());
+        }
+        
         return "cliente/diagnostico-form";
     }
 
     @PostMapping("/crear")
-    public String crearDiagnostico(@AuthenticationPrincipal UserDetails userDetails,
+    public String crearOActualizarDiagnostico(@AuthenticationPrincipal UserDetails userDetails,
                                    @ModelAttribute DiagnosticoDTO diagnosticoDTO,
-                                   @RequestParam(required = true) MultipartFile fotoFrontal,
-                                   @RequestParam(required = true) MultipartFile fotoLateral,
-                                   @RequestParam(required = true) MultipartFile fotoTrasera,
+                                   @RequestParam(required = false) MultipartFile fotoFrontal,
+                                   @RequestParam(required = false) MultipartFile fotoLateral,
+                                   @RequestParam(required = false) MultipartFile fotoTrasera,
                                    Model model) {
         try {
             Long clienteId = clienteService.getClienteByEmail(userDetails.getUsername()).getId();
             diagnosticoDTO.setIdCliente(clienteId);
-            diagnosticoDTO.setFecha(java.time.LocalDate.now());
-
-            // Validar que las 3 fotos esten presentes
-            if (fotoFrontal.isEmpty() || fotoLateral.isEmpty() || fotoTrasera.isEmpty()) {
-                model.addAttribute("error", "Las 3 fotos (frontal, lateral y trasera) son obligatorias");
-                return "cliente/diagnostico-form";
+            
+            // Determinar si es creación o actualización
+            boolean esCreacion = diagnosticoDTO.getIdDiagnostico() == null;
+            
+            if (esCreacion) {
+                diagnosticoDTO.setFecha(java.time.LocalDate.now());
+                
+                // Para creación, las 3 fotos son obligatorias
+                if (fotoFrontal == null || fotoFrontal.isEmpty() || 
+                    fotoLateral == null || fotoLateral.isEmpty() || 
+                    fotoTrasera == null || fotoTrasera.isEmpty()) {
+                    model.addAttribute("error", "Las 3 fotos (frontal, lateral y trasera) son obligatorias para crear un diagnóstico");
+                    model.addAttribute("diagnostico", diagnosticoDTO);
+                    return "cliente/diagnostico-form";
+                }
             }
 
-            // Guardar las fotos y obtener las URLs
-            String urlFrontal = guardarFotoDiagnostico(fotoFrontal, "frontal");
-            String urlLateral = guardarFotoDiagnostico(fotoLateral, "lateral");
-            String urlTrasera = guardarFotoDiagnostico(fotoTrasera, "trasera");
+            // Gestionar las fotos (para creación o actualización)
+            if (fotoFrontal != null && !fotoFrontal.isEmpty()) {
+                String urlFrontal = guardarFotoDiagnostico(fotoFrontal, "frontal");
+                diagnosticoDTO.setFotoFrontalUrl(urlFrontal);
+            }
+            
+            if (fotoLateral != null && !fotoLateral.isEmpty()) {
+                String urlLateral = guardarFotoDiagnostico(fotoLateral, "lateral");
+                diagnosticoDTO.setFotoLateralUrl(urlLateral);
+            }
+            
+            if (fotoTrasera != null && !fotoTrasera.isEmpty()) {
+                String urlTrasera = guardarFotoDiagnostico(fotoTrasera, "trasera");
+                diagnosticoDTO.setFotoTraseraUrl(urlTrasera);
+            }
 
-            // Asignar URLs al DTO
-            diagnosticoDTO.setFotoFrontalUrl(urlFrontal);
-            diagnosticoDTO.setFotoLateralUrl(urlLateral);
-            diagnosticoDTO.setFotoTraseraUrl(urlTrasera);
-
-            // Guardar el diagnostico
+            // Guardar el diagnóstico (create maneja tanto creación como actualización)
             diagnosticoService.createDiagnostico(diagnosticoDTO);
 
-            // Si el objetivo fue proporcionado, actualizarlo tambien en el perfil del cliente
+            // Si el objetivo fue proporcionado, actualizarlo también en el perfil del cliente
             if (diagnosticoDTO.getObjetivo() != null && !diagnosticoDTO.getObjetivo().isEmpty()) {
                 com.sabi.sabi.dto.ClienteDTO clienteDTO = clienteService.getClienteById(clienteId);
                 clienteDTO.setObjetivo(diagnosticoDTO.getObjetivo());
                 clienteService.updateCliente(clienteId, clienteDTO);
             }
 
+            model.addAttribute("success", esCreacion ? "Diagnóstico creado correctamente" : "Diagnóstico actualizado correctamente");
             return "redirect:/cliente/dashboard";
+            
         } catch (IOException e) {
             model.addAttribute("error", "Error al guardar las fotos: " + e.getMessage());
+            model.addAttribute("diagnostico", diagnosticoDTO);
+            return "cliente/diagnostico-form";
+        } catch (Exception e) {
+            model.addAttribute("error", "Error al guardar el diagnóstico: " + e.getMessage());
+            model.addAttribute("diagnostico", diagnosticoDTO);
             return "cliente/diagnostico-form";
         }
     }

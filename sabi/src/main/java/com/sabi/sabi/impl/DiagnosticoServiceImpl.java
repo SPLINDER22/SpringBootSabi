@@ -49,14 +49,21 @@ public class DiagnosticoServiceImpl implements DiagnosticoService {
     @Override
     public DiagnosticoDTO createDiagnostico(DiagnosticoDTO diagnosticoDTO) {
         Diagnostico diagnostico = modelMapper.map(diagnosticoDTO, Diagnostico.class);
+        
+        // Si tiene ID y ya existe, es una actualización
         if (diagnostico.getId() != null && diagnosticoRepository.findById(diagnostico.getId()).isPresent()){
-            updateDiagnostico(diagnostico.getId(), diagnosticoDTO);
+            return updateDiagnostico(diagnostico.getId(), diagnosticoDTO);
         }
+        
+        // Si no tiene ID o no existe, es creación nueva
+        diagnostico.setId(null); // Asegurar que sea null para nueva creación
+        
         if (diagnosticoDTO.getIdCliente() != null) {
             Cliente cliente = clienteRepository.findById(diagnosticoDTO.getIdCliente())
                     .orElseThrow(() -> new RuntimeException("Cliente not found with id: " + diagnosticoDTO.getIdCliente()));
             diagnostico.setCliente(cliente);
         }
+        
         diagnostico = diagnosticoRepository.save(diagnostico);
         return modelMapper.map(diagnostico, DiagnosticoDTO.class);
     }
