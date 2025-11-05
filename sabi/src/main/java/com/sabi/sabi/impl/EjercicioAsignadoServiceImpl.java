@@ -33,10 +33,22 @@ public class EjercicioAsignadoServiceImpl implements EjercicioAsignadoService {
         dto.setOrden(e.getOrden());
         dto.setComentarios(e.getComentarios());
         dto.setNumeroSeries(e.getNumeroSeries());
-        dto.setIdDia(e.getDia()!=null? e.getDia().getId():null);
-        dto.setIdEjercicio(e.getEjercicio()!=null? e.getEjercicio().getId():null);
+        // Protecciones null-safe antes de acceder a relaciones
+        if (e.getEjercicio() != null) {
+            dto.setNombreEjercicio(e.getEjercicio().getNombre());
+            dto.setIdEjercicio(e.getEjercicio().getId());
+        } else {
+            dto.setNombreEjercicio(null);
+            dto.setIdEjercicio(null);
+        }
+        if (e.getDia() != null) {
+            // La entidad Dia usa el campo 'id'
+            dto.setIdDia(e.getDia().getId());
+        } else {
+            dto.setIdDia(null);
+        }
         dto.setUrlVideoCliente(e.getUrlVideoCliente());
-        dto.setChecked(e.getChecked()); // nuevo mapeo
+        dto.setChecked(e.getChecked());
         dto.setEstado(e.getEstado());
         return dto;
     }
@@ -54,9 +66,10 @@ public class EjercicioAsignadoServiceImpl implements EjercicioAsignadoService {
     }
 
     @Override
-    public List<EjercicioAsignado> getEjesDia(Long idDia) {
+    public List<EjercicioAsignadoDTO> getEjesDia(Long idDia) {
         List<EjercicioAsignado> ejesDia = ejercicioAsignadoRepository.getEjesDia(idDia);
-        return ejesDia.stream().toList();
+        // Mapear a DTOs antes de devolver a la capa web
+        return ejesDia.stream().map(this::mapManual).toList();
     }
 
     @Override

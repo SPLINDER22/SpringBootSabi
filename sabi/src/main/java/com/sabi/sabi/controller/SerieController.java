@@ -1,17 +1,20 @@
 package com.sabi.sabi.controller;
 
+import com.sabi.sabi.dto.DiaDTO;
 import com.sabi.sabi.dto.EjercicioAsignadoDTO;
+import com.sabi.sabi.dto.SemanaDTO;
 import com.sabi.sabi.dto.SerieDTO;
-import com.sabi.sabi.service.EjercicioAsignadoService;
-import com.sabi.sabi.service.EjercicioService;
-import com.sabi.sabi.service.SerieService;
+import com.sabi.sabi.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
@@ -24,9 +27,21 @@ public class SerieController {
     private EjercicioAsignadoService ejercicioAsignadoService;
     @Autowired
     private EjercicioService ejercicioService;
+    @Autowired
+    private SemanaService semanaService;
+    @Autowired
+    private DiaService diaService;
+
+    private boolean hasRole(UserDetails userDetails, String role) {
+        if (userDetails == null) return false;
+        return userDetails.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_" + role) || a.getAuthority().equals(role));
+    }
 
     @GetMapping("/series/detallar/{idEje}")
-    public String detallarSeries(@PathVariable Long idEje, Model model, RedirectAttributes redirectAttributes) {
+    public String detallarSeries(@PathVariable Long idEje,
+                                 @RequestParam(value = "readonly", required = false) Boolean readonly,
+                                 @AuthenticationPrincipal UserDetails userDetails,
+                                 Model model, RedirectAttributes redirectAttributes) {
         EjercicioAsignadoDTO ejeDTO;
         try {
             ejeDTO = ejercicioAsignadoService.getEjercicioAsignadoById(idEje);
@@ -34,19 +49,46 @@ public class SerieController {
             redirectAttributes.addFlashAttribute("error", "El ejercicio especificado no existe.");
             return "redirect:/rutinas";
         }
+
+        DiaDTO diaDTO = diaService.getDiaById(ejeDTO.getIdDia());
+        SemanaDTO semanaDTO = semanaService.getSemanaById(diaDTO.getIdSemana());
+        List<?> semanas = semanaService.getSemanasRutina(semanaDTO.getIdRutina());
+        List<?> dias = diaService.getDiasSemana(semanaDTO.getIdSemana());
+        List<?> ejes = ejercicioAsignadoService.getEjesDia(diaDTO.getIdDia());
         List<?> series = serieService.getSerieEje(idEje);
+        model.addAttribute("dia", diaDTO);
+        if (diaDTO != null) {
+            model.addAttribute("idSemana", diaDTO.getIdSemana());
+        }
+        // Añadir idRutina para que la vista pueda construir enlaces de creación igual que en EjercicioAsignadoController
+        if (semanaDTO != null) {
+            model.addAttribute("idRutina", semanaDTO.getIdRutina());
+        }
+        model.addAttribute("semanas", semanas);
+        model.addAttribute("dias", dias);
+        model.addAttribute("ejes", ejes);
         model.addAttribute("series", series);
         model.addAttribute("totalSeries", series.size());
         model.addAttribute("ejercicioAsignado", ejeDTO);
         if (ejeDTO != null) {
             model.addAttribute("idDia", ejeDTO.getIdDia());
-            try {
-                var ejDTO = ejercicioService.getEjercicioById(ejeDTO.getIdEjercicio());
-                if (ejDTO != null) {
-                    model.addAttribute("nombreEjercicio", ejDTO.getNombre());
-                }
-            } catch (RuntimeException ignored) { }
+            // Preferir el nombre ya proporcionado por el DTO; fallback a servicio si es null
+            if (ejeDTO.getNombreEjercicio() != null && !ejeDTO.getNombreEjercicio().isBlank()) {
+                model.addAttribute("nombreEjercicio", ejeDTO.getNombreEjercicio());
+            } else if (ejeDTO.getIdEjercicio() != null) {
+                try {
+                    var ejDTO = ejercicioService.getEjercicioById(ejeDTO.getIdEjercicio());
+                    if (ejDTO != null) {
+                        model.addAttribute("nombreEjercicio", ejDTO.getNombre());
+                    }
+                } catch (RuntimeException ignored) { }
+            }
         }
+
+        boolean esEntrenador = hasRole(userDetails, "ENTRENADOR");
+        boolean readonlyEffective = Boolean.TRUE.equals(readonly) && esEntrenador;
+        model.addAttribute("readonly", readonlyEffective);
+
         return "series/lista";
     }
 
@@ -70,12 +112,17 @@ public class SerieController {
         model.addAttribute("serie", serieDTO);
         if (ejeDTO != null) {
             model.addAttribute("idDia", ejeDTO.getIdDia());
-            try {
-                var ejDTO = ejercicioService.getEjercicioById(ejeDTO.getIdEjercicio());
-                if (ejDTO != null) {
-                    model.addAttribute("nombreEjercicio", ejDTO.getNombre());
-                }
-            } catch (RuntimeException ignored) { }
+            // Preferir el nombre ya en DTO; fallback si es necesario
+            if (ejeDTO.getNombreEjercicio() != null && !ejeDTO.getNombreEjercicio().isBlank()) {
+                model.addAttribute("nombreEjercicio", ejeDTO.getNombreEjercicio());
+            } else if (ejeDTO.getIdEjercicio() != null) {
+                try {
+                    var ejDTO = ejercicioService.getEjercicioById(ejeDTO.getIdEjercicio());
+                    if (ejDTO != null) {
+                        model.addAttribute("nombreEjercicio", ejDTO.getNombre());
+                    }
+                } catch (RuntimeException ignored) { }
+            }
         }
         return "series/formulario";
     }
@@ -98,12 +145,17 @@ public class SerieController {
         model.addAttribute("serie", serieDTO);
         if (ejeDTO != null) {
             model.addAttribute("idDia", ejeDTO.getIdDia());
-            try {
-                var ejDTO = ejercicioService.getEjercicioById(ejeDTO.getIdEjercicio());
-                if (ejDTO != null) {
-                    model.addAttribute("nombreEjercicio", ejDTO.getNombre());
-                }
-            } catch (RuntimeException ignored) { }
+            // Preferir el nombre ya en DTO; fallback si es necesario
+            if (ejeDTO.getNombreEjercicio() != null && !ejeDTO.getNombreEjercicio().isBlank()) {
+                model.addAttribute("nombreEjercicio", ejeDTO.getNombreEjercicio());
+            } else if (ejeDTO.getIdEjercicio() != null) {
+                try {
+                    var ejDTO = ejercicioService.getEjercicioById(ejeDTO.getIdEjercicio());
+                    if (ejDTO != null) {
+                        model.addAttribute("nombreEjercicio", ejDTO.getNombre());
+                    }
+                } catch (RuntimeException ignored) { }
+            }
         }
         return "series/formulario";
     }

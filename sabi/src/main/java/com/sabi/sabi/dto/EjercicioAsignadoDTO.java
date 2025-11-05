@@ -25,6 +25,8 @@ public class EjercicioAsignadoDTO {
     // Relación con Ejercicio (tabla maestra)
     private Long idEjercicio;
 
+    private String nombreEjercicio;
+
     // Relación con Series planificadas
     private List<Long> idSeries;
 

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="es" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
+<html lang="es" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
     <title>Ejercicios Asignados</title>
@@ -75,7 +75,8 @@
         <tr th:each="eje : ${ejes}">
             <td th:text="${eje.orden}"></td>
             <td>
-                <a th:href="@{/ejercicios/detalle/{id}(id=${eje.ejercicio.id}, fromEges=true, idDia=${dia != null ? dia.idDia : null})}" th:text="${eje.ejercicio.nombre}" class="text-decoration-none fw-semibold"></a>
+                <!-- Usar DTO: idEjercicio y nombreEjercicio -->
+                <a th:href="@{/ejercicios/detalle/{id}(id=${eje.idEjercicio}, fromEges=true, idDia=${dia != null ? dia.idDia : null})}" th:text="${eje.nombreEjercicio}" class="text-decoration-none fw-semibold"></a>
             </td>
             <td th:text="${eje.comentarios}" class="small"></td>
             <td th:text="${eje.numeroSeries}"></td>
