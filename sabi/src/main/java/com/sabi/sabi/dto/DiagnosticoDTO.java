@@ -12,6 +12,15 @@ import java.time.LocalDate;
 @Setter
 public class DiagnosticoDTO {
     private Long idDiagnostico;
+    
+    // Método para compatibilidad con ModelMapper
+    public Long getId() {
+        return this.idDiagnostico;
+    }
+    
+    public void setId(Long id) {
+        this.idDiagnostico = id;
+    }
 
     private LocalDate fecha; // fecha en la que se tomó este diagnóstico
 

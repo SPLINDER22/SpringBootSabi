@@ -1,3 +1,4 @@
+
 package com.sabi.sabi.controller;
 
 import com.sabi.sabi.dto.DiagnosticoDTO;
@@ -79,6 +80,24 @@ public class DiagnosticoController {
             }
 
             // Gestionar las fotos (para creación o actualización)
+            // Si es actualización, conservar las URLs existentes si no se cargan nuevas fotos
+            if (!esCreacion) {
+                DiagnosticoDTO diagnosticoExistente = diagnosticoService.getDiagnosticoById(diagnosticoDTO.getIdDiagnostico());
+                if (diagnosticoExistente != null) {
+                    // Conservar URLs existentes si no se suben nuevas fotos
+                    if (fotoFrontal == null || fotoFrontal.isEmpty()) {
+                        diagnosticoDTO.setFotoFrontalUrl(diagnosticoExistente.getFotoFrontalUrl());
+                    }
+                    if (fotoLateral == null || fotoLateral.isEmpty()) {
+                        diagnosticoDTO.setFotoLateralUrl(diagnosticoExistente.getFotoLateralUrl());
+                    }
+                    if (fotoTrasera == null || fotoTrasera.isEmpty()) {
+                        diagnosticoDTO.setFotoTraseraUrl(diagnosticoExistente.getFotoTraseraUrl());
+                    }
+                }
+            }
+            
+            // Procesar nuevas fotos si se subieron
             if (fotoFrontal != null && !fotoFrontal.isEmpty()) {
                 String urlFrontal = guardarFotoDiagnostico(fotoFrontal, "frontal");
                 diagnosticoDTO.setFotoFrontalUrl(urlFrontal);

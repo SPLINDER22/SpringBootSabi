@@ -23,20 +23,19 @@
             <div class="row g-3 align-items-end">
                 <div class="col-md-12">
                     <label for="objetivo" class="form-label">¿Cuál es tu objetivo?</label>
-                    <textarea class="form-control" id="objetivo" name="objetivo" rows="2" required placeholder="Ej: Perder peso, ganar masa muscular, mejorar resistencia..."
-                              th:text="${diagnosticoActual?.objetivo}"></textarea>
+                    <textarea class="form-control" id="objetivo" th:field="*{objetivo}" rows="2" required placeholder="Ej: Perder peso, ganar masa muscular, mejorar resistencia..."></textarea>
                     <small class="text-muted">Describe qué quieres lograr con tu entrenamiento.</small>
                     <div class="invalid-feedback">Este campo es obligatorio.</div>
                 </div>
                 <div class="col-md-4">
                     <label for="peso" class="form-label">Peso (kg)</label>
-                    <input type="number" step="0.1" min="30" max="300" class="form-control" id="peso" name="peso" th:value="${diagnosticoActual?.peso}" required placeholder="Ej: 70.5">
+                    <input type="number" step="0.1" min="30" max="300" class="form-control" id="peso" th:field="*{peso}" required placeholder="Ej: 70.5">
                     <small class="text-muted">Ingrese su peso actual en kilogramos.</small>
                     <div class="invalid-feedback">Este campo es obligatorio.</div>
                 </div>
                 <div class="col-md-4">
                     <label for="estatura" class="form-label">Estatura (cm)</label>
-                    <input type="number" step="0.1" min="100" max="250" class="form-control" id="estatura" name="estatura" th:value="${diagnosticoActual?.estatura}" required placeholder="Ej: 175">
+                    <input type="number" step="0.1" min="100" max="250" class="form-control" id="estatura" th:field="*{estatura}" required placeholder="Ej: 175">
                     <small class="text-muted">Ingrese su estatura en centímetros.</small>
                     <div class="invalid-feedback">Este campo es obligatorio.</div>
                 </div>
@@ -46,48 +45,48 @@
                 </div>
                 <div class="col-md-4">
                     <label for="nivelExperiencia" class="form-label">Nivel de experiencia</label>
-                    <select class="form-select" id="nivelExperiencia" name="nivelExperiencia" required>
+                    <select class="form-select" id="nivelExperiencia" th:field="*{nivelExperiencia}" required>
                         <option value="">Seleccione...</option>
-                        <option th:selected="${diagnosticoActual?.nivelExperiencia == 'PRINCIPIANTE'}" value="PRINCIPIANTE">Principiante</option>
-                        <option th:selected="${diagnosticoActual?.nivelExperiencia == 'INTERMEDIO'}" value="INTERMEDIO">Intermedio</option>
-                        <option th:selected="${diagnosticoActual?.nivelExperiencia == 'AVANZADO'}" value="AVANZADO">Avanzado</option>
+                        <option value="PRINCIPIANTE">Principiante</option>
+                        <option value="INTERMEDIO">Intermedio</option>
+                        <option value="AVANZADO">Avanzado</option>
                     </select>
                     <small class="text-muted">Seleccione su nivel de experiencia física.</small>
                     <div class="invalid-feedback">Este campo es obligatorio.</div>
                 </div>
                 <div class="col-md-4">
                     <label for="disponibilidadTiempo" class="form-label">Disponibilidad de tiempo</label>
-                    <input type="text" class="form-control" id="disponibilidadTiempo" name="disponibilidadTiempo" th:value="${diagnosticoActual?.disponibilidadTiempo}" required placeholder="Ej: 3 veces por semana, 45 min">
+                    <input type="text" class="form-control" id="disponibilidadTiempo" th:field="*{disponibilidadTiempo}" required placeholder="Ej: 3 veces por semana, 45 min">
                     <small class="text-muted">Ejemplo: 3 veces por semana, 45 min.</small>
                     <div class="invalid-feedback">Este campo es obligatorio.</div>
                 </div>
                 <div class="col-md-4">
                     <label for="accesoRecursos" class="form-label">Acceso a recursos</label>
-                    <input type="text" class="form-control" id="accesoRecursos" name="accesoRecursos" th:value="${diagnosticoActual?.accesoRecursos}" required placeholder="Ej: casa, gimnasio, pesas">
+                    <input type="text" class="form-control" id="accesoRecursos" th:field="*{accesoRecursos}" required placeholder="Ej: casa, gimnasio, pesas">
                     <small class="text-muted">Ejemplo: casa, gimnasio, pesas.</small>
                     <div class="invalid-feedback">Este campo es obligatorio.</div>
                 </div>
                 <div class="col-md-4">
                     <label for="lesiones" class="form-label">Lesiones</label>
-                    <input type="text" class="form-control" id="lesiones" name="lesiones" th:value="${diagnosticoActual?.lesiones}" required placeholder="Ej: ninguna, rodilla, espalda">
+                    <input type="text" class="form-control" id="lesiones" th:field="*{lesiones}" required placeholder="Ej: ninguna, rodilla, espalda">
                     <small class="text-muted">Indique si tiene alguna lesión relevante.</small>
                     <div class="invalid-feedback">Este campo es obligatorio.</div>
                 </div>
                 <div class="col-md-4">
                     <label for="condicionesMedicas" class="form-label">Condiciones médicas</label>
-                    <input type="text" class="form-control" id="condicionesMedicas" name="condicionesMedicas" th:value="${diagnosticoActual?.condicionesMedicas}" required placeholder="Ej: hipertensión, diabetes">
+                    <input type="text" class="form-control" id="condicionesMedicas" th:field="*{condicionesMedicas}" required placeholder="Ej: hipertensión, diabetes">
                     <small class="text-muted">Indique si tiene alguna condición médica relevante.</small>
                     <div class="invalid-feedback">Este campo es obligatorio.</div>
                 </div>
                  <div class="col-md-4">
                     <label for="horasSueno" class="form-label">Horas de sueño</label>
-                    <input type="number" step="0.1" min="0" max="24" class="form-control" id="horasSueno" name="horasSueno" th:value="${diagnosticoActual?.horasSueno}" required placeholder="Ej: 8">
+                    <input type="number" step="0.1" min="0" max="24" class="form-control" id="horasSueno" th:field="*{horasSueno}" required placeholder="Ej: 8">
                     <small class="text-muted">Ingrese el promedio de horas de sueño diarias.</small>
                     <div class="invalid-feedback">Este campo es obligatorio.</div>
                 </div>
                 <div class="col-md-4">
                     <label for="habitosAlimenticios" class="form-label">Hábitos Alimenticios</label>
-                    <input type="text" class="form-control" id="habitosAlimenticios" name="habitosAlimenticios" th:value="${diagnosticoActual?.habitosAlimenticios}" required placeholder="Ej: dieta balanceada, vegetariano">
+                    <input type="text" class="form-control" id="habitosAlimenticios" th:field="*{habitosAlimenticios}" required placeholder="Ej: dieta balanceada, vegetariano">
                     <small class="text-muted">Describa brevemente su alimentación.</small>
                     <div class="invalid-feedback">Este campo es obligatorio.</div>
                 </div>
@@ -172,37 +171,37 @@
             <div class="row g-3">
                 <div class="col-md-4">
                     <label for="porcentajeGrasaCorporal" class="form-label">% Grasa Corporal</label>
-                    <input type="number" step="0.1" min="0" max="100" class="form-control" id="porcentajeGrasaCorporal" name="porcentajeGrasaCorporal" th:value="${diagnosticoActual?.porcentajeGrasaCorporal}" placeholder="Ej: 18.5">
+                    <input type="number" step="0.1" min="0" max="100" class="form-control" id="porcentajeGrasaCorporal" name="porcentajeGrasaCorporal" th:field="*{porcentajeGrasaCorporal}" placeholder="Ej: 18.5">
                     <small class="text-muted">Porcentaje estimado de grasa corporal.</small>
                 </div>
                 <div class="col-md-4">
                     <label for="circunferenciaCintura" class="form-label">Circunferencia Cintura (cm)</label>
-                    <input type="number" step="0.1" min="0" class="form-control" id="circunferenciaCintura" name="circunferenciaCintura" th:value="${diagnosticoActual?.circunferenciaCintura}" placeholder="Ej: 80">
+                    <input type="number" step="0.1" min="0" class="form-control" id="circunferenciaCintura" name="circunferenciaCintura" th:field="*{circunferenciaCintura}" placeholder="Ej: 80">
                     <small class="text-muted">Medida de la cintura en centímetros.</small>
                 </div>
                 <div class="col-md-4">
                     <label for="circunferenciaCadera" class="form-label">Circunferencia Cadera (cm)</label>
-                    <input type="number" step="0.1" min="0" class="form-control" id="circunferenciaCadera" name="circunferenciaCadera" th:value="${diagnosticoActual?.circunferenciaCadera}" placeholder="Ej: 95">
+                    <input type="number" step="0.1" min="0" class="form-control" id="circunferenciaCadera" name="circunferenciaCadera" th:field="*{circunferenciaCadera}" placeholder="Ej: 95">
                     <small class="text-muted">Medida de la cadera en centímetros.</small>
                 </div>
                 <div class="col-md-4">
                     <label for="circunferenciaBrazo" class="form-label">Circunferencia Brazo (cm)</label>
-                    <input type="number" step="0.1" min="0" class="form-control" id="circunferenciaBrazo" name="circunferenciaBrazo" th:value="${diagnosticoActual?.circunferenciaBrazo}" placeholder="Ej: 32">
+                    <input type="number" step="0.1" min="0" class="form-control" id="circunferenciaBrazo" name="circunferenciaBrazo" th:field="*{circunferenciaBrazo}" placeholder="Ej: 32">
                     <small class="text-muted">Medida del brazo en centímetros.</small>
                 </div>
                 <div class="col-md-4">
                     <label for="circunferenciaPierna" class="form-label">Circunferencia Pierna (cm)</label>
-                    <input type="number" step="0.1" min="0" class="form-control" id="circunferenciaPierna" name="circunferenciaPierna" th:value="${diagnosticoActual?.circunferenciaPierna}" placeholder="Ej: 40">
+                    <input type="number" step="0.1" min="0" class="form-control" id="circunferenciaPierna" name="circunferenciaPierna" th:field="*{circunferenciaPierna}" placeholder="Ej: 40">
                     <small class="text-muted">Medida de la pierna en centímetros.</small>
                 </div>
                 <div class="col-md-4">
                     <label for="frecuenciaCardiacaReposo" class="form-label">Frecuencia Cardíaca Reposo (bpm)</label>
-                    <input type="number" min="30" max="200" class="form-control" id="frecuenciaCardiacaReposo" name="frecuenciaCardiacaReposo" th:value="${diagnosticoActual?.frecuenciaCardiacaReposo}" placeholder="Ej: 70">
+                    <input type="number" min="30" max="200" class="form-control" id="frecuenciaCardiacaReposo" name="frecuenciaCardiacaReposo" th:field="*{frecuenciaCardiacaReposo}" placeholder="Ej: 70">
                     <small class="text-muted">Latidos por minuto en reposo.</small>
                 </div>
                 <div class="col-md-4">
                     <label for="presionArterial" class="form-label">Presión Arterial</label>
-                    <input type="text" class="form-control" id="presionArterial" name="presionArterial" th:value="${diagnosticoActual?.presionArterial}" placeholder="Ej: 120/80">
+                    <input type="text" class="form-control" id="presionArterial" name="presionArterial" th:field="*{presionArterial}" placeholder="Ej: 120/80">
                     <small class="text-muted">Ejemplo: 120/80.</small>
                 </div>
             </div>
@@ -217,68 +216,69 @@
             <div class="row g-3">
                 <div class="col-md-6">
                     <label for="preferenciasEntrenamiento" class="form-label">Preferencias de Entrenamiento</label>
-                    <textarea class="form-control" id="preferenciasEntrenamiento" name="preferenciasEntrenamiento" rows="2" th:text="${diagnosticoActual?.preferenciasEntrenamiento}" placeholder="Ej: Prefiero ejercicios funcionales, me gusta variar, no me gusta correr"></textarea>
+                    <textarea class="form-control" id="preferenciasEntrenamiento" name="preferenciasEntrenamiento" rows="2" th:field="*{preferenciasEntrenamiento}" placeholder="Ej: Prefiero ejercicios funcionales, me gusta variar, no me gusta correr"></textarea>
                     <small class="text-muted">¿Que tipo de ejercicios prefieres o disfrutas mas?</small>
                 </div>
                 <div class="col-md-6">
                     <label for="experienciaPreviaDeportes" class="form-label">Experiencia Previa en Deportes</label>
-                    <textarea class="form-control" id="experienciaPreviaDeportes" name="experienciaPreviaDeportes" rows="2" th:text="${diagnosticoActual?.experienciaPreviaDeportes}" placeholder="Ej: Jugue futbol 5 anos, natacion 2 anos"></textarea>
+                    <textarea class="form-control" id="experienciaPreviaDeportes" name="experienciaPreviaDeportes" rows="2" th:field="*{experienciaPreviaDeportes}" placeholder="Ej: Jugue futbol 5 anos, natacion 2 anos"></textarea>
                     <small class="text-muted">¿Has practicado deportes antes? ¿Cuales y por cuanto tiempo?</small>
                 </div>
                 <div class="col-md-4">
                     <label for="diasDisponiblesSemana" class="form-label">Dias Disponibles por Semana</label>
-                    <input type="number" min="1" max="7" class="form-control" id="diasDisponiblesSemana" name="diasDisponiblesSemana" th:value="${diagnosticoActual?.diasDisponiblesSemana}" placeholder="Ej: 4">
+                    <input type="number" min="1" max="7" class="form-control" id="diasDisponiblesSemana" name="diasDisponiblesSemana" th:field="*{diasDisponiblesSemana}" placeholder="Ej: 4">
                     <small class="text-muted">¿Cuantos dias a la semana puedes entrenar?</small>
                 </div>
                 <div class="col-md-4">
                     <label for="horarioPreferido" class="form-label">Horario Preferido</label>
-                    <input type="text" class="form-control" id="horarioPreferido" name="horarioPreferido" th:value="${diagnosticoActual?.horarioPreferido}" placeholder="Ej: Mananas 6am-8am">
+                    <input type="text" class="form-control" id="horarioPreferido" name="horarioPreferido" th:field="*{horarioPreferido}" placeholder="Ej: Mananas 6am-8am">
                     <small class="text-muted">¿En que horario prefieres entrenar?</small>
                 <div class="col-md-4">
             </div>
                     <label for="nivelEstres" class="form-label">Nivel de Estres</label>
-                    <select class="form-select" id="nivelEstres" name="nivelEstres">
+                    <select class="form-select" id="nivelEstres" name="nivelEstres" th:field="*{nivelEstres}">
                         <option value="">Seleccionar...</option>
-                        <option th:selected="${diagnosticoActual?.nivelEstres == 'BAJO'}" value="BAJO">Bajo</option>
-                        <option th:selected="${diagnosticoActual?.nivelEstres == 'MEDIO'}" value="MEDIO">Medio</option>
-                        <option th:selected="${diagnosticoActual?.nivelEstres == 'ALTO'}" value="ALTO">Alto</option>
+                        <option value="BAJO">Bajo</option>
+                        <option value="MEDIO">Medio</option>
+                        <option value="ALTO">Alto</option>
                     </select>
                     <small class="text-muted">¿Como es tu nivel de estres diario?</small>
                 </div>
                 <div class="col-md-6">
                     <label for="limitacionesFisicas" class="form-label">Limitaciones Fisicas</label>
-                    <textarea class="form-control" id="limitacionesFisicas" name="limitacionesFisicas" rows="2" th:text="${diagnosticoActual?.limitacionesFisicas}" placeholder="Ej: No puedo hacer sentadillas profundas por problema de rodilla"></textarea>
+                    <textarea class="form-control" id="limitacionesFisicas" name="limitacionesFisicas" rows="2" th:field="*{limitacionesFisicas}" placeholder="Ej: No puedo hacer sentadillas profundas por problema de rodilla"></textarea>
                     <small class="text-muted">¿Hay algun movimiento o ejercicio que no puedas hacer?</small>
                 </div>
                 <div class="col-md-6">
                     <label for="motivacionPrincipal" class="form-label">Motivacion Principal</label>
-                    <textarea class="form-control" id="motivacionPrincipal" name="motivacionPrincipal" rows="2" th:text="${diagnosticoActual?.motivacionPrincipal}" placeholder="Ej: Mejorar mi salud, verme mejor, competir"></textarea>
+                    <textarea class="form-control" id="motivacionPrincipal" name="motivacionPrincipal" rows="2" th:field="*{motivacionPrincipal}" placeholder="Ej: Mejorar mi salud, verme mejor, competir"></textarea>
                     <small class="text-muted">¿Que te motiva a entrenar?</small>
                 </div>
                 <div class="col-md-6">
                     <label for="suplementosActuales" class="form-label">Suplementos Actuales</label>
-                    <input type="text" class="form-control" id="suplementosActuales" name="suplementosActuales" th:value="${diagnosticoActual?.suplementosActuales}" placeholder="Ej: Proteina whey, creatina">
+                    <input type="text" class="form-control" id="suplementosActuales" name="suplementosActuales" th:field="*{suplementosActuales}" placeholder="Ej: Proteina whey, creatina">
                     <small class="text-muted">¿Tomas algun suplemento actualmente?</small>
                 </div>
                 <div class="col-md-3">
                     <label for="fumador" class="form-label">¿Fumas?</label>
-                    <select class="form-select" id="fumador" name="fumador">
+                    <select class="form-select" id="fumador" name="fumador" th:field="*{fumador}">
                         <option value="">Seleccionar...</option>
-                        <option th:selected="${diagnosticoActual?.fumador == false}" value="false">No</option>
-                        <option th:selected="${diagnosticoActual?.fumador == true}" value="true">Si</option>
+                        <option value="false">No</option>
+                        <option value="true">Si</option>
                     </select>
                 </div>
                 <div class="col-md-3">
                     <label for="consumeAlcohol" class="form-label">¿Consumes Alcohol?</label>
-                    <select class="form-select" id="consumeAlcohol" name="consumeAlcohol">
-        </div>
-                        <option th:selected="${diagnosticoActual?.consumeAlcohol == false}" value="false">No</option>
-                        <option th:selected="${diagnosticoActual?.consumeAlcohol == true}" value="true">Si</option>
+                    <select class="form-select" id="consumeAlcohol" name="consumeAlcohol" th:field="*{consumeAlcohol}">
+                        <option value="">Seleccionar...</option>
+                        <option value="false">No</option>
+                        <option value="true">Si</option>
                     </select>
+                </div>
                 </div>
                 <div class="col-md-6" th:if="${diagnosticoActual?.consumeAlcohol == true}">
                     <label for="frecuenciaAlcohol" class="form-label">Frecuencia de Consumo de Alcohol</label>
-                    <input type="text" class="form-control" id="frecuenciaAlcohol" name="frecuenciaAlcohol" th:value="${diagnosticoActual?.frecuenciaAlcohol}" placeholder="Ej: 1 vez por semana, 2-3 veces/semana">
+                    <input type="text" class="form-control" id="frecuenciaAlcohol" name="frecuenciaAlcohol" th:field="*{frecuenciaAlcohol}" placeholder="Ej: 1 vez por semana, 2-3 veces/semana">
                     <small class="text-muted">¿Con que frecuencia consumes alcohol?</small>
                 </div>
         <div class="col-12 text-end">

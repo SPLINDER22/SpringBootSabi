@@ -261,4 +261,57 @@ public class EntrenadorController {
             return org.springframework.http.ResponseEntity.status(500).body("Error: " + e.getMessage());
         }
     }
+
+    @GetMapping("/entrenador/diagnostico/historial/{clienteId}")
+    public String verHistorialDiagnosticos(@PathVariable Long clienteId, Model model) {
+        try {
+            // Obtener historial completo de diagnósticos del cliente
+            List<com.sabi.sabi.dto.DiagnosticoDTO> historial = clienteService.getHistorialDiagnosticosByClienteId(clienteId);
+            if (historial == null || historial.isEmpty()) {
+                model.addAttribute("error", "No se encontraron diagnósticos para este cliente.");
+                return "entrenador/ver-historial-diagnosticos";
+            }
+
+            // Obtener datos del cliente
+            com.sabi.sabi.dto.ClienteDTO cliente = clienteService.getClienteById(clienteId);
+            if (cliente == null) {
+                model.addAttribute("error", "Cliente no encontrado.");
+                return "entrenador/ver-historial-diagnosticos";
+            }
+
+            // Obtener diagnóstico actual (el más reciente)
+            com.sabi.sabi.dto.DiagnosticoDTO diagnosticoActual = historial.get(0);
+            
+            // Obtener diagnóstico anterior para comparativa (si existe)
+            com.sabi.sabi.dto.DiagnosticoDTO diagnosticoAnterior = null;
+            if (historial.size() >= 2) {
+                diagnosticoAnterior = historial.get(1);
+            }
+
+            model.addAttribute("historial", historial);
+            model.addAttribute("cliente", cliente);
+            model.addAttribute("diagnosticoActual", diagnosticoActual);
+            model.addAttribute("diagnosticoAnterior", diagnosticoAnterior);
+            model.addAttribute("tieneComparativa", diagnosticoAnterior != null);
+            
+            return "entrenador/ver-historial-diagnosticos";
+        } catch (Exception e) {
+            model.addAttribute("error", "Ocurrió un error al cargar el historial de diagnósticos: " + e.getMessage());
+            return "entrenador/ver-historial-diagnosticos";
+        }
+    }
+
+    @GetMapping("/api/entrenador/diagnostico/historial/{clienteId}")
+    @ResponseBody
+    public org.springframework.http.ResponseEntity<?> obtenerHistorialDiagnosticos(@PathVariable Long clienteId) {
+        try {
+            List<com.sabi.sabi.dto.DiagnosticoDTO> historial = clienteService.getHistorialDiagnosticosByClienteId(clienteId);
+            if (historial == null || historial.isEmpty()) {
+                return org.springframework.http.ResponseEntity.ok().body(java.util.Collections.singletonMap("message", "No hay historial de diagnósticos"));
+            }
+            return org.springframework.http.ResponseEntity.ok(historial);
+        } catch (Exception e) {
+            return org.springframework.http.ResponseEntity.status(500).body(java.util.Collections.singletonMap("error", e.getMessage()));
+        }
+    }
 }

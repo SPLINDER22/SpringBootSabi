@@ -43,7 +43,10 @@ public class DiagnosticoServiceImpl implements DiagnosticoService {
                 .stream()
                 .findFirst()
                 .orElseThrow(() -> new RuntimeException("Diagnostico not found with id: " + id));
-        return modelMapper.map(diagnostico, DiagnosticoDTO.class);
+        DiagnosticoDTO resultDTO = modelMapper.map(diagnostico, DiagnosticoDTO.class);
+        // Asegurar que el ID se mapee correctamente
+        resultDTO.setIdDiagnostico(diagnostico.getId());
+        return resultDTO;
     }
 
     @Override
@@ -65,7 +68,10 @@ public class DiagnosticoServiceImpl implements DiagnosticoService {
         }
         
         diagnostico = diagnosticoRepository.save(diagnostico);
-        return modelMapper.map(diagnostico, DiagnosticoDTO.class);
+        DiagnosticoDTO resultDTO = modelMapper.map(diagnostico, DiagnosticoDTO.class);
+        // Asegurar que el ID se mapee correctamente
+        resultDTO.setIdDiagnostico(diagnostico.getId());
+        return resultDTO;
     }
 
     @Override
@@ -77,8 +83,12 @@ public class DiagnosticoServiceImpl implements DiagnosticoService {
                     .orElseThrow(() -> new RuntimeException("Cliente not found with id: " + diagnosticoDTO.getIdCliente()));
             existingDiagnostico.setCliente(cliente);
         }
-        existingDiagnostico.setFecha(diagnosticoDTO.getFecha());
+        // Actualizar campos básicos
+        if (diagnosticoDTO.getFecha() != null) {
+            existingDiagnostico.setFecha(diagnosticoDTO.getFecha());
+        }
         existingDiagnostico.setProximoDiagnostico(diagnosticoDTO.getProximoDiagnostico());
+        existingDiagnostico.setObjetivo(diagnosticoDTO.getObjetivo());
         existingDiagnostico.setPeso(diagnosticoDTO.getPeso());
         existingDiagnostico.setEstatura(diagnosticoDTO.getEstatura());
         existingDiagnostico.setNivelExperiencia(diagnosticoDTO.getNivelExperiencia());
@@ -86,9 +96,18 @@ public class DiagnosticoServiceImpl implements DiagnosticoService {
         existingDiagnostico.setAccesoRecursos(diagnosticoDTO.getAccesoRecursos());
         existingDiagnostico.setLesiones(diagnosticoDTO.getLesiones());
         existingDiagnostico.setCondicionesMedicas(diagnosticoDTO.getCondicionesMedicas());
-        existingDiagnostico.setFotoFrontalUrl(diagnosticoDTO.getFotoFrontalUrl());
-        existingDiagnostico.setFotoLateralUrl(diagnosticoDTO.getFotoLateralUrl());
-        existingDiagnostico.setFotoTraseraUrl(diagnosticoDTO.getFotoTraseraUrl());
+        
+        // Solo actualizar URLs de fotos si no son null (se conservan las existentes si no se pasan nuevas)
+        if (diagnosticoDTO.getFotoFrontalUrl() != null) {
+            existingDiagnostico.setFotoFrontalUrl(diagnosticoDTO.getFotoFrontalUrl());
+        }
+        if (diagnosticoDTO.getFotoLateralUrl() != null) {
+            existingDiagnostico.setFotoLateralUrl(diagnosticoDTO.getFotoLateralUrl());
+        }
+        if (diagnosticoDTO.getFotoTraseraUrl() != null) {
+            existingDiagnostico.setFotoTraseraUrl(diagnosticoDTO.getFotoTraseraUrl());
+        }
+        // Actualizar medidas corporales opcionales
         existingDiagnostico.setPorcentajeGrasaCorporal(diagnosticoDTO.getPorcentajeGrasaCorporal());
         existingDiagnostico.setCircunferenciaCintura(diagnosticoDTO.getCircunferenciaCintura());
         existingDiagnostico.setCircunferenciaCadera(diagnosticoDTO.getCircunferenciaCadera());
@@ -98,9 +117,25 @@ public class DiagnosticoServiceImpl implements DiagnosticoService {
         existingDiagnostico.setPresionArterial(diagnosticoDTO.getPresionArterial());
         existingDiagnostico.setHorasSueno(diagnosticoDTO.getHorasSueno());
         existingDiagnostico.setHabitosAlimenticios(diagnosticoDTO.getHabitosAlimenticios());
+        
+        // Actualizar campos adicionales para el entrenador
+        existingDiagnostico.setPreferenciasEntrenamiento(diagnosticoDTO.getPreferenciasEntrenamiento());
+        existingDiagnostico.setExperienciaPreviaDeportes(diagnosticoDTO.getExperienciaPreviaDeportes());
+        existingDiagnostico.setDiasDisponiblesSemana(diagnosticoDTO.getDiasDisponiblesSemana());
+        existingDiagnostico.setHorarioPreferido(diagnosticoDTO.getHorarioPreferido());
+        existingDiagnostico.setLimitacionesFisicas(diagnosticoDTO.getLimitacionesFisicas());
+        existingDiagnostico.setMotivacionPrincipal(diagnosticoDTO.getMotivacionPrincipal());
+        existingDiagnostico.setNivelEstres(diagnosticoDTO.getNivelEstres());
+        existingDiagnostico.setSuplementosActuales(diagnosticoDTO.getSuplementosActuales());
+        existingDiagnostico.setFumador(diagnosticoDTO.getFumador());
+        existingDiagnostico.setConsumeAlcohol(diagnosticoDTO.getConsumeAlcohol());
+        existingDiagnostico.setFrecuenciaAlcohol(diagnosticoDTO.getFrecuenciaAlcohol());
 
         existingDiagnostico = diagnosticoRepository.save(existingDiagnostico);
-        return modelMapper.map(existingDiagnostico, DiagnosticoDTO.class);
+        DiagnosticoDTO resultDTO = modelMapper.map(existingDiagnostico, DiagnosticoDTO.class);
+        // Asegurar que el ID se mapee correctamente
+        resultDTO.setIdDiagnostico(existingDiagnostico.getId());
+        return resultDTO;
     }
 
     @Override
