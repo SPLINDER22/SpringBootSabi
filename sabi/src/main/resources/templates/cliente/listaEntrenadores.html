@@ -11,11 +11,11 @@
         <h1 class="h3 mb-4 text-dark text-center">Entrenadores Disponibles</h1>
         <form action="#" th:action="@{/cliente/listaEntrenadores}" method="get" class="mb-4">
             <div class="row g-2 align-items-end">
-                <div class="col-12 col-md-4">
+                <div class="col-12 col-md-3">
                     <label class="form-label mb-1">Nombre</label>
                     <input type="text" name="nombre" class="form-control" placeholder="Buscar por nombre" th:value="${nombre}">
                 </div>
-                <div class="col-12 col-md-4">
+                <div class="col-12 col-md-3">
                     <label class="form-label mb-1">Especialidad</label>
                     <input type="text" name="especialidad" class="form-control" placeholder="Ej: fuerza, yoga" th:value="${especialidad}">
                 </div>
@@ -26,6 +26,14 @@
                 <div class="col-6 col-md-2">
                     <label class="form-label mb-1">Puntuación máx.</label>
                     <input type="number" name="maxPuntuacion" class="form-control" min="0" max="5" step="0.1" th:value="${maxPuntuacion}">
+                </div>
+                <div class="col-6 col-md-2">
+                    <label class="form-label mb-1">Experiencia mín. (años)</label>
+                    <input type="number" name="minExperiencia" class="form-control" min="0" max="50" placeholder="Años" th:value="${minExperiencia}">
+                </div>
+                <div class="col-12 col-md-6">
+                    <label class="form-label mb-1">Certificaciones</label>
+                    <input type="text" name="certificaciones" class="form-control" placeholder="Ej: ACE, NASM" th:value="${certificaciones}">
                 </div>
                 <div class="col-12 mt-2">
                     <div class="d-flex gap-2">
@@ -72,13 +80,19 @@
                                     <h6 class="text-success"><i class="fas fa-dumbbell me-2"></i> Especialidad</h6>
                                     <p id="modalEntrenadorEspecialidades" class="text-muted"></p>
                                 </div>
+                                <div class="mb-3">
+                                    <h6 class="text-success"><i class="fas fa-calendar-alt me-2"></i> Experiencia</h6>
+                                    <p id="modalEntrenadorExperiencia" class="text-muted"></p>
+                                </div>
+                                <div class="mb-3" id="modalEntrenadorCertificacionesContainer" style="display: none;">
+                                    <h6 class="text-success"><i class="fas fa-certificate me-2"></i> Certificaciones</h6>
+                                    <div id="modalEntrenadorCertificaciones" class="text-muted">
+                                        <!-- Lista de certificaciones con botones para ver -->
+                                    </div>
+                                </div>
                                 <div class="mb-3" id="modalEntrenadorTelefonoContainer" style="display: none;">
                                     <h6 class="text-success"><i class="fas fa-phone me-2"></i> Teléfono</h6>
                                     <p id="modalEntrenadorTelefono" class="text-muted"></p>
-                                </div>
-                                <div class="mb-3">
-                                    <h6 class="text-success"><i class="fas fa-trophy me-2"></i> Experiencia</h6>
-                                    <p id="modalEntrenadorExperiencia" class="text-muted"></p>
                                 </div>
                             </div>
                         </div>
@@ -100,6 +114,31 @@
                                 <i class="fas fa-money-bill-wave me-1"></i> Cotizar Suscripción
                             </button>
                         </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal para Visualizar PDF -->
+        <div class="modal fade" id="modalVisualizadorPDF" tabindex="-1" aria-labelledby="modalVisualizadorPDFLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered modal-xl">
+                <div class="modal-content">
+                    <div class="modal-header bg-danger text-white">
+                        <h5 class="modal-title" id="modalVisualizadorPDFLabel">
+                            <i class="fas fa-file-pdf me-2"></i> <span id="pdfTitulo">Certificación</span>
+                        </h5>
+                        <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body p-0" style="height: 70vh;">
+                        <iframe id="pdfViewer" style="width: 100%; height: 100%; border: none;"></iframe>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                        <a id="pdfDownloadLink" href="#" download class="btn btn-primary">
+                            <i class="fas fa-download me-1"></i> Descargar PDF
+                        </a>
                     </div>
                 </div>
             </div>
@@ -194,6 +233,8 @@
                     document.getElementById('modalEstrellas').innerHTML = '<i class="far fa-star text-warning"></i>'.repeat(5);
                     document.getElementById('modalEntrenadorTelefono').textContent = '';
                     document.getElementById('modalEntrenadorTelefonoContainer').style.display = 'none';
+                    document.getElementById('modalEntrenadorCertificaciones').textContent = '';
+                    document.getElementById('modalEntrenadorCertificacionesContainer').style.display = 'none';
                     document.getElementById('modalEntrenadorDescripcion').textContent = '';
                     document.getElementById('modalEntrenadorDescripcionContainer').style.display = 'none';
                     document.getElementById('modalSinDescripcion').style.display = 'none';
@@ -233,6 +274,43 @@
                             document.getElementById('modalEntrenadorTelefonoContainer').style.display = 'block';
                         }
 
+                        const certificaciones = (info.certificaciones || '').toString().trim();
+                        if (certificaciones) {
+                            const certContainer = document.getElementById('modalEntrenadorCertificaciones');
+                            certContainer.innerHTML = '';
+
+                            // Las certificaciones son rutas de archivos separadas por coma
+                            const archivos = certificaciones.split(',');
+                            archivos.forEach((ruta, index) => {
+                                const nombreArchivo = ruta.split('/').pop();
+
+                                // Crear contenedor para cada certificación
+                                const certItem = document.createElement('div');
+                                certItem.className = 'cert-item d-flex align-items-center justify-content-between p-2 mb-2 bg-light rounded';
+                                certItem.style.border = '1px solid #dee2e6';
+
+                                // Nombre del archivo con icono
+                                const fileInfo = document.createElement('div');
+                                fileInfo.className = 'flex-grow-1';
+                                fileInfo.innerHTML = `<i class="fas fa-file-pdf text-danger me-2"></i><span class="text-dark">${nombreArchivo}</span>`;
+
+                                // Botón para visualizar
+                                const btnVer = document.createElement('button');
+                                btnVer.className = 'btn btn-sm btn-primary';
+                                btnVer.innerHTML = '<i class="fas fa-eye me-1"></i> Ver';
+                                btnVer.onclick = function(e) {
+                                    e.preventDefault();
+                                    abrirVisualizadorPDF('/' + ruta, nombreArchivo);
+                                };
+
+                                certItem.appendChild(fileInfo);
+                                certItem.appendChild(btnVer);
+                                certContainer.appendChild(certItem);
+                            });
+
+                            document.getElementById('modalEntrenadorCertificacionesContainer').style.display = 'block';
+                        }
+
                         const desc = (info.descripcion || '').toString().trim();
                         if (desc) {
                             document.getElementById('modalEntrenadorDescripcion').textContent = desc;
@@ -262,6 +340,28 @@
                     }
                 });
             });
+
+            // Función para abrir el visualizador de PDF
+            function abrirVisualizadorPDF(rutaPDF, nombreArchivo) {
+                // Actualizar título del modal
+                document.getElementById('pdfTitulo').textContent = nombreArchivo;
+
+                // Cargar PDF en el iframe
+                document.getElementById('pdfViewer').src = rutaPDF;
+
+                // Configurar enlace de descarga
+                document.getElementById('pdfDownloadLink').href = rutaPDF;
+                document.getElementById('pdfDownloadLink').download = nombreArchivo;
+
+                // Abrir modal de visualización
+                if (window.jQuery && typeof jQuery.fn.modal === 'function') {
+                    jQuery('#modalVisualizadorPDF').modal('show');
+                } else if (window.bootstrap && window.bootstrap.Modal) {
+                    const modal = document.getElementById('modalVisualizadorPDF');
+                    const bsModal = window.bootstrap.Modal.getOrCreateInstance(modal);
+                    bsModal.show();
+                }
+            }
         </script>
     </section>
 </body>

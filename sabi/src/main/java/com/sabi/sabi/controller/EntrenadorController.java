@@ -314,4 +314,25 @@ public class EntrenadorController {
             return org.springframework.http.ResponseEntity.status(500).body(java.util.Collections.singletonMap("error", e.getMessage()));
         }
     }
+
+    @GetMapping("/uploads/certificaciones/{filename:.+}")
+    @ResponseBody
+    public org.springframework.http.ResponseEntity<org.springframework.core.io.Resource> descargarCertificacion(@PathVariable String filename) {
+        try {
+            java.nio.file.Path file = java.nio.file.Paths.get("uploads/certificaciones").resolve(filename);
+            org.springframework.core.io.Resource resource = new org.springframework.core.io.UrlResource(file.toUri());
+
+            if (resource.exists() || resource.isReadable()) {
+                return org.springframework.http.ResponseEntity.ok()
+                        .header(org.springframework.http.HttpHeaders.CONTENT_DISPOSITION,
+                                "inline; filename=\"" + resource.getFilename() + "\"")
+                        .header(org.springframework.http.HttpHeaders.CONTENT_TYPE, "application/pdf")
+                        .body(resource);
+            } else {
+                return org.springframework.http.ResponseEntity.notFound().build();
+            }
+        } catch (Exception e) {
+            return org.springframework.http.ResponseEntity.notFound().build();
+        }
+    }
 }

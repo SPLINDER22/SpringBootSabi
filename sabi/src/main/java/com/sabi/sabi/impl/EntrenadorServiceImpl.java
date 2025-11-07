@@ -105,6 +105,12 @@ public class EntrenadorServiceImpl implements EntrenadorService {
         if (entrenadorDTO.getCalificacionPromedio() != null) {
             existingEntrenador.setCalificacionPromedio(entrenadorDTO.getCalificacionPromedio());
         }
+        if (entrenadorDTO.getAniosExperiencia() != null) {
+            existingEntrenador.setAniosExperiencia(entrenadorDTO.getAniosExperiencia());
+        }
+        if (entrenadorDTO.getCertificaciones() != null) {
+            existingEntrenador.setCertificaciones(entrenadorDTO.getCertificaciones());
+        }
 
         existingEntrenador = entrenadorRepository.save(existingEntrenador);
         return modelMapper.map(existingEntrenador, EntrenadorDTO.class);
@@ -128,18 +134,26 @@ public class EntrenadorServiceImpl implements EntrenadorService {
 
     @Override
     public List<EntrenadorDTO> buscarEntrenadores(String nombre, String especialidad, Double minPuntuacion, Double maxPuntuacion) {
+        return buscarEntrenadores(nombre, especialidad, minPuntuacion, maxPuntuacion, null, null);
+    }
+
+    @Override
+    public List<EntrenadorDTO> buscarEntrenadores(String nombre, String especialidad, Double minPuntuacion, Double maxPuntuacion, Integer minExperiencia, String certificaciones) {
         // Normalizar entradas vacías
         String n = (nombre != null && !nombre.trim().isEmpty()) ? nombre.trim() : null;
         String esp = (especialidad != null && !especialidad.trim().isEmpty()) ? especialidad.trim() : null;
         Double min = (minPuntuacion != null && minPuntuacion >= 0) ? minPuntuacion : null;
         Double max = (maxPuntuacion != null && maxPuntuacion >= 0) ? maxPuntuacion : null;
+        Integer minExp = (minExperiencia != null && minExperiencia >= 0) ? minExperiencia : null;
+        String cert = (certificaciones != null && !certificaciones.trim().isEmpty()) ? certificaciones.trim() : null;
+
         // Ajustar rango si está invertido
         if (min != null && max != null && min > max) {
             double tmp = min;
             min = max;
             max = tmp;
         }
-        List<Entrenador> list = entrenadorRepository.searchActive(n, esp, min, max);
+        List<Entrenador> list = entrenadorRepository.searchActive(n, esp, min, max, minExp, cert);
         return list.stream().map(e -> modelMapper.map(e, EntrenadorDTO.class)).toList();
     }
 }

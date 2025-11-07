@@ -122,21 +122,118 @@ public class AuthController {
             @AuthenticationPrincipal UserDetails userDetails
     ) {
         Usuario usuario = usuarioService.obtenerPorEmail(userDetails.getUsername());
-        usuario.setRol(rol);
-        usuarioService.actualizarUsuario(usuario);
-        // Actualizar el contexto de seguridad con el nuevo rol
-        UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
-                usuario.getEmail(),
-                usuario.getContraseña(),
-                usuario.getAuthorities()
-        );
-        SecurityContextHolder.getContext().setAuthentication(authToken);
+
         if (rol == Rol.CLIENTE) {
+            // Para clientes, simplemente cambiar el rol y redirigir
+            usuario.setRol(rol);
+            usuarioService.actualizarUsuario(usuario);
+
+            // Actualizar el contexto de seguridad con el nuevo rol
+            UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
+                    usuario.getEmail(),
+                    usuario.getContraseña(),
+                    usuario.getAuthorities()
+            );
+            SecurityContextHolder.getContext().setAuthentication(authToken);
+
             return "redirect:/cliente/dashboard";
         } else if (rol == Rol.ENTRENADOR) {
-            return "redirect:/entrenador/dashboard";
+            // Para entrenadores, cambiar el rol temporalmente y redirigir al formulario adicional
+            usuario.setRol(rol);
+            usuarioService.actualizarUsuario(usuario);
+
+            // Actualizar el contexto de seguridad
+            UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
+                    usuario.getEmail(),
+                    usuario.getContraseña(),
+                    usuario.getAuthorities()
+            );
+            SecurityContextHolder.getContext().setAuthentication(authToken);
+
+            return "redirect:/auth/completar-perfil-entrenador";
         } else {
             return "redirect:/";
+        }
+    }
+
+    @GetMapping("/completar-perfil-entrenador")
+    public String mostrarFormularioEntrenador(
+            @AuthenticationPrincipal UserDetails userDetails,
+            Model model
+    ) {
+        Usuario usuario = usuarioService.obtenerPorEmail(userDetails.getUsername());
+
+        // Verificar que el usuario sea entrenador
+        if (usuario.getRol() != Rol.ENTRENADOR) {
+            return "redirect:/";
+        }
+
+        model.addAttribute("usuario", usuario);
+        return "auth/completar-perfil-entrenador";
+    }
+
+    @PostMapping("/completar-perfil-entrenador")
+    public String completarPerfilEntrenador(
+            @RequestParam String especialidad,
+            @RequestParam Integer aniosExperiencia,
+            @RequestParam(required = false) org.springframework.web.multipart.MultipartFile[] certificaciones,
+            @AuthenticationPrincipal UserDetails userDetails,
+            Model model
+    ) {
+        try {
+            Usuario usuario = usuarioService.obtenerPorEmail(userDetails.getUsername());
+
+            // Verificar que el usuario sea entrenador
+            if (usuario.getRol() != Rol.ENTRENADOR) {
+                return "redirect:/";
+            }
+
+            // Actualizar los datos del entrenador
+            if (usuario instanceof com.sabi.sabi.entity.Entrenador entrenador) {
+                entrenador.setEspecialidad(especialidad);
+                entrenador.setAniosExperiencia(aniosExperiencia);
+
+                // Procesar archivos PDF de certificaciones
+                if (certificaciones != null && certificaciones.length > 0) {
+                    java.util.List<String> rutasArchivos = new java.util.ArrayList<>();
+
+                    // Crear directorio si no existe
+                    String uploadDir = "uploads/certificaciones/";
+                    java.nio.file.Path uploadPath = java.nio.file.Paths.get(uploadDir);
+                    if (!java.nio.file.Files.exists(uploadPath)) {
+                        java.nio.file.Files.createDirectories(uploadPath);
+                    }
+
+                    for (org.springframework.web.multipart.MultipartFile file : certificaciones) {
+                        if (!file.isEmpty() && file.getOriginalFilename() != null) {
+                            // Generar nombre único para el archivo
+                            String nombreOriginal = file.getOriginalFilename();
+                            String nombreArchivo = "cert_" + usuario.getId() + "_" +
+                                                  System.currentTimeMillis() + "_" +
+                                                  nombreOriginal.replaceAll("[^a-zA-Z0-9.]", "_");
+
+                            // Guardar archivo
+                            java.nio.file.Path rutaArchivo = uploadPath.resolve(nombreArchivo);
+                            file.transferTo(rutaArchivo.toFile());
+
+                            // Agregar ruta a la lista
+                            rutasArchivos.add(uploadDir + nombreArchivo);
+                        }
+                    }
+
+                    // Guardar rutas separadas por coma
+                    if (!rutasArchivos.isEmpty()) {
+                        entrenador.setCertificaciones(String.join(",", rutasArchivos));
+                    }
+                }
+
+                usuarioService.actualizarUsuario(entrenador);
+            }
+
+            return "redirect:/entrenador/dashboard";
+        } catch (Exception e) {
+            model.addAttribute("error", "Error al completar perfil: " + e.getMessage());
+            return "auth/completar-perfil-entrenador";
         }
     }
 

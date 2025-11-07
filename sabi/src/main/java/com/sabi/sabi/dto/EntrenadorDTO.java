@@ -17,6 +17,10 @@ public class EntrenadorDTO extends UsuarioDTO{
 
     private Double calificacionPromedio;
 
+    private Integer aniosExperiencia;
+
+    private String certificaciones;
+
     // Relaciones
 
     private List<Long> idRutinas;

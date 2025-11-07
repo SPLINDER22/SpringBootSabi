@@ -20,6 +20,12 @@ public class Entrenador extends Usuario {
     @Column(name = "calificacion_promedio")
     private Double calificacionPromedio;
 
+    @Column(name = "anios_experiencia")
+    private Integer aniosExperiencia;
+
+    @Column(length = 1000)
+    private String certificaciones; // Rutas de archivos PDF separadas por coma
+
     // Relaciones
 
     @OneToMany(mappedBy = "entrenador", cascade = CascadeType.ALL, orphanRemoval = true)

@@ -104,6 +104,7 @@ public class UsuarioServiceImpl implements UsuarioService {
                     .telefono(usuarioDTO.getTelefono())
                     .estado(usuarioDTO.getEstado() != null ? usuarioDTO.getEstado() : true)
                     .calificacionPromedio(0.0)
+                    .aniosExperiencia(0)
                     .build();
         } else {
             // Por defecto, crea usuario base

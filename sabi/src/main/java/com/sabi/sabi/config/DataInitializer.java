@@ -44,68 +44,77 @@ public class DataInitializer implements CommandLineRunner {
         @Override
         public void run(String... args) {
                 crearClienteSiNoExiste("Carlos Colmenares", "cliente@sabi.com", "1234567");
-                // Entrenadores con datos más realistas (Colombia)
+                // Entrenadores con datos más realistas (Colombia) - Cada uno con foto diferente
                 crearEntrenadorDetalladoSiNoExiste(
                         "Ernesto", "Espinel", "entrenador@sabi.com", "1234567",
                         Sexo.MASCULINO, LocalDate.of(1987, 5, 14), Departamento.CUNDINAMARCA, "Bogotá",
                         TipoDocumento.CC, "1012456789", "3101234567",
-                        "Fuerza e hipertrofia", 4.6,
+                        "/img/entrenadores/entrenador1.jpg",
+                        "Fuerza e hipertrofia", 4.6, 8,
                         "Entrenador con enfoque en fuerza e hipertrofia, planificación y técnica correcta."
                 );
                 crearEntrenadorDetalladoSiNoExiste(
                         "Ana", "García", "entrenador1@sabi.com", "1234567",
                         Sexo.FEMENINO, LocalDate.of(1990, 9, 22), Departamento.ANTIOQUIA, "Medellín",
                         TipoDocumento.CC, "1033345698", "3129876543",
-                        "CrossFit y HIIT", 4.3,
+                        "/img/entrenadores/entrenadora1.jpg",
+                        "CrossFit y HIIT", 4.3, 6,
                         "Especialista en entrenamiento metabólico y acondicionamiento de alta intensidad."
                 );
                 crearEntrenadorDetalladoSiNoExiste(
                         "Luis", "Martínez", "entrenador2@sabi.com", "1234567",
                         Sexo.MASCULINO, LocalDate.of(1985, 3, 8), Departamento.VALLE_DEL_CAUCA, "Cali",
                         TipoDocumento.CC, "1009876523", "3004567890",
-                        "Pérdida de peso y funcional", 4.1,
+                        "/img/entrenadores/entrenador2.jpg",
+                        "Pérdida de peso y funcional", 4.1, 10,
                         "Acompañamiento integral para reducción de grasa y hábitos saludables."
                 );
                 crearEntrenadorDetalladoSiNoExiste(
                         "María", "López", "entrenador3@sabi.com", "1234567",
                         Sexo.FEMENINO, LocalDate.of(1992, 12, 11), Departamento.ATLANTICO, "Barranquilla",
                         TipoDocumento.CC, "1015678923", "3011237894",
-                        "Funcional y movilidad", 4.4,
+                        "/img/entrenadores/entrenadora2.jpg",
+                        "Funcional y movilidad", 4.4, 4,
                         "Trabajo de movilidad articular, estabilidad y funcionalidad para la vida diaria."
                 );
                 crearEntrenadorDetalladoSiNoExiste(
                         "Carlos", "Pérez", "entrenador4@sabi.com", "1234567",
                         Sexo.MASCULINO, LocalDate.of(1988, 7, 19), Departamento.SANTANDER, "Bucaramanga",
                         TipoDocumento.CC, "1098765432", "3159988776",
-                        "Resistencia y running", 4.2,
+                        "/img/entrenadores/entrenador3.jpg",
+                        "Resistencia y running", 4.2, 7,
                         "Planificación de carreras 5K-21K, técnica de carrera y fortalecimiento específico."
                 );
                 crearEntrenadorDetalladoSiNoExiste(
                         "Sofía", "Rodríguez", "entrenador5@sabi.com", "1234567",
                         Sexo.FEMENINO, LocalDate.of(1995, 4, 30), Departamento.BOLIVAR, "Cartagena",
                         TipoDocumento.CC, "1012349987", "3176655443",
-                        "Pilates y core", 4.5,
+                        "/img/entrenadores/entrenadora3.jpg",
+                        "Pilates y core", 4.5, 5,
                         "Fortalecimiento de core, postura y prevención de dolor lumbar con métodos de pilates."
                 );
                 crearEntrenadorDetalladoSiNoExiste(
                         "Jorge", "Hernández", "entrenador6@sabi.com", "1234567",
                         Sexo.MASCULINO, LocalDate.of(1984, 2, 2), Departamento.CUNDINAMARCA, "Chía",
                         TipoDocumento.CC, "1004567812", "3114455667",
-                        "Halterofilia y olímpicos", 4.7,
+                        "/img/entrenadores/entrenador4.jpg",
+                        "Halterofilia y olímpicos", 4.7, 12,
                         "Entrenamientos de levantamiento olímpico, técnica de arranque y envión."
                 );
                 crearEntrenadorDetalladoSiNoExiste(
                         "Lucía", "Fernández", "entrenador7@sabi.com", "1234567",
                         Sexo.FEMENINO, LocalDate.of(1993, 11, 5), Departamento.BOGOTA, "Bogotá",
                         TipoDocumento.CC, "1023456780", "3193344556",
-                        "Yoga y movilidad", 4.0,
+                        "/img/entrenadores/entrenadora4.jpg",
+                        "Yoga y movilidad", 4.0, 3,
                         "Sesiones de yoga enfocadas en flexibilidad, respiración y control postural."
                 );
                 crearEntrenadorDetalladoSiNoExiste(
                         "Diego", "Gómez", "entrenador8@sabi.com", "1234567",
                         Sexo.MASCULINO, LocalDate.of(1989, 1, 17), Departamento.ANTIOQUIA, "Envigado",
                         TipoDocumento.CC, "1001234599", "3135566778",
-                        "Calistenia y street workout", 4.3,
+                        "/img/entrenadores/entrenador5.jpg",
+                        "Calistenia y street workout", 4.3, 6,
                         "Progresiones de calistenia, dominadas, fondos y trabajo de fuerza con peso corporal."
                 );
                 crearEjerciciosSiNoExisten();
@@ -190,7 +199,9 @@ public class DataInitializer implements CommandLineRunner {
                         String nombre, String apellido, String email, String rawPassword,
                         Sexo sexo, LocalDate fechaNacimiento, Departamento departamento, String ciudad,
                         TipoDocumento tipoDocumento, String numeroDocumento, String telefono,
-                        String especialidad, Double calificacionPromedio, String descripcion) {
+                        String fotoPerfilUrl,
+                        String especialidad, Double calificacionPromedio, Integer aniosExperiencia,
+                        String descripcion) {
 
                 if (usuarioRepository.findByEmail(email).isPresent()) {
                         System.out.println("Usuario ya existe: " + email + " (no se muestra contraseña raw)");
@@ -210,11 +221,12 @@ public class DataInitializer implements CommandLineRunner {
                                 .tipoDocumento(tipoDocumento)
                                 .numeroDocumento(numeroDocumento)
                                 .telefono(telefono)
-                                // fotoPerfilUrl: null (no usar en seed, se usará imagen por defecto)
+                                .fotoPerfilUrl(fotoPerfilUrl)
                                 .descripcion(descripcion)
                                 .estado(true)
                                 .especialidad(especialidad)
                                 .calificacionPromedio(calificacionPromedio)
+                                .aniosExperiencia(aniosExperiencia)
                                 .build();
                 usuarioRepository.save(entrenador);
                 System.out.println("Usuario creado: " + nombre + " " + apellido + " | " + email + " | contraseña (raw): " + rawPassword);

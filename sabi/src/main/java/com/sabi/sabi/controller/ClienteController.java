@@ -94,6 +94,8 @@ public class ClienteController {
         @RequestParam(value = "especialidad", required = false) String especialidad,
         @RequestParam(value = "minPuntuacion", required = false) Double minPuntuacion,
         @RequestParam(value = "maxPuntuacion", required = false) Double maxPuntuacion,
+        @RequestParam(value = "minExperiencia", required = false) Integer minExperiencia,
+        @RequestParam(value = "certificaciones", required = false) String certificaciones,
         Model model) {
 
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -108,11 +110,15 @@ public class ClienteController {
 
     String criterio = (nombre != null) ? nombre.trim() : null;
     String esp = (especialidad != null) ? especialidad.trim() : null;
+    String cert = (certificaciones != null) ? certificaciones.trim() : null;
     boolean hasRange = (minPuntuacion != null && minPuntuacion >= 0) || (maxPuntuacion != null && maxPuntuacion >= 0);
-    boolean noFilters = (criterio == null || criterio.isEmpty()) && (esp == null || esp.isEmpty()) && !hasRange;
+    boolean hasExperience = (minExperiencia != null && minExperiencia >= 0);
+    boolean hasCertificaciones = (cert != null && !cert.isEmpty());
+    boolean noFilters = (criterio == null || criterio.isEmpty()) && (esp == null || esp.isEmpty()) && !hasRange && !hasExperience && !hasCertificaciones;
+
     List<EntrenadorDTO> entrenadores = noFilters
         ? entrenadorService.getAllActiveEntrenadores()
-        : entrenadorService.buscarEntrenadores(criterio, esp, minPuntuacion, maxPuntuacion);
+        : entrenadorService.buscarEntrenadores(criterio, esp, minPuntuacion, maxPuntuacion, minExperiencia, cert);
 
         model.addAttribute("entrenadores", entrenadores);
         model.addAttribute("tieneDiagnostico", tieneDiagnostico);
@@ -120,6 +126,8 @@ public class ClienteController {
         model.addAttribute("especialidad", especialidad);
         model.addAttribute("minPuntuacion", minPuntuacion);
         model.addAttribute("maxPuntuacion", maxPuntuacion);
+        model.addAttribute("minExperiencia", minExperiencia);
+        model.addAttribute("certificaciones", certificaciones);
         return "cliente/listaEntrenadores";
     }
 
@@ -153,7 +161,7 @@ public class ClienteController {
                         id -> id,
                         id -> {
                             var e = entrenadorService.getEntrenadorById(id);
-                            return e != null ? e.getNombre() : null;
+                            return e != null ? e.getNombre() : "Entrenador no disponible";
                         }));
         model.addAttribute("nombresEntrenadores", nombresEntrenadores);
         return "cliente/suscripcion-historial";
@@ -270,7 +278,8 @@ public class ClienteController {
             info.put("fotoPerfilUrl",
                     entrenador.getFotoPerfilUrl() != null ? entrenador.getFotoPerfilUrl() : "/img/entrenador.jpg");
             info.put("especialidades", entrenador.getEspecialidad());
-            info.put("experiencia", 0); // No hay campo de experiencia en DTO, poner 0 o null
+            info.put("experiencia", entrenador.getAniosExperiencia() != null ? entrenador.getAniosExperiencia() : 0);
+            info.put("certificaciones", entrenador.getCertificaciones());
             info.put("calificacionPromedio",
                     entrenador.getCalificacionPromedio() != null ? entrenador.getCalificacionPromedio() : 0.0);
             info.put("telefono", entrenador.getTelefono());

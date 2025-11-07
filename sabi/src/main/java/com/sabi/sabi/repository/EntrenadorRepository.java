@@ -19,11 +19,15 @@ public interface EntrenadorRepository extends JpaRepository<Entrenador,Long> {
             "AND (:nombre IS NULL OR LOWER(e.nombre) LIKE LOWER(CONCAT('%', :nombre, '%'))) " +
             "AND (:especialidad IS NULL OR LOWER(e.especialidad) LIKE LOWER(CONCAT('%', :especialidad, '%'))) " +
             "AND (:min IS NULL OR e.calificacionPromedio >= :min) " +
-            "AND (:max IS NULL OR e.calificacionPromedio <= :max)")
+            "AND (:max IS NULL OR e.calificacionPromedio <= :max) " +
+            "AND (:minExperiencia IS NULL OR e.aniosExperiencia >= :minExperiencia) " +
+            "AND (:certificaciones IS NULL OR LOWER(e.certificaciones) LIKE LOWER(CONCAT('%', :certificaciones, '%')))")
     List<Entrenador> searchActive(
             @Param("nombre") String nombre,
             @Param("especialidad") String especialidad,
             @Param("min") Double min,
-            @Param("max") Double max
+            @Param("max") Double max,
+            @Param("minExperiencia") Integer minExperiencia,
+            @Param("certificaciones") String certificaciones
     );
 }
