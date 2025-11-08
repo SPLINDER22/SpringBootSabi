@@ -4,6 +4,7 @@ import com.sabi.sabi.dto.UsuarioDTO;
 import com.sabi.sabi.entity.Usuario;
 import com.sabi.sabi.entity.enums.Rol;
 import com.sabi.sabi.service.UsuarioService;
+import com.sabi.sabi.service.EmailService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -27,6 +28,7 @@ public class AuthController {
     private final UsuarioService usuarioService;
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
+    private final EmailService emailService;
 
     @GetMapping("/login")
     public String login(Authentication authentication) {
@@ -56,6 +58,7 @@ public class AuthController {
                                    @RequestParam(required = false) String tipoDocumento,
                                    @RequestParam(required = false) String numeroDocumento,
                                    @RequestParam(required = false) String telefono,
+                                   HttpServletRequest request,
                                    Model model) {
 
         try {
@@ -104,6 +107,9 @@ public class AuthController {
             Authentication auth = authenticationManager.authenticate(authToken);
             SecurityContextHolder.getContext().setAuthentication(auth);
 
+            // Guardar la autenticación en la sesión HTTP
+            request.getSession().setAttribute("SPRING_SECURITY_CONTEXT", SecurityContextHolder.getContext());
+
             return "redirect:/auth/seleccionar-rol";
         } catch (Exception e) {
             model.addAttribute("error", "Error al registrar usuario: " + e.getMessage());
@@ -119,22 +125,50 @@ public class AuthController {
     @PostMapping("/seleccionar-rol")
     public String seleccionarRol(
             @RequestParam Rol rol,
-            @AuthenticationPrincipal UserDetails userDetails
+            @AuthenticationPrincipal UserDetails userDetails,
+            HttpServletRequest request
     ) {
-        Usuario usuario = usuarioService.obtenerPorEmail(userDetails.getUsername());
+        // Obtener el usuario desde el contexto de seguridad o desde userDetails
+        String username;
+        if (userDetails != null) {
+            username = userDetails.getUsername();
+        } else {
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+            if (auth != null && auth.getPrincipal() instanceof UserDetails) {
+                username = ((UserDetails) auth.getPrincipal()).getUsername();
+            } else if (auth != null && auth.getName() != null) {
+                username = auth.getName();
+            } else {
+                return "redirect:/auth/login";
+            }
+        }
+
+        Usuario usuario = usuarioService.obtenerPorEmail(username);
 
         if (rol == Rol.CLIENTE) {
             // Para clientes, simplemente cambiar el rol y redirigir
             usuario.setRol(rol);
             usuarioService.actualizarUsuario(usuario);
 
-            // Actualizar el contexto de seguridad con el nuevo rol
+            // Recargar el usuario actualizado desde la BD
+            Usuario usuarioActualizado = usuarioService.obtenerPorEmail(username);
+
+            // Enviar correo de bienvenida personalizado
+            emailService.enviarCorreoBienvenida(usuarioActualizado);
+
+            // Crear CustomUserDetails con el usuario actualizado
+            com.sabi.sabi.security.CustomUserDetails customUserDetails = new com.sabi.sabi.security.CustomUserDetails(usuarioActualizado);
+
+            // Actualizar el contexto de seguridad con el nuevo rol usando CustomUserDetails
             UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
-                    usuario.getEmail(),
-                    usuario.getContraseña(),
-                    usuario.getAuthorities()
+                    customUserDetails, // Usar CustomUserDetails como principal
+                    customUserDetails.getPassword(),
+                    customUserDetails.getAuthorities()
             );
             SecurityContextHolder.getContext().setAuthentication(authToken);
+
+            // Guardar la autenticación en la sesión HTTP
+            request.getSession().setAttribute("SPRING_SECURITY_CONTEXT", SecurityContextHolder.getContext());
 
             return "redirect:/cliente/dashboard";
         } else if (rol == Rol.ENTRENADOR) {
@@ -142,13 +176,25 @@ public class AuthController {
             usuario.setRol(rol);
             usuarioService.actualizarUsuario(usuario);
 
-            // Actualizar el contexto de seguridad
+            // Recargar el usuario actualizado desde la BD
+            Usuario usuarioActualizado = usuarioService.obtenerPorEmail(username);
+
+            // Enviar correo de bienvenida personalizado
+            emailService.enviarCorreoBienvenida(usuarioActualizado);
+
+            // Crear CustomUserDetails con el usuario actualizado
+            com.sabi.sabi.security.CustomUserDetails customUserDetails = new com.sabi.sabi.security.CustomUserDetails(usuarioActualizado);
+
+            // Actualizar el contexto de seguridad usando CustomUserDetails
             UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
-                    usuario.getEmail(),
-                    usuario.getContraseña(),
-                    usuario.getAuthorities()
+                    customUserDetails, // Usar CustomUserDetails como principal
+                    customUserDetails.getPassword(),
+                    customUserDetails.getAuthorities()
             );
             SecurityContextHolder.getContext().setAuthentication(authToken);
+
+            // Guardar la autenticación en la sesión HTTP
+            request.getSession().setAttribute("SPRING_SECURITY_CONTEXT", SecurityContextHolder.getContext());
 
             return "redirect:/auth/completar-perfil-entrenador";
         } else {
@@ -161,7 +207,22 @@ public class AuthController {
             @AuthenticationPrincipal UserDetails userDetails,
             Model model
     ) {
-        Usuario usuario = usuarioService.obtenerPorEmail(userDetails.getUsername());
+        // Obtener el usuario desde el contexto de seguridad o desde userDetails
+        String username;
+        if (userDetails != null) {
+            username = userDetails.getUsername();
+        } else {
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+            if (auth != null && auth.getPrincipal() instanceof UserDetails) {
+                username = ((UserDetails) auth.getPrincipal()).getUsername();
+            } else if (auth != null && auth.getName() != null) {
+                username = auth.getName();
+            } else {
+                return "redirect:/auth/login";
+            }
+        }
+
+        Usuario usuario = usuarioService.obtenerPorEmail(username);
 
         // Verificar que el usuario sea entrenador
         if (usuario.getRol() != Rol.ENTRENADOR) {
@@ -181,7 +242,22 @@ public class AuthController {
             Model model
     ) {
         try {
-            Usuario usuario = usuarioService.obtenerPorEmail(userDetails.getUsername());
+            // Obtener el usuario desde el contexto de seguridad o desde userDetails
+            String username;
+            if (userDetails != null) {
+                username = userDetails.getUsername();
+            } else {
+                Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+                if (auth != null && auth.getPrincipal() instanceof UserDetails) {
+                    username = ((UserDetails) auth.getPrincipal()).getUsername();
+                } else if (auth != null && auth.getName() != null) {
+                    username = auth.getName();
+                } else {
+                    return "redirect:/auth/login";
+                }
+            }
+
+            Usuario usuario = usuarioService.obtenerPorEmail(username);
 
             // Verificar que el usuario sea entrenador
             if (usuario.getRol() != Rol.ENTRENADOR) {
