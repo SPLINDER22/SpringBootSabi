@@ -8,70 +8,188 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         .perfil-container {
-            max-width: 900px;
+            max-width: 1200px;
             margin: 2rem auto;
             padding: 2rem;
         }
         .perfil-card {
             background: white;
-            border-radius: 12px;
-            padding: 2rem;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            border-radius: 16px;
+            padding: 2.5rem;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
             margin-bottom: 2rem;
         }
         .perfil-header {
             display: flex;
             align-items: center;
             gap: 2rem;
-            margin-bottom: 2rem;
+            margin-bottom: 2.5rem;
             padding-bottom: 2rem;
-            border-bottom: 2px solid #f0f0f0;
+            border-bottom: 3px solid #f0f0f0;
         }
         .perfil-img-container {
             position: relative;
         }
         .perfil-img {
-            width: 150px;
-            height: 150px;
+            width: 160px;
+            height: 160px;
             border-radius: 50%;
             object-fit: cover;
-            border: 4px solid #2563eb;
+            border: 5px solid #2563eb;
+            box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3);
         }
         .cambiar-foto-btn {
             position: absolute;
-            bottom: 0;
-            right: 0;
-            background: #2563eb;
+            bottom: 5px;
+            right: 5px;
+            background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
             color: white;
             border: none;
             border-radius: 50%;
-            width: 40px;
-            height: 40px;
+            width: 45px;
+            height: 45px;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            transition: all 0.3s;
         }
+        .cambiar-foto-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 4px 15px rgba(37, 99, 235, 0.4);
+        }
+
+        /* Grid de 3 columnas para datos personales */
         .perfil-info-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            grid-template-columns: repeat(3, 1fr);
             gap: 1.5rem;
+            margin-bottom: 2rem;
         }
+
+        @media (max-width: 992px) {
+            .perfil-info-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 576px) {
+            .perfil-info-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
         .info-item {
-            padding: 1rem;
-            background: #f8f9fa;
-            border-radius: 8px;
+            padding: 1.25rem;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-radius: 12px;
+            border-left: 4px solid #2563eb;
+            transition: all 0.3s;
+        }
+        .info-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
         }
         .info-label {
-            font-weight: 600;
+            font-weight: 700;
             color: #666;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             margin-bottom: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
         .info-value {
             font-size: 1.1rem;
-            color: #333;
+            color: #1e293b;
+            font-weight: 600;
         }
+
+        /* Sección especial para entrenador */
+        .entrenador-info-section {
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+            border-radius: 16px;
+            padding: 2rem;
+            margin-top: 2rem;
+            border: 3px solid #f59e0b;
+        }
+
+        .entrenador-info-section h4 {
+            color: #92400e;
+            margin-bottom: 1.5rem;
+            font-size: 1.4rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .entrenador-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1.5rem;
+        }
+
+        @media (max-width: 768px) {
+            .entrenador-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .entrenador-item {
+            background: white;
+            padding: 1.25rem;
+            border-radius: 12px;
+            border-left: 4px solid #f59e0b;
+        }
+
+        .readonly-badge {
+            display: inline-block;
+            background: #dc2626;
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            margin-left: 0.5rem;
+        }
+
+        .certificaciones-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            margin-top: 0.5rem;
+        }
+
+        .certificacion-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            background: #f8f9fa;
+            padding: 0.75rem;
+            border-radius: 8px;
+        }
+
+        .certificacion-item i {
+            color: #2563eb;
+            font-size: 1.2rem;
+        }
+
+        .section-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 2px solid #e2e8f0;
+        }
+
+        .section-title i {
+            color: #2563eb;
+        }
+
         .edit-section {
             margin-top: 2rem;
         }
@@ -80,44 +198,55 @@
         }
         .form-group label {
             display: block;
-            font-weight: 600;
-            margin-bottom: 0.5rem;
-            color: #333;
+            font-weight: 700;
+            margin-bottom: 0.75rem;
+            color: #1e293b;
+            font-size: 1rem;
         }
         .form-control {
             width: 100%;
-            padding: 0.75rem;
-            border: 1px solid #ddd;
-            border-radius: 8px;
+            padding: 0.875rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
             font-size: 1rem;
+            transition: all 0.3s;
+        }
+        .form-control:focus {
+            outline: none;
+            border-color: #2563eb;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
         }
         .btn-primary {
-            background: #2563eb;
+            background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
             color: white;
             border: none;
-            padding: 0.75rem 2rem;
-            border-radius: 8px;
-            font-size: 1rem;
+            padding: 1rem 2.5rem;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: 700;
             cursor: pointer;
-            transition: background 0.3s;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3);
         }
         .btn-primary:hover {
-            background: #1d4ed8;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(37, 99, 235, 0.4);
         }
         .alert {
             padding: 1rem;
-            border-radius: 8px;
+            border-radius: 10px;
             margin-bottom: 1rem;
+            font-weight: 600;
         }
         .alert-success {
             background: #d1fae5;
             color: #065f46;
-            border: 1px solid #10b981;
+            border: 2px solid #10b981;
         }
         .alert-error {
             background: #fee2e2;
             color: #991b1b;
-            border: 1px solid #ef4444;
+            border: 2px solid #ef4444;
         }
     </style>
 </head>
@@ -157,7 +286,9 @@
                 </div>
             </div>
 
-            <h4 style="margin-bottom: 1rem; color: #333;">Datos Personales</h4>
+            <h4 class="section-title">
+                <i class="fas fa-user-circle"></i> Datos Personales
+            </h4>
             <div class="perfil-info-grid">
                 <div class="info-item">
                     <div class="info-label"><i class="fas fa-birthday-cake"></i> Edad</div>
@@ -195,26 +326,84 @@
 
             <!-- Descripción actual -->
             <div style="margin-top: 2rem;" th:if="${usuario.descripcion != null}">
-                <h4 style="margin-bottom: 1rem; color: #333;">Descripción Personal</h4>
-                <p th:text="${usuario.descripcion}" style="background: #f8f9fa; padding: 1rem; border-radius: 8px;"></p>
+                <h4 class="section-title"><i class="fas fa-pen"></i> Descripción Personal</h4>
+                <p th:text="${usuario.descripcion}" style="background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%); padding: 1.5rem; border-radius: 12px; border-left: 4px solid #2563eb; line-height: 1.6;"></p>
             </div>
 
             <!-- Objetivo (Cliente) -->
             <div style="margin-top: 2rem;" th:if="${usuario.rol == T(com.sabi.sabi.entity.enums.Rol).CLIENTE && objetivo != null}">
-                <h4 style="margin-bottom: 1rem; color: #333;"><i class="fas fa-bullseye"></i> Objetivo</h4>
-                <p th:text="${objetivo}" style="background: #f0f9ff; padding: 1rem; border-radius: 8px; color: #0369a1;"></p>
+                <h4 class="section-title"><i class="fas fa-bullseye"></i> Mi Objetivo</h4>
+                <p th:text="${objetivo}" style="background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%); padding: 1.5rem; border-radius: 12px; color: #1e40af; border-left: 4px solid #3b82f6; font-weight: 600; line-height: 1.6;"></p>
             </div>
 
-            <!-- Especialidad (Entrenador) -->
-            <div style="margin-top: 2rem;" th:if="${usuario.rol == T(com.sabi.sabi.entity.enums.Rol).ENTRENADOR && especialidad != null}">
-                <h4 style="margin-bottom: 1rem; color: #333;"><i class="fas fa-award"></i> Especialidad</h4>
-                <p th:text="${especialidad}" style="background: #f0fdf4; padding: 1rem; border-radius: 8px; color: #065f46;"></p>
+            <!-- Sección Profesional del Entrenador (NO EDITABLE) -->
+            <div class="entrenador-info-section" th:if="${usuario.rol == T(com.sabi.sabi.entity.enums.Rol).ENTRENADOR}">
+                <h4>
+                    <i class="fas fa-dumbbell"></i> Información Profesional
+                    <span class="readonly-badge">
+                        <i class="fas fa-lock"></i> NO EDITABLE
+                    </span>
+                </h4>
+                <p style="color: #78350f; margin-bottom: 1.5rem; font-size: 0.95rem;">
+                    <i class="fas fa-info-circle"></i>
+                    <strong>Esta información es visible para tus clientes</strong> y no puede ser modificada después del registro inicial.
+                </p>
+
+                <div class="entrenador-grid">
+                    <!-- Especialidad -->
+                    <div class="entrenador-item" th:if="${especialidad != null}">
+                        <div class="info-label" style="color: #92400e;">
+                            <i class="fas fa-award"></i> ESPECIALIDAD
+                        </div>
+                        <div class="info-value" style="color: #78350f;" th:text="${especialidad}">-</div>
+                    </div>
+
+                    <!-- Años de Experiencia -->
+                    <div class="entrenador-item" th:if="${aniosExperiencia != null}">
+                        <div class="info-label" style="color: #92400e;">
+                            <i class="fas fa-calendar-check"></i> AÑOS DE EXPERIENCIA
+                        </div>
+                        <div class="info-value" style="color: #78350f;">
+                            <span th:text="${aniosExperiencia}">0</span>
+                            <span th:text="${aniosExperiencia == 1 ? 'año' : 'años'}">años</span>
+                        </div>
+                    </div>
+
+                    <!-- Certificaciones -->
+                    <div class="entrenador-item" style="grid-column: 1 / -1;" th:if="${certificaciones != null && !certificaciones.isEmpty()}">
+                        <div class="info-label" style="color: #92400e;">
+                            <i class="fas fa-certificate"></i> CERTIFICACIONES
+                        </div>
+                        <div class="certificaciones-list">
+                            <div class="certificacion-item" th:each="cert : ${certificaciones}">
+                                <i class="fas fa-file-pdf"></i>
+                                <a th:href="${cert}" target="_blank" style="color: #2563eb; font-weight: 600; text-decoration: none;">
+                                    Ver Certificación
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="margin-top: 1.5rem; padding: 1rem; background: white; border-radius: 8px; border-left: 4px solid #dc2626;">
+                    <p style="margin: 0; color: #7c2d12; font-size: 0.9rem;">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <strong>Nota:</strong> Si necesitas actualizar esta información, contacta al administrador del sistema.
+                    </p>
+                </div>
             </div>
         </div>
 
         <!-- Formulario de Edición -->
         <div class="perfil-card edit-section">
-            <h4 style="margin-bottom: 1.5rem; color: #333;">Editar Información</h4>
+            <h4 class="section-title">
+                <i class="fas fa-edit"></i> Editar Información
+            </h4>
+            <p style="color: #64748b; margin-bottom: 1.5rem; font-size: 0.95rem;">
+                <i class="fas fa-info-circle"></i>
+                Actualiza tu información personal y profesional.
+            </p>
+
             <form th:action="@{/perfil/actualizar}" method="post" enctype="multipart/form-data">
                 <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
 
@@ -228,11 +417,11 @@
                     <label for="descripcion">
                         <i class="fas fa-pen"></i> Descripción Personal
                     </label>
-                    <small style="color: #666; display: block; margin-bottom: 0.5rem;">
-                        💡 Sube cualquier imagen desde tu PC (máx. 10MB)
+                    <small style="color: #64748b; display: block; margin-bottom: 0.75rem; font-size: 0.9rem;">
+                        💡 Cuéntanos sobre ti, tus intereses y tu experiencia
                     </small>
-                    <textarea id="descripcion" name="descripcion" class="form-control" rows="4"
-                              placeholder="Cuéntanos sobre ti..."
+                    <textarea id="descripcion" name="descripcion" class="form-control" rows="5"
+                              placeholder="Escribe una descripción sobre ti..."
                               th:text="${usuario.descripcion}"></textarea>
                 </div>
 
@@ -241,19 +430,22 @@
                     <label for="objetivo">
                         <i class="fas fa-bullseye"></i> Tu Objetivo
                     </label>
+                    <small style="color: #64748b; display: block; margin-bottom: 0.75rem; font-size: 0.9rem;">
+                        🎯 Define qué quieres lograr con tu entrenamiento
+                    </small>
                     <textarea id="objetivo" name="objetivo" class="form-control" rows="3"
-                              placeholder="¿Qué quieres lograr?"
+                              placeholder="Ejemplo: Perder peso, ganar masa muscular, mejorar resistencia..."
                               th:text="${objetivo}"></textarea>
                 </div>
 
-                <!-- Campo especialidad para entrenadores -->
-                <div class="form-group" th:if="${usuario.rol == T(com.sabi.sabi.entity.enums.Rol).ENTRENADOR}">
-                    <label for="especialidad">
-                        <i class="fas fa-award"></i> Especialidad
-                    </label>
-                    <input type="text" id="especialidad" name="especialidad" class="form-control"
-                           placeholder="Ej: Entrenamiento funcional, Nutrición deportiva..."
-                           th:value="${especialidad}">
+                <!-- Mensaje para entrenadores sobre especialidad -->
+                <div th:if="${usuario.rol == T(com.sabi.sabi.entity.enums.Rol).ENTRENADOR}"
+                     style="background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%); padding: 1.25rem; border-radius: 12px; margin-bottom: 1.5rem; border-left: 4px solid #f59e0b;">
+                    <p style="margin: 0; color: #78350f; font-weight: 600;">
+                        <i class="fas fa-lock"></i>
+                        <strong>Nota:</strong> Tu especialidad, años de experiencia y certificaciones no pueden ser editadas desde aquí.
+                        Esta información fue establecida durante tu registro y es visible para tus clientes.
+                    </p>
                 </div>
 
                 <button type="submit" class="btn-primary">
