@@ -1,20 +1,11 @@
 package com.sabi.sabi.controller;
 
-import com.sabi.sabi.dto.DiagnosticoDTO;
-import com.sabi.sabi.dto.EntrenadorDTO;
-import com.sabi.sabi.dto.RutinaDTO;
-import com.sabi.sabi.dto.SuscripcionDTO;
-import com.sabi.sabi.service.SuscripcionService;
-import com.sabi.sabi.service.EntrenadorService;
-import com.sabi.sabi.service.ClienteService;
-import com.sabi.sabi.service.DiagnosticoService;
-import com.sabi.sabi.service.ExcelService;
+import com.sabi.sabi.dto.*;
+import com.sabi.sabi.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.validation.BindingResult;
-import jakarta.validation.Valid;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import com.sabi.sabi.security.CustomUserDetails;
@@ -42,6 +33,10 @@ public class ClienteController {
 
     @Autowired
     private EntrenadorService entrenadorService;
+    @Autowired
+    private RutinaService rutinaService;
+    @Autowired
+    private DiaService diaService;
 
     @GetMapping("/cliente/dashboard")
     public String clienteDashboard(Model model) {
@@ -67,6 +62,19 @@ public class ClienteController {
         model.addAttribute("diagnosticoAnterior", diagnosticoAnterior);
         model.addAttribute("tieneComparativa", diagnosticoAnterior != null);
         model.addAttribute("usuario", userDetails.getUsuario());
+
+        RutinaDTO rutinaDTO = rutinaService.getRutinaActivaCliente(clienteId);
+        if (rutinaDTO != null) {
+            DiaDTO diaDTO = diaService.getDiaActual(clienteId);
+            long porcentajeCompletado = diaService.calcularProgresoRutina(clienteId);
+
+            model.addAttribute("tieneRutinaActiva", true);
+            model.addAttribute("rutina", rutinaDTO);
+            model.addAttribute("diaActual", diaDTO);
+            model.addAttribute("porcentajeCompletado", porcentajeCompletado);
+        } else {
+            model.addAttribute("tieneRutinaActiva", false);
+        }
 
         return "cliente/dashboard";
     }

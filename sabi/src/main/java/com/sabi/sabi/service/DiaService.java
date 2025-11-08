@@ -21,4 +21,8 @@ public interface DiaService {
     boolean desactivateDia(long id);
 
     DiaDTO toggleChecked(long idDia);
+
+    DiaDTO getDiaActual(long idCliente);
+
+    long calcularProgresoRutina(long idCliente);
 }

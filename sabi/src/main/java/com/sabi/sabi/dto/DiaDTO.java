@@ -22,7 +22,5 @@ public class DiaDTO {
 
     private List<Long> idEjerciciosAsignados;
 
-    private Boolean checked = false;
-
-    private Boolean estado = true;
+    private Boolean estado = false;
 }

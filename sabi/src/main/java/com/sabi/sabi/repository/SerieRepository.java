@@ -13,7 +13,7 @@ import java.util.List;
 public interface SerieRepository extends JpaRepository<Serie,Long> {
     List<Serie> findByEstadoTrue();
 
-    @Query("SELECT s FROM Serie s WHERE s.ejercicioAsignado.idEjercicioAsignado = :idEjercicioAsignado AND (s.estado = true OR s.estado IS NULL) ORDER BY s.orden ASC")
+    @Query("SELECT s FROM Serie s WHERE s.ejercicioAsignado.idEjercicioAsignado = :idEjercicioAsignado ORDER BY s.orden ASC")
     List<Serie> getSerieEje(@Param("idEjercicioAsignado") Long idEjercicioAsignado);
 
     List<Serie> findByEjercicioAsignado(EjercicioAsignado ejercicioAsignado);

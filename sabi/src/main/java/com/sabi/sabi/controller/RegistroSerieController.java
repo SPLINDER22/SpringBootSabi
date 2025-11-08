@@ -7,6 +7,13 @@ import com.sabi.sabi.repository.EjercicioAsignadoRepository;
 import com.sabi.sabi.repository.RegistroSerieRepository;
 import com.sabi.sabi.repository.SerieRepository;
 import com.sabi.sabi.service.RegistroSerieService;
+import com.sabi.sabi.dto.DiaDTO;
+import com.sabi.sabi.dto.EjercicioAsignadoDTO;
+import com.sabi.sabi.dto.SemanaDTO;
+import com.sabi.sabi.service.EjercicioAsignadoService;
+import com.sabi.sabi.service.EjercicioService;
+import com.sabi.sabi.service.SemanaService;
+import com.sabi.sabi.service.DiaService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +34,10 @@ public class RegistroSerieController {
     @Autowired private SerieRepository serieRepository;
     @Autowired private RegistroSerieRepository registroSerieRepository;
     @Autowired private RegistroSerieService registroSerieService;
+    @Autowired private EjercicioAsignadoService ejercicioAsignadoService;
+    @Autowired private SemanaService semanaService;
+    @Autowired private DiaService diaService;
+    @Autowired private EjercicioService ejercicioService;
 
     @GetMapping("/registros-series/{idEjercicioAsignado}")
     public String verRegistroSeries(@PathVariable Long idEjercicioAsignado,
@@ -74,7 +85,40 @@ public class RegistroSerieController {
             model.addAttribute("registrosMap", registrosMap);
             model.addAttribute("ejercicioAsignado", asignado);
             model.addAttribute("idDia", idDia);
-            // readonly solo es true si explícitamente se pide o si es entrenador (progreso). Cliente normal mantiene editable.
+            // Añadir datos para las pestañas (semanas/dias/ejes) — similar a SerieController.detallarSeries
+            try {
+                EjercicioAsignadoDTO ejeDTO = null;
+                try { ejeDTO = ejercicioAsignadoService.getEjercicioAsignadoById(idEjercicioAsignado); } catch (Exception ignore) {}
+                if (ejeDTO != null) {
+                    DiaDTO diaDTO = null;
+                    try { diaDTO = diaService.getDiaById(ejeDTO.getIdDia()); } catch (Exception ignore) {}
+                    SemanaDTO semanaDTO = null;
+                    if (diaDTO != null) {
+                        try { semanaDTO = semanaService.getSemanaById(diaDTO.getIdSemana()); } catch (Exception ignore) {}
+                    }
+
+                    if (diaDTO != null) model.addAttribute("dia", diaDTO);
+                    if (diaDTO != null) model.addAttribute("idSemana", diaDTO.getIdSemana());
+                    if (semanaDTO != null) model.addAttribute("idRutina", semanaDTO.getIdRutina());
+
+                    try {
+                        if (semanaDTO != null) model.addAttribute("semanas", semanaService.getSemanasRutina(semanaDTO.getIdRutina()));
+                    } catch (Exception ignore) {}
+                    try { if (semanaDTO != null) model.addAttribute("dias", diaService.getDiasSemana(semanaDTO.getIdSemana())); } catch (Exception ignore) {}
+                    try { if (diaDTO != null) model.addAttribute("ejes", ejercicioAsignadoService.getEjesDia(diaDTO.getIdDia())); } catch (Exception ignore) {}
+
+                    model.addAttribute("totalSeries", series.size());
+                    // nombreEjercicio: preferir valor del DTO, fallback a servicio
+                    if (ejeDTO.getNombreEjercicio() != null && !ejeDTO.getNombreEjercicio().isBlank()) {
+                        model.addAttribute("nombreEjercicio", ejeDTO.getNombreEjercicio());
+                    } else if (ejeDTO.getIdEjercicio() != null) {
+                        try {
+                            var ej = ejercicioService.getEjercicioById(ejeDTO.getIdEjercicio());
+                            if (ej != null) model.addAttribute("nombreEjercicio", ej.getNombre());
+                        } catch (Exception ignore) {}
+                    }
+                }
+            } catch (Exception ignore) {}
             model.addAttribute("readonly", esEntrenador || Boolean.TRUE.equals(readonly));
         } catch (Exception ex) {
             log.error("Error cargando registros de series", ex);

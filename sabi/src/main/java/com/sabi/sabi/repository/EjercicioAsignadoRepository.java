@@ -12,7 +12,7 @@ import java.util.List;
 public interface EjercicioAsignadoRepository extends JpaRepository<EjercicioAsignado, Long> {
     List<EjercicioAsignado> findByEstadoTrue();
 
-    @Query("SELECT e FROM EjercicioAsignado e JOIN FETCH e.ejercicio WHERE e.dia.id = :idDia AND e.estado = true ORDER BY e.orden ASC")
+    @Query("SELECT e FROM EjercicioAsignado e JOIN FETCH e.ejercicio WHERE e.dia.id = :idDia ORDER BY e.orden ASC")
     List<EjercicioAsignado> getEjesDia(Long idDia);
 
     List<EjercicioAsignado> findByDia(Dia dia);

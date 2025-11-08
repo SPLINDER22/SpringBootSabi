@@ -189,7 +189,23 @@
             <div th:unless="${diagnosticoActual != null}"></div>
         </div>
     </div>
-    <!-- El resto del dashboard permanece igual, sin mostrar el historial ni el formulario aquí -->
+
+    <div th:if="${tieneRutinaActiva}" class="reporte-rutina col-md-5 row">
+        <h5 class="mb-3 col-md-12">Tu Rutina</h5>
+        <span class="col-md-6 titulo">Rutina:</span>
+        <span class="col-md-6 titulo">Porcentaje completado</span>
+        <span class="col-md-6 nombre" th:text="${rutina.nombre}"></span>
+        <span class="col-md-6 porcentaje mb-2" th:text="${porcentajeCompletado + '%'}"></span>
+
+        <!-- Mostrar el enlace solo si existe un diaActual -->
+        <div th:if="${diaActual != null}">
+            <a class="btn btn-info" th:href="@{'/ejes/detallar/' + ${diaActual.idDia}}">Ejercicios del dia</a>
+        </div>
+        <div th:unless="${diaActual != null}">
+            <span class="text-muted">No hay un día pendiente en la rutina.</span>
+        </div>
+    </div>
+
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script th:if="${diagnosticoActual == null}">
     document.addEventListener('DOMContentLoaded', function() {

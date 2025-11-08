@@ -46,8 +46,8 @@
             <th style="width:10%"># Día</th>
             <th style="width:48%">Descripción</th>
             <th style="width:12%">N° Ejercicios</th>
-            <th sec:authorize="hasAnyRole('CLIENTE')" th:if="${!readonly}" style="width:8%">Completado</th>
-            <th style="width:30%">Acciones</th>
+            <th style="width:8%">Completado</th>
+            <th style="width:22%">Acciones</th>
         </tr>
         </thead>
         <tbody>
@@ -55,20 +55,20 @@
             <td th:text="${dia.numeroDia}"></td>
             <td th:text="${dia.descripcion}"></td>
             <td th:text="${dia.numeroEjercicios}"></td>
-            <td sec:authorize="hasAnyRole('CLIENTE')" th:if="${!readonly}">
-                <span th:class="${dia.checked} ? 'status-badge badge-complete' : 'status-badge badge-pending'">
-                    <i th:class="${dia.checked} ? 'fas fa-check-circle' : 'far fa-circle'"></i>
-                    <span th:text="${dia.checked} ? 'Completado' : 'Pendiente'"></span>
+            <td>
+                <span th:class="${dia.estado} ? 'status-badge badge-complete' : 'status-badge badge-pending'">
+                    <i th:class="${dia.estado} ? 'fas fa-check-circle' : 'far fa-circle'"></i>
+                    <span th:text="${dia.estado} ? 'Completado' : 'Pendiente'"></span>
                 </span>
             </td>
             <td>
                 <!-- Vista cliente editable -->
                 <div sec:authorize="hasAnyRole('CLIENTE')" class="action-buttons" th:if="${!readonly}">
                     <a th:href="@{/dias/check/{idDia}(idDia=${diaId})}"
-                       th:class="${dia.checked} ? 'btn btn-sm btn-outline-warning btn-toggle-completa' : 'btn btn-sm btn-outline-success btn-toggle-completa'"
-                       th:title="${dia.checked} ? 'Desmarcar día' : 'Marcar día como completado'">
-                        <i th:class="${dia.checked} ? 'fas fa-undo' : 'fas fa-check'"></i>
-                        <span th:text="${dia.checked} ? 'Desmarcar' : 'Marcar'"></span>
+                       th:class="${dia.estado} ? 'btn btn-sm btn-outline-warning btn-toggle-completa' : 'btn btn-sm btn-outline-success btn-toggle-completa'"
+                       th:title="${dia.estado} ? 'Desmarcar día' : 'Marcar día como completado'">
+                        <i th:class="${dia.estado} ? 'fas fa-undo' : 'fas fa-check'"></i>
+                        <span th:text="${dia.estado} ? 'Desmarcar' : 'Marcar'"></span>
                     </a>
                     <a th:href="@{/ejes/detallar/{idDia}(idDia=${diaId}, readonly=${readonly})}" class="btn btn-sm btn-info">
                         <i class="fas fa-dumbbell"></i> Ver Ejercicios
@@ -109,12 +109,11 @@
         </tr>
         <!-- Fila vacía entrenador (modo edición) -->
         <tr sec:authorize="hasAnyRole('ENTRENADOR')" th:if="${!readonly && (dias == null || #lists.isEmpty(dias))}">
-            <td colspan="4" class="text-center text-muted py-4">No hay días registrados todavía.</td>
+            <td colspan="5" class="text-center text-muted py-4">No hay días registrados todavía.</td>
         </tr>
         <!-- Fila vacía entrenador (modo lectura) -->
         <tr sec:authorize="hasAnyRole('ENTRENADOR')" th:if="${readonly && (dias == null || #lists.isEmpty(dias))}">
-            <!-- En modo lectura la tabla no muestra columna de completado, así que 4 columnas -->
-            <td colspan="4" class="text-center text-muted py-4">No hay días registrados todavía.</td>
+            <td colspan="5" class="text-center text-muted py-4">No hay días registrados todavía.</td>
         </tr>
         </tbody>
     </table>

@@ -2,8 +2,10 @@ package com.sabi.sabi.impl;
 
 import com.sabi.sabi.dto.DiaDTO;
 import com.sabi.sabi.entity.Dia;
+import com.sabi.sabi.entity.Rutina;
 import com.sabi.sabi.entity.Semana;
 import com.sabi.sabi.repository.DiaRepository;
+import com.sabi.sabi.repository.RutinaRepository;
 import com.sabi.sabi.repository.SemanaRepository;
 import com.sabi.sabi.service.DiaService;
 import org.modelmapper.ModelMapper;
@@ -11,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class DiaServiceImpl implements DiaService {
@@ -20,6 +23,8 @@ public class DiaServiceImpl implements DiaService {
     private ModelMapper modelMapper;
     @Autowired
     private SemanaRepository semanaRepository;
+    @Autowired
+    private RutinaRepository rutinaRepository;
 
     @Override
     public List<DiaDTO> getAllDia() {
@@ -187,8 +192,57 @@ public class DiaServiceImpl implements DiaService {
     public DiaDTO toggleChecked(long idDia) {
         Dia dia = diaRepository.findById(idDia)
                 .orElseThrow(() -> new RuntimeException("Dia not found with id: " + idDia));
-        dia.setChecked(dia.getChecked() == null ? Boolean.TRUE : !dia.getChecked());
+        dia.setEstado(dia.getEstado() == null ? Boolean.TRUE : !dia.getEstado());
         diaRepository.save(dia);
         return modelMapper.map(dia, DiaDTO.class);
+    }
+
+    @Override
+    public DiaDTO getDiaActual(long idCliente) {
+        Optional<Rutina> rutina = rutinaRepository.findActiveByClienteId(idCliente);
+        if (rutina.isEmpty()) {
+            return null; // No hay rutina activa
+        }
+        List<Semana> semanas = semanaRepository.getSemanasRutina(rutina.get().getId());
+        if (semanas == null || semanas.isEmpty()) {
+            return null;
+        }
+        for (Semana semana : semanas) {
+            List<Dia> dias = diaRepository.getDiasSemana(semana.getId());
+            if (dias == null) continue;
+            for (Dia dia : dias) {
+                // Se asume que un día "actual" es aquel cuyo estado es FALSE (no completado)
+                if (dia.getEstado() != null && !dia.getEstado()) {
+                    return modelMapper.map(dia, DiaDTO.class);
+                }
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public long calcularProgresoRutina(long idCliente) {
+        long totalDias = 0;
+        long diasCompletados = 0;
+        Optional<Rutina> rutina = rutinaRepository.findActiveByClienteId(idCliente);
+        if (rutina.isEmpty()) {
+            return 0L;
+        }
+        List<Semana> semanas = semanaRepository.getSemanasRutina(rutina.get().getId());
+        if (semanas == null || semanas.isEmpty()) {
+            return 0L;
+        }
+        for (Semana semana : semanas) {
+            List<Dia> dias = diaRepository.getDiasSemana(semana.getId());
+            if (dias == null) continue;
+            for (Dia dia : dias) {
+                totalDias ++;
+                if (dia.getEstado() != null && dia.getEstado()) {
+                    diasCompletados ++;
+                }
+            }
+        }
+        if (totalDias == 0) return 0L;
+        return Math.round(((double) diasCompletados / (double) totalDias) * 100.0);
     }
 }

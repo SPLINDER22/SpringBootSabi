@@ -167,7 +167,7 @@ public class DiaController {
         }
         try {
             var dia = diaService.toggleChecked(idDia);
-            redirectAttributes.addFlashAttribute("success", dia.getChecked() ? "Día marcado como completado." : "Día marcado como pendiente.");
+            redirectAttributes.addFlashAttribute("success", dia.getEstado() ? "Día marcado como completado." : "Día marcado como pendiente.");
             return "redirect:/dias/detallar/" + dia.getIdSemana();
         } catch (RuntimeException ex) {
             redirectAttributes.addFlashAttribute("error", "No se pudo actualizar el estado del día.");

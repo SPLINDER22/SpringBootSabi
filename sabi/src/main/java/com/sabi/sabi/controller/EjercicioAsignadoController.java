@@ -183,7 +183,7 @@ public class EjercicioAsignadoController {
         }
         try {
             var eje = ejercicioAsignadoService.toggleChecked(idEje);
-            redirectAttributes.addFlashAttribute("success", eje.getChecked() ? "Ejercicio marcado como completado." : "Ejercicio marcado como pendiente.");
+            redirectAttributes.addFlashAttribute("success", eje.getEstado() ? "Ejercicio marcado como completado." : "Ejercicio marcado como pendiente.");
             return "redirect:/ejes/detallar/" + eje.getIdDia();
         } catch (RuntimeException ex) {
             redirectAttributes.addFlashAttribute("error", "No se pudo actualizar el estado del ejercicio.");

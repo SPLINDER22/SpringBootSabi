@@ -19,4 +19,6 @@ public interface RegistroSerieService {
     boolean desactivateRegistroSerie(long id);
 
     RegistroSerieDTO saveOrUpdateRegistroSerie(RegistroSerieDTO registroSerieDTO);
+
+    List<RegistroSerieDTO> getRegistroSeriesBySerieId(Long idSerie);
 }

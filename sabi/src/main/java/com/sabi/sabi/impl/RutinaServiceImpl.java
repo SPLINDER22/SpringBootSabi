@@ -11,7 +11,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class RutinaServiceImpl implements RutinaService {
@@ -63,7 +62,7 @@ public class RutinaServiceImpl implements RutinaService {
 
     @Override
     public List<Rutina> findByClienteAndEstado(Cliente cliente) {
-        return rutinaRepository.findByClienteAndEstado(cliente); // uso puntual externo si hace falta
+        return rutinaRepository.findByClienteAndEstado(cliente);
     }
 
     @Override
@@ -115,35 +114,35 @@ public class RutinaServiceImpl implements RutinaService {
         List<Semana> semanasOrigen = semanaRepository.getSemanasRutina(origen.getId());
         if (semanasOrigen != null) {
             for (Semana sOri : semanasOrigen) {
-                if (sOri == null || Boolean.FALSE.equals(sOri.getEstado())) continue;
+                if (sOri == null) continue; // copiar siempre la semana aunque su estado sea false
                 Semana sNueva = new Semana();
                 sNueva.setId(null);
                 sNueva.setNumeroSemana(sOri.getNumeroSemana());
                 sNueva.setDescripcion(sOri.getDescripcion());
                 sNueva.setNumeroDias(sOri.getNumeroDias());
                 sNueva.setRutina(nueva);
-                sNueva.setEstado(true);
+                sNueva.setEstado(false);
                 sNueva.setDias(null);
                 sNueva = semanaRepository.save(sNueva);
 
                 List<Dia> diasOrigen = diaRepository.getDiasSemana(sOri.getId());
                 if (diasOrigen != null) {
                     for (Dia dOri : diasOrigen) {
-                        if (dOri == null || Boolean.FALSE.equals(dOri.getEstado())) continue;
+                        if (dOri == null) continue; // copiar siempre el día aunque su estado sea false
                         Dia dNuevo = new Dia();
                         dNuevo.setId(null);
                         dNuevo.setNumeroDia(dOri.getNumeroDia());
                         dNuevo.setDescripcion(dOri.getDescripcion());
                         dNuevo.setNumeroEjercicios(dOri.getNumeroEjercicios());
                         dNuevo.setSemana(sNueva);
-                        dNuevo.setEstado(true);
+                        dNuevo.setEstado(false);
                         dNuevo.setEjerciciosAsignados(null);
                         dNuevo = diaRepository.save(dNuevo);
 
                         List<EjercicioAsignado> ejesOrigen = ejercicioAsignadoRepository.findByDia(dOri);
                         if (ejesOrigen != null) {
                             for (EjercicioAsignado ejeOri : ejesOrigen) {
-                                if (ejeOri == null || Boolean.FALSE.equals(ejeOri.getEstado())) continue;
+                                if (ejeOri == null) continue; // copiar siempre el ejercicio aunque su estado sea false
                                 EjercicioAsignado ejeNuevo = new EjercicioAsignado();
                                 ejeNuevo.setIdEjercicioAsignado(null);
                                 ejeNuevo.setOrden(ejeOri.getOrden());
@@ -153,13 +152,13 @@ public class RutinaServiceImpl implements RutinaService {
                                 ejeNuevo.setEjercicio(ejeOri.getEjercicio());
                                 ejeNuevo.setSeries(null);
                                 ejeNuevo.setUrlVideoCliente(null);
-                                ejeNuevo.setEstado(true);
+                                ejeNuevo.setEstado(false);
                                 ejeNuevo = ejercicioAsignadoRepository.save(ejeNuevo);
 
                                 List<Serie> seriesOrigen = serieRepository.findByEjercicioAsignado(ejeOri);
                                 if (seriesOrigen != null) {
                                     for (Serie serOri : seriesOrigen) {
-                                        if (serOri == null || Boolean.FALSE.equals(serOri.getEstado())) continue;
+                                        if (serOri == null) continue; // copiar siempre la serie aunque su estado sea false
                                         Serie serNueva = new Serie();
                                         serNueva.setId(null);
                                         serNueva.setOrden(serOri.getOrden());
@@ -169,7 +168,7 @@ public class RutinaServiceImpl implements RutinaService {
                                         serNueva.setIntensidad(serOri.getIntensidad());
                                         serNueva.setComentarios(serOri.getComentarios());
                                         serNueva.setEjercicioAsignado(ejeNuevo);
-                                        serNueva.setEstado(true);
+                                        serNueva.setEstado(false);
                                         serieRepository.save(serNueva);
                                     }
                                 }
