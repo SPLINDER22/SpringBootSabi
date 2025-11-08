@@ -4,17 +4,28 @@
 <head>
     <meta charset="UTF-8">
     <title>Lista De Suscripciones</title>
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 
 <body th:replace="layout/layout :: layout('Lista de suscripciones', ~{::section})">
     <section th:fragment="section">
+        <!-- Alertas de éxito y error -->
+        <div th:if="${success}" class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="fas fa-check-circle me-2"></i>
+            <strong>¡Éxito!</strong> <span th:text="${success}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="fas fa-exclamation-triangle me-2"></i>
+            <strong>¡Error!</strong> <span th:text="${error}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+
         <div class="d-flex justify-content-between align-items-center mb-4">
             <h1 class="h3 text-dark mb-0">Lista de Suscripciones</h1>
             <div class="d-flex align-items-center">
-                <a th:href="@{/entrenador/suscripciones/historial}" class="btn btn-outline-secondary btn-lg">
-                    <i class="fas fa-history me-1"></i> Ver Historial
-                </a>
-                <a th:href="@{/entrenador/suscripciones/reporte.pdf}" class="btn btn-danger btn-lg ml-2">
+                <a th:href="@{/entrenador/suscripciones/reporte.pdf}" class="btn btn-danger btn-lg">
                     <i class="bi bi-filetype-pdf me-1"></i> Generar reporte
                 </a>
             </div>
@@ -146,11 +157,12 @@
                         </div>
                         <div class="card-footer bg-primary pt-3 pb-3">
                             <div class="d-flex flex-wrap gap-2 w-100 justify-content-center">
-                                <div class="d-flex gap-2 w-100">
-                                    <!-- Botón editar -->
-                                    <button type="button" class="btn btn-light flex-fill btn-editar-suscripcion"
-                                        data-toggle="modal" data-target="#modalEditarSuscripcion"
-                                        th:disabled="${suscripcion.estadoSuscripcion == T(com.sabi.sabi.entity.enums.EstadoSuscripcion).ACEPTADA}"
+                                <!-- Botón Cotizar Diagnóstico (antes era Editar) - Solo para PENDIENTE -->
+                                <button th:if="${suscripcion.estadoSuscripcion == T(com.sabi.sabi.entity.enums.EstadoSuscripcion).PENDIENTE}"
+                                        type="button"
+                                        class="btn btn-warning flex-fill btn-cotizar-diagnostico"
+                                        data-toggle="modal"
+                                        data-target="#modalEditarSuscripcion"
                                         th:attr="data-id=${suscripcion.idSuscripcion},
                                                  data-cliente=${suscripcion.idCliente},
                                                  data-entrenador=${suscripcion.idEntrenador},
@@ -158,43 +170,42 @@
                                                  data-fechainicio=${suscripcion.fechaInicio},
                                                  data-fechafin=${suscripcion.fechaFin},
                                                  data-estado=${suscripcion.estadoSuscripcion}">
-                                        <i class="fas fa-edit me-1"></i> Editar
+                                    <i class="fas fa-hand-holding-usd me-1"></i> Cotizar Diagnóstico
+                                </button>
+
+                                <!-- Botón Ver Diagnóstico - Para PENDIENTE, COTIZADA y ACEPTADA -->
+                                <a th:if="${suscripcion.idCliente != null}"
+                                   th:href="@{/entrenador/diagnostico/vista/{clienteId}(clienteId=${suscripcion.idCliente})}"
+                                   class="btn btn-info text-white flex-fill"
+                                   title="Ver diagnóstico completo del cliente">
+                                    <i class="fas fa-notes-medical me-1"></i> Ver Diagnóstico
+                                </a>
+
+                                <!-- Botón Rechazar - Solo para PENDIENTE -->
+                                <form th:if="${suscripcion.estadoSuscripcion == T(com.sabi.sabi.entity.enums.EstadoSuscripcion).PENDIENTE}"
+                                      th:action="@{/suscripciones/rechazar/{id}(id=${suscripcion.idSuscripcion})}"
+                                      method="post"
+                                      class="flex-fill mb-0">
+                                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                                    <input type="hidden" name="redirectTo" value="/entrenador/suscripciones" />
+                                    <button type="submit" class="btn btn-danger w-100">
+                                        <i class="fas fa-times-circle me-1"></i> Rechazar
                                     </button>
-                                    <!-- Botón rutina (Asignar o Ver progreso) -->
-                                    <div th:if="${suscripcion.estadoSuscripcion == T(com.sabi.sabi.entity.enums.EstadoSuscripcion).ACEPTADA}" class="flex-fill">
-                                        <a th:if="${rutinasActivasClientes != null and rutinasActivasClientes.containsKey(suscripcion.idCliente)}"
-                                           th:href="@{'/semanas/detallar/' + ${rutinasActivasClientes[suscripcion.idCliente]} + '?readonly=true'}"
-                                           class="btn btn-primary w-100">
-                                            <i class="fas fa-chart-line me-1"></i> Ver progreso
-                                        </a>
-                                        <a th:if="${rutinasActivasClientes == null || !rutinasActivasClientes.containsKey(suscripcion.idCliente)}"
-                                           th:href="@{/rutinas(asignar=true, idCliente=${suscripcion.idCliente})}"
-                                           class="btn btn-success w-100">
-                                            <i class="fas fa-dumbbell me-1"></i> Asignar rutina
-                                        </a>
-                                    </div>
-                                    <!-- Botones de diagnóstico -->
-                                    <div th:if="${suscripcion.idCliente != null && (suscripcion.estadoSuscripcion == T(com.sabi.sabi.entity.enums.EstadoSuscripcion).ACEPTADA
-                                                   or suscripcion.estadoSuscripcion == T(com.sabi.sabi.entity.enums.EstadoSuscripcion).COTIZADA
-                                                   or suscripcion.estadoSuscripcion == T(com.sabi.sabi.entity.enums.EstadoSuscripcion).PENDIENTE)}"
-                                         class="d-flex gap-1 flex-fill">
-                                        <a th:href="@{/entrenador/diagnostico/vista/{clienteId}(clienteId=${suscripcion.idCliente})}"
-                                           class="btn btn-info text-white flex-fill" title="Ver diagnóstico actual completo">
-                                            <i class="fas fa-notes-medical me-1"></i> Diagnóstico
-                                        </a>
-                                        <a th:href="@{/entrenador/diagnostico/historial/{clienteId}(clienteId=${suscripcion.idCliente})}"
-                                           class="btn btn-outline-info flex-fill" title="Ver historial completo de diagnósticos">
-                                            <i class="fas fa-history me-1"></i> Historial
-                                        </a>
-                                    </div>
-                                    <!-- Botón rechazar (pendiente) -->
-                                    <form th:if="${suscripcion.estadoSuscripcion == T(com.sabi.sabi.entity.enums.EstadoSuscripcion).PENDIENTE}"
-                                          th:action="@{/suscripciones/rechazar/{id}(id=${suscripcion.idSuscripcion})}"
-                                          method="post" class="flex-fill mb-0">
-                                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
-                                        <input type="hidden" name="redirectTo" value="/entrenador/suscripciones" />
-                                        <button type="submit" class="btn btn-danger w-100"><i class="fas fa-times-circle me-1"></i> Rechazar</button>
-                                    </form>
+                                </form>
+
+                                <!-- Sección para ACEPTADA: Asignar rutina o Ver progreso -->
+                                <div th:if="${suscripcion.estadoSuscripcion == T(com.sabi.sabi.entity.enums.EstadoSuscripcion).ACEPTADA}"
+                                     class="w-100 mt-2">
+                                    <a th:if="${rutinasActivasClientes != null and rutinasActivasClientes.containsKey(suscripcion.idCliente)}"
+                                       th:href="@{'/semanas/detallar/' + ${rutinasActivasClientes[suscripcion.idCliente]} + '?readonly=true'}"
+                                       class="btn btn-primary w-100">
+                                        <i class="fas fa-chart-line me-1"></i> Ver Progreso de Rutina
+                                    </a>
+                                    <a th:if="${rutinasActivasClientes == null || !rutinasActivasClientes.containsKey(suscripcion.idCliente)}"
+                                       th:href="@{/rutinas(asignar=true, idCliente=${suscripcion.idCliente})}"
+                                       class="btn btn-success w-100">
+                                        <i class="fas fa-dumbbell me-1"></i> Asignar Rutina
+                                    </a>
                                 </div>
                             </div>
                         </div>
@@ -202,18 +213,24 @@
                 </div>
             </div>
         </div>
-        <!-- Modal Editar Suscripción -->
+        <!-- Modal Cotizar Diagnóstico -->
         <div class="modal fade" id="modalEditarSuscripcion" tabindex="-1" aria-labelledby="modalEditarSuscripcionLabel"
             aria-hidden="true" role="dialog">
             <div class="modal-dialog">
                 <div class="modal-content">
                     <form th:action="@{/suscripciones/guardar}" method="post" id="form-editar-suscripcion" novalidate>
-                        <div class="modal-header">
-                            <h5 class="modal-title" id="modalEditarSuscripcionLabel">Editar Suscripción</h5>
+                        <div class="modal-header bg-warning">
+                            <h5 class="modal-title text-dark" id="modalEditarSuscripcionLabel">
+                                <i class="fas fa-hand-holding-usd me-2"></i>Cotizar Diagnóstico del Cliente
+                            </h5>
                             <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar"><span
                                     aria-hidden="true">&times;</span></button>
                         </div>
                         <div class="modal-body">
+                            <div class="alert alert-info" role="alert">
+                                <i class="fas fa-info-circle me-2"></i>
+                                <strong>Importante:</strong> Asegúrate de haber revisado el diagnóstico completo del cliente antes de enviar una cotización.
+                            </div>
                             <input type="hidden" name="idSuscripcion" id="modal-idSuscripcion">
 
                             <div class="row">
@@ -254,29 +271,69 @@
 
         <script>
             window.addEventListener('load', function () {
-                console.log('Script de edición de suscripción listo.');
-                $(document).on('click', '.btn-editar-suscripcion', function (e) {
+                console.log('Script de cotización de diagnóstico listo.');
+                $(document).on('click', '.btn-cotizar-diagnostico', function (e) {
                     e.preventDefault();
                     var button = $(this);
+                    var clienteId = button.data('cliente');
+
                     if (!$('#modalEditarSuscripcion').length) {
                         console.error('Modal element not found: #modalEditarSuscripcion');
                         return;
                     }
-                    console.log('Abrir modal editar suscripción:', button.data());
-                    $('#modal-idSuscripcion').val(button.data('id'));
-                    // Se eliminan cliente y entrenador del formulario; no se editan aquí
-                    $('#modal-precio').val(button.data('precio') || '');
-                    const fechainicioRaw = button.data('fechainicio') || '';
-                    const fechafinRaw = button.data('fechafin') || '';
-                    $('#modal-fechainicio').val(normalizeDateValue(fechainicioRaw));
-                    $('#modal-fechafin').val(normalizeDateValue(fechafinRaw));
-                    if (typeof $('#modalEditarSuscripcion').modal === 'function') {
-                        // Mueve el modal al <body> para evitar problemas de stacking/overflow
-                        $('#modalEditarSuscripcion').appendTo('body').modal('show');
-                    } else {
-                        console.error('Bootstrap modal plugin not available. Verify bootstrap JS is loaded.');
-                    }
+
+                    // Verificar si el cliente tiene diagnóstico usando AJAX
+                    $.ajax({
+                        url: '/api/entrenador/diagnostico/cliente/' + clienteId,
+                        method: 'GET',
+                        success: function(response) {
+                            if (response.message && response.message === "No hay diagnostico") {
+                                // Cliente no tiene diagnóstico
+                                Swal.fire({
+                                    icon: 'warning',
+                                    title: '⚠️ Diagnóstico Requerido',
+                                    html: `
+                                        <p style="font-size:1.1rem;line-height:1.6;">
+                                            <strong>Debes revisar el diagnóstico del cliente antes de poder enviar una cotización.</strong>
+                                        </p>
+                                        <p style="color:#64748b;margin-top:1rem;">
+                                            Haz clic en el botón <strong>"Ver Diagnóstico"</strong> para revisar la información del cliente primero.
+                                        </p>
+                                    `,
+                                    confirmButtonText: 'Entendido',
+                                    confirmButtonColor: '#3b82f6',
+                                    allowOutsideClick: false
+                                });
+                                return;
+                            }
+
+                            // Cliente tiene diagnóstico, abrir modal normalmente
+                            console.log('Abrir modal cotizar diagnóstico:', button.data());
+                            $('#modal-idSuscripcion').val(button.data('id'));
+                            $('#modal-precio').val(button.data('precio') || '');
+                            const fechainicioRaw = button.data('fechainicio') || '';
+                            const fechafinRaw = button.data('fechafin') || '';
+                            $('#modal-fechainicio').val(normalizeDateValue(fechainicioRaw));
+                            $('#modal-fechafin').val(normalizeDateValue(fechafinRaw));
+
+                            if (typeof $('#modalEditarSuscripcion').modal === 'function') {
+                                $('#modalEditarSuscripcion').appendTo('body').modal('show');
+                            } else {
+                                console.error('Bootstrap modal plugin not available. Verify bootstrap JS is loaded.');
+                            }
+                        },
+                        error: function(xhr, status, error) {
+                            console.error('Error al verificar diagnóstico:', error);
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error',
+                                text: 'No se pudo verificar el diagnóstico del cliente. Intenta nuevamente.',
+                                confirmButtonColor: '#dc2626'
+                            });
+                        }
+                    });
                 });
+
                 // Ajuste de límites y estados cuando se muestre el modal
                 $('#modalEditarSuscripcion').on('shown.bs.modal', function () {
                     try {

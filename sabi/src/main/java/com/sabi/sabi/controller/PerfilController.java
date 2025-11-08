@@ -41,6 +41,15 @@ public class PerfilController {
         } else if (usuario instanceof Entrenador) {
             Entrenador entrenador = (Entrenador) usuario;
             model.addAttribute("especialidad", entrenador.getEspecialidad());
+            model.addAttribute("aniosExperiencia", entrenador.getAniosExperiencia());
+
+            // Pasar certificaciones si existen
+            String certificaciones = entrenador.getCertificaciones();
+            if (certificaciones != null && !certificaciones.isEmpty()) {
+                // Dividir las certificaciones por coma si hay varias
+                java.util.List<String> listaCertificaciones = java.util.Arrays.asList(certificaciones.split(","));
+                model.addAttribute("certificaciones", listaCertificaciones);
+            }
         }
 
         return "perfil";
@@ -51,7 +60,6 @@ public class PerfilController {
             @AuthenticationPrincipal UserDetails userDetails,
             @RequestParam(required = false) String descripcion,
             @RequestParam(required = false) String objetivo,
-            @RequestParam(required = false) String especialidad,
             @RequestParam(required = false) MultipartFile fotoPerfil,
             Model model) {
 
@@ -75,12 +83,9 @@ public class PerfilController {
                 if (objetivo != null && !objetivo.isEmpty()) {
                     cliente.setObjetivo(objetivo);
                 }
-            } else if (usuario instanceof Entrenador) {
-                Entrenador entrenador = (Entrenador) usuario;
-                if (especialidad != null && !especialidad.isEmpty()) {
-                    entrenador.setEspecialidad(especialidad);
-                }
             }
+            // Nota: La especialidad, años de experiencia y certificaciones del entrenador
+            // NO son editables desde el perfil. Solo se establecen durante el registro inicial.
 
             // Guardar cambios
             usuarioService.actualizarUsuario(usuario);

@@ -101,19 +101,34 @@ public class SuscripcionController {
     @PostMapping("/suscripciones/guardar")
     public String crearSuscripcion(@ModelAttribute SuscripcionDTO suscripcionDTO,
                                    @AuthenticationPrincipal UserDetails userDetails,
-                                   @RequestParam(value = "redirectTo", required = false) String redirectTo) {
+                                   @RequestParam(value = "redirectTo", required = false) String redirectTo,
+                                   org.springframework.web.servlet.mvc.support.RedirectAttributes redirectAttributes) {
         if (userDetails == null) {
             return "redirect:/auth/login";
         }
-        // Si viene ID (update)
+
+        var usuario = usuarioService.obtenerPorEmail(userDetails.getUsername());
+
+        // Si viene ID (update/cotizar)
         if (suscripcionDTO.getIdSuscripcion() != null) {
             // Preservar idCliente y idEntrenador del registro existente
             SuscripcionDTO existente = suscripcionService.getSuscripcionById(suscripcionDTO.getIdSuscripcion());
             if (existente != null) {
                 suscripcionDTO.setIdCliente(existente.getIdCliente());
                 suscripcionDTO.setIdEntrenador(existente.getIdEntrenador());
-                // Si se colocan ambas fechas, cambiar a COTIZADA automáticamente
+
+                // VALIDACIÓN: Verificar que el entrenador haya visto el diagnóstico
+                // Esto se hace verificando si existe un diagnóstico actual para el cliente
                 if (suscripcionDTO.getFechaInicio() != null && suscripcionDTO.getFechaFin() != null) {
+                    // Verificar que el cliente tenga diagnóstico
+                    var diagnostico = clienteService.getDiagnosticoActualByClienteId(existente.getIdCliente());
+                    if (diagnostico == null) {
+                        redirectAttributes.addFlashAttribute("error",
+                            "No puedes cotizar porque el cliente aún no tiene un diagnóstico registrado.");
+                        return "redirect:" + (redirectTo != null && !redirectTo.isEmpty() ? redirectTo : "/suscripciones");
+                    }
+
+                    // Cambiar a COTIZADA automáticamente
                     suscripcionDTO.setEstadoSuscripcion(com.sabi.sabi.entity.enums.EstadoSuscripcion.COTIZADA);
                 } else {
                     // Mantener el estado anterior si no se cumplen condiciones
@@ -121,6 +136,7 @@ public class SuscripcionController {
                 }
             }
             suscripcionService.updateSuscripcion(suscripcionDTO.getIdSuscripcion(), suscripcionDTO);
+            redirectAttributes.addFlashAttribute("success", "Cotización enviada exitosamente al cliente.");
         } else {
             suscripcionService.createSuscripcion(suscripcionDTO);
         }
