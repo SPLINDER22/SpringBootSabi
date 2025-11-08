@@ -284,7 +284,7 @@ public class ClienteController {
             info.put("nombre", nombreCompleto);
             info.put("email", entrenador.getEmail());
             info.put("fotoPerfilUrl",
-                    entrenador.getFotoPerfilUrl() != null ? entrenador.getFotoPerfilUrl() : "/img/entrenador.jpg");
+                    entrenador.getFotoPerfilUrl() != null ? entrenador.getFotoPerfilUrl() : "/img/fotoPerfil.png");
             info.put("especialidades", entrenador.getEspecialidad());
             info.put("experiencia", entrenador.getAniosExperiencia() != null ? entrenador.getAniosExperiencia() : 0);
             info.put("certificaciones", entrenador.getCertificaciones());
