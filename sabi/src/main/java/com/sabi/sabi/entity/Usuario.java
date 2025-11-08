@@ -71,8 +71,9 @@ public class Usuario {
     @Column(length = 20)
     private String telefono;
 
+    @Builder.Default
     @Column(name = "foto_perfil_url", length = 500)
-    private String fotoPerfilUrl;
+    private String fotoPerfilUrl = "/img/fotoPerfil.png";
 
     @Column(length = 1000)
     private String descripcion;
