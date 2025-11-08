@@ -63,7 +63,7 @@
             </a>
         </button>
     </div>
-    <div class="ejes row">
+    <div class="ejes row mb-5">
         <button class="col-md-2" th:each="e : ${ejes}"
                 th:classappend="${(e != null and ejercicioAsignado != null and e.idEjercicioAsignado != null and ejercicioAsignado.idEjercicioAsignado != null and e.idEjercicioAsignado.equals(ejercicioAsignado.idEjercicioAsignado))} ? 'bg-info text-white' : ''">
             <!-- Sólo renderizar el enlace si 'e' existe y tiene id -->

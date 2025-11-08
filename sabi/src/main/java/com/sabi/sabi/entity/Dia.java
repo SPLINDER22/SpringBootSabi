@@ -38,9 +38,6 @@ public class Dia {
     @OneToMany(mappedBy = "dia", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<EjercicioAsignado> ejerciciosAsignados;
 
-    @Column(name = "checked")
-    private Boolean checked = false;
-
     @Column(name = "estado", nullable = false)
-    private Boolean estado = true;
+    private Boolean estado = false;
 }

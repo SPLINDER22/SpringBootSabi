@@ -46,7 +46,7 @@
             </a>
         </button>
     </div>
-    <div class="dias row">
+    <div class="dias row mb-5">
         <button class="col-md-2" th:each="d : ${dias}"
                 th:classappend="${d.id == dia.idDia} ? 'bg-info text-white' : ''">
             <a th:href="@{'/ejes/detallar/' + ${d.id}}" th:text="'Dia '+${d.numeroDia}"
@@ -81,19 +81,19 @@
             <td th:text="${eje.comentarios}" class="small"></td>
             <td th:text="${eje.numeroSeries}"></td>
             <td sec:authorize="hasAnyRole('CLIENTE')" th:if="${!readonly}">
-                <span th:class="${eje.checked} ? 'status-badge badge-complete' : 'status-badge badge-pending'">
-                    <i th:class="${eje.checked} ? 'fas fa-check-circle' : 'far fa-circle'"></i>
-                    <span th:text="${eje.checked} ? 'Completado' : 'Pendiente'"></span>
+                <span th:class="${eje.estado} ? 'status-badge badge-complete' : 'status-badge badge-pending'">
+                    <i th:class="${eje.estado} ? 'fas fa-check-circle' : 'far fa-circle'"></i>
+                    <span th:text="${eje.estado} ? 'Completado' : 'Pendiente'"></span>
                 </span>
             </td>
             <td>
                 <!-- Vista cliente editable -->
                 <div sec:authorize="hasAnyRole('CLIENTE')" class="action-buttons" th:if="${!readonly}">
                     <a th:href="@{/ejes/check/{idEje}(idEje=${eje.idEjercicioAsignado})}"
-                       th:class="${eje.checked} ? 'btn btn-sm btn-outline-warning btn-toggle-completa' : 'btn btn-sm btn-outline-success btn-toggle-completa'"
-                       th:title="${eje.checked} ? 'Desmarcar ejercicio' : 'Marcar ejercicio como completado'">
-                        <i th:class="${eje.checked} ? 'fas fa-undo' : 'fas fa-check'"></i>
-                        <span th:text="${eje.checked} ? 'Desmarcar' : 'Marcar'"></span>
+                       th:class="${eje.estado} ? 'btn btn-sm btn-outline-warning btn-toggle-completa' : 'btn btn-sm btn-outline-success btn-toggle-completa'"
+                       th:title="${eje.estado} ? 'Desmarcar ejercicio' : 'Marcar ejercicio como completado'">
+                        <i th:class="${eje.estado} ? 'fas fa-undo' : 'fas fa-check'"></i>
+                        <span th:text="${eje.estado} ? 'Desmarcar' : 'Marcar'"></span>
                     </a>
                     <a th:href="@{/registros-series/{idEje}(idEje=${eje.idEjercicioAsignado}, readonly=${readonly})}" class="btn btn-sm btn-info">
                         <i class="fas fa-list"></i> Ver Series

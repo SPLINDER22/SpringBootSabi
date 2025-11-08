@@ -47,8 +47,6 @@ public class Serie {
     @JoinColumn(name = "ejercicio_asignado_id", nullable = false)
     private EjercicioAsignado ejercicioAsignado;
 
-    private Boolean checked = false;
-
     @Column(name = "estado", nullable = false)
-    private Boolean estado = true;
+    private Boolean estado = false;
 }

@@ -69,10 +69,9 @@
         <thead class="table-light">
         <tr>
             <th style="width:10%"># Semana</th>
-            <th style="width:52%">Descripción</th>
-            <th style="width:4%">N° Días</th>
-            <th sec:authorize="hasAnyRole('CLIENTE')" th:if="${!readonly}" style="width:8%">Completada</th>
-            <th style="width:30%">Acciones</th>
+            <th style="width:62%">Descripción</th>
+            <th style="width:8%">N° Días</th>
+            <th style="width:20%">Acciones</th>
         </tr>
         </thead>
         <tbody>
@@ -80,21 +79,9 @@
             <td th:text="${semana.numeroSemana}"></td>
             <td th:text="${semana.descripcion}"></td>
             <td th:text="${semana.numeroDias}"></td>
-            <td sec:authorize="hasAnyRole('CLIENTE')" th:if="${!readonly}">
-                <span th:class="${semana.checked} ? 'status-badge badge-complete' : 'status-badge badge-pending'">
-                    <i th:class="${semana.checked} ? 'fas fa-check-circle' : 'far fa-circle'"></i>
-                    <span th:text="${semana.checked} ? 'Completada' : 'Pendiente'"></span>
-                </span>
-            </td>
             <td>
                 <!-- Vista cliente edición -->
                 <div sec:authorize="hasAnyRole('CLIENTE')" th:if="${!readonly}">
-                    <a th:href="@{/semanas/check/{idSemana}(idSemana=${semId})}"
-                       th:class="${semana.checked}? 'btn btn-sm btn-outline-warning btn-toggle-completa' : 'btn btn-sm btn-outline-success btn-toggle-completa'"
-                       th:title="${semana.checked}? 'Desmarcar semana' : 'Marcar semana como completada'">
-                        <i th:class="${semana.checked}? 'fas fa-undo' : 'fas fa-check'"></i>
-                        <span th:text="${semana.checked}? 'Desmarcar' : 'Marcar'"></span>
-                    </a>
                     <a th:href="@{/dias/detallar/{idSemana}(idSemana=${semId}, readonly=${readonly})}" class="btn btn-sm btn-info">
                         <i class="fas fa-calendar-day"></i> Ver Días
                     </a>
@@ -129,7 +116,7 @@
             </td>
         </tr>
         <tr th:if="${semanas == null || #lists.isEmpty(semanas)}">
-            <td th:colspan="${(!readonly && #authorization.expression('hasRole(\'CLIENTE\')')) ? 5 : 4}" class="text-center text-muted py-4">No hay semanas registradas todavía.</td>
+            <td th:colspan="4" class="text-center text-muted py-4">No hay semanas registradas todavía.</td>
         </tr>
         </tbody>
     </table>

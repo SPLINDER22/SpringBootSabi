@@ -36,6 +36,56 @@
         </div>
     </div>
 
+    <!-- Pestañas de navegación: semanas / dias / ejes (copiado de series/lista.html) -->
+    <div class="semanas row">
+        <button class="col-md-2" th:each="se : ${semanas}"
+                th:classappend="${(dia != null and dia.idSemana != null and se != null and se.id == dia.idSemana)} ? 'bg-info text-white' : ''">
+            <a th:href="@{/dias/detallar/{idSemana}(idSemana=${se.id}, readonly=${readonly != null ? readonly : false})}"
+               th:text="'Semana '+${se.numeroSemana}"
+               class="text-decoration-none text-reset"></a>
+        </button>
+        <button class="col-md-1">
+            <a sec:authorize="hasAnyRole('ENTRENADOR')" th:if="${!readonly}"
+               th:href="@{/semanas/crear/{idRutina}(idRutina=${idRutina})}">
+                <i class="fas fa-plus"></i>
+            </a>
+        </button>
+    </div>
+    <div class="dias row">
+        <button class="col-md-2" th:each="d : ${dias}"
+                th:classappend="${(dia != null and dia.idDia != null and d != null and d.id == dia.idDia)} ? 'bg-info text-white' : ''">
+            <a th:href="@{/ejes/detallar/{idDia}(idDia=${d.id}, readonly=${readonly != null ? readonly : false})}"
+               th:text="'Dia '+${d.numeroDia}"
+               class="text-decoration-none text-reset"></a>
+        </button>
+        <button class="col-md-1">
+            <a sec:authorize="hasAnyRole('ENTRENADOR')" th:if="${!readonly and dia != null and dia.idSemana != null}"
+               th:href="@{/dias/crear/{idSemana}(idSemana=${dia.idSemana})}">
+                <i class="fas fa-plus"></i>
+            </a>
+        </button>
+    </div>
+    <div class="ejes row mb-5">
+        <button class="col-md-2" th:each="e : ${ejes}"
+                th:classappend="${(e != null and ejercicioAsignado != null and e.idEjercicioAsignado != null and ejercicioAsignado.idEjercicioAsignado != null and e.idEjercicioAsignado.equals(ejercicioAsignado.idEjercicioAsignado))} ? 'bg-info text-white' : ''">
+            <!-- Sólo renderizar el enlace si 'e' existe y tiene id -->
+            <a th:if="${e != null and e.idEjercicioAsignado != null}"
+               th:href="@{/series/detallar/{idEje}(idEje=${e.idEjercicioAsignado}, readonly=${readonly != null ? readonly : false})}"
+               th:text="${e != null and e.nombreEjercicio != null ? e.nombreEjercicio : 'Sin nombre'}"
+               class="text-decoration-none text-reset"></a>
+            <!-- Si no hay 'e', mostrar texto sin enlace -->
+            <span th:if="${e == null or e.idEjercicioAsignado == null}"
+                  th:text="${e != null and e.nombreEjercicio != null ? e.nombreEjercicio : 'Sin nombre'}"
+                  class="text-decoration-none text-reset"></span>
+        </button>
+        <button class="col-md-1">
+            <a sec:authorize="hasAnyRole('ENTRENADOR')" th:if="${!readonly and dia != null and dia.idDia != null}"
+               th:href="@{/ejes/crear/{idDia}(idDia=${dia.idDia})}">
+                <i class="fas fa-plus"></i>
+            </a>
+        </button>
+    </div>
+
     <div class="mb-2 contador-series" th:if="${series != null}" th:text="${'Series encontradas: ' + #lists.size(series)}"></div>
 
     <div class="mb-4">
@@ -52,6 +102,7 @@
             <input type="hidden" name="idSerie" th:value="${serie.id}"/>
             <input type="hidden" name="idRegistroSerie" th:value="${reg != null ? reg.idRegistroSerie : null}"/>
             <input type="hidden" name="fechaEjecucion" th:value="${reg != null ? reg.fechaEjecucion : null}"/>
+            <input type="hidden" name="estado" value="true">
             <table class="table table-bordered table-hover shadow-sm bg-white mb-0">
                 <thead class="table-light">
                 <tr>

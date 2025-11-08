@@ -564,3 +564,26 @@
         font-size: 1.3rem;
     }
 }
+
+.reporte-rutina {
+    background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+    border-radius: 12px;
+    padding: 20px;
+    border: 2px solid #38bdf8;
+    box-shadow: 0 4px 15px rgba(56, 189, 248, 0.1);
+    margin-top: 20px;
+    color: black;
+}
+.titulo{
+    font-size: 1.25rem;
+}
+.nombre {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #011753;
+}
+.porcentaje {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #00ff77;
+}

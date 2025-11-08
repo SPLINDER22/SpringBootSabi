@@ -48,7 +48,6 @@ public class EjercicioAsignadoServiceImpl implements EjercicioAsignadoService {
             dto.setIdDia(null);
         }
         dto.setUrlVideoCliente(e.getUrlVideoCliente());
-        dto.setChecked(e.getChecked());
         dto.setEstado(e.getEstado());
         return dto;
     }
@@ -68,7 +67,6 @@ public class EjercicioAsignadoServiceImpl implements EjercicioAsignadoService {
     @Override
     public List<EjercicioAsignadoDTO> getEjesDia(Long idDia) {
         List<EjercicioAsignado> ejesDia = ejercicioAsignadoRepository.getEjesDia(idDia);
-        // Mapear a DTOs antes de devolver a la capa web
         return ejesDia.stream().map(this::mapManual).toList();
     }
 
@@ -233,7 +231,7 @@ public class EjercicioAsignadoServiceImpl implements EjercicioAsignadoService {
     public EjercicioAsignadoDTO toggleChecked(long idEjercicioAsignado) {
         EjercicioAsignado ejercicioAsignado = ejercicioAsignadoRepository.findById(idEjercicioAsignado)
                 .orElseThrow(() -> new RuntimeException("EjercicioAsignado not found with id: " + idEjercicioAsignado));
-        ejercicioAsignado.setChecked(ejercicioAsignado.getChecked() == null ? Boolean.TRUE : !ejercicioAsignado.getChecked());
+        ejercicioAsignado.setEstado(ejercicioAsignado.getEstado() == null ? Boolean.TRUE : !ejercicioAsignado.getEstado());
         ejercicioAsignadoRepository.save(ejercicioAsignado);
         return mapManual(ejercicioAsignado);
     }

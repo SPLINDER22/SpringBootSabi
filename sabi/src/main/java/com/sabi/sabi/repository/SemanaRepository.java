@@ -12,7 +12,7 @@ import java.util.List;
 public interface SemanaRepository extends JpaRepository<Semana,Long> {
     List<Semana> findByEstadoTrue();
 
-    @Query("SELECT s FROM Semana s WHERE s.rutina.id = :idRutina AND s.estado = true ORDER BY s.numeroSemana ASC")
+    @Query("SELECT s FROM Semana s WHERE s.rutina.id = :idRutina ORDER BY s.numeroSemana ASC")
     List<Semana> getSemanasRutina(Long idRutina);
 
     Semana findByRutina(Rutina rutina);

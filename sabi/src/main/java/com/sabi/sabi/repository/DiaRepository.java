@@ -13,7 +13,7 @@ import java.util.List;
 public interface DiaRepository extends JpaRepository<Dia,Long> {
     List<Dia> findByEstadoTrue();
 
-    @Query("SELECT d FROM Dia d WHERE d.semana.id = :idSemana AND d.estado = true ORDER BY d.numeroDia ASC")
+    @Query("SELECT d FROM Dia d WHERE d.semana.id = :idSemana ORDER BY d.numeroDia ASC")
     List<Dia> getDiasSemana(Long idSemana);
 
     Dia findBySemana(Semana semana);
