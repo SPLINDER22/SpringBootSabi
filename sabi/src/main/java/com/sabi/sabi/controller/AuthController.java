@@ -3,6 +3,7 @@ package com.sabi.sabi.controller;
 import com.sabi.sabi.dto.UsuarioDTO;
 import com.sabi.sabi.entity.Usuario;
 import com.sabi.sabi.entity.enums.Rol;
+import com.sabi.sabi.exception.EmailYaExisteException;
 import com.sabi.sabi.service.UsuarioService;
 import com.sabi.sabi.service.EmailService;
 import lombok.RequiredArgsConstructor;
@@ -111,8 +112,13 @@ public class AuthController {
             request.getSession().setAttribute("SPRING_SECURITY_CONTEXT", SecurityContextHolder.getContext());
 
             return "redirect:/auth/seleccionar-rol";
+        } catch (EmailYaExisteException e) {
+            model.addAttribute("error", "El correo electrónico ya está registrado. Por favor, usa otro correo o inicia sesión.");
+            model.addAttribute("usuarioDTO", usuarioDTO);
+            return "auth/registro";
         } catch (Exception e) {
             model.addAttribute("error", "Error al registrar usuario: " + e.getMessage());
+            model.addAttribute("usuarioDTO", usuarioDTO);
             return "auth/registro";
         }
     }

@@ -43,6 +43,7 @@ public class ClienteController {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         CustomUserDetails userDetails = (CustomUserDetails) auth.getPrincipal();
         Long clienteId = userDetails.getUsuario().getId();
+
         // Obtener diagnostico actual
         DiagnosticoDTO diagnosticoActual = clienteService.getDiagnosticoActualByClienteId(clienteId);
         boolean tieneDiagnostico = diagnosticoActual != null;
@@ -50,12 +51,30 @@ public class ClienteController {
         // Obtener historial completo para comparativa
         List<DiagnosticoDTO> historial = clienteService.getHistorialDiagnosticosByClienteId(clienteId);
 
+        // DEBUG: Ver qué diagnósticos tenemos
+        System.out.println("=== DEBUG DASHBOARD ===");
+        System.out.println("Cliente ID: " + clienteId);
+        System.out.println("Total diagnósticos: " + (historial != null ? historial.size() : 0));
+        if (historial != null && !historial.isEmpty()) {
+            System.out.println("Diagnósticos encontrados:");
+            for (int i = 0; i < historial.size(); i++) {
+                DiagnosticoDTO d = historial.get(i);
+                System.out.println("  [" + i + "] Fecha: " + d.getFecha() + ", Peso: " + d.getPeso() + " kg");
+            }
+        }
+
         // Obtener diagnostico anterior (el segundo mas reciente)
         DiagnosticoDTO diagnosticoAnterior = null;
         if (historial != null && historial.size() >= 2) {
             // El historial viene ordenado por fecha DESC, entonces [0]=actual, [1]=anterior
             diagnosticoAnterior = historial.get(1);
+            System.out.println("✅ COMPARATIVA ACTIVADA");
+            System.out.println("  Diagnóstico actual: " + diagnosticoActual.getFecha() + " - " + diagnosticoActual.getPeso() + " kg");
+            System.out.println("  Diagnóstico anterior: " + diagnosticoAnterior.getFecha() + " - " + diagnosticoAnterior.getPeso() + " kg");
+        } else {
+            System.out.println("❌ COMPARATIVA DESACTIVADA - Solo hay " + (historial != null ? historial.size() : 0) + " diagnóstico(s)");
         }
+        System.out.println("======================");
 
         model.addAttribute("tieneDiagnostico", tieneDiagnostico);
         model.addAttribute("diagnosticoActual", diagnosticoActual);

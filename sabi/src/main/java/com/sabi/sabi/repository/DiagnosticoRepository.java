@@ -10,4 +10,5 @@ import java.util.List;
 public interface DiagnosticoRepository extends JpaRepository<Diagnostico,Long> {
     List<Diagnostico> findByEstadoTrue();
     List<Diagnostico> findByClienteIdAndEstadoTrue(Long clienteId);
+    List<Diagnostico> findByClienteIdAndEstadoTrueOrderByFechaDesc(Long clienteId);
 }

@@ -434,21 +434,35 @@
 
 /* ========== ESTILOS PARA COMPARATIVA DE DIAGNOSTICOS ========== */
 .comparativa-section {
-    background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
-    border-radius: 12px;
-    padding: 25px;
-    border: 2px solid #3b82f6;
-    box-shadow: 0 4px 15px rgba(59, 130, 246, 0.1);
+    background: linear-gradient(135deg, #fef3c7 0%, #fde047 100%);
+    border-radius: 15px;
+    padding: 30px;
+    border: 4px solid #f59e0b;
+    box-shadow: 0 8px 30px rgba(245, 158, 11, 0.3);
+    margin-bottom: 25px;
+    animation: slideInDown 0.6s ease-out;
+}
+
+@keyframes slideInDown {
+    from {
+        opacity: 0;
+        transform: translateY(-30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 .comparativa-title {
-    color: #1e40af;
-    font-size: 1.5rem;
-    font-weight: 700;
-    margin-bottom: 20px;
+    color: #92400e;
+    font-size: 1.8rem;
+    font-weight: 800;
+    margin-bottom: 15px;
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 12px;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
 }
 
 .comparativa-grid {

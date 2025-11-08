@@ -151,10 +151,49 @@ public class ClienteServiceImpl implements ClienteService {
 
     @Override
     public List<DiagnosticoDTO> getHistorialDiagnosticosByClienteId(Long clienteId) {
-        List<Diagnostico> diagnosticos = diagnosticoRepository.findByClienteIdAndEstadoTrue(clienteId);
-        return diagnosticos.stream()
+        System.out.println("\n========================================");
+        System.out.println("🔍 LLAMADA A getHistorialDiagnosticosByClienteId");
+        System.out.println("   Cliente ID: " + clienteId);
+
+        // Obtener diagnósticos ordenados por fecha descendente (más reciente primero)
+        List<Diagnostico> diagnosticos = diagnosticoRepository.findByClienteIdAndEstadoTrueOrderByFechaDesc(clienteId);
+
+        System.out.println("   Diagnósticos encontrados en BD: " + (diagnosticos != null ? diagnosticos.size() : "null"));
+
+        if (diagnosticos != null && !diagnosticos.isEmpty()) {
+            System.out.println("   📋 LISTADO DE DIAGNÓSTICOS:");
+            for (int i = 0; i < diagnosticos.size(); i++) {
+                Diagnostico d = diagnosticos.get(i);
+                System.out.println("      [" + i + "] ID: " + d.getId() +
+                                 ", Fecha: " + d.getFecha() +
+                                 ", Peso: " + d.getPeso() + " kg" +
+                                 ", Estado: " + d.getEstado() +
+                                 ", Cliente ID: " + (d.getCliente() != null ? d.getCliente().getId() : "null"));
+            }
+        } else {
+            System.out.println("   ⚠️ NO SE ENCONTRARON DIAGNÓSTICOS");
+            System.out.println("   Verificando si existen diagnósticos SIN FILTRO de estado...");
+            List<Diagnostico> todosDiagnosticos = diagnosticoRepository.findAll();
+            System.out.println("   Total diagnósticos en BD (sin filtro): " + todosDiagnosticos.size());
+            if (!todosDiagnosticos.isEmpty()) {
+                System.out.println("   Mostrando TODOS los diagnósticos:");
+                for (Diagnostico d : todosDiagnosticos) {
+                    System.out.println("      - ID: " + d.getId() +
+                                     ", Cliente ID: " + (d.getCliente() != null ? d.getCliente().getId() : "null") +
+                                     ", Estado: " + d.getEstado() +
+                                     ", Fecha: " + d.getFecha());
+                }
+            }
+        }
+
+        List<DiagnosticoDTO> resultado = diagnosticos.stream()
             .map(d -> modelMapper.map(d, DiagnosticoDTO.class))
             .toList();
+
+        System.out.println("   📤 DTOs mapeados: " + resultado.size());
+        System.out.println("========================================\n");
+
+        return resultado;
     }
 
     @Override
