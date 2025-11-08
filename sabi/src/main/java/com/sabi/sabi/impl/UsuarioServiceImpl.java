@@ -5,6 +5,7 @@ import com.sabi.sabi.entity.Cliente;
 import com.sabi.sabi.entity.Entrenador;
 import com.sabi.sabi.entity.Usuario;
 import com.sabi.sabi.entity.enums.Rol;
+import com.sabi.sabi.exception.EmailYaExisteException;
 import com.sabi.sabi.repository.UsuarioRepository;
 import com.sabi.sabi.service.UsuarioService;
 import jakarta.annotation.PostConstruct;
@@ -67,6 +68,11 @@ public class UsuarioServiceImpl implements UsuarioService {
         // Si viene ID, actualizar
         if (usuarioDTO.getId() != null && usuarioRepository.findById(usuarioDTO.getId()).isPresent()){
             return updateUsuario(usuarioDTO.getId(), usuarioDTO);
+        }
+
+        // Verificar si el email ya existe
+        if (usuarioRepository.findByEmail(usuarioDTO.getEmail()).isPresent()) {
+            throw new EmailYaExisteException("El correo electrónico ya está registrado");
         }
 
         // Crear subclase según rol para que exista la fila en la tabla específica
