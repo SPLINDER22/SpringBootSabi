@@ -3,13 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sabi App - Inicio</title>
+    <title>SABI - Inicio</title>
+    <!-- Google Font para aspecto más moderno -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" th:href="@{/css/index.css}">
 </head>
 <body>
     <header class="header">
         <div class="container">
-            <h1 class="logo">Sabi App</h1>
+            <div style="display:flex;align-items:baseline;gap:.6rem;">
+                <h1 class="logo">SABI</h1>
+                <small class="logo-sub">Salud y Bienestar</small>
+            </div>
             <nav>
                 <ul>
                     <li><a href="#quienes-somos">¿Quiénes somos?</a></li>
@@ -20,11 +25,59 @@
         </div>
     </header>
     <main>
+        <!-- Hero nuevo: encabezado visual con CTA -->
+        <section class="hero">
+            <div class="hero-inner container">
+                <div class="hero-text">
+                    <h2>Transforma tu salud con <span class="brand">SABI</span></h2>
+                    <p class="hero-sub">Rutinas personalizadas, diagnósticos claros y entrenadores que te acompañan en cada paso.</p>
+                    <div class="hero-ctas">
+                        <a class="btn btn-primary" href="/auth/registro">Comenzar ahora</a>
+                        <a class="btn btn-ghost" href="/auth/login">Ya tengo cuenta</a>
+                    </div>
+                </div>
+                <div class="hero-visual" aria-hidden="true">
+                    <!-- contenedor Lottie (se intentará cargar si hay conexión) -->
+                    <div class="lottie-player" data-lottie-url="https://assets2.lottiefiles.com/packages/lf20_Stt1R7.json" aria-hidden="true"></div>
+                    <!-- SVG decorativo inline: formas y líneas animadas (ligero y editable) -->
+                    <svg class="hero-fallback-svg" width="100%" height="100%" viewBox="0 0 600 360" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                        <defs>
+                            <linearGradient id="g1" x1="0" x2="1">
+                                <stop offset="0%" stop-color="#2a7ae4" stop-opacity="0.95"/>
+                                <stop offset="100%" stop-color="#43a047" stop-opacity="0.95"/>
+                            </linearGradient>
+                        </defs>
+                        <g class="hero-svg-group" transform="translate(0,0)">
+                            <circle class="blob blob1" cx="480" cy="60" r="90" fill="url(#g1)" opacity="0.14" />
+                            <circle class="blob blob2" cx="120" cy="260" r="100" fill="#ffd166" opacity="0.10" />
+                            <g class="figure" transform="translate(160,60)">
+                                <circle cx="100" cy="70" r="46" fill="#ffffff" opacity="0.95" />
+                                <rect x="60" y="120" width="140" height="90" rx="18" fill="#ffffff" opacity="0.9" />
+                                <path d="M40 220 C 120 180, 220 180, 300 220" stroke="#cfe9ff" stroke-width="6" fill="none" stroke-linecap="round" opacity="0.9"/>
+                            </g>
+                            <g class="pulse-rings" transform="translate(360,200)">
+                                <circle class="ring r1" r="8" cx="0" cy="0" fill="#2a7ae4" opacity="0.14" />
+                                <circle class="ring r2" r="28" cx="0" cy="0" fill="none" stroke="#2a7ae4" stroke-width="2" opacity="0.08" />
+                            </g>
+                        </g>
+                    </svg>
+                </div>
+            </div>
+        </section>
+
         <section id="quienes-somos" class="section">
             <div class="container">
                 <h2>¿Quiénes somos?</h2>
-                <p><strong>Sabi App</strong> es una plataforma digital que ayuda a personas de todas las edades a mejorar su bienestar físico y mental a través de rutinas personalizadas, diagnósticos de salud y seguimiento de progreso.</p>
-                <p>Dirigido a <span class="target">usuarios que buscan una vida más saludable</span>, desde principiantes hasta deportistas, Sabi App conecta clientes con entrenadores y facilita el acceso a planes de ejercicio, historial de diagnósticos y rutinas adaptadas.</p>
+                <p><strong>SABI</strong> es un sistema de información diseñado para optimizar la interacción entre usuarios interesados en mejorar su salud y bienestar, y profesionales del entrenamiento.</p>
+                <p>SABI facilita la creación y gestión de planes personalizados, mejora la comunicación entre profesionales y clientes, y sistematiza el seguimiento del progreso de los usuarios.</p>
+                <p>Al automatizar la creación de planes, se reduce significativamente el tiempo y esfuerzo que los profesionales necesitan para desarrollar programas de entrenamiento, permitiendo ofrecer un servicio más ágil y eficiente. Además, SABI proporciona un canal centrado en la comunicación entre clientes y profesionales, mejorando la disponibilidad y rapidez en la respuesta y eliminando la necesidad de múltiples medios de contacto.</p>
+                <p>El seguimiento del progreso del usuario se simplifica permitiendo un registro digital y organizado de los avances en rutinas. Esto facilita el monitoreo del progreso y permite a los profesionales acceder a la información rápidamente para ajustar planes con mayor precisión.</p>
+                <h3>Problemas que resolvemos</h3>
+                <ul class="goals">
+                    <li>Reducir el tiempo de entrega de planes personalizados para profesionales.</li>
+                    <li>Centralizar la comunicación entre cliente y profesional (sin depender de reuniones presenciales).</li>
+                    <li>Digitalizar y organizar el seguimiento del progreso del usuario para facilitar ajustes precisos.</li>
+                </ul>
             </div>
         </section>
         <section id="objetivo" class="section section-bg">
@@ -43,28 +96,24 @@
             <div class="container">
                 <h2>Scrum Team</h2>
                 <ul class="team-list">
-                    <li class="team-lead">William Espinel <span class="rol">Líder</span></li>
-                    <li class="team-db">Andrés Mena <span class="rol">Base de datos</span></li>
-                    <li class="team-design">Santiago Castro <span class="rol">Diseñador y presentador</span></li>
+                    <li class="team-lead">William Espinel <span class="rol">Scrum Leader</span></li>
+                    <li class="team-db">Andrés Mena <span class="rol">Developer </span></li>
+                    <li class="team-design">Santiago Castro <span class="rol">Developer</span></li>
                 </ul>
             </div>
         </section>
-        <section class="section section-login">
-            <div class="container login-actions">
-                <div class="action-card" onclick="window.location.href='/auth/login'">
-                    <span>Iniciar sesión</span>
-                </div>
-                <div class="action-card" onclick="window.location.href='/auth/registro'">
-                    <span>Crear cuenta</span>
-                </div>
-            </div>
-        </section>
+        <!-- Sección de login inferior eliminada según solicitud del usuario -->
     </main>
+
     <footer class="footer">
         <div class="container">
-            <p>&copy; 2025 Sabi App. Todos los derechos reservados.</p>
+            <p>&copy; 2025 SABI. Todos los derechos reservados.</p>
         </div>
     </footer>
+    <!-- Script Lottie (CDN) -->
+    <script src="https://unpkg.com/lottie-web@5.10.1/build/player/lottie.min.js"></script>
+    <!-- Script específico para hero: parallax, lottie y reveal -->
+    <script th:src="@{/js/hero.js}"></script>
     <script th:src="@{/js/index.js}"></script>
 </body>
 </html>
