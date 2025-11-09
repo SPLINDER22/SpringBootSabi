@@ -51,33 +51,68 @@ public class DiagnosticoServiceImpl implements DiagnosticoService {
 
     @Override
     public DiagnosticoDTO createDiagnostico(DiagnosticoDTO diagnosticoDTO) {
+        System.out.println("\n🔷 CREANDO/ACTUALIZANDO DIAGNÓSTICO");
+        System.out.println("   DTO ID: " + diagnosticoDTO.getIdDiagnostico());
+        System.out.println("   Cliente ID: " + diagnosticoDTO.getIdCliente());
+
         Diagnostico diagnostico = modelMapper.map(diagnosticoDTO, Diagnostico.class);
         
         // Si tiene ID y ya existe, es una actualización
         if (diagnostico.getId() != null && diagnosticoRepository.findById(diagnostico.getId()).isPresent()){
+            System.out.println("   ➡️ Es actualización de diagnóstico existente ID: " + diagnostico.getId());
             return updateDiagnostico(diagnostico.getId(), diagnosticoDTO);
         }
         
         // Si no tiene ID o no existe, es creación nueva
+        System.out.println("   ➡️ Es creación de NUEVO diagnóstico");
+        System.out.println("   📝 Creando NUEVO registro en base de datos");
+
         diagnostico.setId(null); // Asegurar que sea null para nueva creación
         
+        // ⚠️ IMPORTANTE: Asegurar que estado sea true
+        diagnostico.setEstado(true);
+        System.out.println("   ✅ Estado establecido: true");
+
         if (diagnosticoDTO.getIdCliente() != null) {
             Cliente cliente = clienteRepository.findById(diagnosticoDTO.getIdCliente())
                     .orElseThrow(() -> new RuntimeException("Cliente not found with id: " + diagnosticoDTO.getIdCliente()));
             diagnostico.setCliente(cliente);
+            System.out.println("   ✅ Cliente asignado: " + cliente.getId());
         }
         
+        // Guardar NUEVO diagnóstico
         diagnostico = diagnosticoRepository.save(diagnostico);
+        System.out.println("   ✅ NUEVO Diagnóstico guardado con ID: " + diagnostico.getId());
+        System.out.println("   Estado en BD: " + diagnostico.getEstado());
+        System.out.println("   Cliente ID en BD: " + (diagnostico.getCliente() != null ? diagnostico.getCliente().getId() : "null"));
+        System.out.println("   Fecha: " + diagnostico.getFecha());
+
+        // Verificar cuántos diagnósticos tiene ahora el cliente
+        List<Diagnostico> todosLosDelCliente = diagnosticoRepository.findByClienteIdAndEstadoTrue(diagnostico.getCliente().getId());
+        System.out.println("   📊 Total diagnósticos del cliente ahora: " + todosLosDelCliente.size());
+
         DiagnosticoDTO resultDTO = modelMapper.map(diagnostico, DiagnosticoDTO.class);
         // Asegurar que el ID se mapee correctamente
         resultDTO.setIdDiagnostico(diagnostico.getId());
+
+        System.out.println("   📤 DTO resultado ID: " + resultDTO.getIdDiagnostico());
+        System.out.println("🔷 FIN CREACIÓN\n");
+
         return resultDTO;
     }
 
     @Override
     public DiagnosticoDTO updateDiagnostico(long id, DiagnosticoDTO diagnosticoDTO) {
+        System.out.println("\n🔶 ACTUALIZANDO DIAGNÓSTICO ID: " + id);
+
         Diagnostico existingDiagnostico = diagnosticoRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Diagnostico not found with id: " + id));
+
+        System.out.println("   Estado ANTES de actualizar: " + existingDiagnostico.getEstado());
+
+        // ⚠️ IMPORTANTE: Asegurar que estado permanezca true
+        existingDiagnostico.setEstado(true);
+
         if (diagnosticoDTO.getIdCliente() != null) {
             Cliente cliente = clienteRepository.findById(diagnosticoDTO.getIdCliente())
                     .orElseThrow(() -> new RuntimeException("Cliente not found with id: " + diagnosticoDTO.getIdCliente()));
@@ -132,6 +167,13 @@ public class DiagnosticoServiceImpl implements DiagnosticoService {
         existingDiagnostico.setFrecuenciaAlcohol(diagnosticoDTO.getFrecuenciaAlcohol());
 
         existingDiagnostico = diagnosticoRepository.save(existingDiagnostico);
+
+        System.out.println("   ✅ Diagnóstico actualizado");
+        System.out.println("   Estado DESPUÉS de guardar: " + existingDiagnostico.getEstado());
+        System.out.println("   ID: " + existingDiagnostico.getId());
+        System.out.println("   Cliente ID: " + (existingDiagnostico.getCliente() != null ? existingDiagnostico.getCliente().getId() : "null"));
+        System.out.println("🔶 FIN ACTUALIZACIÓN\n");
+
         DiagnosticoDTO resultDTO = modelMapper.map(existingDiagnostico, DiagnosticoDTO.class);
         // Asegurar que el ID se mapee correctamente
         resultDTO.setIdDiagnostico(existingDiagnostico.getId());

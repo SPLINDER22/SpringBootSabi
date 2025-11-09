@@ -4,108 +4,378 @@
     <meta charset="UTF-8">
     <title>Historial de Diagnósticos</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link rel="stylesheet" th:href="@{/css/diagnostico-form.css}">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/diagnostico-historial.css}">
+    <style>
+        .comparativa-box {
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+            border: 3px solid #f59e0b;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 15px rgba(245, 158, 11, 0.2);
+        }
+        .metric-comparison {
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
+            gap: 15px;
+            align-items: center;
+            margin: 15px 0;
+        }
+        .metric-value {
+            text-align: center;
+            padding: 15px;
+            border-radius: 10px;
+            background: white;
+            font-weight: 700;
+            font-size: 1.1rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        .metric-change {
+            text-align: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+        .metric-change.positive {
+            color: #dc3545;
+        }
+        .metric-change.negative {
+            color: #22c55e;
+        }
+        .metric-change.neutral {
+            color: #6c757d;
+        }
+        @media (max-width: 768px) {
+            .metric-comparison {
+                grid-template-columns: 1fr;
+                gap: 10px;
+            }
+        }
+    </style>
 </head>
 <body th:replace="layout/layout :: layout('Historial de Diagnósticos', ~{::section})">
 <section th:fragment="section">
 <div class="container py-4">
-    <h2 class="mb-4">Historial de Diagnósticos</h2>
-    <table class="table table-bordered table-hover">
+    <div class="historial-card">
+        <h2 class="mb-2"><i class="fas fa-history"></i> Historial de Diagnósticos</h2>
+        <p class="mb-0">Total de diagnósticos: <strong th:text="${historial != null ? historial.size() : 0}">0</strong></p>
+    </div>
+
+    <!-- Alerta si no hay diagnósticos -->
+    <div th:if="${historial == null || historial.isEmpty()}" class="alert alert-info mt-4">
+        <h5><i class="fas fa-info-circle"></i> No tienes diagnósticos registrados</h5>
+        <p class="mb-2">Crea tu primer diagnóstico para comenzar a hacer seguimiento de tu progreso.</p>
+        <a href="/diagnostico/cliente" class="btn btn-primary">
+            <i class="fas fa-plus-circle"></i> Crear Mi Primer Diagnóstico
+        </a>
+    </div>
+
+    <!-- Contenido del historial (solo si hay diagnósticos) -->
+    <div th:if="${historial != null && !historial.isEmpty()}">
+        <!-- Comparativa Rápida (si hay más de un diagnóstico) -->
+    <div class="comparativa-box" th:if="${tieneComparativa}">
+        <h4 class="mb-3"><i class="fas fa-chart-bar"></i> 📊 Tu Evolución Reciente</h4>
+        <p class="text-muted mb-4">Comparación entre tu diagnóstico más reciente y el anterior</p>
+
+        <div class="row">
+            <!-- Comparación de Peso -->
+            <div class="col-md-4" th:with="pesoActual=${diagnosticoActual.peso}, pesoAnterior=${diagnosticoAnterior.peso}">
+                <h6 class="mb-3">⚖️ Peso</h6>
+                <div class="metric-comparison" th:if="${pesoActual != null && pesoAnterior != null}">
+                    <div class="metric-value">
+                        <small class="text-muted">Anterior</small><br>
+                        <span th:text="${#numbers.formatDecimal(pesoAnterior, 1, 1) + ' kg'}"></span>
+                    </div>
+                    <div class="metric-change" th:with="diferencia=${pesoActual - pesoAnterior}"
+                         th:classappend="${diferencia > 0} ? 'positive' : (${diferencia < 0} ? 'negative' : 'neutral')">
+                        <span th:if="${diferencia > 0}">↗️ +<span th:text="${#numbers.formatDecimal(diferencia, 1, 1)}"></span></span>
+                        <span th:if="${diferencia < 0}">↘️ <span th:text="${#numbers.formatDecimal(diferencia, 1, 1)}"></span></span>
+                        <span th:if="${diferencia == 0}">➡️</span>
+                    </div>
+                    <div class="metric-value">
+                        <small class="text-muted">Actual</small><br>
+                        <span th:text="${#numbers.formatDecimal(pesoActual, 1, 1) + ' kg'}"></span>
+                    </div>
+                </div>
+                <div class="text-center mt-2">
+                    <span th:if="${pesoActual > pesoAnterior}" class="badge bg-danger">Subió de peso</span>
+                    <span th:if="${pesoActual < pesoAnterior}" class="badge bg-success">Bajó de peso</span>
+                    <span th:if="${pesoActual == pesoAnterior}" class="badge bg-secondary">Sin cambio</span>
+                </div>
+            </div>
+
+            <!-- Comparación de IMC -->
+            <div class="col-md-4" th:with="imcActual=${diagnosticoActual.peso != null && diagnosticoActual.estatura != null ? T(java.lang.Math).round((diagnosticoActual.peso / ((diagnosticoActual.estatura/100)*(diagnosticoActual.estatura/100))) * 10) / 10.0 : null}, imcAnterior=${diagnosticoAnterior.peso != null && diagnosticoAnterior.estatura != null ? T(java.lang.Math).round((diagnosticoAnterior.peso / ((diagnosticoAnterior.estatura/100)*(diagnosticoAnterior.estatura/100))) * 10) / 10.0 : null}">
+                <h6 class="mb-3">📊 IMC</h6>
+                <div class="metric-comparison" th:if="${imcActual != null && imcAnterior != null}">
+                    <div class="metric-value">
+                        <small class="text-muted">Anterior</small><br>
+                        <span th:text="${#numbers.formatDecimal(imcAnterior, 1, 1)}"></span>
+                    </div>
+                    <div class="metric-change" th:with="diferencia=${imcActual - imcAnterior}"
+                         th:classappend="${diferencia > 0} ? 'positive' : (${diferencia < 0} ? 'negative' : 'neutral')">
+                        <span th:if="${diferencia > 0}">↗️ +<span th:text="${#numbers.formatDecimal(diferencia, 1, 1)}"></span></span>
+                        <span th:if="${diferencia < 0}">↘️ <span th:text="${#numbers.formatDecimal(diferencia, 1, 1)}"></span></span>
+                        <span th:if="${diferencia == 0}">➡️</span>
+                    </div>
+                    <div class="metric-value">
+                        <small class="text-muted">Actual</small><br>
+                        <span th:text="${#numbers.formatDecimal(imcActual, 1, 1)}"></span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Comparación de Grasa Corporal -->
+            <div class="col-md-4" th:if="${diagnosticoActual.porcentajeGrasaCorporal != null && diagnosticoAnterior.porcentajeGrasaCorporal != null}" th:with="grasaActual=${diagnosticoActual.porcentajeGrasaCorporal}, grasaAnterior=${diagnosticoAnterior.porcentajeGrasaCorporal}">
+                <h6 class="mb-3">💪 % Grasa Corporal</h6>
+                <div class="metric-comparison">
+                    <div class="metric-value">
+                        <small class="text-muted">Anterior</small><br>
+                        <span th:text="${#numbers.formatDecimal(grasaAnterior, 1, 1) + '%'}"></span>
+                    </div>
+                    <div class="metric-change" th:with="diferencia=${grasaActual - grasaAnterior}"
+                         th:classappend="${diferencia < 0} ? 'negative' : (${diferencia > 0} ? 'positive' : 'neutral')">
+                        <span th:if="${diferencia > 0}">↗️ +<span th:text="${#numbers.formatDecimal(diferencia, 1, 1)}"></span></span>
+                        <span th:if="${diferencia < 0}">↘️ <span th:text="${#numbers.formatDecimal(diferencia, 1, 1)}"></span></span>
+                        <span th:if="${diferencia == 0}">➡️</span>
+                    </div>
+                    <div class="metric-value">
+                        <small class="text-muted">Actual</small><br>
+                        <span th:text="${#numbers.formatDecimal(grasaActual, 1, 1) + '%'}"></span>
+                    </div>
+                </div>
+                <div class="text-center mt-2">
+                    <span th:if="${grasaActual < grasaAnterior}" class="badge bg-success">Redujo grasa</span>
+                    <span th:if="${grasaActual > grasaAnterior}" class="badge bg-danger">Aumentó grasa</span>
+                    <span th:if="${grasaActual == grasaAnterior}" class="badge bg-secondary">Sin cambio</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mensaje cuando solo hay 1 diagnóstico -->
+    <div th:if="${historial != null && historial.size() == 1}" class="alert alert-info mt-4" style="background: linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%); border: 3px solid #ff9800; border-radius: 15px;">
+        <div class="d-flex align-items-center">
+            <i class="fas fa-chart-line fa-3x me-3" style="color: #f57c00;"></i>
+            <div>
+                <h5 class="mb-2" style="color: #e65100;">
+                    <i class="fas fa-star"></i> ¡Tienes tu primer diagnóstico!
+                </h5>
+                <p class="mb-2" style="color: #ef6c00; font-size: 1.1rem;">
+                    <strong>Para ver la comparativa de evolución</strong>, necesitas crear un segundo diagnóstico.
+                </p>
+                <p class="mb-0" style="color: #f57c00;">
+                    La comparativa te mostrará si has <strong>subido o bajado de peso</strong>, cambios en tu <strong>IMC</strong> y <strong>grasa corporal</strong>.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tabla de Diagnósticos -->
+    <table class="table historial-table table-bordered table-hover">
         <thead>
             <tr>
+                <th>#</th>
                 <th>Fecha</th>
                 <th>Peso</th>
                 <th>Estatura</th>
+                <th>IMC</th>
                 <th>Nivel</th>
                 <th>Acciones</th>
             </tr>
         </thead>
         <tbody>
-            <tr th:each="diag : ${historial}">
-        <td th:text="${#temporals.format(diag.fecha, 'dd/MM/yyyy')}"></td>
-        <td th:text="${diag.peso}"></td>
-        <td th:text="${diag.estatura}"></td>
-        <td th:text="${diag.nivelExperiencia}"></td>
-        <td>
-          <button type="button" class="btn btn-info btn-sm" data-bs-toggle="modal" data-bs-target="#modalDetalle" th:attr="data-id=${diag.idDiagnostico}">Ver detalle</button>
-          <a th:href="@{/cliente/diagnostico/descargar/{id}(id=${diag.idDiagnostico})}" class="btn btn-success btn-sm">
-            <i class="fas fa-file-excel"></i> Descargar Excel
-          </a>
-        </td>
+            <tr th:each="diag, stat : ${historial}">
+                <td>
+                    <span th:text="${historial.size() - stat.index}"></span>
+                    <span th:if="${stat.first}" class="badge bg-success ms-1">Actual</span>
+                </td>
+                <td th:text="${#temporals.format(diag.fecha, 'dd/MM/yyyy')}"></td>
+                <td th:text="${diag.peso != null ? diag.peso + ' kg' : 'N/A'}"></td>
+                <td th:text="${diag.estatura != null ? diag.estatura + ' cm' : 'N/A'}"></td>
+                <td th:with="imc=${diag.peso != null && diag.estatura != null ? T(java.lang.Math).round((diag.peso / ((diag.estatura/100)*(diag.estatura/100))) * 10) / 10.0 : null}">
+                    <span th:text="${imc != null ? #numbers.formatDecimal(imc, 1, 1) : 'N/A'}"></span>
+                </td>
+                <td th:text="${diag.nivelExperiencia}"></td>
+                <td>
+                    <button type="button" class="btn btn-info btn-sm" data-bs-toggle="modal" data-bs-target="#modalDetalle" th:attr="data-id=${diag.idDiagnostico}">
+                        <i class="fas fa-eye"></i> Ver detalle
+                    </button>
+                    <a th:href="@{/cliente/diagnostico/descargar/{id}(id=${diag.idDiagnostico})}" class="btn btn-success btn-sm">
+                        <i class="fas fa-file-excel"></i> Descargar
+                    </a>
+                </td>
             </tr>
         </tbody>
     </table>
+
     <!-- Modal para detalle de diagnóstico -->
     <div class="modal fade" id="modalDetalle" tabindex="-1" aria-labelledby="modalDetalleLabel" aria-hidden="true">
-      <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-          <div class="modal-header bg-primary text-white">
-            <h5 class="modal-title" id="modalDetalleLabel">Detalle de Diagnóstico</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-          </div>
-          <div class="modal-body">
-            <div id="detalleDiagnosticoContent">
-              <!-- Aquí se cargan los datos por AJAX -->
+        <div class="modal-dialog modal-xl modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title" id="modalDetalleLabel">
+                        <i class="fas fa-file-medical"></i> Detalle de Diagnóstico
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="detalleDiagnosticoContent">
+                        <div class="text-center">
+                            <div class="spinner-border text-primary" role="status">
+                                <span class="visually-hidden">Cargando...</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="fas fa-times"></i> Cerrar
+                    </button>
+                </div>
             </div>
-            <div class="alert alert-info mt-3">
-              <i class="fas fa-info-circle"></i> Los datos mostrados son solo informativos y no pueden ser editados.
-            </div>
-          </div>
         </div>
-      </div>
+    </div>
+    </div> <!-- Fin del div th:if historial no vacío -->
+
+    <!-- Botones de navegación -->
+    <div class="mt-4">
+        <a href="/cliente/dashboard" class="btn btn-secondary">
+            <i class="fas fa-arrow-left"></i> Volver al Dashboard
+        </a>
+        <a href="/diagnostico/cliente" class="btn btn-primary" th:if="${historial != null && !historial.isEmpty()}">
+            <i class="fas fa-plus-circle"></i> Nuevo Diagnóstico
+        </a>
     </div>
 </div>
+
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
-  document.addEventListener('DOMContentLoaded', function() {
-    var modal = document.getElementById('modalDetalle');
-    var diagId = null;
-    document.querySelectorAll('button[data-bs-target="#modalDetalle"]').forEach(function(btn) {
-      btn.addEventListener('click', function() {
-        diagId = btn.getAttribute('data-id');
-      });
-    });
-    modal.addEventListener('shown.bs.modal', function () {
-      if (!diagId) return;
-      fetch('/diagnostico/detalle/' + diagId)
-        .then(response => response.json())
-        .then(data => {
-          document.getElementById('detalleDiagnosticoContent').innerHTML = `
-            <div class='row'>
-              <div class='col-md-6'>
-                <ul class='list-group mb-3'>
-                  <li class='list-group-item'><strong>Fecha:</strong> ${data.fecha}</li>
-                  <li class='list-group-item'><strong>Peso:</strong> ${data.peso} kg</li>
-                  <li class='list-group-item'><strong>Estatura:</strong> ${data.estatura} cm</li>
-                  <li class='list-group-item'><strong>IMC:</strong> ${data.peso && data.estatura ? (Math.round((data.peso / Math.pow(data.estatura/100,2))*10)/10) : '--'}</li>
-                  <li class='list-group-item'><strong>Nivel de experiencia:</strong> ${data.nivelExperiencia}</li>
-                  <li class='list-group-item'><strong>Disponibilidad de tiempo:</strong> ${data.disponibilidadTiempo || 'N/A'}</li>
-                  <li class='list-group-item'><strong>Acceso a recursos:</strong> ${data.accesoRecursos || 'N/A'}</li>
-                  <li class='list-group-item'><strong>Lesiones:</strong> ${data.lesiones || 'N/A'}</li>
-                  <li class='list-group-item'><strong>Condiciones médicas:</strong> ${data.condicionesMedicas || 'N/A'}</li>
-                </ul>
-              </div>
-              <div class='col-md-6'>
-                <ul class='list-group mb-3'>
-                  <li class='list-group-item'><strong>Foto Frontal:</strong> ${data.fotoFrontalUrl ? `<a href='${data.fotoFrontalUrl}' target='_blank'>Ver foto</a>` : 'N/A'}</li>
-                  <li class='list-group-item'><strong>Foto Lateral:</strong> ${data.fotoLateralUrl ? `<a href='${data.fotoLateralUrl}' target='_blank'>Ver foto</a>` : 'N/A'}</li>
-                  <li class='list-group-item'><strong>Foto Trasera:</strong> ${data.fotoTraseraUrl ? `<a href='${data.fotoTraseraUrl}' target='_blank'>Ver foto</a>` : 'N/A'}</li>
-                  <li class='list-group-item'><strong>% Grasa Corporal:</strong> ${data.porcentajeGrasaCorporal || 'N/A'}</li>
-                  <li class='list-group-item'><strong>Circunferencia Cintura:</strong> ${data.circunferenciaCintura || 'N/A'} cm</li>
-                  <li class='list-group-item'><strong>Circunferencia Cadera:</strong> ${data.circunferenciaCadera || 'N/A'} cm</li>
-                  <li class='list-group-item'><strong>Circunferencia Brazo:</strong> ${data.circunferenciaBrazo || 'N/A'} cm</li>
-                  <li class='list-group-item'><strong>Circunferencia Pierna:</strong> ${data.circunferenciaPierna || 'N/A'} cm</li>
-                  <li class='list-group-item'><strong>Frecuencia Cardíaca Reposo:</strong> ${data.frecuenciaCardiacaReposo || 'N/A'} bpm</li>
-                  <li class='list-group-item'><strong>Presión Arterial:</strong> ${data.presionArterial || 'N/A'}</li>
-                  <li class='list-group-item'><strong>Horas de Sueño:</strong> ${data.horasSueno || 'N/A'}</li>
-                  <li class='list-group-item'><strong>Hábitos Alimenticios:</strong> ${data.habitosAlimenticios || 'N/A'}</li>
-                </ul>
-              </div>
-            </div>
-          `;
+    document.addEventListener('DOMContentLoaded', function() {
+        var modal = document.getElementById('modalDetalle');
+        var diagId = null;
+
+        document.querySelectorAll('button[data-bs-target="#modalDetalle"]').forEach(function(btn) {
+            btn.addEventListener('click', function() {
+                diagId = btn.getAttribute('data-id');
+            });
+        });
+
+        modal.addEventListener('shown.bs.modal', function () {
+            if (!diagId) return;
+
+            fetch('/diagnostico/detalle/' + diagId)
+                .then(response => response.json())
+                .then(data => {
+                    const imc = data.peso && data.estatura ?
+                        (Math.round((data.peso / Math.pow(data.estatura/100, 2)) * 10) / 10) : null;
+
+                    let imcCategoria = '';
+                    let imcColor = '';
+                    if (imc) {
+                        if (imc < 18.5) {
+                            imcCategoria = 'Bajo peso';
+                            imcColor = 'info';
+                        } else if (imc < 25) {
+                            imcCategoria = 'Normal';
+                            imcColor = 'success';
+                        } else if (imc < 30) {
+                            imcCategoria = 'Sobrepeso';
+                            imcColor = 'warning';
+                        } else {
+                            imcCategoria = 'Obesidad';
+                            imcColor = 'danger';
+                        }
+                    }
+
+                    document.getElementById('detalleDiagnosticoContent').innerHTML = `
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h5 class="mb-3"><i class="fas fa-weight"></i> Información Básica</h5>
+                                <ul class="list-group mb-3">
+                                    <li class="list-group-item"><strong>📅 Fecha:</strong> ${data.fecha}</li>
+                                    <li class="list-group-item"><strong>⚖️ Peso:</strong> ${data.peso} kg</li>
+                                    <li class="list-group-item"><strong>📏 Estatura:</strong> ${data.estatura} cm</li>
+                                    <li class="list-group-item">
+                                        <strong>📊 IMC:</strong> ${imc || 'N/A'}
+                                        ${imc ? '<span class="badge bg-' + imcColor + ' ms-2">' + imcCategoria + '</span>' : ''}
+                                    </li>
+                                    <li class="list-group-item"><strong>🎯 Nivel de experiencia:</strong> ${data.nivelExperiencia}</li>
+                                    <li class="list-group-item"><strong>⏰ Disponibilidad de tiempo:</strong> ${data.disponibilidadTiempo || 'N/A'}</li>
+                                    <li class="list-group-item"><strong>🏋️ Acceso a recursos:</strong> ${data.accesoRecursos || 'N/A'}</li>
+                                </ul>
+
+                                <h5 class="mb-3"><i class="fas fa-heartbeat"></i> Salud</h5>
+                                <ul class="list-group mb-3">
+                                    <li class="list-group-item"><strong>🤕 Lesiones:</strong> ${data.lesiones || 'Ninguna'}</li>
+                                    <li class="list-group-item"><strong>🏥 Condiciones médicas:</strong> ${data.condicionesMedicas || 'Ninguna'}</li>
+                                    <li class="list-group-item"><strong>❤️ Frecuencia cardíaca en reposo:</strong> ${data.frecuenciaCardiacaReposo || 'N/A'} bpm</li>
+                                    <li class="list-group-item"><strong>🩺 Presión arterial:</strong> ${data.presionArterial || 'N/A'}</li>
+                                </ul>
+                            </div>
+
+                            <div class="col-md-6">
+                                <h5 class="mb-3"><i class="fas fa-ruler-combined"></i> Medidas Corporales</h5>
+                                <ul class="list-group mb-3">
+                                    <li class="list-group-item"><strong>💪 % Grasa Corporal:</strong> ${data.porcentajeGrasaCorporal || 'N/A'}</li>
+                                    <li class="list-group-item"><strong>📐 Circunferencia Cintura:</strong> ${data.circunferenciaCintura || 'N/A'} cm</li>
+                                    <li class="list-group-item"><strong>📐 Circunferencia Cadera:</strong> ${data.circunferenciaCadera || 'N/A'} cm</li>
+                                    <li class="list-group-item"><strong>💪 Circunferencia Brazo:</strong> ${data.circunferenciaBrazo || 'N/A'} cm</li>
+                                    <li class="list-group-item"><strong>🦵 Circunferencia Pierna:</strong> ${data.circunferenciaPierna || 'N/A'} cm</li>
+                                </ul>
+
+                                <h5 class="mb-3"><i class="fas fa-utensils"></i> Hábitos</h5>
+                                <ul class="list-group mb-3">
+                                    <li class="list-group-item"><strong>😴 Horas de Sueño:</strong> ${data.horasSueno || 'N/A'}</li>
+                                    <li class="list-group-item"><strong>🍎 Hábitos Alimenticios:</strong> ${data.habitosAlimenticios || 'N/A'}</li>
+                                </ul>
+
+                                <h5 class="mb-3"><i class="fas fa-images"></i> Fotos</h5>
+                                <div class="row g-2">
+                                    ${data.fotoFrontalUrl ? `
+                                        <div class="col-4">
+                                            <div class="card">
+                                                <img src="${data.fotoFrontalUrl}" class="card-img-top" alt="Frontal" style="height: 200px; object-fit: cover;">
+                                                <div class="card-footer text-center p-1"><small>📸 Frontal</small></div>
+                                            </div>
+                                        </div>
+                                    ` : ''}
+                                    ${data.fotoLateralUrl ? `
+                                        <div class="col-4">
+                                            <div class="card">
+                                                <img src="${data.fotoLateralUrl}" class="card-img-top" alt="Lateral" style="height: 200px; object-fit: cover;">
+                                                <div class="card-footer text-center p-1"><small>📸 Lateral</small></div>
+                                            </div>
+                                        </div>
+                                    ` : ''}
+                                    ${data.fotoTraseraUrl ? `
+                                        <div class="col-4">
+                                            <div class="card">
+                                                <img src="${data.fotoTraseraUrl}" class="card-img-top" alt="Trasera" style="height: 200px; object-fit: cover;">
+                                                <div class="card-footer text-center p-1"><small>📸 Trasera</small></div>
+                                            </div>
+                                        </div>
+                                    ` : ''}
+                                    ${!data.fotoFrontalUrl && !data.fotoLateralUrl && !data.fotoTraseraUrl ?
+                                        '<div class="col-12"><p class="text-muted">No hay fotos disponibles</p></div>' : ''}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="alert alert-info mt-3">
+                            <i class="fas fa-info-circle"></i> Los datos mostrados son solo informativos y no pueden ser editados.
+                        </div>
+                    `;
+                })
+                .catch(error => {
+                    document.getElementById('detalleDiagnosticoContent').innerHTML = `
+                        <div class="alert alert-danger">
+                            <i class="fas fa-exclamation-triangle"></i> Error al cargar los datos del diagnóstico.
+                        </div>
+                    `;
+                });
         });
     });
-  });
 </script>
 </section>
 </body>

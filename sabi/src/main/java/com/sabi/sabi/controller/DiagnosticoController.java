@@ -34,7 +34,9 @@ public class DiagnosticoController {
     private String uploadPath;
 
     @GetMapping("/cliente")
-    public String diagnosticoCliente(@AuthenticationPrincipal UserDetails userDetails, Model model) {
+    public String diagnosticoCliente(@AuthenticationPrincipal UserDetails userDetails,
+                                     @RequestParam(required = false) String action,
+                                     Model model) {
         Long clienteId = clienteService.getClienteByEmail(userDetails.getUsername()).getId();
         DiagnosticoDTO diagnosticoActual = clienteService.getDiagnosticoActualByClienteId(clienteId);
         List<DiagnosticoDTO> historial = clienteService.getHistorialDiagnosticosByClienteId(clienteId);
@@ -42,13 +44,23 @@ public class DiagnosticoController {
         model.addAttribute("diagnosticoActual", diagnosticoActual);
         model.addAttribute("historial", historial);
         
-        // Pasar el diagnóstico para el formulario - nuevo para creación, existente para actualización
-        if (diagnosticoActual != null) {
-            model.addAttribute("diagnostico", diagnosticoActual);
-        } else {
-            model.addAttribute("diagnostico", new DiagnosticoDTO());
+        // ⚠️ IMPORTANTE: SIEMPRE crear formulario vacío para NUEVO diagnóstico
+        // Esto evita que se actualice el diagnóstico existente
+        DiagnosticoDTO diagnosticoFormulario = new DiagnosticoDTO();
+
+        // Si tiene diagnóstico actual, pre-llenar algunos campos que típicamente no cambian
+        if (diagnosticoActual != null && "actualizar".equals(action)) {
+            // Solo si explícitamente se pide actualizar, cargar el actual
+            diagnosticoFormulario = diagnosticoActual;
+        } else if (diagnosticoActual != null) {
+            // Para nuevo diagnóstico, solo copiar datos básicos que no suelen cambiar
+            diagnosticoFormulario.setEstatura(diagnosticoActual.getEstatura());
+            diagnosticoFormulario.setNivelExperiencia(diagnosticoActual.getNivelExperiencia());
         }
-        
+
+        model.addAttribute("diagnostico", diagnosticoFormulario);
+        model.addAttribute("esNuevo", !"actualizar".equals(action));
+
         return "cliente/diagnostico-form";
     }
 
@@ -59,13 +71,33 @@ public class DiagnosticoController {
                                    @RequestParam(required = false) MultipartFile fotoLateral,
                                    @RequestParam(required = false) MultipartFile fotoTrasera,
                                    Model model) {
+        System.out.println("\n");
+        System.out.println("████████████████████████████████████████");
+        System.out.println("🚀 POST /diagnostico/crear EJECUTADO");
+        System.out.println("████████████████████████████████████████");
+
         try {
             Long clienteId = clienteService.getClienteByEmail(userDetails.getUsername()).getId();
+
+            System.out.println("   Cliente ID: " + clienteId);
+            System.out.println("   DTO ID Diagnostico recibido: " + diagnosticoDTO.getIdDiagnostico());
+            System.out.println("   Peso: " + diagnosticoDTO.getPeso());
+            System.out.println("   Estatura: " + diagnosticoDTO.getEstatura());
+
+            // ⚠️ CRÍTICO: FORZAR QUE SIEMPRE SEA NUEVO DIAGNÓSTICO
+            // Eliminar el ID para forzar creación de nuevo registro
+            diagnosticoDTO.setIdDiagnostico(null);
             diagnosticoDTO.setIdCliente(clienteId);
-            
-            // Determinar si es creación o actualización
-            boolean esCreacion = diagnosticoDTO.getIdDiagnostico() == null;
-            
+            diagnosticoDTO.setFecha(java.time.LocalDate.now());
+            diagnosticoDTO.setEstado(true);
+
+            System.out.println("   🆕 FORZANDO CREACIÓN DE NUEVO DIAGNÓSTICO");
+            System.out.println("   ID establecido en: null");
+            System.out.println("   Estado: true");
+            System.out.println("   Fecha: " + diagnosticoDTO.getFecha());
+
+            boolean esCreacion = true;
+
             if (esCreacion) {
                 diagnosticoDTO.setFecha(java.time.LocalDate.now());
                 
@@ -114,7 +146,11 @@ public class DiagnosticoController {
             }
 
             // Guardar el diagnóstico (create maneja tanto creación como actualización)
-            diagnosticoService.createDiagnostico(diagnosticoDTO);
+            DiagnosticoDTO resultado = diagnosticoService.createDiagnostico(diagnosticoDTO);
+
+            System.out.println("   ✅✅✅ DIAGNÓSTICO GUARDADO EXITOSAMENTE");
+            System.out.println("   ID del diagnóstico guardado: " + resultado.getIdDiagnostico());
+            System.out.println("   Estado: " + resultado.getEstado());
 
             // Si el objetivo fue proporcionado, actualizarlo también en el perfil del cliente
             if (diagnosticoDTO.getObjetivo() != null && !diagnosticoDTO.getObjetivo().isEmpty()) {
@@ -122,6 +158,9 @@ public class DiagnosticoController {
                 clienteDTO.setObjetivo(diagnosticoDTO.getObjetivo());
                 clienteService.updateCliente(clienteId, clienteDTO);
             }
+
+            System.out.println("   ➡️ Redirigiendo a dashboard");
+            System.out.println("████████████████████████████████████████\n");
 
             model.addAttribute("success", esCreacion ? "Diagnóstico creado correctamente" : "Diagnóstico actualizado correctamente");
             return "redirect:/cliente/dashboard";
@@ -201,10 +240,93 @@ public class DiagnosticoController {
         return diagnosticoService.getDiagnosticoById(id);
     }
 
+    // ⚠️ ENDPOINT TEMPORAL PARA CREAR DATOS DE PRUEBA
+    @GetMapping("/crear-datos-prueba")
+    public String crearDatosPrueba(@AuthenticationPrincipal UserDetails userDetails) {
+        System.out.println("\n🔧 CREANDO DIAGNÓSTICOS DE PRUEBA...");
+
+        Long clienteId = clienteService.getClienteByEmail(userDetails.getUsername()).getId();
+        System.out.println("Cliente ID: " + clienteId);
+
+        // Diagnóstico 1 (más antiguo - hace 1 mes)
+        DiagnosticoDTO diagnostico1 = new DiagnosticoDTO();
+        diagnostico1.setIdCliente(clienteId);
+        diagnostico1.setFecha(java.time.LocalDate.now().minusMonths(1));
+        diagnostico1.setPeso(68.5);
+        diagnostico1.setEstatura(175.0);
+        diagnostico1.setNivelExperiencia(com.sabi.sabi.entity.enums.NivelExperiencia.INTERMEDIO);
+        diagnostico1.setDisponibilidadTiempo("3 veces por semana");
+        diagnostico1.setAccesoRecursos("Gimnasio");
+        diagnostico1.setObjetivo("Bajar de peso");
+        diagnostico1.setPorcentajeGrasaCorporal(22.5);
+        diagnostico1.setHorasSueno(7L);
+        diagnostico1.setHabitosAlimenticios("Saludable");
+        diagnostico1.setFotoFrontalUrl("/img/fotoPerfil.png");
+        diagnostico1.setFotoLateralUrl("/img/fotoPerfil.png");
+        diagnostico1.setFotoTraseraUrl("/img/fotoPerfil.png");
+        diagnostico1.setEstado(true);
+
+        DiagnosticoDTO resultado1 = diagnosticoService.createDiagnostico(diagnostico1);
+        System.out.println("✅ Diagnóstico 1 creado con ID: " + resultado1.getIdDiagnostico());
+
+        // Diagnóstico 2 (más reciente - hoy)
+        DiagnosticoDTO diagnostico2 = new DiagnosticoDTO();
+        diagnostico2.setIdCliente(clienteId);
+        diagnostico2.setFecha(java.time.LocalDate.now());
+        diagnostico2.setPeso(71.0);
+        diagnostico2.setEstatura(175.0);
+        diagnostico2.setNivelExperiencia(com.sabi.sabi.entity.enums.NivelExperiencia.INTERMEDIO);
+        diagnostico2.setDisponibilidadTiempo("4 veces por semana");
+        diagnostico2.setAccesoRecursos("Gimnasio");
+        diagnostico2.setObjetivo("Ganar masa muscular");
+        diagnostico2.setPorcentajeGrasaCorporal(20.5);
+        diagnostico2.setHorasSueno(8L);
+        diagnostico2.setHabitosAlimenticios("Muy saludable");
+        diagnostico2.setFotoFrontalUrl("/img/fotoPerfil.png");
+        diagnostico2.setFotoLateralUrl("/img/fotoPerfil.png");
+        diagnostico2.setFotoTraseraUrl("/img/fotoPerfil.png");
+        diagnostico2.setEstado(true);
+
+        DiagnosticoDTO resultado2 = diagnosticoService.createDiagnostico(diagnostico2);
+        System.out.println("✅ Diagnóstico 2 creado con ID: " + resultado2.getIdDiagnostico());
+
+        System.out.println("🎉 ¡DATOS DE PRUEBA CREADOS! Ahora verás la comparativa en el dashboard.\n");
+
+        return "redirect:/cliente/dashboard";
+    }
+
     @GetMapping("/historial")
     public String historialDiagnosticos(@AuthenticationPrincipal UserDetails userDetails, Model model) {
         Long clienteId = clienteService.getClienteByEmail(userDetails.getUsername()).getId();
         List<DiagnosticoDTO> historial = clienteService.getHistorialDiagnosticosByClienteId(clienteId);
+
+        // Debug logging
+        System.out.println("=== DEBUG HISTORIAL ===");
+        System.out.println("Cliente ID: " + clienteId);
+        System.out.println("Total diagnósticos: " + (historial != null ? historial.size() : 0));
+        if (historial != null && !historial.isEmpty()) {
+            System.out.println("Primer diagnóstico (más reciente):");
+            System.out.println("  - Fecha: " + historial.get(0).getFecha());
+            System.out.println("  - Peso: " + historial.get(0).getPeso());
+            if (historial.size() >= 2) {
+                System.out.println("Segundo diagnóstico:");
+                System.out.println("  - Fecha: " + historial.get(1).getFecha());
+                System.out.println("  - Peso: " + historial.get(1).getPeso());
+            }
+        }
+
+        // Agregar variables para la comparativa
+        if (historial != null && historial.size() >= 2) {
+            model.addAttribute("diagnosticoActual", historial.get(0));
+            model.addAttribute("diagnosticoAnterior", historial.get(1));
+            model.addAttribute("tieneComparativa", true);
+            System.out.println("Comparativa ACTIVADA");
+        } else {
+            model.addAttribute("tieneComparativa", false);
+            System.out.println("Comparativa DESACTIVADA (menos de 2 diagnósticos)");
+        }
+        System.out.println("======================");
+
         model.addAttribute("historial", historial);
         return "cliente/diagnostico-historial";
     }
