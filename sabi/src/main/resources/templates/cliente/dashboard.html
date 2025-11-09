@@ -10,8 +10,38 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link rel="stylesheet" th:href="@{/css/contenido.css}">
     <link rel="stylesheet" th:href="@{/css/dashboard-cliente.css}">
-    <!-- SweetAlert2 -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        /* Estilos personalizados para el SweetAlert2 */
+        .swal-diagnostico-obligatorio {
+            border-radius: 20px !important;
+            padding: 30px !important;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3) !important;
+        }
+
+        .swal-title-custom {
+            font-size: 1.8rem !important;
+            font-weight: 800 !important;
+            color: #1e293b !important;
+        }
+
+        .swal-html-custom {
+            margin: 25px 0 !important;
+        }
+
+        .swal-confirm-custom {
+            animation: pulse 2s infinite !important;
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.05);
+            }
+        }
+    </style>
 </head>
 
 <body th:replace="layout/layout :: layout('Dashboard Cliente', ~{::section})">
@@ -99,11 +129,15 @@
 
                     <div class="info-item" style="font-size: 1.5rem; display: flex; align-items: center;">
                         <span class="info-label" style="margin-right: 10px;">😴 Horas de sueno:</span>
-                        <span class="info-value" th:text="${diagnosticoActual.horasSueno != null ? diagnosticoActual.horasSueno + ' horas' : '-- horas'}" style="font-weight: bold;">-- horas</span>
+                        <span class="info-value"
+                              th:text="${diagnosticoActual.horasSueno != null ? diagnosticoActual.horasSueno + ' horas' : '-- horas'}"
+                              style="font-weight: bold;">-- horas</span>
                     </div>
                     <div class="info-item" style="font-size: 1.5rem; display: flex; align-items: center;">
                         <span class="info-label" style="margin-right: 10px;">🍎 Alimentacion:</span>
-                        <span class="info-value" th:text="${diagnosticoActual.habitosAlimenticios != null ? diagnosticoActual.habitosAlimenticios : '--'}" style="font-weight: bold;">--</span>
+                        <span class="info-value"
+                              th:text="${diagnosticoActual.habitosAlimenticios != null ? diagnosticoActual.habitosAlimenticios : '--'}"
+                              style="font-weight: bold;">--</span>
                     </div>
                 </div>
 
@@ -163,7 +197,8 @@
                         <div class="comparativa-item" style="grid-column: 1 / -1;">
                             <div class="comparativa-label">📅 Diagnostico anterior del:</div>
                             <div class="comparativa-values">
-                                <span class="valor-anterior" th:text="${#temporals.format(diagnosticoAnterior.fecha, 'dd/MM/yyyy')}">--</span>
+                                <span class="valor-anterior"
+                                      th:text="${#temporals.format(diagnosticoAnterior.fecha, 'dd/MM/yyyy')}">--</span>
                             </div>
                         </div>
                     </div>
@@ -177,6 +212,7 @@
         </div>
     </div>
 
+    <!-- Reporte de rutina -->
     <div th:if="${tieneRutinaActiva}" class="reporte-rutina col-md-5 row">
         <h5 class="mb-3 col-md-12">Tu Rutina</h5>
         <span class="col-md-6 titulo">Rutina:</span>
@@ -193,6 +229,81 @@
         </div>
     </div>
 
+    <!-- Reporte de suscripcion -->
+    <div th:if="${suscripcion != null}" class="col-md-6 mt-4">
+        <div class="reporte-suscripcion-card">
+            <div class="reporte-suscripcion-header">
+                <h5><i class="fas fa-id-card-clip me-2"></i> Tu Suscripción</h5>
+                <div class="reporte-suscripcion-badge"
+                     th:classappend=" ${(suscripcion.estadoSuscripcion != null ? suscripcion.estadoSuscripcion.name().toLowerCase() : '')}"
+                     th:text="${suscripcion.estadoSuscripcion != null ? suscripcion.estadoSuscripcion : '---'}">Estado
+                </div>
+            </div>
+            <div class="reporte-suscripcion-body">
+                <div class="reporte-suscripcion-rows">
+                    <div>
+                        <div class="reporte-suscripcion-label">Entrenador</div>
+                        <div class="reporte-suscripcion-value">
+                            <span th:if="${nombreEntrenador != null}" class="reporte-suscripcion-chip"><i class="fas fa-user"></i><span th:text="${nombreEntrenador}">Nombre</span></span>
+                            <span th:unless="${nombreEntrenador != null}" class="text-muted">Sin asignar</span>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="reporte-suscripcion-label">Precio</div>
+                        <div class="reporte-suscripcion-value" th:text="${suscripcion.precio != null ? ('$' + #numbers.formatDecimal(suscripcion.precio,1,'COMMA',2,'POINT')) : '--'}">--</div>
+                    </div>
+                    <div>
+                        <div class="reporte-suscripcion-label">Fecha Inicio</div>
+                        <div class="reporte-suscripcion-value" th:text="${suscripcion.fechaInicio != null ? #temporals.format(suscripcion.fechaInicio,'dd/MM/yyyy') : '--'}">--</div>
+                    </div>
+                    <div>
+                        <div class="reporte-suscripcion-label">Fecha Fin</div>
+                        <div class="reporte-suscripcion-value" th:text="${suscripcion.fechaFin != null ? #temporals.format(suscripcion.fechaFin,'dd/MM/yyyy') : '--'}">--</div>
+                    </div>
+                    <div>
+                        <div class="reporte-suscripcion-label">Días restantes</div>
+                        <div class="reporte-suscripcion-value"
+                             th:text="${susDiasRestantes != null ? (!susVencida ? susDiasRestantes + ' días' : 'Vencida') : '--'}">--</div>
+                    </div>
+                    <div>
+                        <div class="reporte-suscripcion-label">Duración</div>
+                        <div class="reporte-suscripcion-value" th:text="${susDiasTotales != null ? susDiasTotales + ' días' : '--'}">--</div>
+                    </div>
+                </div>
+                <div class="reporte-suscripcion-progress" th:if="${susAvance != null}">
+                    <div class="progress-label">
+                        <span>Progreso</span>
+                        <span th:text="${susAvance} + '%'">0%</span>
+                    </div>
+                    <div class="progress">
+                        <div class="progress-bar" role="progressbar" th:style="${'width:' + susAvance + '%;'}" aria-valuemin="0" aria-valuemax="100"></div>
+                    </div>
+                </div>
+                <div class="reporte-suscripcion-actions">
+                    <a class="btn btn-outline-secondary" th:href="@{/cliente/suscripcion/historial}"><i class="fas fa-clock-rotate-left me-1"></i> Historial</a>
+                    <a class="btn btn-outline-primary" th:href="@{/cliente/suscripcion}"><i class="fas fa-eye me-1"></i> Detalle</a>
+                    <a class="btn btn-success" th:href="@{/cliente/listaEntrenadores}" th:if="${nombreEntrenador == null}"><i class="fas fa-search me-1"></i> Buscar Entrenador</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div th:unless="${suscripcion != null}" class="col-md-6 mt-4">
+        <div class="reporte-suscripcion-card">
+            <div class="reporte-suscripcion-header">
+                <h5><i class="fas fa-id-card-clip me-2"></i> Tu Suscripción</h5>
+                <div class="reporte-suscripcion-badge pendiente">Sin activa</div>
+            </div>
+            <div class="reporte-suscripcion-body">
+                <p class="mb-3" style="color:#475569; font-weight:500;">
+                    <i class="fas fa-info-circle me-2"></i>No tienes una suscripción activa. ¡Explora entrenadores para comenzar!
+                </p>
+                <div class="reporte-suscripcion-actions">
+                    <a class="btn btn-primary" th:href="@{/cliente/listaEntrenadores}"><i class="fas fa-search me-1"></i> Explorar entrenadores</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script th:if="${!tieneDiagnostico}">
     document.addEventListener('DOMContentLoaded', function() {
@@ -273,38 +384,5 @@
         });
     });
 </script>
-
-<style>
-    /* Estilos personalizados para el SweetAlert2 */
-    .swal-diagnostico-obligatorio {
-        border-radius: 20px !important;
-        padding: 30px !important;
-        box-shadow: 0 20px 60px rgba(0,0,0,0.3) !important;
-    }
-
-    .swal-title-custom {
-        font-size: 1.8rem !important;
-        font-weight: 800 !important;
-        color: #1e293b !important;
-    }
-
-    .swal-html-custom {
-        margin: 25px 0 !important;
-    }
-
-    .swal-confirm-custom {
-        animation: pulse 2s infinite !important;
-    }
-
-    @keyframes pulse {
-        0%, 100% {
-            transform: scale(1);
-        }
-        50% {
-            transform: scale(1.05);
-        }
-    }
-</style>
-</section>
 </body>
 </html>

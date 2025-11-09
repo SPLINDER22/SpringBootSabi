@@ -587,3 +587,50 @@
     font-weight: 700;
     color: #00ff77;
 }
+
+/* ========== REPORTE DE SUSCRIPCION ========== */
+.reporte-suscripcion-card {
+    background: linear-gradient(135deg, #f8fafc 0%, #eef2ff 100%);
+    border-radius: 16px;
+    border: 2px solid #c7d2fe;
+    box-shadow: 0 6px 18px rgba(99,102,241,0.15);
+    overflow: hidden;
+}
+.reporte-suscripcion-header {
+    display:flex; align-items:center; justify-content:space-between;
+    padding: 16px 18px;
+    background: linear-gradient(135deg, #6366f1, #3b82f6);
+    color: #fff;
+}
+.reporte-suscripcion-header h5 { margin:0; font-weight:800; letter-spacing:.3px; }
+.reporte-suscripcion-badge {
+    padding:6px 12px; border-radius: 999px; font-weight:700; font-size:.8rem;
+    background: rgba(255,255,255,.15); border:1px solid rgba(255,255,255,.35);
+}
+.reporte-suscripcion-body { padding: 16px 18px 18px; }
+.reporte-suscripcion-rows { display:grid; grid-template-columns: 1fr 1fr; gap: 10px 14px; }
+.reporte-suscripcion-label { color:#475569; font-size:.9rem; font-weight:600; }
+.reporte-suscripcion-value { color:#0f172a; font-size:1rem; font-weight:700; }
+
+/* Chip del entrenador */
+.reporte-suscripcion-chip { display:inline-flex; align-items:center; gap:8px; background:#eef2ff; color:#3730a3; border:1px solid #c7d2fe; padding:6px 10px; border-radius:999px; font-weight:700; }
+.reporte-suscripcion-chip i { color:#6366f1; }
+
+/* Progreso de suscripción */
+.reporte-suscripcion-progress { margin-top:14px; }
+.reporte-suscripcion-progress .progress-label { display:flex; justify-content:space-between; font-size:.85rem; color:#334155; margin-bottom:6px; font-weight:600; }
+.reporte-suscripcion-progress .progress { height: 12px; background:#e2e8f0; border-radius: 999px; overflow: hidden; border:1px solid #cbd5e1; }
+.reporte-suscripcion-progress .progress-bar { height:100%; background: linear-gradient(90deg, #22c55e, #3b82f6); box-shadow: inset 0 0 6px rgba(255,255,255,0.5); transition: width .4s ease; }
+
+/* Acciones */
+.reporte-suscripcion-actions { margin-top:14px; display:flex; gap:10px; flex-wrap:wrap; }
+.reporte-suscripcion-actions .btn { border-radius:10px; }
+
+/* Estados (opcional si quieres tintar el badge segun estado) */
+.reporte-suscripcion-badge.activa { background: rgba(16,185,129,.2); border-color: rgba(16,185,129,.6); color:#fff; }
+.reporte-suscripcion-badge.pendiente { background: rgba(251,191,36,.25); border-color: rgba(251,191,36,.7); }
+.reporte-suscripcion-badge.vencida, .reporte-suscripcion-badge.rechazada { background: rgba(239,68,68,.25); border-color: rgba(239,68,68,.7); }
+
+@media (max-width: 768px){
+  .reporte-suscripcion-rows { grid-template-columns: 1fr; }
+}
