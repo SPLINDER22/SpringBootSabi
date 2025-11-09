@@ -4,36 +4,46 @@
 <head>
     <meta charset="UTF-8">
     <title>Lista De Entrenadores</title>
+    <!-- estilos movidos a /css/entrenadores-lista.css -->
 </head>
 
 <body th:replace="layout/layout :: layout('Lista de entrenadores', ~{::section})">
-    <section th:fragment="section">
+<section th:fragment="section">
+    <div class="container mb-4">
         <h1 class="h3 mb-4 text-dark text-center">Entrenadores Disponibles</h1>
+    </div>
+    <div class="container mb-4">
         <form action="#" th:action="@{/cliente/listaEntrenadores}" method="get" class="mb-4">
             <div class="row g-2 align-items-end">
                 <div class="col-12 col-md-3">
                     <label for="inputNombre" class="form-label mb-1">Nombre</label>
-                    <input id="inputNombre" type="text" name="nombre" class="form-control" placeholder="Buscar por nombre" th:value="${nombre}">
+                    <input id="inputNombre" type="text" name="nombre" class="form-control"
+                           placeholder="Buscar por nombre" th:value="${nombre}">
                 </div>
                 <div class="col-12 col-md-3">
                     <label for="inputEspecialidad" class="form-label mb-1">Especialidad</label>
-                    <input id="inputEspecialidad" type="text" name="especialidad" class="form-control" placeholder="Ej: fuerza, yoga" th:value="${especialidad}">
+                    <input id="inputEspecialidad" type="text" name="especialidad" class="form-control"
+                           placeholder="Ej: fuerza, yoga" th:value="${especialidad}">
                 </div>
                 <div class="col-6 col-md-2">
                     <label for="inputMinPuntuacion" class="form-label mb-1">Puntuación mín.</label>
-                    <input id="inputMinPuntuacion" type="number" name="minPuntuacion" class="form-control" min="0" max="5" step="0.1" th:value="${minPuntuacion}">
+                    <input id="inputMinPuntuacion" type="number" name="minPuntuacion" class="form-control" min="0"
+                           max="5" step="0.1" th:value="${minPuntuacion}">
                 </div>
                 <div class="col-6 col-md-2">
                     <label for="inputMaxPuntuacion" class="form-label mb-1">Puntuación máx.</label>
-                    <input id="inputMaxPuntuacion" type="number" name="maxPuntuacion" class="form-control" min="0" max="5" step="0.1" th:value="${maxPuntuacion}">
+                    <input id="inputMaxPuntuacion" type="number" name="maxPuntuacion" class="form-control" min="0"
+                           max="5" step="0.1" th:value="${maxPuntuacion}">
                 </div>
                 <div class="col-6 col-md-2">
                     <label for="inputMinExperiencia" class="form-label mb-1">Experiencia mín. (años)</label>
-                    <input id="inputMinExperiencia" type="number" name="minExperiencia" class="form-control" min="0" max="50" placeholder="Años" th:value="${minExperiencia}">
+                    <input id="inputMinExperiencia" type="number" name="minExperiencia" class="form-control" min="0"
+                           max="50" placeholder="Años" th:value="${minExperiencia}">
                 </div>
                 <div class="col-12 col-md-6">
                     <label for="inputCertificaciones" class="form-label mb-1">Certificaciones</label>
-                    <input id="inputCertificaciones" type="text" name="certificaciones" class="form-control" placeholder="Ej: ACE, NASM" th:value="${certificaciones}">
+                    <input id="inputCertificaciones" type="text" name="certificaciones" class="form-control"
+                           placeholder="Ej: ACE, NASM" th:value="${certificaciones}">
                 </div>
                 <div class="col-12 mt-2">
                     <div class="d-flex gap-2">
@@ -45,326 +55,327 @@
                 </div>
             </div>
         </form>
+    </div>
 
-        <!-- Modal Info del Entrenador -->
-        <div class="modal fade" id="modalInfoEntrenador" tabindex="-1" aria-labelledby="modalInfoEntrenadorLabel"
-            aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered modal-lg">
-                <div class="modal-content">
-                    <div class="modal-header bg-success text-white">
-                        <h5 class="modal-title" id="modalInfoEntrenadorLabel">
-                            <i class="fas fa-user-tie me-2"></i> Información del Entrenador
-                        </h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
+    <div class="container">
+        <div class="row" th:if="${#lists.isEmpty(entrenadores)}">
+            <div class="col-12 d-flex justify-content-center">
+                <div class="alert alert-info text-center w-50 mt-5" role="alert">
+                    <strong>Aún no hay entrenadores disponibles</strong><br>
+                    Cuando haya entrenadores, aquí se mostrarán.
+                </div>
+            </div>
+        </div>
+        <div class="row" th:if="${!#lists.isEmpty(entrenadores)}">
+            <th:block th:each="entrenador : ${entrenadores}">
+                <div class="col-12 col-md-4 mb-5 d-flex">
+                    <div class="trainer-card w-100">
+                        <div class="trainer-header">
+                            <div class="trainer-avatar-wrapper">
+                                <div class="ring">
+                                    <img class="trainer-avatar" src="/img/fotoPerfil.png"
+                                         th:src="${entrenador.fotoPerfilUrl != null ? entrenador.fotoPerfilUrl : '/img/fotoPerfil.png'}"
+                                         th:alt="|Foto de ${entrenador.nombre}|" alt="Foto"/>
+                                </div>
+                            </div>
+                            <div class="trainer-name" th:text="|${entrenador.nombre} ${entrenador.apellido}|">Nombre
+                                Apellido
+                            </div>
+                            <div class="trainer-rating"
+                                 th:with="cal=${entrenador.calificacionPromedio} ?: 0, full=${T(java.lang.Math).floor(cal)}, frac=${cal - T(java.lang.Math).floor(cal)}">
+                                <span class="rating-value" th:text="${#numbers.formatDecimal(cal,1,1)}">0.0</span>
+                                <span th:each="i : ${#numbers.sequence(1,5)}">
+                                    <i class="fas fa-star text-warning" th:if="${i <= full}"></i>
+                                    <i class="fas fa-star-half-alt text-warning"
+                                       th:if="${i == full + 1 and frac >= 0.5}"></i>
+                                    <i class="far fa-star text-warning"
+                                       th:if="${!(i <= full) and !(i == full + 1 and frac >= 0.5)}"></i>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="trainer-footer">
+                            <div class="trainer-meta">
+                                <div class="trainer-meta-item">
+                                    <h6>Especialidad</h6>
+                                    <span th:text="${entrenador.especialidad} ?: 'No especificado'">No especificado</span>
+                                </div>
+                                <div class="trainer-meta-item">
+                                    <h6>Experiencia</h6>
+                                    <span
+                                        th:text="${entrenador.aniosExperiencia != null ? entrenador.aniosExperiencia + ' años' : '0 años'}">0
+                                        años
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="trainer-actions">
+                                <button type="button" class="btn-detalles btn-ver-info-entrenador"
+                                        th:attr="data-entrenador-id=${entrenador.id}">
+                                    <i class="fas fa-info-circle me-1"></i> Detalles
+                                </button>
+                                <form th:action="@{/entrenadores/solicitar/{idEntrenador}(idEntrenador=${entrenador.id})}"
+                                      method="post" class="flex-grow-1">
+                                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                                    <button type="submit" class="btn-cotizar w-100">
+                                        <i class="fas fa-money-bill-wave me-1"></i> Cotizar
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </th:block>
+        </div>
+    </div>
+
+    <!-- Modal Info del Entrenador -->
+    <div class="modal fade" id="modalInfoEntrenador" tabindex="-1" aria-labelledby="modalInfoEntrenadorLabel"
+         aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content">
+                <div class="modal-header bg-success text-white">
+                    <h5 class="modal-title" id="modalInfoEntrenadorLabel">
+                        <i class="fas fa-user-tie me-2"></i> Información del Entrenador
+                    </h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-4 text-center mb-3">
+                            <img id="modalEntrenadorFoto" src="/img/fotoPerfil.png" alt="Foto del entrenador"
+                                 class="rounded-circle img-fluid"
+                                 style="width: 150px; height: 150px; object-fit: cover; border: 4px solid #28a745;">
+                            <h4 id="modalEntrenadorNombre" class="mt-3 mb-0">Nombre</h4>
+                            <div class="rating-stars mt-2" id="modalEntrenadorEstrellas">
+                                <span class="text-muted me-2" id="modalEntrenadorCalificacion">0.0</span>
+                                <div id="modalEstrellas"></div>
+                            </div>
+                        </div>
+                        <div class="col-md-8">
+                            <div class="mb-3">
+                                <h6 class="text-success"><i class="fas fa-envelope me-2"></i> Email</h6>
+                                <p id="modalEntrenadorEmail" class="text-muted"></p>
+                            </div>
+                            <div class="mb-3">
+                                <h6 class="text-success"><i class="fas fa-dumbbell me-2"></i> Especialidad</h6>
+                                <p id="modalEntrenadorEspecialidades" class="text-muted"></p>
+                            </div>
+                            <div class="mb-3">
+                                <h6 class="text-success"><i class="fas fa-calendar-alt me-2"></i> Experiencia</h6>
+                                <p id="modalEntrenadorExperiencia" class="text-muted"></p>
+                            </div>
+                            <div class="mb-3" id="modalEntrenadorCertificacionesContainer" style="display: none;">
+                                <h6 class="text-success"><i class="fas fa-certificate me-2"></i> Certificaciones</h6>
+                                <div id="modalEntrenadorCertificaciones" class="text-muted">
+                                    <!-- Lista de certificaciones con botones para ver -->
+                                </div>
+                            </div>
+                            <div class="mb-3" id="modalEntrenadorTelefonoContainer" style="display: none;">
+                                <h6 class="text-success"><i class="fas fa-phone me-2"></i> Teléfono</h6>
+                                <p id="modalEntrenadorTelefono" class="text-muted"></p>
+                            </div>
+                        </div>
+                    </div>
+                    <hr>
+                    <div id="modalEntrenadorDescripcionContainer" style="display: none;">
+                        <h6 class="text-success"><i class="fas fa-comment-dots me-2"></i> Sobre el Entrenador</h6>
+                        <p id="modalEntrenadorDescripcion" class="bg-light p-3 rounded"></p>
+                    </div>
+                    <div id="modalSinDescripcion" style="display: none;" class="alert alert-info">
+                        <i class="fas fa-info-circle me-2"></i> El entrenador aún no ha agregado una descripción
+                        personal.
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                    <form id="modalFormSolicitar" method="post" style="display: inline;">
+                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                        <button type="submit" class="btn btn-success">
+                            <i class="fas fa-money-bill-wave me-1"></i> Cotizar Suscripción
                         </button>
-                    </div>
-                    <div class="modal-body">
-                        <div class="row">
-                            <div class="col-md-4 text-center mb-3">
-                                <img id="modalEntrenadorFoto" src="/img/fotoPerfil.png" alt="Foto del entrenador"
-                                    class="rounded-circle img-fluid"
-                                    style="width: 150px; height: 150px; object-fit: cover; border: 4px solid #28a745;">
-                                <h4 id="modalEntrenadorNombre" class="mt-3 mb-0">Nombre</h4>
-                                <div class="rating-stars mt-2" id="modalEntrenadorEstrellas">
-                                    <span class="text-muted me-2" id="modalEntrenadorCalificacion">0.0</span>
-                                    <div id="modalEstrellas"></div>
-                                </div>
-                            </div>
-                            <div class="col-md-8">
-                                <div class="mb-3">
-                                    <h6 class="text-success"><i class="fas fa-envelope me-2"></i> Email</h6>
-                                    <p id="modalEntrenadorEmail" class="text-muted"></p>
-                                </div>
-                                <div class="mb-3">
-                                    <h6 class="text-success"><i class="fas fa-dumbbell me-2"></i> Especialidad</h6>
-                                    <p id="modalEntrenadorEspecialidades" class="text-muted"></p>
-                                </div>
-                                <div class="mb-3">
-                                    <h6 class="text-success"><i class="fas fa-calendar-alt me-2"></i> Experiencia</h6>
-                                    <p id="modalEntrenadorExperiencia" class="text-muted"></p>
-                                </div>
-                                <div class="mb-3" id="modalEntrenadorCertificacionesContainer" style="display: none;">
-                                    <h6 class="text-success"><i class="fas fa-certificate me-2"></i> Certificaciones</h6>
-                                    <div id="modalEntrenadorCertificaciones" class="text-muted">
-                                        <!-- Lista de certificaciones con botones para ver -->
-                                    </div>
-                                </div>
-                                <div class="mb-3" id="modalEntrenadorTelefonoContainer" style="display: none;">
-                                    <h6 class="text-success"><i class="fas fa-phone me-2"></i> Teléfono</h6>
-                                    <p id="modalEntrenadorTelefono" class="text-muted"></p>
-                                </div>
-                            </div>
-                        </div>
-                        <hr>
-                        <div id="modalEntrenadorDescripcionContainer" style="display: none;">
-                            <h6 class="text-success"><i class="fas fa-comment-dots me-2"></i> Sobre el Entrenador</h6>
-                            <p id="modalEntrenadorDescripcion" class="bg-light p-3 rounded"></p>
-                        </div>
-                        <div id="modalSinDescripcion" style="display: none;" class="alert alert-info">
-                            <i class="fas fa-info-circle me-2"></i> El entrenador aún no ha agregado una descripción
-                            personal.
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
-                        <form id="modalFormSolicitar" method="post" style="display: inline;">
-                            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
-                            <button type="submit" class="btn btn-success">
-                                <i class="fas fa-money-bill-wave me-1"></i> Cotizar Suscripción
-                            </button>
-                        </form>
-                    </div>
+                    </form>
                 </div>
             </div>
         </div>
+    </div>
 
-        <!-- Modal para Visualizar PDF -->
-        <div class="modal fade" id="modalVisualizadorPDF" tabindex="-1" aria-labelledby="modalVisualizadorPDFLabel" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered modal-xl">
-                <div class="modal-content">
-                    <div class="modal-header bg-danger text-white">
-                        <h5 class="modal-title" id="modalVisualizadorPDFLabel">
-                            <i class="fas fa-file-pdf me-2"></i> <span id="pdfTitulo">Certificación</span>
-                        </h5>
-                        <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
-                    <div class="modal-body p-0" style="height: 70vh;">
-                        <iframe id="pdfViewer" style="width: 100%; height: 100%; border: none;"></iframe>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
-                        <a id="pdfDownloadLink" href="#" download class="btn btn-primary">
-                            <i class="fas fa-download me-1"></i> Descargar PDF
-                        </a>
-                    </div>
+    <!-- Modal para Visualizar PDF -->
+    <div class="modal fade" id="modalVisualizadorPDF" tabindex="-1" aria-labelledby="modalVisualizadorPDFLabel"
+         aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-xl">
+            <div class="modal-content">
+                <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title" id="modalVisualizadorPDFLabel">
+                        <i class="fas fa-file-pdf me-2"></i> <span id="pdfTitulo">Certificación</span>
+                    </h5>
+                    <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body p-0" style="height: 70vh;">
+                    <iframe id="pdfViewer" style="width: 100%; height: 100%; border: none;"></iframe>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                    <a id="pdfDownloadLink" href="#" download class="btn btn-primary">
+                        <i class="fas fa-download me-1"></i> Descargar PDF
+                    </a>
                 </div>
             </div>
         </div>
+    </div>
 
-        <div class="container">
-            <div class="row">
-                <div th:if="${#lists.isEmpty(entrenadores)}" class="col d-flex justify-content-center">
-                    <div class="alert alert-info text-center w-50 mt-5" role="alert">
-                        <strong>Aún no hay entrenadores disponibles</strong><br>
-                        Cuando haya entrenadores, aquí se mostrarán.
-                    </div>
-                </div>
-                <th:block th:each="entrenador, iterStat : ${entrenadores}">
-                    <div class="col-12 col-md-6 mb-4">
-                        <div class="card w-100 shadow-lg border-primary rounded-4 p-2 text-dark">
-                            <div class="row align-items-center">
-                            <div class="col-12 col-md-5">
-                                <div class="rounded-start rounded-top overflow-hidden"
-                                    style="position: relative; width: 100%; padding-top: 100%;">
-                                    <img th:src="${entrenador.fotoPerfilUrl != null ? entrenador.fotoPerfilUrl : '/img/fotoPerfil.png'}"
-                                        alt="Foto de entrenador"
-                                        th:alt="'Foto de ' + ${entrenador.nombre}"
-                                        style="position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover;">
-                                </div>
-                            </div>
-                            <div class="col-12 col-md-7">
-                                <div class="card-body py-2 px-1">
-                                    <h5 class="card-title mb-2" th:text="${entrenador.nombre}">Nombre</h5>
 
-                                    <div class="row">
-                                        <div class="col-12 col-sm-6">
-                                            <p class="card-text mb-2"><strong>Especialidad:</strong> <span
-                                                    th:text="${entrenador.especialidad} ?: 'No especificado'"></span></p>
-                                        </div>
-                                        <div class="col-12 col-sm-6"
-                                             th:with="cal=${entrenador.calificacionPromedio} ?: 0,
-                                                      full=${T(java.lang.Math).floor(cal)},
-                                                      frac=${cal - T(java.lang.Math).floor(cal)}">
-                                            <p class="card-text mb-1">
-                                                <strong>Puntuación:</strong>
-                                                <span class="ms-1 small text-muted"
-                                                      th:text="${#numbers.formatDecimal(cal,1,1)}">0.0 </span>
-                                            </p>
-                                            <div class="d-flex align-items-center">
-                                                <span th:each="i : ${#numbers.sequence(1,5)}" class="me-1">
-                                                    <i class="fas fa-star text-warning" th:if="${i <= full}"></i>
-                                                    <i class="fas fa-star-half-alt text-warning" th:if="${i == full + 1 and frac >= 0.5}"></i>
-                                                    <i class="far fa-star text-warning" th:if="${!(i <= full) and !(i == full + 1 and frac >= 0.5)}"></i>
-                                                </span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="mt-2 text-center">
-                                        <button type="button" class="btn btn-outline-success btn-ver-info-entrenador mx-auto"
-                                            th:attr="data-entrenador-id=${entrenador.id}">
-                                            <i class="fas fa-info-circle me-1"></i> Ver detalles
-                                        </button>
-                                        <form class="mt-2"
-                                            th:action="@{/entrenadores/solicitar/{idEntrenador}(idEntrenador=${entrenador.id})}"
-                                            method="post">
-                                            <input type="hidden" th:name="${_csrf.parameterName}"
-                                                th:value="${_csrf.token}" />
-                                            <button type="submit" class="btn btn-success w-100">
-                                                <i class="fas fa-money-bill-wave me-1"></i> Cotizar
-                                            </button>
-                                        </form>
-                                    </div>
-                                </div>
-                            </div>
-                            </div>
-                        </div>
-                    </div>
-                </th:block>
-            </div>
-        </div>
+    <script>
+        // Script para cargar info del entrenador y abrir modal solo si carga OK
+        document.querySelectorAll('.btn-ver-info-entrenador').forEach(btn => {
+            btn.addEventListener('click', async function (e) {
+                e.preventDefault();
+                const entrenadorId = this.getAttribute('data-entrenador-id');
+                if (!entrenadorId) return;
 
-        <script>
-            // Script para cargar info del entrenador y abrir modal solo si carga OK
-            document.querySelectorAll('.btn-ver-info-entrenador').forEach(btn => {
-                btn.addEventListener('click', async function (e) {
-                    e.preventDefault();
-                    const entrenadorId = this.getAttribute('data-entrenador-id');
-                    if (!entrenadorId) return;
+                // Resetear contenido a un estado base antes de cargar
+                document.getElementById('modalEntrenadorFoto').src = '/img/fotoPerfil.png';
+                document.getElementById('modalEntrenadorNombre').textContent = '';
+                document.getElementById('modalEntrenadorEmail').textContent = '';
+                document.getElementById('modalEntrenadorEspecialidades').textContent = '';
+                document.getElementById('modalEntrenadorExperiencia').textContent = '';
+                document.getElementById('modalEntrenadorCalificacion').textContent = '0.0';
+                document.getElementById('modalEstrellas').innerHTML = '<i class="far fa-star text-warning"></i>'.repeat(5);
+                document.getElementById('modalEntrenadorTelefono').textContent = '';
+                document.getElementById('modalEntrenadorTelefonoContainer').style.display = 'none';
+                document.getElementById('modalEntrenadorCertificaciones').textContent = '';
+                document.getElementById('modalEntrenadorCertificacionesContainer').style.display = 'none';
+                document.getElementById('modalEntrenadorDescripcion').textContent = '';
+                document.getElementById('modalEntrenadorDescripcionContainer').style.display = 'none';
+                document.getElementById('modalSinDescripcion').style.display = 'none';
 
-                    // Resetear contenido a un estado base antes de cargar
-                    document.getElementById('modalEntrenadorFoto').src = '/img/fotoPerfil.png';
-                    document.getElementById('modalEntrenadorNombre').textContent = '';
-                    document.getElementById('modalEntrenadorEmail').textContent = '';
-                    document.getElementById('modalEntrenadorEspecialidades').textContent = '';
-                    document.getElementById('modalEntrenadorExperiencia').textContent = '';
-                    document.getElementById('modalEntrenadorCalificacion').textContent = '0.0';
-                    document.getElementById('modalEstrellas').innerHTML = '<i class="far fa-star text-warning"></i>'.repeat(5);
-                    document.getElementById('modalEntrenadorTelefono').textContent = '';
-                    document.getElementById('modalEntrenadorTelefonoContainer').style.display = 'none';
-                    document.getElementById('modalEntrenadorCertificaciones').textContent = '';
-                    document.getElementById('modalEntrenadorCertificacionesContainer').style.display = 'none';
-                    document.getElementById('modalEntrenadorDescripcion').textContent = '';
-                    document.getElementById('modalEntrenadorDescripcionContainer').style.display = 'none';
-                    document.getElementById('modalSinDescripcion').style.display = 'none';
-
-                    try {
-                        const response = await fetch(`/api/cliente/entrenador/${entrenadorId}/info`, { credentials: 'same-origin' });
-                        if (!response.ok) {
-                            const txt = await response.text();
-                            console.error('Modal info fetch failed', response.status, txt);
-                            throw new Error('Error al cargar información');
-                        }
-
-                        const info = await response.json();
-
-                        // Actualizar modal con datos reales
-                        document.getElementById('modalEntrenadorFoto').src = info.fotoPerfilUrl || '/img/fotoPerfil.png';
-                        document.getElementById('modalEntrenadorNombre').textContent = info.nombre || '';
-                        document.getElementById('modalEntrenadorEmail').textContent = info.email || '';
-                        document.getElementById('modalEntrenadorEspecialidades').textContent = info.especialidades || 'No especificado';
-                        document.getElementById('modalEntrenadorExperiencia').textContent = (info.experiencia || 0) + ' años';
-
-                        const cal = typeof info.calificacionPromedio === 'number' ? info.calificacionPromedio : 0;
-                        document.getElementById('modalEntrenadorCalificacion').textContent = cal.toFixed(1);
-                        const full = Math.floor(cal);
-                        const frac = cal - full;
-                        let estrellasHTML = '';
-                        for (let i = 1; i <= 5; i++) {
-                            if (i <= full) estrellasHTML += '<i class="fas fa-star text-warning"></i>';
-                            else if (i === full + 1 && frac >= 0.5) estrellasHTML += '<i class="fas fa-star-half-alt text-warning"></i>';
-                            else estrellasHTML += '<i class="far fa-star text-warning"></i>';
-                        }
-                        document.getElementById('modalEstrellas').innerHTML = estrellasHTML;
-
-                        const telefono = (info.telefono || '').toString().trim();
-                        if (telefono) {
-                            document.getElementById('modalEntrenadorTelefono').textContent = telefono;
-                            document.getElementById('modalEntrenadorTelefonoContainer').style.display = 'block';
-                        }
-
-                        const certificaciones = (info.certificaciones || '').toString().trim();
-                        if (certificaciones) {
-                            const certContainer = document.getElementById('modalEntrenadorCertificaciones');
-                            certContainer.innerHTML = '';
-
-                            // Las certificaciones son rutas de archivos separadas por coma
-                            const archivos = certificaciones.split(',');
-                            archivos.forEach((ruta, index) => {
-                                const nombreArchivo = ruta.split('/').pop();
-
-                                // Crear contenedor para cada certificación
-                                const certItem = document.createElement('div');
-                                certItem.className = 'cert-item d-flex align-items-center justify-content-between p-2 mb-2 bg-light rounded';
-                                certItem.style.border = '1px solid #dee2e6';
-
-                                // Nombre del archivo con icono
-                                const fileInfo = document.createElement('div');
-                                fileInfo.className = 'flex-grow-1';
-                                fileInfo.innerHTML = `<i class="fas fa-file-pdf text-danger me-2"></i><span class="text-dark">${nombreArchivo}</span>`;
-
-                                // Botón para visualizar
-                                const btnVer = document.createElement('button');
-                                btnVer.className = 'btn btn-sm btn-primary';
-                                btnVer.innerHTML = '<i class="fas fa-eye me-1"></i> Ver';
-                                btnVer.onclick = function(e) {
-                                    e.preventDefault();
-                                    abrirVisualizadorPDF('/' + ruta, nombreArchivo);
-                                };
-
-                                certItem.appendChild(fileInfo);
-                                certItem.appendChild(btnVer);
-                                certContainer.appendChild(certItem);
-                            });
-
-                            document.getElementById('modalEntrenadorCertificacionesContainer').style.display = 'block';
-                        }
-
-                        const desc = (info.descripcion || '').toString().trim();
-                        if (desc) {
-                            document.getElementById('modalEntrenadorDescripcion').textContent = desc;
-                            document.getElementById('modalEntrenadorDescripcionContainer').style.display = 'block';
-                        } else {
-                            document.getElementById('modalSinDescripcion').style.display = 'block';
-                        }
-
-                        // Actualizar formulario de cotización
-                        document.getElementById('modalFormSolicitar').action = `/entrenadores/solicitar/${info.id}`;
-
-                        // Abrir modal solo si todo OK
-                        if (window.jQuery && typeof jQuery.fn.modal === 'function') {
-                            jQuery('#modalInfoEntrenador').modal('show');
-                        } else if (window.bootstrap && window.bootstrap.Modal) {
-                            const modal = document.getElementById('modalInfoEntrenador');
-                            const bsModal = window.bootstrap.Modal.getOrCreateInstance(modal);
-                            bsModal.show();
-                        } else {
-                            // fallback: simulate click if attributes exist
-                            document.getElementById('modalInfoEntrenador').style.display = 'block';
-                        }
-
-                    } catch (error) {
-                        console.error('Error abriendo modal:', error);
-                        alert('Error al cargar la información del entrenador');
+                try {
+                    const response = await fetch(`/api/cliente/entrenador/${entrenadorId}/info`, { credentials: 'same-origin' });
+                    if (!response.ok) {
+                        const txt = await response.text();
+                        console.error('Modal info fetch failed', response.status, txt);
+                        throw new Error('Error al cargar información');
                     }
-                });
-            });
 
-            // Función para abrir el visualizador de PDF
-            function abrirVisualizadorPDF(rutaPDF, nombreArchivo) {
-                // Actualizar título del modal
-                document.getElementById('pdfTitulo').textContent = nombreArchivo;
+                    const info = await response.json();
 
-                // Cargar PDF en el iframe
-                document.getElementById('pdfViewer').src = rutaPDF;
+                    // Actualizar modal con datos reales
+                    document.getElementById('modalEntrenadorFoto').src = info.fotoPerfilUrl || '/img/fotoPerfil.png';
+                    document.getElementById('modalEntrenadorNombre').textContent = info.nombre || '';
+                    document.getElementById('modalEntrenadorEmail').textContent = info.email || '';
+                    document.getElementById('modalEntrenadorEspecialidades').textContent = info.especialidades || 'No especificado';
+                    document.getElementById('modalEntrenadorExperiencia').textContent = (info.experiencia || 0) + ' años';
 
-                // Configurar enlace de descarga
-                document.getElementById('pdfDownloadLink').href = rutaPDF;
-                document.getElementById('pdfDownloadLink').download = nombreArchivo;
+                    const cal = typeof info.calificacionPromedio === 'number' ? info.calificacionPromedio : 0;
+                    document.getElementById('modalEntrenadorCalificacion').textContent = cal.toFixed(1);
+                    const full = Math.floor(cal);
+                    const frac = cal - full;
+                    let estrellasHTML = '';
+                    for (let i = 1; i <= 5; i++) {
+                        if (i <= full) estrellasHTML += '<i class="fas fa-star text-warning"></i>';
+                        else if (i === full + 1 && frac >= 0.5) estrellasHTML += '<i class="fas fa-star-half-alt text-warning"></i>';
+                        else estrellasHTML += '<i class="far fa-star text-warning"></i>';
+                    }
+                    document.getElementById('modalEstrellas').innerHTML = estrellasHTML;
 
-                // Abrir modal de visualización
-                if (window.jQuery && typeof jQuery.fn.modal === 'function') {
-                    jQuery('#modalVisualizadorPDF').modal('show');
-                } else if (window.bootstrap && window.bootstrap.Modal) {
-                    const modal = document.getElementById('modalVisualizadorPDF');
-                    const bsModal = window.bootstrap.Modal.getOrCreateInstance(modal);
-                    bsModal.show();
+                    const telefono = (info.telefono || '').toString().trim();
+                    if (telefono) {
+                        document.getElementById('modalEntrenadorTelefono').textContent = telefono;
+                        document.getElementById('modalEntrenadorTelefonoContainer').style.display = 'block';
+                    }
+
+                    const certificaciones = (info.certificaciones || '').toString().trim();
+                    if (certificaciones) {
+                        const certContainer = document.getElementById('modalEntrenadorCertificaciones');
+                        certContainer.innerHTML = '';
+
+                        // Las certificaciones son rutas de archivos separadas por coma
+                        const archivos = certificaciones.split(',');
+                        archivos.forEach((ruta, index) => {
+                            const nombreArchivo = ruta.split('/').pop();
+
+                            // Crear contenedor para cada certificación
+                            const certItem = document.createElement('div');
+                            certItem.className = 'cert-item d-flex align-items-center justify-content-between p-2 mb-2 bg-light rounded';
+                            certItem.style.border = '1px solid #dee2e6';
+
+                            // Nombre del archivo con icono
+                            const fileInfo = document.createElement('div');
+                            fileInfo.className = 'flex-grow-1';
+                            fileInfo.innerHTML = `<i class="fas fa-file-pdf text-danger me-2"></i><span class="text-dark">${nombreArchivo}</span>`;
+
+                            // Botón para visualizar
+                            const btnVer = document.createElement('button');
+                            btnVer.className = 'btn btn-sm btn-primary';
+                            btnVer.innerHTML = '<i class="fas fa-eye me-1"></i> Ver';
+                            btnVer.onclick = function(e) {
+                                e.preventDefault();
+                                abrirVisualizadorPDF('/' + ruta, nombreArchivo);
+                            };
+
+                            certItem.appendChild(fileInfo);
+                            certItem.appendChild(btnVer);
+                            certContainer.appendChild(certItem);
+                        });
+
+                        document.getElementById('modalEntrenadorCertificacionesContainer').style.display = 'block';
+                    }
+
+                    const desc = (info.descripcion || '').toString().trim();
+                    if (desc) {
+                        document.getElementById('modalEntrenadorDescripcion').textContent = desc;
+                        document.getElementById('modalEntrenadorDescripcionContainer').style.display = 'block';
+                    } else {
+                        document.getElementById('modalSinDescripcion').style.display = 'block';
+                    }
+
+                    // Actualizar formulario de cotización
+                    document.getElementById('modalFormSolicitar').action = `/entrenadores/solicitar/${info.id}`;
+
+                    // Abrir modal solo si todo OK
+                    if (window.jQuery && typeof jQuery.fn.modal === 'function') {
+                        jQuery('#modalInfoEntrenador').modal('show');
+                    } else if (window.bootstrap && window.bootstrap.Modal) {
+                        const modal = document.getElementById('modalInfoEntrenador');
+                        const bsModal = window.bootstrap.Modal.getOrCreateInstance(modal);
+                        bsModal.show();
+                    } else {
+                        // fallback: simulate click if attributes exist
+                        document.getElementById('modalInfoEntrenador').style.display = 'block';
+                    }
+
+                } catch (error) {
+                    console.error('Error abriendo modal:', error);
+                    alert('Error al cargar la información del entrenador');
                 }
+            });
+        });
+
+        // Función para abrir el visualizador de PDF
+        function abrirVisualizadorPDF(rutaPDF, nombreArchivo) {
+            // Actualizar título del modal
+            document.getElementById('pdfTitulo').textContent = nombreArchivo;
+
+            // Cargar PDF en el iframe
+            document.getElementById('pdfViewer').src = rutaPDF;
+
+            // Configurar enlace de descarga
+            document.getElementById('pdfDownloadLink').href = rutaPDF;
+            document.getElementById('pdfDownloadLink').download = nombreArchivo;
+
+            // Abrir modal de visualización
+            if (window.jQuery && typeof jQuery.fn.modal === 'function') {
+                jQuery('#modalVisualizadorPDF').modal('show');
+            } else if (window.bootstrap && window.bootstrap.Modal) {
+                const modal = document.getElementById('modalVisualizadorPDF');
+                const bsModal = window.bootstrap.Modal.getOrCreateInstance(modal);
+                bsModal.show();
             }
-        </script>
-    </section>
+        }
+    </script>
+</section>
 </body>
 
 </html>

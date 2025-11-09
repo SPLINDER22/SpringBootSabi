@@ -1,0 +1,23 @@
+/* Estilos para tarjetas de la lista de entrenadores */
+.trainer-card {background: linear-gradient(135deg,#ffffff,#f3f9ff); border: none; border-radius: 22px; position: relative; overflow: hidden; box-shadow: 0 10px 20px -5px rgba(0,0,0,.15); transition: transform .3s ease, box-shadow .3s ease; min-height:430px;}
+.trainer-card:hover {transform: translateY(-6px); box-shadow:0 18px 30px -8px rgba(0,0,0,.25);}
+.trainer-avatar-wrapper {width: 120px; height: 120px; margin: -50px auto 14px; position: relative;}
+.trainer-avatar-wrapper .ring {position:absolute; inset:0; border-radius:50%; padding:4px; background: linear-gradient(135deg,#00c176,#1e7e34);}
+.trainer-avatar {width:100%; height:100%; object-fit:cover; border-radius:50%; border:4px solid #fff; box-shadow:0 4px 10px rgba(0,0,0,.2);}
+.trainer-header {padding-top:80px; text-align:center; background: radial-gradient(circle at top,#e8fff4,#ffffff 70%);}
+.trainer-name {font-weight:700; font-size:1.15rem; letter-spacing:.5px; margin-bottom:4px; color:#1e3d2f;}
+.trainer-rating {display:flex; align-items:center; justify-content:center; gap:4px; margin-bottom:10px;}
+.trainer-rating i {font-size:1rem;}
+.trainer-meta {display:flex; justify-content:space-between; gap:8px; margin-bottom:14px;}
+.trainer-meta-item {flex:1; background:#ffffff; border:1px solid #d9ece3; padding:8px 10px; border-radius:12px; text-align:center;}
+.trainer-meta-item h6 {font-size:.65rem; text-transform:uppercase; letter-spacing:1px; margin:0 0 4px; color:#168750; font-weight:600;}
+.trainer-meta-item span {font-size:.85rem; font-weight:600; color:#123;}
+.trainer-actions {display:flex; gap:10px; margin-top:6px;}
+.btn-cotizar {flex:1; background:#19b869; border:none; color:#fff; font-weight:600; border-radius:14px; padding:10px 14px; box-shadow:0 4px 12px rgba(25,184,105,.4);}
+.btn-cotizar:hover {background:#129553;}
+.btn-detalles {flex:1; background:#ffffff; border:2px solid #19b869; color:#19b869; font-weight:600; border-radius:14px; padding:10px 14px;}
+.btn-detalles:hover {background:#19b869; color:#fff;}
+.trainer-footer {padding:0 18px 18px;}
+.floating-badge {position:absolute; top:12px; right:14px; background:#19b869; color:#fff; padding:5px 12px; border-radius:20px; font-size:.7rem; font-weight:600; letter-spacing:.5px; box-shadow:0 4px 8px rgba(0,0,0,.15);}
+.rating-value {font-size:.75rem; font-weight:700; color:#555; background:#e9f7ef; padding:3px 8px; border-radius:12px;}
+@media (max-width: 768px){.trainer-meta{flex-direction:column;} .trainer-avatar-wrapper{margin:-55px auto 18px;} .trainer-avatar-wrapper{width:110px;height:110px;} .trainer-header { padding-top:90px; }}
