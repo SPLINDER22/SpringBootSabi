@@ -20,12 +20,16 @@ import com.sabi.sabi.repository.SemanaRepository;
 import com.sabi.sabi.repository.DiaRepository;
 import com.sabi.sabi.repository.EjercicioAsignadoRepository;
 import com.sabi.sabi.repository.SerieRepository;
+import com.sabi.sabi.entity.Suscripcion;
+import com.sabi.sabi.repository.SuscripcionRepository;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
+import java.util.Optional;
 
 @Component
 @RequiredArgsConstructor
@@ -40,11 +44,18 @@ public class    DataInitializer implements CommandLineRunner {
         private final EjercicioAsignadoRepository ejercicioAsignadoRepository;
         private final SerieRepository serieRepository;
         private final DiagnosticoRepository diagnosticoRepository;
+        private final SuscripcionRepository suscripcionRepository;
 
         @Override
         public void run(String... args) {
                 // Clientes
                 crearClienteSiNoExiste("Carlos Colmenares", "cliente@sabi.com", "1234567");
+                // Crear más clientes demo
+                crearClienteSiNoExiste("Laura Torres", "cliente2@sabi.com", "1234567");
+                crearClienteSiNoExiste("Miguel Ángel", "cliente3@sabi.com", "1234567");
+                crearClienteSiNoExiste("Paula Ruiz", "cliente4@sabi.com", "1234567");
+                crearClienteSiNoExiste("Andrés Castro", "cliente5@sabi.com", "1234567");
+
                 // Entrenadores
                 crearEntrenadorDetalladoSiNoExiste(
                         "Ernesto", "Espinel", "entrenador@sabi.com", "1234567",
@@ -113,11 +124,18 @@ public class    DataInitializer implements CommandLineRunner {
                 crearRutinaDeEjemplo();
                 crearRutinaGlobalLibre(); // Nueva rutina global sin cliente ni entrenador ni estadoRutina
 
+                // Crear suscripciones de ejemplo (mezcla de estados)
+                inicializarSuscripcionesDemo();
+
                 // Mostrar en consola un resumen de los usuarios creados / existentes
                 System.out.println("");
                 System.out.println("Resumen de usuarios iniciales:");
                 System.out.println("");
                 System.out.println("Cliente - cliente@sabi.com - Contraseña (raw): 1234567");
+                System.out.println("Cliente - cliente2@sabi.com - Contraseña (raw): 1234567");
+                System.out.println("Cliente - cliente3@sabi.com - Contraseña (raw): 1234567");
+                System.out.println("Cliente - cliente4@sabi.com - Contraseña (raw): 1234567");
+                System.out.println("Cliente - cliente5@sabi.com - Contraseña (raw): 1234567");
                 System.out.println("Entrenador - entrenador@sabi.com - Contraseña (raw): 1234567");
                 System.out.println("Entrenador - entrenador1@sabi.com - Contraseña (raw): 1234567");
                 System.out.println("Entrenador - entrenador2@sabi.com - Contraseña (raw): 1234567");
@@ -221,6 +239,71 @@ public class    DataInitializer implements CommandLineRunner {
                 usuarioRepository.save(entrenador);
                 System.out.println("Usuario creado: " + nombre + " " + apellido + " | " + email + " | contraseña (raw): " + rawPassword);
         }
+
+    // Helpers para obtener clientes/entrenadores por email
+    private Optional<Cliente> getClientePorEmail(String email) {
+        return usuarioRepository.findByEmail(email).map(u -> (Cliente) u);
+    }
+    private Optional<Entrenador> getEntrenadorPorEmail(String email) {
+        return usuarioRepository.findByEmail(email).map(u -> (Entrenador) u);
+    }
+
+    private void crearSuscripcionSiNoExiste(Cliente cliente, Entrenador entrenador,
+                                            EstadoSuscripcion estado,
+                                            Double precio, LocalDate inicio, LocalDate fin) {
+        if (cliente == null || entrenador == null) return;
+        boolean existe = suscripcionRepository.findAll().stream()
+                .anyMatch(s -> s.getCliente().getId().equals(cliente.getId())
+                        && s.getEntrenador().getId().equals(entrenador.getId())
+                        && s.getEstadoSuscripcion() == estado
+                        && java.util.Objects.equals(s.getFechaInicio(), inicio)
+                        && java.util.Objects.equals(s.getFechaFin(), fin)
+                        && java.util.Objects.equals(s.getPrecio(), precio));
+        if (existe) return;
+        Suscripcion s = Suscripcion.builder()
+                .cliente(cliente)
+                .entrenador(entrenador)
+                .estadoSuscripcion(estado)
+                .precio(precio)
+                .fechaInicio(inicio)
+                .fechaFin(fin)
+                .estado(true)
+                .build();
+        suscripcionRepository.save(s);
+    }
+
+    private void inicializarSuscripcionesDemo() {
+        Cliente c1 = getClientePorEmail("cliente@sabi.com").orElse(null);
+        Cliente c2 = getClientePorEmail("cliente2@sabi.com").orElse(null);
+        Cliente c3 = getClientePorEmail("cliente3@sabi.com").orElse(null);
+        Cliente c4 = getClientePorEmail("cliente4@sabi.com").orElse(null);
+        Cliente c5 = getClientePorEmail("cliente5@sabi.com").orElse(null);
+
+        // Todas las suscripciones se asignarán al mismo entrenador: Ernesto (entrenador@sabi.com)
+        Entrenador e0 = getEntrenadorPorEmail("entrenador@sabi.com").orElse(null);
+
+        // PENDIENTE sin precio/fechas
+        crearSuscripcionSiNoExiste(c2, e0, EstadoSuscripcion.PENDIENTE, null, null, null);
+        crearSuscripcionSiNoExiste(c3, e0, EstadoSuscripcion.PENDIENTE, null, null, null);
+
+        // COTIZADA con precio y fechas propuestas
+        crearSuscripcionSiNoExiste(c1, e0, EstadoSuscripcion.COTIZADA, 180.0,
+                LocalDate.now().plusDays(3), LocalDate.now().plusMonths(1).plusDays(3));
+        crearSuscripcionSiNoExiste(c4, e0, EstadoSuscripcion.COTIZADA, 220.0,
+                LocalDate.now().plusDays(7), LocalDate.now().plusMonths(2).plusDays(7));
+
+        // ACEPTADA activa
+        crearSuscripcionSiNoExiste(c5, e0, EstadoSuscripcion.ACEPTADA, 200.0,
+                LocalDate.now().minusDays(5), LocalDate.now().plusMonths(1));
+
+        // RECHAZADA (para historial)
+        crearSuscripcionSiNoExiste(c3, e0, EstadoSuscripcion.RECHAZADA, 190.0,
+                LocalDate.now().minusMonths(2), LocalDate.now().minusMonths(1));
+        crearSuscripcionSiNoExiste(c4, e0, EstadoSuscripcion.RECHAZADA, 210.0,
+                LocalDate.now().minusMonths(4), LocalDate.now().minusMonths(3));
+        crearSuscripcionSiNoExiste(c2, e0, EstadoSuscripcion.RECHAZADA, 175.0,
+                LocalDate.now().minusMonths(3), LocalDate.now().minusMonths(2));
+    }
 
     private void crearEjerciciosSiNoExisten() {
         // Ejercicios globales (no asignados a ningún usuario)
