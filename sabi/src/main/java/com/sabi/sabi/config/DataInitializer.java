@@ -48,13 +48,57 @@ public class    DataInitializer implements CommandLineRunner {
 
         @Override
         public void run(String... args) {
-                // Clientes
-                crearClienteSiNoExiste("Carlos Colmenares", "cliente@sabi.com", "1234567");
-                // Crear más clientes demo
-                crearClienteSiNoExiste("Laura Torres", "cliente2@sabi.com", "1234567");
-                crearClienteSiNoExiste("Miguel Ángel", "cliente3@sabi.com", "1234567");
-                crearClienteSiNoExiste("Paula Ruiz", "cliente4@sabi.com", "1234567");
-                crearClienteSiNoExiste("Andrés Castro", "cliente5@sabi.com", "1234567");
+                // Clientes con diagnósticos detallados
+                crearClienteConDiagnosticoDetallado("Carlos Colmenares", "cliente@sabi.com", "1234567",
+                        70.0, 170.0, NivelExperiencia.PRINCIPIANTE, "3 veces por semana, 45 min",
+                        "casa", "ninguna", "ninguna", 8L,
+                        "Dieta balanceada");
+
+                crearClienteConDiagnosticoDetallado("Laura Torres", "cliente2@sabi.com", "1234567",
+                        55.0, 162.0, NivelExperiencia.PRINCIPIANTE, "4 veces por semana, 40 min",
+                        "gimnasio básico", "ninguna", "ninguna", 7L,
+                        "Dieta baja en carbohidratos");
+
+                crearClienteConDiagnosticoDetallado("Miguel Ángel", "cliente3@sabi.com", "1234567",
+                        82.0, 177.0, NivelExperiencia.INTERMEDIO, "5 veces por semana, 55 min",
+                        "gimnasio completo", "Dolor de rodilla leve", "ninguna", 6L,
+                        "Dieta alta en proteínas");
+
+                crearClienteConDiagnosticoDetallado("Paula Ruiz", "cliente4@sabi.com", "1234567",
+                        68.0, 168.0, NivelExperiencia.AVANZADO, "6 veces por semana, 75 min",
+                        "gimnasio completo", "ninguna", "ninguna", 8L,
+                        "Dieta flexible (IIFYM)");
+
+                crearClienteConDiagnosticoDetallado("Andrés Castro", "cliente5@sabi.com", "1234567",
+                        90.0, 182.0, NivelExperiencia.INTERMEDIO, "4 veces por semana, 60 min",
+                        "gimnasio y casa", "Tendinitis en codo", "Diabetes tipo 2 controlada", 7L,
+                        "Dieta para diabéticos");
+
+                // 5 clientes adicionales con diagnósticos variados
+                crearClienteConDiagnosticoDetallado("Roberto Gómez", "cliente6@sabi.com", "1234567",
+                        85.0, 180.0, NivelExperiencia.INTERMEDIO, "5 veces por semana, 60 min",
+                        "gimnasio completo", "Lesión antigua de rodilla", "ninguna", 7L,
+                        "Dieta alta en proteínas");
+
+                crearClienteConDiagnosticoDetallado("Valentina Morales", "cliente7@sabi.com", "1234567",
+                        62.0, 165.0, NivelExperiencia.PRINCIPIANTE, "3 veces por semana, 40 min",
+                        "casa con mancuernas", "ninguna", "ninguna", 8L,
+                        "Vegetariana, comida balanceada");
+
+                crearClienteConDiagnosticoDetallado("Fernando Silva", "cliente8@sabi.com", "1234567",
+                        95.0, 175.0, NivelExperiencia.PRINCIPIANTE, "4 veces por semana, 45 min",
+                        "parque y casa", "ninguna", "Presión alta controlada", 6L,
+                        "Dieta baja en sodio");
+
+                crearClienteConDiagnosticoDetallado("Carolina Vargas", "cliente9@sabi.com", "1234567",
+                        58.0, 160.0, NivelExperiencia.AVANZADO, "6 veces por semana, 90 min",
+                        "gimnasio completo", "Tendinitis en hombro derecho", "ninguna", 8L,
+                        "Dieta cetogénica");
+
+                crearClienteConDiagnosticoDetallado("Sebastián Rojas", "cliente10@sabi.com", "1234567",
+                        78.0, 178.0, NivelExperiencia.INTERMEDIO, "4 veces por semana, 50 min",
+                        "gimnasio básico", "Dolor lumbar ocasional", "ninguna", 7L,
+                        "Dieta mediterránea");
 
                 // Entrenadores
                 crearEntrenadorDetalladoSiNoExiste(
@@ -136,6 +180,11 @@ public class    DataInitializer implements CommandLineRunner {
                 System.out.println("Cliente - cliente3@sabi.com - Contraseña (raw): 1234567");
                 System.out.println("Cliente - cliente4@sabi.com - Contraseña (raw): 1234567");
                 System.out.println("Cliente - cliente5@sabi.com - Contraseña (raw): 1234567");
+                System.out.println("Cliente - cliente6@sabi.com - Contraseña (raw): 1234567");
+                System.out.println("Cliente - cliente7@sabi.com - Contraseña (raw): 1234567");
+                System.out.println("Cliente - cliente8@sabi.com - Contraseña (raw): 1234567");
+                System.out.println("Cliente - cliente9@sabi.com - Contraseña (raw): 1234567");
+                System.out.println("Cliente - cliente10@sabi.com - Contraseña (raw): 1234567");
                 System.out.println("Entrenador - entrenador@sabi.com - Contraseña (raw): 1234567");
                 System.out.println("Entrenador - entrenador1@sabi.com - Contraseña (raw): 1234567");
                 System.out.println("Entrenador - entrenador2@sabi.com - Contraseña (raw): 1234567");
@@ -183,6 +232,49 @@ public class    DataInitializer implements CommandLineRunner {
                     .build();
             diagnosticoRepository.save(diagnostico);
             System.out.println("Diagnóstico creado para cliente: " + email);
+        }
+    }
+
+    private void crearClienteConDiagnosticoDetallado(String nombre, String email, String rawPassword,
+                                                     Double peso, Double estatura, NivelExperiencia nivelExperiencia,
+                                                     String disponibilidadTiempo, String accesoRecursos,
+                                                     String lesiones, String condicionesMedicas, Long horasSueno,
+                                                     String habitosAlimenticios) {
+        Cliente cliente;
+        if (usuarioRepository.findByEmail(email).isEmpty()) {
+            cliente = Cliente.builder()
+                    .nombre(nombre)
+                    .email(email)
+                    .contraseña(passwordEncoder.encode(rawPassword))
+                    .rol(Rol.CLIENTE)
+                    .estado(true)
+                    .objetivo("Mejorar condición física")
+                    .build();
+            usuarioRepository.save(cliente);
+            System.out.println("Usuario creado: " + nombre + " | " + email + " | contraseña (raw): " + rawPassword);
+        } else {
+            cliente = (Cliente) usuarioRepository.findByEmail(email).get();
+            System.out.println("Usuario ya existe: " + email + " (no se muestra contraseña raw)");
+        }
+
+        // Crear diagnóstico personalizado si no existe
+        if (diagnosticoRepository.findByClienteIdAndEstadoTrue(cliente.getId()).isEmpty()) {
+            Diagnostico diagnostico = Diagnostico.builder()
+                    .cliente(cliente)
+                    .fecha(java.time.LocalDate.now())
+                    .peso(peso)
+                    .estatura(estatura)
+                    .nivelExperiencia(nivelExperiencia)
+                    .disponibilidadTiempo(disponibilidadTiempo)
+                    .accesoRecursos(accesoRecursos)
+                    .lesiones(lesiones)
+                    .condicionesMedicas(condicionesMedicas)
+                    .horasSueno(horasSueno)
+                    .habitosAlimenticios(habitosAlimenticios)
+                    .estado(true)
+                    .build();
+            diagnosticoRepository.save(diagnostico);
+            System.out.println("Diagnóstico personalizado creado para cliente: " + email);
         }
     }
 
