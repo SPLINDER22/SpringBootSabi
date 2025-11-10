@@ -6,6 +6,7 @@
     <title>Lista De Suscripciones</title>
     <!-- SweetAlert2 -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link rel="stylesheet" th:href="@{/css/suscripciones.css}" />
 </head>
 
 <body th:replace="layout/layout :: layout('Lista de suscripciones', ~{::section})">
@@ -24,7 +25,15 @@
 
         <div class="d-flex justify-content-between align-items-center mb-4">
             <h1 class="h3 text-dark mb-0">Lista de Suscripciones</h1>
-            <div class="d-flex align-items-center">
+            <div class="d-flex align-items-center gap-2">
+                <div class="btn-group vista-toggle me-2" role="group" aria-label="Alternar vista">
+                    <button id="btnVistaGrid" type="button" class="btn btn-outline-primary btn-sm active" title="Vista de tarjetas">
+                        <i class="fas fa-th-large me-1"></i> Cuadrícula
+                    </button>
+                    <button id="btnVistaLista" type="button" class="btn btn-outline-primary btn-sm" title="Vista de lista">
+                        <i class="fas fa-list me-1"></i> Lista
+                    </button>
+                </div>
                 <a th:href="@{/entrenador/suscripciones/reporte.pdf}" class="btn btn-danger btn-lg">
                     <i class="bi bi-filetype-pdf me-1"></i> Generar reporte
                 </a>
@@ -101,112 +110,154 @@
             </div>
         </div>
         <div class="container">
-            <div class="row g-4">
-                <div th:if="${#lists.isEmpty(suscripciones)}" class="col-12 d-flex justify-content-center">
-                    <div class="alert alert-info text-center w-50 mt-5" role="alert">
-                        <strong>Aún no hay suscripciones</strong><br>
-                        Cuando tengas alguna, aquí se mostrarán.
-                    </div>
+            <div th:if="${#lists.isEmpty(suscripciones)}" class="col-12 d-flex justify-content-center">
+                <div class="alert alert-info text-center w-50 mt-5 empty-message" role="alert">
+                    <strong>Aún no hay suscripciones</strong><br>
+                    Cuando tengas alguna, aquí se mostrarán.
                 </div>
-                <div th:each="suscripcion : ${suscripciones}" class="col-12 col-md-6 mb-4">
-                    <div class="card w-100 shadow-lg border-primary rounded-4 text-center">
-                        <div class="card-header text-dark bg-primary">
-                            <h5 class="fw-semibold mb-0">Detalles de la Suscripción</h5>
+            </div>
+
+            <!-- Vista cuadrícula -->
+            <div id="vistaGrid" class="row g-4" th:if="${!#lists.isEmpty(suscripciones)}">
+                <div th:each="suscripcion : ${suscripciones}" class="col-12 col-md-6">
+                    <div class="card w-100 text-center">
+                        <div class="card-header">
+                            <h5 class="fw-semibold mb-0">Suscripción</h5>
                         </div>
-                        <div class="card-body py-4">
+                        <div class="card-body py-3">
                             <div class="d-flex flex-column align-items-center mb-3">
-                                <h4 class="card-title fw-semibold mb-1">Cliente: <strong
-                                        th:text="${nombresClientes[suscripcion.idCliente]} ?: 'Cliente'">Cliente</strong>
+                                <h4 class="card-title fw-semibold mb-1">
+                                    <i class="fas fa-user-circle text-primary me-2"></i>
+                                    <strong th:text="${nombresClientes[suscripcion.idCliente]} ?: 'Cliente'">Cliente</strong>
                                 </h4>
-                                <span class="text-dark mb-1">Estado de la suscripción</span>
-                                <span class="badge rounded-pill px-3 py-2 text-uppercase fs-6"
-                                    th:text="${suscripcion.estadoSuscripcion}"
-                                    th:classappend="${suscripcion.estadoSuscripcion == 'ACEPTADA' ? ' bg-success' : (suscripcion.estadoSuscripcion == 'COTIZADA' ? ' bg-info text-dark' : (suscripcion.estadoSuscripcion == 'RECHAZADA' ? ' bg-danger' : (suscripcion.estadoSuscripcion == 'PENDIENTE' ? ' bg-warning text-dark' : (suscripcion.estadoSuscripcion == 'CANCELADA' ? ' bg-secondary' : ' bg-light text-dark'))))}">
+                                <span class="badge rounded-pill px-3 py-2 estado"
+                                      th:text="${suscripcion.estadoSuscripcion}"
+                                      th:classappend="${suscripcion.estadoSuscripcion == 'ACEPTADA' ? ' bg-success' : (suscripcion.estadoSuscripcion == 'COTIZADA' ? ' bg-info text-dark' : (suscripcion.estadoSuscripcion == 'RECHAZADA' ? ' bg-danger' : (suscripcion.estadoSuscripcion == 'PENDIENTE' ? ' bg-warning text-dark' : ' bg-secondary')))}">
                                     Estado
                                 </span>
                             </div>
 
-                            <div class="row g-3 g-md-3 justify-content-center">
+                            <div class="row g-3 justify-content-center">
                                 <div class="col-12 col-md-4">
-                                    <div class="d-flex flex-column align-items-center p-2">
-                                        <div class="fs-6 text-dark mb-1"><i class="fas fa-dollar-sign text-primary me-2"></i> Precio</div>
-                                        <div class="fw-semibold fs-6" th:text="${suscripcion.precio != null ? #numbers.formatDecimal(suscripcion.precio, 1, 'COMMA', 2, 'POINT') : 'Por Definirse'}">Por Definirse</div>
+                                    <div class="p-2">
+                                        <div class="text-muted small mb-1"><i class="fas fa-dollar-sign text-primary me-1"></i>Precio</div>
+                                        <div class="fw-semibold" th:text="${suscripcion.precio != null ? #numbers.formatDecimal(suscripcion.precio, 1, 'COMMA', 2, 'POINT') : 'Por Definirse'}">Por Definirse</div>
                                     </div>
                                 </div>
                                 <div class="col-12 col-md-4">
-                                    <div class="d-flex flex-column align-items-center p-2">
-                                        <div class="fs-6 text-dark mb-1">
-                                            <i class="fas fa-play text-primary me-2"></i> Fecha de Inicio
-                                        </div>
-                                        <div class="fw-semibold fs-6"
-                                            th:text="${suscripcion.fechaInicio != null ? #temporals.format(suscripcion.fechaInicio, 'yyyy-MM-dd') : 'Por Definirse'}">
-                                            Por Definirse</div>
+                                    <div class="p-2">
+                                        <div class="text-muted small mb-1"><i class="fas fa-play text-primary me-1"></i>Inicio</div>
+                                        <div class="fw-semibold" th:text="${suscripcion.fechaInicio != null ? #temporals.format(suscripcion.fechaInicio, 'yyyy-MM-dd') : 'Por Definirse'}">Por Definirse</div>
                                     </div>
                                 </div>
                                 <div class="col-12 col-md-4">
-                                    <div class="d-flex flex-column align-items-center p-2">
-                                        <div class="fs-6 text-dark mb-1">
-                                            <i class="fas fa-flag-checkered text-primary me-2"></i> Fecha de Fin
-                                        </div>
-                                        <div class="fw-semibold fs-6"
-                                            th:text="${suscripcion.fechaFin != null ? #temporals.format(suscripcion.fechaFin, 'yyyy-MM-dd') : 'Por Definirse'}">
-                                            Por Definirse</div>
+                                    <div class="p-2">
+                                        <div class="text-muted small mb-1"><i class="fas fa-flag-checkered text-primary me-1"></i>Fin</div>
+                                        <div class="fw-semibold" th:text="${suscripcion.fechaFin != null ? #temporals.format(suscripcion.fechaFin, 'yyyy-MM-dd') : 'Por Definirse'}">Por Definirse</div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                        <div class="card-footer bg-primary pt-3 pb-3">
+                        <div class="card-footer pb-4">
                             <div class="d-flex flex-wrap gap-2 w-100 justify-content-center">
-                                <!-- Botón Cotizar Diagnóstico (antes era Editar) - Solo para PENDIENTE -->
+                                <!-- Botón Cotizar Diagnóstico -->
                                 <button th:if="${suscripcion.estadoSuscripcion == T(com.sabi.sabi.entity.enums.EstadoSuscripcion).PENDIENTE}"
                                         type="button"
-                                        class="btn btn-warning flex-fill btn-cotizar-diagnostico"
-                                        data-toggle="modal"
-                                        data-target="#modalEditarSuscripcion"
-                                        th:attr="data-id=${suscripcion.idSuscripcion},
-                                                 data-cliente=${suscripcion.idCliente},
-                                                 data-entrenador=${suscripcion.idEntrenador},
-                                                 data-precio=${suscripcion.precio},
-                                                 data-fechainicio=${suscripcion.fechaInicio},
-                                                 data-fechafin=${suscripcion.fechaFin},
-                                                 data-estado=${suscripcion.estadoSuscripcion}">
-                                    <i class="fas fa-hand-holding-usd me-1"></i> Cotizar Diagnóstico
+                                        class="btn btn-warning btn-sm flex-fill btn-cotizar-diagnostico"
+                                        th:attr="data-id=${suscripcion.idSuscripcion},data-cliente=${suscripcion.idCliente},data-entrenador=${suscripcion.idEntrenador},data-precio=${suscripcion.precio},data-fechainicio=${suscripcion.fechaInicio},data-fechafin=${suscripcion.fechaFin},data-estado=${suscripcion.estadoSuscripcion}">
+                                    <i class="fas fa-hand-holding-usd me-1"></i> Cotizar
                                 </button>
-
-                                <!-- Botón Ver Diagnóstico - Para PENDIENTE, COTIZADA y ACEPTADA -->
                                 <a th:if="${suscripcion.idCliente != null}"
                                    th:href="@{/entrenador/diagnostico/vista/{clienteId}(clienteId=${suscripcion.idCliente})}"
-                                   class="btn btn-info text-white flex-fill"
-                                   title="Ver diagnóstico completo del cliente">
-                                    <i class="fas fa-notes-medical me-1"></i> Ver Diagnóstico
+                                   class="btn btn-info btn-sm text-white flex-fill">
+                                    <i class="fas fa-notes-medical me-1"></i> Diagnóstico
                                 </a>
-
-                                <!-- Botón Rechazar - Solo para PENDIENTE -->
                                 <form th:if="${suscripcion.estadoSuscripcion == T(com.sabi.sabi.entity.enums.EstadoSuscripcion).PENDIENTE}"
                                       th:action="@{/suscripciones/rechazar/{id}(id=${suscripcion.idSuscripcion})}"
-                                      method="post"
-                                      class="flex-fill mb-0">
+                                      method="post" class="flex-fill mb-0">
                                     <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
                                     <input type="hidden" name="redirectTo" value="/entrenador/suscripciones" />
-                                    <button type="submit" class="btn btn-danger w-100">
+                                    <button type="submit" class="btn btn-danger btn-sm w-100">
                                         <i class="fas fa-times-circle me-1"></i> Rechazar
                                     </button>
                                 </form>
-
-                                <!-- Sección para ACEPTADA: Asignar rutina o Ver progreso -->
-                                <div th:if="${suscripcion.estadoSuscripcion == T(com.sabi.sabi.entity.enums.EstadoSuscripcion).ACEPTADA}"
-                                     class="w-100 mt-2">
+                                <div th:if="${suscripcion.estadoSuscripcion == T(com.sabi.sabi.entity.enums.EstadoSuscripcion).ACEPTADA}" class="w-100 mt-2">
                                     <a th:if="${rutinasActivasClientes != null and rutinasActivasClientes.containsKey(suscripcion.idCliente)}"
                                        th:href="@{'/semanas/detallar/' + ${rutinasActivasClientes[suscripcion.idCliente]} + '?readonly=true'}"
-                                       class="btn btn-primary w-100">
-                                        <i class="fas fa-chart-line me-1"></i> Ver Progreso de Rutina
+                                       class="btn btn-primary btn-sm w-100">
+                                        <i class="fas fa-chart-line me-1"></i> Progreso
                                     </a>
                                     <a th:if="${rutinasActivasClientes == null || !rutinasActivasClientes.containsKey(suscripcion.idCliente)}"
                                        th:href="@{/rutinas(asignar=true, idCliente=${suscripcion.idCliente})}"
-                                       class="btn btn-success w-100">
+                                       class="btn btn-success btn-sm w-100">
                                         <i class="fas fa-dumbbell me-1"></i> Asignar Rutina
                                     </a>
                                 </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Vista lista -->
+            <div id="vistaLista" class="row" style="display:none" th:if="${!#lists.isEmpty(suscripciones)}">
+                <div class="col-12">
+                    <div class="card shadow-sm">
+                        <div class="card-body p-0">
+                            <div class="table-responsive">
+                                <table class="table align-middle mb-0">
+                                    <thead>
+                                        <tr>
+                                            <th>Cliente</th>
+                                            <th>Estado</th>
+                                            <th>Precio</th>
+                                            <th>Inicio</th>
+                                            <th>Fin</th>
+                                            <th class="text-end">Acciones</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr th:each="suscripcion : ${suscripciones}">
+                                            <td th:text="${nombresClientes[suscripcion.idCliente]} ?: 'Cliente'">Cliente</td>
+                                            <td>
+                                                <span class="badge rounded-pill px-3 py-2 estado"
+                                                      th:text="${suscripcion.estadoSuscripcion}"
+                                                      th:classappend="${suscripcion.estadoSuscripcion == 'ACEPTADA' ? ' bg-success' : (suscripcion.estadoSuscripcion == 'COTIZADA' ? ' bg-info text-dark' : (suscripcion.estadoSuscripcion == 'RECHAZADA' ? ' bg-danger' : (suscripcion.estadoSuscripcion == 'PENDIENTE' ? ' bg-warning text-dark' : ' bg-secondary')))}">
+                                                    Estado
+                                                </span>
+                                            </td>
+                                            <td th:text="${suscripcion.precio != null ? #numbers.formatDecimal(suscripcion.precio, 1, 'COMMA', 2, 'POINT') : 'Por Definirse'}">Por Definirse</td>
+                                            <td th:text="${suscripcion.fechaInicio != null ? #temporals.format(suscripcion.fechaInicio, 'yyyy-MM-dd') : 'Por Definirse'}">Por Definirse</td>
+                                            <td th:text="${suscripcion.fechaFin != null ? #temporals.format(suscripcion.fechaFin, 'yyyy-MM-dd') : 'Por Definirse'}">Por Definirse</td>
+                                            <td class="text-end acciones-cell">
+                                                <div class="d-inline-flex flex-wrap justify-content-end">
+                                                    <button th:if="${suscripcion.estadoSuscripcion == T(com.sabi.sabi.entity.enums.EstadoSuscripcion).PENDIENTE}"
+                                                            type="button"
+                                                            class="btn btn-warning btn-sm btn-cotizar-diagnostico"
+                                                            th:attr="data-id=${suscripcion.idSuscripcion},data-cliente=${suscripcion.idCliente},data-entrenador=${suscripcion.idEntrenador},data-precio=${suscripcion.precio},data-fechainicio=${suscripcion.fechaInicio},data-fechafin=${suscripcion.fechaFin},data-estado=${suscripcion.estadoSuscripcion}">
+                                                        <i class="fas fa-hand-holding-usd"></i>
+                                                    </button>
+                                                    <a th:if="${suscripcion.idCliente != null}"
+                                                       th:href="@{/entrenador/diagnostico/vista/{clienteId}(clienteId=${suscripcion.idCliente})}"
+                                                       class="btn btn-info btn-sm text-white" title="Diagnóstico"><i class="fas fa-notes-medical"></i></a>
+                                                    <form th:if="${suscripcion.estadoSuscripcion == T(com.sabi.sabi.entity.enums.EstadoSuscripcion).PENDIENTE}"
+                                                          th:action="@{/suscripciones/rechazar/{id}(id=${suscripcion.idSuscripcion})}"
+                                                          method="post" class="mb-0">
+                                                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                                                        <input type="hidden" name="redirectTo" value="/entrenador/suscripciones" />
+                                                        <button type="submit" class="btn btn-danger btn-sm" title="Rechazar"><i class="fas fa-times-circle"></i></button>
+                                                    </form>
+                                                    <a th:if="${suscripcion.estadoSuscripcion == T(com.sabi.sabi.entity.enums.EstadoSuscripcion).ACEPTADA && rutinasActivasClientes != null and rutinasActivasClientes.containsKey(suscripcion.idCliente)}"
+                                                       th:href="@{'/semanas/detallar/' + ${rutinasActivasClientes[suscripcion.idCliente]} + '?readonly=true'}"
+                                                       class="btn btn-primary btn-sm" title="Progreso"><i class="fas fa-chart-line"></i></a>
+                                                    <a th:if="${suscripcion.estadoSuscripcion == T(com.sabi.sabi.entity.enums.EstadoSuscripcion).ACEPTADA && (rutinasActivasClientes == null || !rutinasActivasClientes.containsKey(suscripcion.idCliente))}"
+                                                       th:href="@{/rutinas(asignar=true, idCliente=${suscripcion.idCliente})}"
+                                                       class="btn btn-success btn-sm" title="Asignar"><i class="fas fa-dumbbell"></i></a>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
                             </div>
                         </div>
                     </div>
@@ -603,7 +654,29 @@
                 });
             });
         </script>
+        <script>
+            (function(){
+                const btnGrid = document.getElementById('btnVistaGrid');
+                const btnLista = document.getElementById('btnVistaLista');
+                const vistaGrid = document.getElementById('vistaGrid');
+                const vistaLista = document.getElementById('vistaLista');
+                const KEY = 'suscripcionesVistaEntrenador';
+                function setVista(tipo){
+                    const grid = tipo==='grid';
+                    vistaGrid.style.display = grid ? '' : 'none';
+                    vistaLista.style.display = grid ? 'none' : '';
+                    btnGrid.classList.toggle('active', grid);
+                    btnLista.classList.toggle('active', !grid);
+                    try{localStorage.setItem(KEY, tipo);}catch(e){}
+                }
+                const pref = (()=>{try{return localStorage.getItem(KEY);}catch(e){return null;}})();
+                setVista(pref==='lista' ? 'lista' : 'grid');
+                btnGrid?.addEventListener('click', ()=> setVista('grid'));
+                btnLista?.addEventListener('click', ()=> setVista('lista'));
+            })();
+        </script>
     </section>
 </body>
 
 </html>
+

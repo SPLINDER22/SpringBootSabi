@@ -1,0 +1,27 @@
+/* Estilos específicos para historial de suscripciones con vista alternable */
+
+.vista-toggle .btn { transition: background-color .25s ease, color .25s ease; }
+.vista-toggle .btn.active { background-color: #0d6efd; color: #fff; box-shadow: 0 0 0 .25rem rgba(13,110,253,.25); }
+
+#vistaGrid .card { transition: transform .25s ease, box-shadow .25s ease; }
+#vistaGrid .card:hover { transform: translateY(-4px); box-shadow: 0 .75rem 1.5rem rgba(0,0,0,.15); }
+
+/* Tabla lista */
+#vistaLista table { border-radius: .75rem; overflow: hidden; }
+#vistaLista thead { background: linear-gradient(135deg,#0d6efd,#4dabf7); color:#fff; }
+#vistaLista tbody tr { transition: background-color .15s ease; }
+#vistaLista tbody tr:hover { background-color: #f1f7ff; }
+
+.badge.estado { letter-spacing: .5px; font-weight: 600; }
+
+/* Empty message */
+.empty-message { max-width: 560px; }
+
+@media (min-width: 992px) { /* hacer cartas un poco más largas */
+  #vistaGrid .card { min-height: 360px; }
+}
+
+/* Acciones en tabla */
+.acciones-cell a { margin-right: .5rem; }
+.acciones-cell a:last-child { margin-right: 0; }
+
