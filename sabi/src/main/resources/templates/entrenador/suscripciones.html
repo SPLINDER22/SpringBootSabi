@@ -3,679 +3,692 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>Lista De Suscripciones</title>
+    <title>Suscripciones con tus clientes</title>
     <!-- SweetAlert2 -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <link rel="stylesheet" th:href="@{/css/suscripciones.css}" />
+    <link rel="stylesheet" th:href="@{/css/suscripciones.css}"/>
 </head>
 
 <body th:replace="layout/layout :: layout('Lista de suscripciones', ~{::section})">
-    <section th:fragment="section">
-        <!-- Alertas de éxito y error -->
-        <div th:if="${success}" class="alert alert-success alert-dismissible fade show" role="alert">
-            <i class="fas fa-check-circle me-2"></i>
-            <strong>¡Éxito!</strong> <span th:text="${success}"></span>
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
-        <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
-            <i class="fas fa-exclamation-triangle me-2"></i>
-            <strong>¡Error!</strong> <span th:text="${error}"></span>
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
+<section th:fragment="section" class="suscripciones-page">
+    <!-- Alertas de éxito y error -->
+    <div th:if="${success}" class="alert alert-success alert-dismissible fade show" role="alert">
+        <i class="fas fa-check-circle me-2"></i>
+        <strong>¡Éxito!</strong> <span th:text="${success}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+        <i class="fas fa-exclamation-triangle me-2"></i>
+        <strong>¡Error!</strong> <span th:text="${error}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
 
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <h1 class="h3 text-dark mb-0">Lista de Suscripciones</h1>
-            <div class="d-flex align-items-center gap-2">
-                <div class="btn-group vista-toggle me-2" role="group" aria-label="Alternar vista">
-                    <button id="btnVistaGrid" type="button" class="btn btn-outline-primary btn-sm active" title="Vista de tarjetas">
-                        <i class="fas fa-th-large me-1"></i> Cuadrícula
-                    </button>
-                    <button id="btnVistaLista" type="button" class="btn btn-outline-primary btn-sm" title="Vista de lista">
-                        <i class="fas fa-list me-1"></i> Lista
-                    </button>
-                </div>
-                <a th:href="@{/entrenador/suscripciones/reporte.pdf}" class="btn btn-danger btn-lg">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3 text-dark mb-0">Lista de Suscripciones</h1>
+        <div class="d-flex align-items-center gap-2">
+            <div class="btn-group shadow-sm rounded" role="group" aria-label="Alternar vista y reporte">
+                <button id="btnVistaGrid" type="button"
+                        class="btn btn-outline-primary btn-lg text-nowrap active btn-toggle"
+                        title="Vista de tarjetas">
+                    <i class="fas fa-th-large me-1"></i> Cuadrícula
+                </button>
+                <button id="btnVistaLista" type="button" class="btn btn-outline-primary btn-lg text-nowrap btn-toggle"
+                        title="Vista de lista">
+                    <i class="fas fa-list me-1"></i> Lista
+                </button>
+                <a th:href="@{/entrenador/suscripciones/reporte.pdf}"
+                   class="btn btn-danger btn-lg text-nowrap btn-toggle btn-report"
+                   title="Generar reporte">
                     <i class="bi bi-filetype-pdf me-1"></i> Generar reporte
                 </a>
             </div>
         </div>
-        <!-- Modal Ver Diagnóstico -->
-        <div class="modal fade" id="modalDiagnostico" tabindex="-1" aria-labelledby="modalDiagnosticoLabel" aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="modalDiagnosticoLabel">Último Diagnóstico</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                        <p><strong>Fecha:</strong> <span id="diagnosticoFecha"></span></p>
-                        <p><strong>Peso:</strong> <span id="diagnosticoPeso"></span> kg</p>
-                        <p><strong>Estatura:</strong> <span id="diagnosticoEstatura"></span> cm</p>
-                        <p><strong>Nivel de Experiencia:</strong> <span id="diagnosticoNivelExperiencia"></span></p>
-                        <p><strong>Disponibilidad de Tiempo:</strong> <span id="diagnosticoDisponibilidad"></span></p>
-                        <p><strong>Acceso a Recursos:</strong> <span id="diagnosticoRecursos"></span></p>
-                        <p><strong>Lesiones:</strong> <span id="diagnosticoLesiones"></span></p>
-                        <p><strong>Condiciones Médicas:</strong> <span id="diagnosticoCondiciones"></span></p>
-                        <p><strong>Porcentaje de Grasa Corporal:</strong> <span id="diagnosticoGrasa"></span>%</p>
-                        <p><strong>Circunferencia Cintura:</strong> <span id="diagnosticoCintura"></span> cm</p>
-                        <p><strong>Circunferencia Cadera:</strong> <span id="diagnosticoCadera"></span> cm</p>
-                        <p><strong>Frecuencia Cardiaca en Reposo:</strong> <span id="diagnosticoFrecuencia"></span> bpm</p>
-                        <p><strong>Presión Arterial:</strong> <span id="diagnosticoPresion"></span></p>
-                        <p><strong>Hábitos Alimenticios:</strong> <span id="diagnosticoHabitos"></span></p>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-                    </div>
+    </div>
+    <!-- Modal Ver Diagnóstico -->
+    <div class="modal fade" id="modalDiagnostico" tabindex="-1" aria-labelledby="modalDiagnosticoLabel"
+         aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalDiagnosticoLabel">Último Diagnóstico</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p><strong>Fecha:</strong> <span id="diagnosticoFecha"></span></p>
+                    <p><strong>Peso:</strong> <span id="diagnosticoPeso"></span> kg</p>
+                    <p><strong>Estatura:</strong> <span id="diagnosticoEstatura"></span> cm</p>
+                    <p><strong>Nivel de Experiencia:</strong> <span id="diagnosticoNivelExperiencia"></span></p>
+                    <p><strong>Disponibilidad de Tiempo:</strong> <span id="diagnosticoDisponibilidad"></span></p>
+                    <p><strong>Acceso a Recursos:</strong> <span id="diagnosticoRecursos"></span></p>
+                    <p><strong>Lesiones:</strong> <span id="diagnosticoLesiones"></span></p>
+                    <p><strong>Condiciones Médicas:</strong> <span id="diagnosticoCondiciones"></span></p>
+                    <p><strong>Porcentaje de Grasa Corporal:</strong> <span id="diagnosticoGrasa"></span>%</p>
+                    <p><strong>Circunferencia Cintura:</strong> <span id="diagnosticoCintura"></span> cm</p>
+                    <p><strong>Circunferencia Cadera:</strong> <span id="diagnosticoCadera"></span> cm</p>
+                    <p><strong>Frecuencia Cardiaca en Reposo:</strong> <span id="diagnosticoFrecuencia"></span> bpm</p>
+                    <p><strong>Presión Arterial:</strong> <span id="diagnosticoPresion"></span></p>
+                    <p><strong>Hábitos Alimenticios:</strong> <span id="diagnosticoHabitos"></span></p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
                 </div>
             </div>
         </div>
-
-        <!-- Modal Ver Descripción del Cliente -->
-        <div class="modal fade" id="modalDescripcionCliente" tabindex="-1" aria-labelledby="modalDescripcionClienteLabel" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered">
-                <div class="modal-content">
-                    <div class="modal-header bg-primary text-white">
-                        <h5 class="modal-title" id="modalDescripcionClienteLabel">
-                            <i class="fas fa-user-circle me-2"></i>Información del Cliente
-                        </h5>
-                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                        <div class="text-center mb-3">
-                            <img id="modalClienteFoto" src="/img/fotoPerfil.png" alt="Foto del cliente"
-                                 class="rounded-circle" style="width: 100px; height: 100px; object-fit: cover; border: 3px solid #007bff;">
-                            <h4 id="modalClienteNombre" class="mt-2 mb-0">Nombre del Cliente</h4>
-                            <p id="modalClienteEmail" class="text-muted mb-0"><i class="fas fa-envelope me-1"></i>email@example.com</p>
-                        </div>
-                        <hr>
-                        <div id="modalClienteObjetivoContainer" style="display: none;">
-                            <h6 class="text-primary"><i class="fas fa-bullseye me-2"></i>Objetivo</h6>
-                            <p id="modalClienteObjetivo" class="bg-light p-3 rounded"></p>
-                        </div>
-                        <div id="modalClienteDescripcionContainer" style="display: none;">
-                            <h6 class="text-primary"><i class="fas fa-comment-dots me-2"></i>Descripción Personal</h6>
-                            <p id="modalClienteDescripcion" class="bg-light p-3 rounded"></p>
-                        </div>
-                        <div id="modalSinInfoAdicional" style="display: none;" class="alert alert-info">
-                            <i class="fas fa-info-circle me-2"></i>El cliente aún no ha agregado información adicional en su perfil.
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-                        <a id="modalVerDiagnosticoCompleto" href="#" class="btn btn-primary">
-                            <i class="fas fa-file-medical me-1"></i>Ver Diagnóstico Completo
-                        </a>
-                    </div>
-                </div>
+    </div>
+    <div class="container">
+        <div th:if="${#lists.isEmpty(suscripciones)}" class="col-12 d-flex justify-content-center">
+            <div class="alert alert-info text-center w-50 mt-5 empty-message" role="alert">
+                <strong>Aún no hay suscripciones</strong><br>
+                Cuando tengas alguna, aquí se mostrarán.
             </div>
         </div>
-        <div class="container">
-            <div th:if="${#lists.isEmpty(suscripciones)}" class="col-12 d-flex justify-content-center">
-                <div class="alert alert-info text-center w-50 mt-5 empty-message" role="alert">
-                    <strong>Aún no hay suscripciones</strong><br>
-                    Cuando tengas alguna, aquí se mostrarán.
-                </div>
-            </div>
 
-            <!-- Vista cuadrícula -->
-            <div id="vistaGrid" class="row g-4" th:if="${!#lists.isEmpty(suscripciones)}">
-                <div th:each="suscripcion : ${suscripciones}" class="col-12 col-md-6">
-                    <div class="card w-100 text-center">
-                        <div class="card-header">
-                            <h5 class="fw-semibold mb-0">Suscripción</h5>
+        <!-- Vista cuadrícula -->
+        <div id="vistaGrid" class="row g-5 suscripciones-grid" th:if="${!#lists.isEmpty(suscripciones)}">
+            <div th:each="suscripcion : ${suscripciones}" class="col-12 col-md-6">
+                <div class="card card-suscripcion w-100 text-center"
+                     th:with="estado=${suscripcion.estadoSuscripcion != null ? #strings.toString(suscripcion.estadoSuscripcion) : ''}">
+                    <div class="card-header">
+                        <h5 class="fw-semibold mb-0">Suscripción</h5>
+                    </div>
+                    <div class="card-body py-4">
+                        <div class="d-flex flex-column align-items-center mb-3">
+                            <h4 class="card-title fw-semibold mb-1">
+                                <i class="fas fa-user-circle text-primary me-2"></i>
+                                <strong th:text="${nombresClientes[suscripcion.idCliente]} ?: 'Cliente'">Cliente</strong>
+                            </h4>
+                            <!-- Badge estado actualizado -->
+                            <span class="badge rounded-pill px-3 py-2 estado-badge"
+                                  th:text="${estado}"
+                                  th:classappend="${estado == 'ACEPTADA' ? ' estado-aceptada' : (estado == 'COTIZADA' ? ' estado-cotizada' : (estado == 'RECHAZADA' ? ' estado-rechazada' : (estado == 'PENDIENTE' ? ' estado-pendiente' : ' estado-desconocida')))}">
+                                Estado
+                            </span>
+                            <p class="estado-descripcion small mt-2"
+                               th:switch="${estado}">
+                                <span th:case="'PENDIENTE'">Aún no se le ha cotizado la suscripción al cliente.</span>
+                                <span th:case="'COTIZADA'">El cliente ya recibió la cotización y se está a la espera de su aceptación y pago.</span>
+                                <span th:case="'ACEPTADA'">La suscripción ya está pagada y activa hasta la fecha de finalización.</span>
+                                <span th:case="*">Estado de la suscripción en proceso.</span>
+                            </p>
                         </div>
-                        <div class="card-body py-3">
-                            <div class="d-flex flex-column align-items-center mb-3">
-                                <h4 class="card-title fw-semibold mb-1">
-                                    <i class="fas fa-user-circle text-primary me-2"></i>
-                                    <strong th:text="${nombresClientes[suscripcion.idCliente]} ?: 'Cliente'">Cliente</strong>
-                                </h4>
-                                <span class="badge rounded-pill px-3 py-2 estado"
-                                      th:text="${suscripcion.estadoSuscripcion}"
-                                      th:classappend="${suscripcion.estadoSuscripcion == 'ACEPTADA' ? ' bg-success' : (suscripcion.estadoSuscripcion == 'COTIZADA' ? ' bg-info text-dark' : (suscripcion.estadoSuscripcion == 'RECHAZADA' ? ' bg-danger' : (suscripcion.estadoSuscripcion == 'PENDIENTE' ? ' bg-warning text-dark' : ' bg-secondary')))}">
-                                    Estado
-                                </span>
+
+                        <div class="row g-3 justify-content-center">
+                            <div class="col-12 col-md-4">
+                                <div class="p-2">
+                                    <div class="text-muted small mb-1"><i
+                                            class="fas fa-dollar-sign text-primary me-1"></i>Precio
+                                    </div>
+                                    <div class="fw-semibold"
+                                         th:text="${suscripcion.precio != null ? #numbers.formatDecimal(suscripcion.precio, 1, 'COMMA', 2, 'POINT') : 'Por Definirse'}">
+                                        Por Definirse
+                                    </div>
+                                </div>
                             </div>
-
-                            <div class="row g-3 justify-content-center">
-                                <div class="col-12 col-md-4">
-                                    <div class="p-2">
-                                        <div class="text-muted small mb-1"><i class="fas fa-dollar-sign text-primary me-1"></i>Precio</div>
-                                        <div class="fw-semibold" th:text="${suscripcion.precio != null ? #numbers.formatDecimal(suscripcion.precio, 1, 'COMMA', 2, 'POINT') : 'Por Definirse'}">Por Definirse</div>
+                            <div class="col-12 col-md-4">
+                                <div class="p-2">
+                                    <div class="text-muted small mb-1"><i class="fas fa-play text-primary me-1"></i>Inicio
+                                    </div>
+                                    <div class="fw-semibold"
+                                         th:text="${suscripcion.fechaInicio != null ? #temporals.format(suscripcion.fechaInicio, 'yyyy-MM-dd') : 'Por Definirse'}">
+                                        Por Definirse
                                     </div>
                                 </div>
-                                <div class="col-12 col-md-4">
-                                    <div class="p-2">
-                                        <div class="text-muted small mb-1"><i class="fas fa-play text-primary me-1"></i>Inicio</div>
-                                        <div class="fw-semibold" th:text="${suscripcion.fechaInicio != null ? #temporals.format(suscripcion.fechaInicio, 'yyyy-MM-dd') : 'Por Definirse'}">Por Definirse</div>
+                            </div>
+                            <div class="col-12 col-md-4">
+                                <div class="p-2">
+                                    <div class="text-muted small mb-1"><i
+                                            class="fas fa-flag-checkered text-primary me-1"></i>Fin
                                     </div>
-                                </div>
-                                <div class="col-12 col-md-4">
-                                    <div class="p-2">
-                                        <div class="text-muted small mb-1"><i class="fas fa-flag-checkered text-primary me-1"></i>Fin</div>
-                                        <div class="fw-semibold" th:text="${suscripcion.fechaFin != null ? #temporals.format(suscripcion.fechaFin, 'yyyy-MM-dd') : 'Por Definirse'}">Por Definirse</div>
+                                    <div class="fw-semibold"
+                                         th:text="${suscripcion.fechaFin != null ? #temporals.format(suscripcion.fechaFin, 'yyyy-MM-dd') : 'Por Definirse'}">
+                                        Por Definirse
                                     </div>
                                 </div>
                             </div>
                         </div>
-                        <div class="card-footer pb-4">
-                            <div class="d-flex flex-wrap gap-2 w-100 justify-content-center">
-                                <!-- Botón Cotizar Diagnóstico -->
-                                <button th:if="${suscripcion.estadoSuscripcion == T(com.sabi.sabi.entity.enums.EstadoSuscripcion).PENDIENTE}"
-                                        type="button"
-                                        class="btn btn-warning btn-sm flex-fill btn-cotizar-diagnostico"
-                                        th:attr="data-id=${suscripcion.idSuscripcion},data-cliente=${suscripcion.idCliente},data-entrenador=${suscripcion.idEntrenador},data-precio=${suscripcion.precio},data-fechainicio=${suscripcion.fechaInicio},data-fechafin=${suscripcion.fechaFin},data-estado=${suscripcion.estadoSuscripcion}">
-                                    <i class="fas fa-hand-holding-usd me-1"></i> Cotizar
+                    </div>
+                    <div class="card-footer pb-4">
+                        <div class="d-flex flex-wrap gap-2 w-100 justify-content-center">
+                            <button th:if="${estado == 'PENDIENTE' && suscripcion.vistaDiagnostico}" type="button"
+                                    class="btn btn-success btn-action flex-fill btn-cotizar-diagnostico"
+                                    th:attr="data-id=${suscripcion.idSuscripcion},data-cliente=${suscripcion.idCliente},data-entrenador=${suscripcion.idEntrenador},data-precio=${suscripcion.precio},data-fechainicio=${suscripcion.fechaInicio},data-fechafin=${suscripcion.fechaFin},data-estado=${suscripcion.estadoSuscripcion}">
+                                <i class="fas fa-hand-holding-usd me-1"></i> Cotizar
+                            </button>
+                            <button th:if="${estado == 'PENDIENTE' && !suscripcion.vistaDiagnostico}" type="button"
+                                    class="btn btn-secondary btn-action flex-fill" disabled
+                                    title="Debes ver el diagnóstico antes de cotizar">
+                                <i class="fas fa-lock me-1"></i> Cotizar (bloqueado)
+                            </button>
+                            <a th:if="${suscripcion.idCliente != null}"
+                               th:href="@{/entrenador/diagnostico/vista/{clienteId}(clienteId=${suscripcion.idCliente})}"
+                               class="btn btn-info btn-action text-white flex-fill">
+                                <i class="fas fa-notes-medical me-1"></i> Diagnóstico
+                            </a>
+                            <form th:if="${estado == 'PENDIENTE'}"
+                                  th:action="@{/suscripciones/rechazar/{id}(id=${suscripcion.idSuscripcion})}"
+                                  method="post" class="flex-fill mb-0">
+                                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                                <input type="hidden" name="redirectTo" value="/entrenador/suscripciones"/>
+                                <button type="submit" class="btn btn-danger btn-action w-100">
+                                    <i class="fas fa-times-circle me-1"></i> Rechazar
                                 </button>
-                                <a th:if="${suscripcion.idCliente != null}"
-                                   th:href="@{/entrenador/diagnostico/vista/{clienteId}(clienteId=${suscripcion.idCliente})}"
-                                   class="btn btn-info btn-sm text-white flex-fill">
-                                    <i class="fas fa-notes-medical me-1"></i> Diagnóstico
+                            </form>
+                            <div th:if="${estado == 'ACEPTADA'}" class="w-100 mt-2">
+                                <a th:if="${rutinasActivasClientes != null and rutinasActivasClientes.containsKey(suscripcion.idCliente)}"
+                                   th:href="@{'/semanas/detallar/' + ${rutinasActivasClientes[suscripcion.idCliente]} + '?readonly=true'}"
+                                   class="btn btn-primary btn-action w-100">
+                                    <i class="fas fa-chart-line me-1"></i> Progreso
                                 </a>
-                                <form th:if="${suscripcion.estadoSuscripcion == T(com.sabi.sabi.entity.enums.EstadoSuscripcion).PENDIENTE}"
-                                      th:action="@{/suscripciones/rechazar/{id}(id=${suscripcion.idSuscripcion})}"
-                                      method="post" class="flex-fill mb-0">
-                                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
-                                    <input type="hidden" name="redirectTo" value="/entrenador/suscripciones" />
-                                    <button type="submit" class="btn btn-danger btn-sm w-100">
-                                        <i class="fas fa-times-circle me-1"></i> Rechazar
-                                    </button>
-                                </form>
-                                <div th:if="${suscripcion.estadoSuscripcion == T(com.sabi.sabi.entity.enums.EstadoSuscripcion).ACEPTADA}" class="w-100 mt-2">
-                                    <a th:if="${rutinasActivasClientes != null and rutinasActivasClientes.containsKey(suscripcion.idCliente)}"
-                                       th:href="@{'/semanas/detallar/' + ${rutinasActivasClientes[suscripcion.idCliente]} + '?readonly=true'}"
-                                       class="btn btn-primary btn-sm w-100">
-                                        <i class="fas fa-chart-line me-1"></i> Progreso
-                                    </a>
-                                    <a th:if="${rutinasActivasClientes == null || !rutinasActivasClientes.containsKey(suscripcion.idCliente)}"
-                                       th:href="@{/rutinas(asignar=true, idCliente=${suscripcion.idCliente})}"
-                                       class="btn btn-success btn-sm w-100">
-                                        <i class="fas fa-dumbbell me-1"></i> Asignar Rutina
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Vista lista -->
-            <div id="vistaLista" class="row" style="display:none" th:if="${!#lists.isEmpty(suscripciones)}">
-                <div class="col-12">
-                    <div class="card shadow-sm">
-                        <div class="card-body p-0">
-                            <div class="table-responsive">
-                                <table class="table align-middle mb-0">
-                                    <thead>
-                                        <tr>
-                                            <th>Cliente</th>
-                                            <th>Estado</th>
-                                            <th>Precio</th>
-                                            <th>Inicio</th>
-                                            <th>Fin</th>
-                                            <th class="text-end">Acciones</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr th:each="suscripcion : ${suscripciones}">
-                                            <td th:text="${nombresClientes[suscripcion.idCliente]} ?: 'Cliente'">Cliente</td>
-                                            <td>
-                                                <span class="badge rounded-pill px-3 py-2 estado"
-                                                      th:text="${suscripcion.estadoSuscripcion}"
-                                                      th:classappend="${suscripcion.estadoSuscripcion == 'ACEPTADA' ? ' bg-success' : (suscripcion.estadoSuscripcion == 'COTIZADA' ? ' bg-info text-dark' : (suscripcion.estadoSuscripcion == 'RECHAZADA' ? ' bg-danger' : (suscripcion.estadoSuscripcion == 'PENDIENTE' ? ' bg-warning text-dark' : ' bg-secondary')))}">
-                                                    Estado
-                                                </span>
-                                            </td>
-                                            <td th:text="${suscripcion.precio != null ? #numbers.formatDecimal(suscripcion.precio, 1, 'COMMA', 2, 'POINT') : 'Por Definirse'}">Por Definirse</td>
-                                            <td th:text="${suscripcion.fechaInicio != null ? #temporals.format(suscripcion.fechaInicio, 'yyyy-MM-dd') : 'Por Definirse'}">Por Definirse</td>
-                                            <td th:text="${suscripcion.fechaFin != null ? #temporals.format(suscripcion.fechaFin, 'yyyy-MM-dd') : 'Por Definirse'}">Por Definirse</td>
-                                            <td class="text-end acciones-cell">
-                                                <div class="d-inline-flex flex-wrap justify-content-end">
-                                                    <button th:if="${suscripcion.estadoSuscripcion == T(com.sabi.sabi.entity.enums.EstadoSuscripcion).PENDIENTE}"
-                                                            type="button"
-                                                            class="btn btn-warning btn-sm btn-cotizar-diagnostico"
-                                                            th:attr="data-id=${suscripcion.idSuscripcion},data-cliente=${suscripcion.idCliente},data-entrenador=${suscripcion.idEntrenador},data-precio=${suscripcion.precio},data-fechainicio=${suscripcion.fechaInicio},data-fechafin=${suscripcion.fechaFin},data-estado=${suscripcion.estadoSuscripcion}">
-                                                        <i class="fas fa-hand-holding-usd"></i>
-                                                    </button>
-                                                    <a th:if="${suscripcion.idCliente != null}"
-                                                       th:href="@{/entrenador/diagnostico/vista/{clienteId}(clienteId=${suscripcion.idCliente})}"
-                                                       class="btn btn-info btn-sm text-white" title="Diagnóstico"><i class="fas fa-notes-medical"></i></a>
-                                                    <form th:if="${suscripcion.estadoSuscripcion == T(com.sabi.sabi.entity.enums.EstadoSuscripcion).PENDIENTE}"
-                                                          th:action="@{/suscripciones/rechazar/{id}(id=${suscripcion.idSuscripcion})}"
-                                                          method="post" class="mb-0">
-                                                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
-                                                        <input type="hidden" name="redirectTo" value="/entrenador/suscripciones" />
-                                                        <button type="submit" class="btn btn-danger btn-sm" title="Rechazar"><i class="fas fa-times-circle"></i></button>
-                                                    </form>
-                                                    <a th:if="${suscripcion.estadoSuscripcion == T(com.sabi.sabi.entity.enums.EstadoSuscripcion).ACEPTADA && rutinasActivasClientes != null and rutinasActivasClientes.containsKey(suscripcion.idCliente)}"
-                                                       th:href="@{'/semanas/detallar/' + ${rutinasActivasClientes[suscripcion.idCliente]} + '?readonly=true'}"
-                                                       class="btn btn-primary btn-sm" title="Progreso"><i class="fas fa-chart-line"></i></a>
-                                                    <a th:if="${suscripcion.estadoSuscripcion == T(com.sabi.sabi.entity.enums.EstadoSuscripcion).ACEPTADA && (rutinasActivasClientes == null || !rutinasActivasClientes.containsKey(suscripcion.idCliente))}"
-                                                       th:href="@{/rutinas(asignar=true, idCliente=${suscripcion.idCliente})}"
-                                                       class="btn btn-success btn-sm" title="Asignar"><i class="fas fa-dumbbell"></i></a>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
+                                <a th:if="${rutinasActivasClientes == null || !rutinasActivasClientes.containsKey(suscripcion.idCliente)}"
+                                   th:href="@{/rutinas(asignar=true, idCliente=${suscripcion.idCliente})}"
+                                   class="btn btn-success btn-action w-100">
+                                    <i class="fas fa-dumbbell me-1"></i> Asignar Rutina
+                                </a>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-        <!-- Modal Cotizar Diagnóstico -->
-        <div class="modal fade" id="modalEditarSuscripcion" tabindex="-1" aria-labelledby="modalEditarSuscripcionLabel"
-            aria-hidden="true" role="dialog">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <form th:action="@{/suscripciones/guardar}" method="post" id="form-editar-suscripcion" novalidate>
-                        <div class="modal-header bg-warning">
-                            <h5 class="modal-title text-dark" id="modalEditarSuscripcionLabel">
-                                <i class="fas fa-hand-holding-usd me-2"></i>Cotizar Diagnóstico del Cliente
-                            </h5>
-                            <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar"><span
-                                    aria-hidden="true">&times;</span></button>
-                        </div>
-                        <div class="modal-body">
-                            <div class="alert alert-info" role="alert">
-                                <i class="fas fa-info-circle me-2"></i>
-                                <strong>Importante:</strong> Asegúrate de haber revisado el diagnóstico completo del cliente antes de enviar una cotización.
-                            </div>
-                            <input type="hidden" name="idSuscripcion" id="modal-idSuscripcion">
 
-                            <div class="row">
-                                <div class="col-md-6 mb-3">
-                                    <label for="modal-precio" class="form-label">Precio</label>
-                                    <input type="number" step="0.01" min="0" class="form-control" id="modal-precio"
-                                        name="precio" required>
-                                    <div class="invalid-feedback">El precio es obligatorio.</div>
-                                    <div class="valid-feedback">Precio válido.</div>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-md-6 mb-3">
-                                    <label for="modal-fechainicio" class="form-label">Fecha Inicio</label>
-                                    <input type="date" class="form-control" id="modal-fechainicio" name="fechaInicio" required>
-                                    <div class="invalid-feedback" id="msg-fechainicio">Seleccione una fecha de inicio válida.</div>
-                                    <div class="valid-feedback">Fecha de inicio válida.</div>
-                                </div>
-                                <div class="col-md-6 mb-3">
-                                    <label for="modal-fechafin" class="form-label">Fecha Fin</label>
-                                    <input type="date" class="form-control" id="modal-fechafin" name="fechaFin" required>
-                                    <div class="invalid-feedback" id="msg-fechafin">Seleccione una fecha de fin válida.</div>
-                                    <div class="valid-feedback">Fecha de fin válida.</div>
-                                </div>
-                            </div>
-
-                            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
-                            <input type="hidden" name="redirectTo" value="/entrenador/suscripciones" />
+        <!-- Vista lista -->
+        <div id="vistaLista" class="row" style="display:none" th:if="${!#lists.isEmpty(suscripciones)}">
+            <div class="col-12">
+                <div class="card shadow-sm">
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table align-middle mb-0">
+                                <thead>
+                                <tr>
+                                    <th>Cliente</th>
+                                    <th>Estado</th>
+                                    <th>Precio</th>
+                                    <th>Inicio</th>
+                                    <th>Fin</th>
+                                    <th class="text-end">Acciones</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr th:each="suscripcion : ${suscripciones}"
+                                    th:with="estado=${suscripcion.estadoSuscripcion != null ? #strings.toString(suscripcion.estadoSuscripcion) : ''}">
+                                    <td th:text="${nombresClientes[suscripcion.idCliente]} ?: 'Cliente'">Cliente</td>
+                                    <td>
+                                        <span class="badge rounded-pill px-3 py-2 estado-badge"
+                                              th:text="${estado}"
+                                              th:classappend="${estado == 'ACEPTADA' ? ' estado-aceptada' : (estado == 'COTIZADA' ? ' estado-cotizada' : (estado == 'RECHAZADA' ? ' estado-rechazada' : (estado == 'PENDIENTE' ? ' estado-pendiente' : ' estado-desconocida')))}">
+                                            Estado
+                                        </span>
+                                        <div class="estado-descripcion small mt-1" th:switch="${estado}">
+                                            <span th:case="'PENDIENTE'">Aún no se le ha cotizado la suscripción al cliente.</span>
+                                            <span th:case="'COTIZADA'">El cliente ya recibió la cotización y se está a la espera de su aceptación y pago.</span>
+                                            <span th:case="'ACEPTADA'">La suscripción ya está pagada y activa hasta la fecha de finalización.</span>
+                                            <span th:case="*">Estado de la suscripción en proceso.</span>
+                                        </div>
+                                    </td>
+                                    <td th:text="${suscripcion.precio != null ? #numbers.formatDecimal(suscripcion.precio, 1, 'COMMA', 2, 'POINT') : 'Por Definirse'}">
+                                        Por Definirse
+                                    </td>
+                                    <td th:text="${suscripcion.fechaInicio != null ? #temporals.format(suscripcion.fechaInicio, 'yyyy-MM-dd') : 'Por Definirse'}">
+                                        Por Definirse
+                                    </td>
+                                    <td th:text="${suscripcion.fechaFin != null ? #temporals.format(suscripcion.fechaFin, 'yyyy-MM-dd') : 'Por Definirse'}">
+                                        Por Definirse
+                                    </td>
+                                    <td class="text-end acciones-cell">
+                                        <div class="d-inline-flex flex-wrap justify-content-end gap-2">
+                                            <!-- Botón Cotizar Diagnóstico (cambiado a verde) -->
+                                            <button th:if="${estado == 'PENDIENTE' && suscripcion.vistaDiagnostico}" type="button"
+                                                    class="btn btn-success btn-action btn-cotizar-diagnostico"
+                                                    th:attr="data-id=${suscripcion.idSuscripcion},data-cliente=${suscripcion.idCliente},data-entrenador=${suscripcion.idEntrenador},data-precio=${suscripcion.precio},data-fechainicio=${suscripcion.fechaInicio},data-fechafin=${suscripcion.fechaFin},data-estado=${suscripcion.estadoSuscripcion}">
+                                                <i class="fas fa-hand-holding-usd"></i>
+                                            </button>
+                                            <button th:if="${estado == 'PENDIENTE' && !suscripcion.vistaDiagnostico}" type="button"
+                                                    class="btn btn-secondary btn-action" disabled title="Ver el diagnóstico para habilitar">
+                                                <i class="fas fa-lock"></i>
+                                            </button>
+                                            <a th:if="${suscripcion.idCliente != null}"
+                                               th:href="@{/entrenador/diagnostico/vista/{clienteId}(clienteId=${suscripcion.idCliente})}"
+                                               class="btn btn-info btn-action text-white" title="Diagnóstico"><i
+                                                    class="fas fa-notes-medical"></i></a>
+                                            <form th:if="${estado == 'PENDIENTE'}"
+                                                  th:action="@{/suscripciones/rechazar/{id}(id=${suscripcion.idSuscripcion})}"
+                                                  method="post" class="mb-0">
+                                                <input type="hidden" th:name="${_csrf.parameterName}"
+                                                       th:value="${_csrf.token}"/>
+                                                <input type="hidden" name="redirectTo"
+                                                       value="/entrenador/suscripciones"/>
+                                                <button type="submit" class="btn btn-danger btn-action"
+                                                        title="Rechazar"><i
+                                                        class="fas fa-times-circle"></i></button>
+                                            </form>
+                                            <a th:if="${estado == 'ACEPTADA' && rutinasActivasClientes != null and rutinasActivasClientes.containsKey(suscripcion.idCliente)}"
+                                               th:href="@{'/semanas/detallar/' + ${rutinasActivasClientes[suscripcion.idCliente]} + '?readonly=true'}"
+                                               class="btn btn-primary btn-action" title="Progreso"><i
+                                                    class="fas fa-chart-line"></i></a>
+                                            <a th:if="${estado == 'ACEPTADA' && (rutinasActivasClientes == null || !rutinasActivasClientes.containsKey(suscripcion.idCliente))}"
+                                               th:href="@{/rutinas(asignar=true, idCliente=${suscripcion.idCliente})}"
+                                               class="btn btn-success btn-action" title="Asignar"><i
+                                                    class="fas fa-dumbbell"></i></a>
+                                        </div>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
                         </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
-                            <button type="submit" class="btn btn-primary">Guardar cambios</button>
-                        </div>
-                    </form>
+                    </div>
                 </div>
             </div>
         </div>
+    </div>
 
-        <script>
-            window.addEventListener('load', function () {
-                console.log('Script de cotización de diagnóstico listo.');
-                $(document).on('click', '.btn-cotizar-diagnostico', function (e) {
-                    e.preventDefault();
-                    var button = $(this);
-                    var clienteId = button.data('cliente');
+    <!-- Modal Ver Descripción del Cliente -->
+    <div class="modal fade" id="modalDescripcionCliente" tabindex="-1" aria-labelledby="modalDescripcionClienteLabel"
+         aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title" id="modalDescripcionClienteLabel">
+                        <i class="fas fa-user-circle me-2"></i>Información del Cliente
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                            aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="text-center mb-3">
+                        <img id="modalClienteFoto" src="/img/fotoPerfil.png" th:src="@{/img/fotoPerfil.png}"
+                             alt="Foto del cliente"
+                             class="rounded-circle"
+                             style="width: 100px; height: 100px; object-fit: cover; border: 3px solid #007bff;">
+                        <h4 id="modalClienteNombre" class="mt-2 mb-0">Nombre del Cliente</h4>
+                        <p id="modalClienteEmail" class="text-muted mb-0"><i class="fas fa-envelope me-1"></i>email@example.com
+                        </p>
+                    </div>
+                    <hr>
+                    <div id="modalClienteObjetivoContainer" style="display: none;">
+                        <h6 class="text-primary"><i class="fas fa-bullseye me-2"></i>Objetivo</h6>
+                        <p id="modalClienteObjetivo" class="bg-light p-3 rounded"></p>
+                    </div>
+                    <div id="modalClienteDescripcionContainer" style="display: none;">
+                        <h6 class="text-primary"><i class="fas fa-comment-dots me-2"></i>Descripción Personal</h6>
+                        <p id="modalClienteDescripcion" class="bg-light p-3 rounded"></p>
+                    </div>
+                    <div id="modalSinInfoAdicional" style="display: none;" class="alert alert-info">
+                        <i class="fas fa-info-circle me-2"></i>El cliente aún no ha agregado información adicional en su
+                        perfil.
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                    <a id="modalVerDiagnosticoCompleto" href="#" class="btn btn-primary">
+                        <i class="fas fa-file-medical me-1"></i>Ver Diagnóstico Completo
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
 
-                    if (!$('#modalEditarSuscripcion').length) {
-                        console.error('Modal element not found: #modalEditarSuscripcion');
-                        return;
-                    }
+    <!-- Modal Cotizar Diagnóstico -->
+    <div class="modal fade" id="modalEditarSuscripcion" tabindex="-1" aria-labelledby="modalEditarSuscripcionLabel"
+         aria-hidden="true" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form th:action="@{/suscripciones/guardar}" method="post" id="form-editar-suscripcion" novalidate>
+                    <div class="modal-header bg-warning">
+                        <h5 class="modal-title text-dark" id="modalEditarSuscripcionLabel">
+                            <i class="fas fa-hand-holding-usd me-2"></i>Cotizar Diagnóstico del Cliente
+                        </h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar"><span
+                                aria-hidden="true">&times;</span></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="alert alert-info" role="alert">
+                            <i class="fas fa-info-circle me-2"></i>
+                            <strong>Importante:</strong> Revisa el diagnóstico completo del cliente antes de enviar una cotización.
+                            Ahora las fechas se calculan automáticamente según la duración en semanas que elijas.
+                        </div>
+                        <input type="hidden" name="idSuscripcion" id="modal-idSuscripcion">
 
-                    // Verificar si el cliente tiene diagnóstico usando AJAX
-                    $.ajax({
-                        url: '/api/entrenador/diagnostico/cliente/' + clienteId,
-                        method: 'GET',
-                        success: function(response) {
-                            if (response.message && response.message === "No hay diagnostico") {
-                                // Cliente no tiene diagnóstico
-                                Swal.fire({
-                                    icon: 'warning',
-                                    title: '⚠️ Diagnóstico Requerido',
-                                    html: `
-                                        <p style="font-size:1.1rem;line-height:1.6;">
-                                            <strong>Debes revisar el diagnóstico del cliente antes de poder enviar una cotización.</strong>
-                                        </p>
-                                        <p style="color:#64748b;margin-top:1rem;">
-                                            Haz clic en el botón <strong>"Ver Diagnóstico"</strong> para revisar la información del cliente primero.
-                                        </p>
-                                    `,
-                                    confirmButtonText: 'Entendido',
-                                    confirmButtonColor: '#3b82f6',
-                                    allowOutsideClick: false
-                                });
-                                return;
-                            }
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="modal-precio" class="form-label">Precio</label>
+                                <input type="number" step="0.01" min="0" class="form-control" id="modal-precio"
+                                       name="precio" required>
+                                <div class="invalid-feedback">El precio es obligatorio.</div>
+                                <div class="valid-feedback">Precio válido.</div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="modal-duracion" class="form-label">Duración</label>
+                                <select id="modal-duracion" name="duracionSemanas" class="form-select" required>
+                                    <option value="" disabled selected>Selecciona...</option>
+                                    <option value="1">1 semana</option>
+                                    <option value="2">2 semanas</option>
+                                    <option value="3">3 semanas</option>
+                                    <option value="4">4 semanas</option>
+                                    <option value="5">5 semanas</option>
+                                    <option value="6">6 semanas</option>
+                                    <option value="7">7 semanas</option>
+                                    <option value="8">8 semanas</option>
+                                </select>
+                                <div class="invalid-feedback">Selecciona la duración en semanas.</div>
+                            </div>
+                        </div>
 
-                            // Cliente tiene diagnóstico, abrir modal normalmente
-                            console.log('Abrir modal cotizar diagnóstico:', button.data());
-                            $('#modal-idSuscripcion').val(button.data('id'));
-                            $('#modal-precio').val(button.data('precio') || '');
-                            const fechainicioRaw = button.data('fechainicio') || '';
-                            const fechafinRaw = button.data('fechafin') || '';
-                            $('#modal-fechainicio').val(normalizeDateValue(fechainicioRaw));
-                            $('#modal-fechafin').val(normalizeDateValue(fechafinRaw));
+                        <!-- Inputs ocultos reales para backend -->
+                        <input type="hidden" id="modal-fechainicio" name="fechaInicio">
+                        <input type="hidden" id="modal-fechafin" name="fechaFin">
 
-                            if (typeof $('#modalEditarSuscripcion').modal === 'function') {
-                                $('#modalEditarSuscripcion').appendTo('body').modal('show');
-                            } else {
-                                console.error('Bootstrap modal plugin not available. Verify bootstrap JS is loaded.');
-                            }
-                        },
-                        error: function(xhr, status, error) {
-                            console.error('Error al verificar diagnóstico:', error);
+                        <div id="modal-rango-preview" class="mt-2 small text-muted" style="display:none;"></div>
+
+                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                        <input type="hidden" name="redirectTo" value="/entrenador/suscripciones"/>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                        <button type="submit" class="btn btn-primary">Guardar cambios</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        window.addEventListener('load', function () {
+            console.log('Script de cotización de diagnóstico listo.');
+            $(document).on('click', '.btn-cotizar-diagnostico', function (e) {
+                e.preventDefault();
+                var button = $(this);
+                var clienteId = button.data('cliente');
+
+                if (!$('#modalEditarSuscripcion').length) {
+                    console.error('Modal element not found: #modalEditarSuscripcion');
+                    return;
+                }
+
+                // Verificar si el cliente tiene diagnóstico usando AJAX
+                $.ajax({
+                    url: '/api/entrenador/diagnostico/cliente/' + clienteId,
+                    method: 'GET',
+                    success: function(response) {
+                        if (response.message && response.message === "No hay diagnostico") {
+                            // Cliente no tiene diagnóstico
                             Swal.fire({
-                                icon: 'error',
-                                title: 'Error',
-                                text: 'No se pudo verificar el diagnóstico del cliente. Intenta nuevamente.',
-                                confirmButtonColor: '#dc2626'
+                                icon: 'warning',
+                                title: '⚠️ Diagnóstico Requerido',
+                                html: `
+                                    <p style="font-size:1.1rem;line-height:1.6;">
+                                        <strong>Debes revisar el diagnóstico del cliente antes de poder enviar una cotización.</strong>
+                                    </p>
+                                    <p style="color:#64748b;margin-top:1rem;">
+                                        Haz clic en el botón <strong>"Ver Diagnóstico"</strong> para revisar la información del cliente primero.
+                                    </p>
+                                `,
+                                confirmButtonText: 'Entendido',
+                                confirmButtonColor: '#3b82f6',
+                                allowOutsideClick: false
                             });
+                            return;
                         }
-                    });
-                });
 
-                // Ajuste de límites y estados cuando se muestre el modal
-                $('#modalEditarSuscripcion').on('shown.bs.modal', function () {
-                    try {
-                        initFechaMinHoy();
-                        actualizarLimitesFechaFin();
-                        // Limpiar estados previos y validar con valores actuales
-                        ['#modal-precio', '#modal-fechainicio', '#modal-fechafin'].forEach(sel => {
-                            const el = document.querySelector(sel);
-                            if (!el) return;
-                            el.classList.remove('is-valid', 'is-invalid');
+                        // Cliente tiene diagnóstico, abrir modal normalmente
+                        console.log('Abrir modal cotizar diagnóstico:', button.data());
+                        $('#modal-idSuscripcion').val(button.data('id'));
+                        $('#modal-precio').val(button.data('precio') || '');
+                        // Fechas ahora se calculan por duración al abrir el modal
+
+                        if (typeof $('#modalEditarSuscripcion').modal === 'function') {
+                            $('#modalEditarSuscripcion').appendTo('body').modal('show');
+                        } else {
+                            console.error('Bootstrap modal plugin not available. Verify bootstrap JS is loaded.');
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('Error al verificar diagnóstico:', error);
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: 'No se pudo verificar el diagnóstico del cliente. Intenta nuevamente.',
+                            confirmButtonColor: '#dc2626'
                         });
-                        validarTodo(false);
-                    } catch (err) {
-                        console.error('Error inicializando validaciones:', err);
                     }
                 });
             });
-        </script>
-        <script>
-            // ======= Utilidades de fechas =======
-            function toYMD(date) {
-                const y = date.getFullYear();
-                const m = String(date.getMonth() + 1).padStart(2, '0');
-                const d = String(date.getDate()).padStart(2, '0');
-                return `${y}-${m}-${d}`;
-            }
-            function normalizeDateValue(str) {
-                if (!str) return '';
-                const s = String(str);
-                const onlyDate = s.includes('T') ? s.split('T')[0] : s;
-                return /^\d{4}-\d{2}-\d{2}$/.test(onlyDate) ? onlyDate : '';
-            }
-            function parseYMD(str) {
-                if (!str) return null;
-                const [y, m, d] = str.split('-').map(Number);
-                if (!y || !m || !d) return null;
-                const dt = new Date(y, m - 1, d);
-                if (dt.getFullYear() !== y || dt.getMonth() !== m - 1 || dt.getDate() !== d) return null;
-                return dt;
-            }
-            function addDays(date, days) {
-                const dt = new Date(date.getFullYear(), date.getMonth(), date.getDate());
-                dt.setDate(dt.getDate() + days);
-                return dt;
-            }
-            function todayLocal() {
-                const now = new Date();
-                return new Date(now.getFullYear(), now.getMonth(), now.getDate());
-            }
 
-            // ======= Configurar límites en inputs =======
-            function initFechaMinHoy() {
-                const inicio = document.getElementById('modal-fechainicio');
-                if (inicio) {
-                    inicio.min = toYMD(todayLocal());
+            // Ajuste de límites y estados cuando se muestre el modal
+            $('#modalEditarSuscripcion').on('shown.bs.modal', function () {
+                try {
+                    // Inicialización nueva por semanas
+                    ['#modal-precio', '#modal-fechainicio', '#modal-fechafin'].forEach(sel => {
+                        const el = document.querySelector(sel);
+                        if (!el) return;
+                        el.classList.remove('is-valid', 'is-invalid');
+                    });
+                    const sel = document.getElementById('modal-duracion');
+                    if (sel && !sel.value) { sel.value = '4'; }
+                    actualizarPreviewRango();
+                    validarTodo(false);
+                } catch (err) {
+                    console.error('Error inicializando validaciones:', err);
+                }
+            });
+        });
+    </script>
+    <script>
+        // ======= Utilidades de fechas (actualizadas para rango semanas) =======
+        function toYMD(date) {
+            const y = date.getFullYear();
+            const m = String(date.getMonth() + 1).padStart(2, '0');
+            const d = String(date.getDate()).padStart(2, '0');
+            return `${y}-${m}-${d}`;
+        }
+        function todayLocal() {
+            const now = new Date();
+            return new Date(now.getFullYear(), now.getMonth(), now.getDate());
+        }
+        function computeFin(inicio, semanas) {
+            const d = new Date(inicio.getFullYear(), inicio.getMonth(), inicio.getDate());
+            d.setDate(d.getDate() + semanas * 7); // fin al cumplir semanas*7 días
+            return d;
+        }
+        function actualizarPreviewRango() {
+            const select = document.getElementById('modal-duracion');
+            const inicioInput = document.getElementById('modal-fechainicio');
+            const finInput = document.getElementById('modal-fechafin');
+            const preview = document.getElementById('modal-rango-preview');
+            if (!select || !inicioInput || !finInput || !preview) return;
+            const val = parseInt(select.value, 10);
+            if (!val) {
+                preview.style.display = 'none';
+                inicioInput.value = '';
+                finInput.value = '';
+                return;
+            }
+            const inicio = todayLocal();
+            const fin = computeFin(inicio, val);
+            inicioInput.value = toYMD(inicio);
+            finInput.value = toYMD(fin);
+            preview.innerHTML = `<strong>Rango:</strong> Inicio ${inicioInput.value} &rarr; Fin ${finInput.value} (Duración ${val} semana(s))`;
+            preview.style.display = 'block';
+        }
+
+        function validarPrecio() {
+            const precio = document.getElementById('modal-precio');
+            if (!precio) return true;
+            const val = precio.value;
+            const isValid = val !== '' && !isNaN(val) && Number(val) >= 0;
+            precio.classList.remove('is-valid', 'is-invalid');
+            precio.classList.add(isValid ? 'is-valid' : 'is-invalid');
+            return isValid;
+        }
+        function validarDuracion() {
+            const sel = document.getElementById('modal-duracion');
+            if (!sel) return true;
+            const ok = !!sel.value;
+            sel.classList.remove('is-valid', 'is-invalid');
+            sel.classList.add(ok ? 'is-valid' : 'is-invalid');
+            return ok;
+        }
+        function validarRangoFechas() {
+            const inicio = document.getElementById('modal-fechainicio').value;
+            const fin = document.getElementById('modal-fechafin').value;
+            return inicio !== '' && fin !== '';
+        }
+        function validarTodo(showAlerts) {
+            const okPrecio = validarPrecio();
+            const okDuracion = validarDuracion();
+            const okRango = validarRangoFechas();
+            const ok = okPrecio && okDuracion && okRango;
+            if (!ok && showAlerts) {
+                // Podríamos mostrar alerta, pero basta con feedback visual.
+            }
+            return ok;
+        }
+        document.addEventListener('change', function(e){
+            if (e.target && e.target.id === 'modal-duracion') {
+                actualizarPreviewRango();
+                validarDuracion();
+            }
+        });
+        document.addEventListener('input', function(e){
+            if (e.target && e.target.id === 'modal-precio') {
+                validarPrecio();
+            }
+        });
+        document.addEventListener('submit', function(e){
+            const form = e.target;
+            if (form && form.id === 'form-editar-suscripcion') {
+                if (!validarTodo(true)) {
+                    e.preventDefault();
+                    e.stopPropagation();
                 }
             }
-            function actualizarLimitesFechaFin() {
-                const inicio = document.getElementById('modal-fechainicio');
-                const fin = document.getElementById('modal-fechafin');
-                if (!inicio || !fin) return;
-                const dtInicio = parseYMD(inicio.value);
-                if (dtInicio) {
-                    const minFin = addDays(dtInicio, 1);
-                    const maxFin = addDays(dtInicio, 365);
-                    fin.min = toYMD(minFin);
-                    fin.max = toYMD(maxFin);
-                } else {
-                    fin.removeAttribute('min');
-                    fin.removeAttribute('max');
+        });
+        // Al abrir modal inicializar
+        $('#modalEditarSuscripcion').on('shown.bs.modal', function(){
+            const sel = document.getElementById('modal-duracion');
+            if (sel && !sel.value) { sel.value = '4'; } // default 4 semanas
+            actualizarPreviewRango();
+            validarPrecio();
+            validarDuracion();
+        });
+    </script>
+    <script>
+        document.querySelectorAll('.btn-ver-diagnostico').forEach(button => {
+            button.addEventListener('click', async () => {
+                const clienteId = button.getAttribute('data-cliente-id');
+                try {
+                    const response = await fetch(`/api/entrenador/diagnostico/${clienteId}`);
+                    if (!response.ok) {
+                        throw new Error('Error al obtener el diagnóstico');
+                    }
+                    const diagnostico = await response.json();
+
+                    // Rellenar el modal con los datos del diagnóstico
+                    document.getElementById('diagnosticoFecha').textContent = diagnostico.fecha || 'N/A';
+                    document.getElementById('diagnosticoPeso').textContent = diagnostico.peso || 'N/A';
+                    document.getElementById('diagnosticoEstatura').textContent = diagnostico.estatura || 'N/A';
+                    document.getElementById('diagnosticoNivelExperiencia').textContent = diagnostico.nivelExperiencia || 'N/A';
+                    document.getElementById('diagnosticoDisponibilidad').textContent = diagnostico.disponibilidadTiempo || 'N/A';
+                    document.getElementById('diagnosticoRecursos').textContent = diagnostico.accesoRecursos || 'N/A';
+                    document.getElementById('diagnosticoLesiones').textContent = diagnostico.lesiones || 'N/A';
+                    document.getElementById('diagnosticoCondiciones').textContent = diagnostico.condicionesMedicas || 'N/A';
+                    document.getElementById('diagnosticoGrasa').textContent = diagnostico.porcentajeGrasaCorporal || 'N/A';
+                    document.getElementById('diagnosticoCintura').textContent = diagnostico.circunferenciaCintura || 'N/A';
+                    document.getElementById('diagnosticoCadera').textContent = diagnostico.circunferenciaCadera || 'N/A';
+                    document.getElementById('diagnosticoFrecuencia').textContent = diagnostico.frecuenciaCardiacaReposo || 'N/A';
+                    document.getElementById('diagnosticoPresion').textContent = diagnostico.presionArterial || 'N/A';
+                    document.getElementById('diagnosticoHabitos').textContent = diagnostico.habitosAlimenticios || 'N/A';
+
+                    // Mostrar el modal
+                    const modal = new bootstrap.Modal(document.getElementById('modalDiagnostico'));
+                    modal.show();
+                } catch (error) {
+                    console.error(error);
+                    alert('Hubo un error al cargar el diagnóstico.');
                 }
-            }
+            });
+        });
+    </script>
+    <script>
+        // Script para cargar info del cliente en modal compacto
+        /* Botón 'Ver info' deshabilitado por ahora
+        document.querySelectorAll('.btn-ver-info-cliente').forEach(btn => {
+            btn.addEventListener('click', async function() {
+                const clienteId = this.getAttribute('data-cliente-id');
+                if (!clienteId) return;
 
-            // ======= Validaciones y feedback =======
-            function setValidity(el, isValid, msgEl, msg) {
-                if (!el) return false;
-                el.classList.remove('is-valid', 'is-invalid');
-                if (isValid) {
-                    el.classList.add('is-valid');
-                    if (msgEl) msgEl.textContent = '';
-                } else {
-                    el.classList.add('is-invalid');
-                    if (msgEl && msg) msgEl.textContent = msg;
-                }
-                return isValid;
-            }
+                try {
+                    const response = await fetch(`/api/entrenador/cliente/${clienteId}/info`);
+                    if (!response.ok) throw new Error('Error al cargar información');
 
-            function validarPrecio() {
-                const precio = document.getElementById('modal-precio');
-                if (!precio) return true;
-                const val = precio.value;
-                const isValid = val !== '' && !isNaN(val);
-                return setValidity(precio, isValid, null, null);
-            }
+                    const info = await response.json();
 
-            function validarFechas() {
-                const inicio = document.getElementById('modal-fechainicio');
-                const fin = document.getElementById('modal-fechafin');
-                const msgIni = document.getElementById('msg-fechainicio');
-                const msgFin = document.getElementById('msg-fechafin');
-                if (!inicio || !fin) return true;
+                    // Actualizar modal
+                    const fallback = '' + '/img/fotoPerfil.png';
+                    document.getElementById('modalClienteFoto').src = info.fotoPerfilUrl || fallback;
+                    document.getElementById('modalClienteNombre').textContent = info.nombre || 'Cliente';
+                    document.getElementById('modalClienteEmail').textContent = info.email || '';
 
-                const dtHoy = todayLocal();
-                const dtInicio = parseYMD(inicio.value);
-                const dtFin = parseYMD(fin.value);
+                    // Mostrar u ocultar secciones según disponibilidad
+                    const objetivoContainer = document.getElementById('modalClienteObjetivoContainer');
+                    const descripcionContainer = document.getElementById('modalClienteDescripcionContainer');
+                    const sinInfo = document.getElementById('modalSinInfoAdicional');
 
-                let okInicio = true;
-                let okFin = true;
+                    let tieneInfo = false;
 
-                // Regla: si hay inicio, debe ser >= hoy
-                if (!inicio.value) {
-                    okInicio = setValidity(inicio, false, msgIni, 'Seleccione una fecha de inicio.');
-                } else if (dtInicio) {
-                    if (dtInicio < dtHoy) {
-                        okInicio = setValidity(inicio, false, msgIni, 'La fecha de inicio no puede ser anterior a hoy.');
+                    if (info.objetivo && info.objetivo.trim() !== '') {
+                        document.getElementById('modalClienteObjetivo').textContent = info.objetivo;
+                        objetivoContainer.style.display = 'block';
+                        tieneInfo = true;
                     } else {
-                        okInicio = setValidity(inicio, true, msgIni, '');
+                        objetivoContainer.style.display = 'none';
                     }
-                }
 
-                // Reglas para fin: solo si existe fecha fin o inicio
-                if (!fin.value) {
-                    okFin = setValidity(fin, false, msgFin, 'Seleccione una fecha de fin (mínimo +1 día desde inicio).');
-                } else if (dtFin && dtInicio) {
-                    const minFin = addDays(dtInicio, 1);
-                    const maxFin = addDays(dtInicio, 365);
-                    if (dtFin < minFin) {
-                        okFin = setValidity(fin, false, msgFin, 'La fecha de fin debe ser al menos 1 día después de la fecha de inicio.');
-                    } else if (dtFin > maxFin) {
-                        okFin = setValidity(fin, false, msgFin, 'La fecha de fin no puede exceder 1 año desde la fecha de inicio.');
+                    if (info.descripcion && info.descripcion.trim() !== '') {
+                        document.getElementById('modalClienteDescripcion').textContent = info.descripcion;
+                        descripcionContainer.style.display = 'block';
+                        tieneInfo = true;
                     } else {
-                        okFin = setValidity(fin, true, msgFin, '');
+                        descripcionContainer.style.display = 'none';
                     }
-                }
 
-                return okInicio && okFin;
+                    sinInfo.style.display = tieneInfo ? 'none' : 'block';
+
+                    // Actualizar link a diagnóstico completo
+                    document.getElementById('modalVerDiagnosticoCompleto').href = `/entrenador/diagnostico/vista/${info.id}`;
+
+                    // Mostrar modal
+                    const modal = new bootstrap.Modal(document.getElementById('modalDescripcionCliente'));
+                    modal.show();
+                } catch (error) {
+                    console.error('Error:', error);
+                    alert('Error al cargar la información del cliente');
+                }
+            });
+        });
+        */
+    </script>
+    <script>
+        (function(){
+            const btnGrid = document.getElementById('btnVistaGrid');
+            const btnLista = document.getElementById('btnVistaLista');
+            const vistaGrid = document.getElementById('vistaGrid');
+            const vistaLista = document.getElementById('vistaLista');
+            const KEY = 'suscripcionesVistaEntrenador';
+            function setVista(tipo){
+                const grid = tipo==='grid';
+                vistaGrid.style.display = grid ? '' : 'none';
+                vistaLista.style.display = grid ? 'none' : '';
+                btnGrid.classList.toggle('active', grid);
+                btnLista.classList.toggle('active', !grid);
+                try{localStorage.setItem(KEY, tipo);}catch(e){}
             }
-
-            function validarTodo(showAlerts) {
-                actualizarLimitesFechaFin();
-                const okPrecio = validarPrecio();
-                const okFechas = validarFechas();
-                const ok = okPrecio && okFechas;
-                if (!ok && showAlerts) {
-                    // Opcional: focus en primer inválido
-                    const firstInvalid = document.querySelector('#form-editar-suscripcion .is-invalid');
-                    if (firstInvalid) firstInvalid.focus();
-                }
-                return ok;
-            }
-
-            // Eventos de entrada
-            document.addEventListener('input', function (e) {
-                const id = e.target && e.target.id;
-                if (id === 'modal-precio') {
-                    validarPrecio();
-                }
-            });
-            document.addEventListener('change', function (e) {
-                const id = e.target && e.target.id;
-                if (id === 'modal-fechainicio') {
-                    actualizarLimitesFechaFin();
-                    validarFechas();
-                } else if (id === 'modal-fechafin') {
-                    validarFechas();
-                }
-            });
-
-            // Interceptar submit
-            document.addEventListener('submit', function (e) {
-                const form = e.target;
-                if (form && form.id === 'form-editar-suscripcion') {
-                    if (!validarTodo(true)) {
-                        e.preventDefault();
-                        e.stopPropagation();
-                    }
-                }
-            }, true);
-        </script>
-        <script>
-            document.querySelectorAll('.btn-ver-diagnostico').forEach(button => {
-                button.addEventListener('click', async () => {
-                    const clienteId = button.getAttribute('data-cliente-id');
-                    try {
-                        const response = await fetch(`/api/entrenador/diagnostico/${clienteId}`);
-                        if (!response.ok) {
-                            throw new Error('Error al obtener el diagnóstico');
-                        }
-                        const diagnostico = await response.json();
-
-                        // Rellenar el modal con los datos del diagnóstico
-                        document.getElementById('diagnosticoFecha').textContent = diagnostico.fecha || 'N/A';
-                        document.getElementById('diagnosticoPeso').textContent = diagnostico.peso || 'N/A';
-                        document.getElementById('diagnosticoEstatura').textContent = diagnostico.estatura || 'N/A';
-                        document.getElementById('diagnosticoNivelExperiencia').textContent = diagnostico.nivelExperiencia || 'N/A';
-                        document.getElementById('diagnosticoDisponibilidad').textContent = diagnostico.disponibilidadTiempo || 'N/A';
-                        document.getElementById('diagnosticoRecursos').textContent = diagnostico.accesoRecursos || 'N/A';
-                        document.getElementById('diagnosticoLesiones').textContent = diagnostico.lesiones || 'N/A';
-                        document.getElementById('diagnosticoCondiciones').textContent = diagnostico.condicionesMedicas || 'N/A';
-                        document.getElementById('diagnosticoGrasa').textContent = diagnostico.porcentajeGrasaCorporal || 'N/A';
-                        document.getElementById('diagnosticoCintura').textContent = diagnostico.circunferenciaCintura || 'N/A';
-                        document.getElementById('diagnosticoCadera').textContent = diagnostico.circunferenciaCadera || 'N/A';
-                        document.getElementById('diagnosticoFrecuencia').textContent = diagnostico.frecuenciaCardiacaReposo || 'N/A';
-                        document.getElementById('diagnosticoPresion').textContent = diagnostico.presionArterial || 'N/A';
-                        document.getElementById('diagnosticoHabitos').textContent = diagnostico.habitosAlimenticios || 'N/A';
-
-                        // Mostrar el modal
-                        const modal = new bootstrap.Modal(document.getElementById('modalDiagnostico'));
-                        modal.show();
-                    } catch (error) {
-                        console.error(error);
-                        alert('Hubo un error al cargar el diagnóstico.');
-                    }
-                });
-            });
-        </script>
-        <script>
-            // Script para cargar info del cliente en modal compacto
-            document.querySelectorAll('.btn-ver-info-cliente').forEach(btn => {
-                btn.addEventListener('click', async function() {
-                    const clienteId = this.getAttribute('data-cliente-id');
-                    if (!clienteId) return;
-
-                    try {
-                        const response = await fetch(`/api/entrenador/cliente/${clienteId}/info`);
-                        if (!response.ok) throw new Error('Error al cargar información');
-
-                        const info = await response.json();
-
-                        // Actualizar modal
-                        document.getElementById('modalClienteFoto').src = info.fotoPerfilUrl;
-                        document.getElementById('modalClienteNombre').textContent = info.nombre;
-                        document.getElementById('modalClienteEmail').textContent = info.email;
-
-                        // Mostrar u ocultar secciones según disponibilidad
-                        const objetivoContainer = document.getElementById('modalClienteObjetivoContainer');
-                        const descripcionContainer = document.getElementById('modalClienteDescripcionContainer');
-                        const sinInfo = document.getElementById('modalSinInfoAdicional');
-
-                        let tieneInfo = false;
-
-                        if (info.objetivo && info.objetivo.trim() !== '') {
-                            document.getElementById('modalClienteObjetivo').textContent = info.objetivo;
-                            objetivoContainer.style.display = 'block';
-                            tieneInfo = true;
-                        } else {
-                            objetivoContainer.style.display = 'none';
-                        }
-
-                        if (info.descripcion && info.descripcion.trim() !== '') {
-                            document.getElementById('modalClienteDescripcion').textContent = info.descripcion;
-                            descripcionContainer.style.display = 'block';
-                            tieneInfo = true;
-                        } else {
-                            descripcionContainer.style.display = 'none';
-                        }
-
-                        sinInfo.style.display = tieneInfo ? 'none' : 'block';
-
-                        // Actualizar link a diagnóstico completo
-                        document.getElementById('modalVerDiagnosticoCompleto').href = `/entrenador/diagnostico/vista/${info.id}`;
-
-                    } catch (error) {
-                        console.error('Error:', error);
-                        alert('Error al cargar la información del cliente');
-                    }
-                });
-            });
-        </script>
-        <script>
-            (function(){
-                const btnGrid = document.getElementById('btnVistaGrid');
-                const btnLista = document.getElementById('btnVistaLista');
-                const vistaGrid = document.getElementById('vistaGrid');
-                const vistaLista = document.getElementById('vistaLista');
-                const KEY = 'suscripcionesVistaEntrenador';
-                function setVista(tipo){
-                    const grid = tipo==='grid';
-                    vistaGrid.style.display = grid ? '' : 'none';
-                    vistaLista.style.display = grid ? 'none' : '';
-                    btnGrid.classList.toggle('active', grid);
-                    btnLista.classList.toggle('active', !grid);
-                    try{localStorage.setItem(KEY, tipo);}catch(e){}
-                }
-                const pref = (()=>{try{return localStorage.getItem(KEY);}catch(e){return null;}})();
-                setVista(pref==='lista' ? 'lista' : 'grid');
-                btnGrid?.addEventListener('click', ()=> setVista('grid'));
-                btnLista?.addEventListener('click', ()=> setVista('lista'));
-            })();
-        </script>
-    </section>
+            const pref = (()=>{try{return localStorage.getItem(KEY);}catch(e){return null;}})();
+            setVista(pref==='lista' ? 'lista' : 'grid');
+            btnGrid?.addEventListener('click', ()=> setVista('grid'));
+            btnLista?.addEventListener('click', ()=> setVista('lista'));
+        })();
+    </script>
+</section>
 </body>
 
 </html>
