@@ -217,7 +217,7 @@ public class EntrenadorController {
     }
 
     @GetMapping("/entrenador/diagnostico/vista/{clienteId}")
-    public String verDiagnostico(@PathVariable Long clienteId, Model model) {
+    public String verDiagnostico(@PathVariable Long clienteId, Model model, @AuthenticationPrincipal UserDetails userDetails) {
         try {
             // Obtener diagnostico actual del cliente
             com.sabi.sabi.dto.DiagnosticoDTO diagnostico = clienteService.getDiagnosticoActualByClienteId(clienteId);
@@ -228,6 +228,24 @@ public class EntrenadorController {
 
             // Obtener datos completos del cliente (para objetivo, descripcion, foto)
             com.sabi.sabi.dto.ClienteDTO cliente = clienteService.getClienteById(clienteId);
+
+            // Marcar en la suscripción actual que el entrenador ya vio el diagnóstico
+            try {
+                if (userDetails != null) {
+                    var entrenador = usuarioService.obtenerPorEmail(userDetails.getUsername());
+                    // Obtener suscripción actual de este cliente
+                    com.sabi.sabi.dto.SuscripcionDTO susActual = suscripcionService.getSuscripcionActualByClienteId(clienteId);
+                    if (susActual != null && susActual.getIdEntrenador() != null && susActual.getIdEntrenador().equals(entrenador.getId())) {
+                        if (susActual.getVistaDiagnostico() == null || !susActual.getVistaDiagnostico()) {
+                            susActual.setVistaDiagnostico(true);
+                            suscripcionService.updateSuscripcion(susActual.getIdSuscripcion(), susActual);
+                        }
+                    }
+                }
+            } catch (Exception e) {
+                // No bloquear la vista por este error
+                System.err.println("[verDiagnostico] No se pudo marcar vistaDiagnostico: " + e.getMessage());
+            }
 
             model.addAttribute("diagnostico", diagnostico);
             model.addAttribute("cliente", cliente);

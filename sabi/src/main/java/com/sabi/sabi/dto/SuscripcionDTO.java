@@ -27,4 +27,7 @@ public class SuscripcionDTO {
     private Long idEntrenador;
 
     private Boolean estado = true;
+
+    // Nuevo: flag para habilitar cotización tras ver diagnóstico
+    private Boolean vistaDiagnostico = false;
 }

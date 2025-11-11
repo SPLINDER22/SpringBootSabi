@@ -39,4 +39,9 @@ public class Suscripcion {
     @Builder.Default
     @Column(name = "estado", nullable = false)
     private Boolean estado = true;
+
+    // Nuevo campo: indica si el entrenador ya abrió la vista del diagnóstico del cliente para esta suscripción
+    @Builder.Default
+    @Column(name = "vista_diagnostico", nullable = false)
+    private Boolean vistaDiagnostico = false;
 }

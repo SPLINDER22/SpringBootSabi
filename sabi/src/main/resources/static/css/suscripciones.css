@@ -1,45 +1,15 @@
-/* Estilos para vista alternable de suscripciones (entrenador) */
-
-.vista-toggle .btn { transition: background-color .25s ease, color .25s ease, box-shadow .25s; }
-.vista-toggle .btn.active { background-color: #0d6efd; color: #fff; box-shadow: 0 0 0 .25rem rgba(13,110,253,.25); }
-
-/* Tarjetas menos formales */
-#vistaGrid .card { border: none; border-radius: 1rem; overflow: hidden; background: linear-gradient(180deg, #ffffff, #f7fbff); box-shadow: 0 10px 24px -10px rgba(0,0,0,.2); transition: transform .2s ease, box-shadow .2s ease; }
-#vistaGrid .card:hover { transform: translateY(-4px); box-shadow: 0 16px 28px -12px rgba(0,0,0,.25); }
-#vistaGrid .card-header { background: transparent; border-bottom: 0; padding-top: 1.25rem; }
-#vistaGrid .card-header h5 { color: #0b2c4c; letter-spacing: .3px; }
-#vistaGrid .card-body { padding-top: .5rem; }
-#vistaGrid .estado { font-weight: 700; letter-spacing: .3px; }
-#vistaGrid .card-footer { background: transparent; border-top: 0; }
-
-/* Hacer las cartas un poco más largas para aire superior */
-@media (min-width: 992px) {
-  #vistaGrid .card { min-height: 380px; }
+/* Estilos de estados de suscripciones */
+.estado-badge {
+  border: 0;
+  font-weight: 600;
+  letter-spacing: .3px;
+  box-shadow: 0 1px 2px rgba(0,0,0,.08);
 }
+.estado-aceptada { background-color: #16a34a !important; color: #ffffff !important; }
+.estado-cotizada { background-color: #0ea5e9 !important; color: #06283a !important; }
+.estado-pendiente { background-color: #f59e0b !important; color: #3b2f04 !important; }
+.estado-rechazada { background-color: #ef4444 !important; color: #ffffff !important; }
+.estado-desconocida { background-color: #6b7280 !important; color: #ffffff !important; }
 
-/* Tabla lista */
-#vistaLista .card { border-radius: 1rem; }
-#vistaLista thead { background: linear-gradient(135deg,#0d6efd,#4dabf7); color:#fff; }
-#vistaLista tbody tr { transition: background-color .15s ease; }
-#vistaLista tbody tr:hover { background-color: #f1f7ff; }
+.estado-descripcion { color: #475569 !important; }
 
-/* Contraste de texto para estados (por defecto blanco) */
-.badge.estado { color:#fff; }
-.badge.estado.bg-warning,
-.badge.estado.bg-info,
-.badge.estado.bg-light,
-.badge.estado.bg-secondary.text-dark { color:#212529; }
-
-/* Mejorar visibilidad en fondos medios */
-.badge.estado.bg-secondary { background-color:#6c757d; color:#fff; }
-.badge.estado.bg-info { background-color:#0dcaf0; }
-.badge.estado.bg-warning { background-color:#ffc107; }
-
-/* Opcional: pequeño sombreado para destacarlas */
-.badge.estado { box-shadow:0 2px 4px rgba(0,0,0,.15); }
-
-/* Botones compactos en acciones */
-.acciones-cell .btn { margin: 0 .15rem; }
-
-/* Mensaje vacío más amigable */
-.empty-message { max-width: 560px; }

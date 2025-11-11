@@ -60,6 +60,8 @@ public class SuscripcionServiceImpl implements SuscripcionService {
         }
         // Asegurar que el precio del DTO se refleje
         suscripcion.setPrecio(suscripcionDTO.getPrecio());
+        // Flag vista diagnostico
+        suscripcion.setVistaDiagnostico(suscripcionDTO.getVistaDiagnostico() != null ? suscripcionDTO.getVistaDiagnostico() : false);
         if (suscripcionDTO.getIdCliente() != null) {
             Cliente cliente = clienteRepository.findById(suscripcionDTO.getIdCliente())
                     .orElseThrow(() -> new RuntimeException("Cliente not found with id: " + suscripcionDTO.getIdCliente()));
@@ -97,6 +99,7 @@ public class SuscripcionServiceImpl implements SuscripcionService {
         existingSuscripcion.setFechaInicio(suscripcionDTO.getFechaInicio());
         existingSuscripcion.setFechaFin(suscripcionDTO.getFechaFin());
         existingSuscripcion.setEstadoSuscripcion(suscripcionDTO.getEstadoSuscripcion());
+        existingSuscripcion.setVistaDiagnostico(suscripcionDTO.getVistaDiagnostico() != null ? suscripcionDTO.getVistaDiagnostico() : existingSuscripcion.getVistaDiagnostico());
 
         existingSuscripcion = suscripcionRepository.save(existingSuscripcion);
         return modelMapper.map(existingSuscripcion, SuscripcionDTO.class);
