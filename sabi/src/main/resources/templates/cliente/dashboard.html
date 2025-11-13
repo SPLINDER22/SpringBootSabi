@@ -231,92 +231,141 @@
     </div>
 
     <!-- Reporte de rutina -->
-    <div th:if="${tieneRutinaActiva}" class="reporte-rutina col-md-5 row">
-        <h5 class="mb-3 col-md-12">Tu Rutina</h5>
-        <span class="col-md-6 titulo">Rutina:</span>
-        <span class="col-md-6 titulo">Porcentaje completado</span>
-        <span class="col-md-6 nombre" th:text="${rutina.nombre}"></span>
-        <span class="col-md-6 porcentaje mb-2" th:text="${porcentajeCompletado + '%'}"></span>
-
-        <!-- Mostrar el enlace solo si existe un diaActual -->
-        <div th:if="${diaActual != null}">
-            <a class="btn btn-info" th:href="@{'/ejes/detallar/' + ${diaActual.idDia}}">Ejercicios del dia</a>
-        </div>
-        <div th:unless="${diaActual != null}">
-            <span class="text-muted">No hay un día pendiente en la rutina.</span>
-        </div>
-    </div>
-
-    <!-- Reporte de suscripcion -->
-    <div th:if="${suscripcion != null}" class="col-md-6 mt-4">
-        <div class="reporte-suscripcion-card">
-            <div class="reporte-suscripcion-header">
-                <h5><i class="fas fa-id-card-clip me-2"></i> Tu Suscripción</h5>
-                <div class="reporte-suscripcion-badge"
-                     th:classappend=" ${(suscripcion.estadoSuscripcion != null ? suscripcion.estadoSuscripcion.name().toLowerCase() : '')}"
-                     th:text="${suscripcion.estadoSuscripcion != null ? suscripcion.estadoSuscripcion : '---'}">Estado
+    <div class="row mt-4">
+        <div th:if="${tieneRutinaActiva}" class="col-md-6">
+            <div class="reporte-suscripcion-card">
+                <div class="reporte-suscripcion-header">
+                    <h5><i class="fas fa-dumbbell me-2"></i> Tu Rutina</h5>
+                    <div class="reporte-suscripcion-badge activa">
+                        <span class="status-text">✅ Activa</span>
+                    </div>
                 </div>
-            </div>
-            <div class="reporte-suscripcion-body">
-                <div class="reporte-suscripcion-rows">
-                    <div>
-                        <div class="reporte-suscripcion-label">Entrenador</div>
-                        <div class="reporte-suscripcion-value">
-                            <span th:if="${nombreEntrenador != null}" class="reporte-suscripcion-chip"><i class="fas fa-user"></i><span th:text="${nombreEntrenador}">Nombre</span></span>
-                            <span th:unless="${nombreEntrenador != null}" class="text-muted">Sin asignar</span>
+                <div class="reporte-suscripcion-body">
+                    <div class="reporte-suscripcion-rows">
+                        <div>
+                            <div class="reporte-suscripcion-label">Nombre</div>
+                            <div class="reporte-suscripcion-value">
+                                <span class="reporte-suscripcion-chip">
+                                    <i class="fas fa-clipboard-list"></i>
+                                    <span th:text="${rutina.nombre}">Nombre de rutina</span>
+                                </span>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="reporte-suscripcion-label">Progreso</div>
+                            <div class="reporte-suscripcion-value" th:text="${porcentajeCompletado + '%'}">0%</div>
                         </div>
                     </div>
-                    <div>
-                        <div class="reporte-suscripcion-label">Precio</div>
-                        <div class="reporte-suscripcion-value" th:text="${suscripcion.precio != null ? ('$' + #numbers.formatDecimal(suscripcion.precio,1,'COMMA',2,'POINT')) : '--'}">--</div>
+                    <div class="reporte-suscripcion-progress" th:if="${porcentajeCompletado != null}">
+                        <div class="progress-label">
+                            <span>Completado</span>
+                            <span th:text="${porcentajeCompletado} + '%'">0%</span>
+                        </div>
+                        <div class="progress">
+                            <div class="progress-bar" role="progressbar" th:style="${'width:' + porcentajeCompletado + '%;'}" aria-valuemin="0" aria-valuemax="100"></div>
+                        </div>
                     </div>
-                    <div>
-                        <div class="reporte-suscripcion-label">Fecha Inicio</div>
-                        <div class="reporte-suscripcion-value" th:text="${suscripcion.fechaInicio != null ? #temporals.format(suscripcion.fechaInicio,'dd/MM/yyyy') : '--'}">--</div>
+                    <div class="reporte-suscripcion-actions">
+                        <div th:if="${diaActual != null}">
+                            <a class="btn btn-primary" th:href="@{'/ejes/detallar/' + ${diaActual.idDia}}">
+                                <i class="fas fa-play me-1"></i> Ejercicios del día
+                            </a>
+                        </div>
+                        <div th:unless="${diaActual != null}">
+                            <span class="text-muted">No hay un día pendiente en la rutina.</span>
+                        </div>
                     </div>
-                    <div>
-                        <div class="reporte-suscripcion-label">Fecha Fin</div>
-                        <div class="reporte-suscripcion-value" th:text="${suscripcion.fechaFin != null ? #temporals.format(suscripcion.fechaFin,'dd/MM/yyyy') : '--'}">--</div>
-                    </div>
-                    <div>
-                        <div class="reporte-suscripcion-label">Días restantes</div>
-                        <div class="reporte-suscripcion-value"
-                             th:text="${susDiasRestantes != null ? (!susVencida ? susDiasRestantes + ' días' : 'Vencida') : '--'}">--</div>
-                    </div>
-                    <div>
-                        <div class="reporte-suscripcion-label">Duración</div>
-                        <div class="reporte-suscripcion-value" th:text="${susDiasTotales != null ? susDiasTotales + ' días' : '--'}">--</div>
-                    </div>
-                </div>
-                <div class="reporte-suscripcion-progress" th:if="${susAvance != null}">
-                    <div class="progress-label">
-                        <span>Progreso</span>
-                        <span th:text="${susAvance} + '%'">0%</span>
-                    </div>
-                    <div class="progress">
-                        <div class="progress-bar" role="progressbar" th:style="${'width:' + susAvance + '%;'}" aria-valuemin="0" aria-valuemax="100"></div>
-                    </div>
-                </div>
-                <div class="reporte-suscripcion-actions">
-                    <a class="btn btn-outline-secondary" th:href="@{/cliente/suscripcion/historial}"><i class="fas fa-clock-rotate-left me-1"></i> Historial</a>
-                    <a class="btn btn-outline-primary" th:href="@{/cliente/suscripcion}"><i class="fas fa-eye me-1"></i> Detalle</a>
-                    <a class="btn btn-success" th:href="@{/cliente/listaEntrenadores}" th:if="${nombreEntrenador == null}"><i class="fas fa-search me-1"></i> Buscar Entrenador</a>
                 </div>
             </div>
         </div>
-    </div>
-    <div th:unless="${suscripcion != null}" class="col-md-6 mt-4">
-        <div class="reporte-suscripcion-card">
-            <div class="reporte-suscripcion-header">
-                <h5><i class="fas fa-id-card-clip me-2"></i> Tu Suscripción</h5>
-                <div class="reporte-suscripcion-badge pendiente">Sin activa</div>
+        <div th:unless="${tieneRutinaActiva}" class="col-md-6">
+            <div class="reporte-suscripcion-card">
+                <div class="reporte-suscripcion-header">
+                    <h5><i class="fas fa-dumbbell me-2"></i> Tu Rutina</h5>
+                    <div class="reporte-suscripcion-badge pendiente">Sin activa</div>
+                </div>
+                <div class="reporte-suscripcion-body">
+                    <p class="mb-3" style="color:#475569; font-weight:500;">
+                        <i class="fas fa-info-circle me-2"></i>No tienes una rutina activa. ¡Explora las rutinas disponibles para comenzar!
+                    </p>
+                    <div class="reporte-suscripcion-actions">
+                        <a class="btn btn-primary" href="#"><i class="fas fa-search me-1"></i> Explorar rutinas</a>
+                    </div>
+                </div>
             </div>
-            <div class="reporte-suscripcion-body">
-                <p class="mb-3" style="color:#475569; font-weight:500;">
-                    <i class="fas fa-info-circle me-2"></i>No tienes una suscripción activa. ¡Explora entrenadores para comenzar!
-                </p>
-                <div class="reporte-suscripcion-actions">
-                    <a class="btn btn-primary" th:href="@{/cliente/listaEntrenadores}"><i class="fas fa-search me-1"></i> Explorar entrenadores</a>
+        </div>
+
+        <!-- Reporte de suscripcion -->
+        <div th:if="${suscripcion != null}" class="col-md-6">
+            <div class="reporte-suscripcion-card">
+                <div class="reporte-suscripcion-header">
+                    <h5><i class="fas fa-id-card-clip me-2"></i> Tu Suscripción</h5>
+                    <div class="reporte-suscripcion-badge"
+                         th:classappend=" ${(suscripcion.estadoSuscripcion != null ? suscripcion.estadoSuscripcion.name().toLowerCase() : '')}"
+                         th:text="${suscripcion.estadoSuscripcion != null ? suscripcion.estadoSuscripcion : '---'}">Estado
+                    </div>
+                </div>
+                <div class="reporte-suscripcion-body">
+                    <div class="reporte-suscripcion-rows">
+                        <div>
+                            <div class="reporte-suscripcion-label">Entrenador</div>
+                            <div class="reporte-suscripcion-value">
+                                <span th:if="${nombreEntrenador != null}" class="reporte-suscripcion-chip"><i class="fas fa-user"></i><span th:text="${nombreEntrenador}">Nombre</span></span>
+                                <span th:unless="${nombreEntrenador != null}" class="text-muted">Sin asignar</span>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="reporte-suscripcion-label">Precio</div>
+                            <div class="reporte-suscripcion-value" th:text="${suscripcion.precio != null ? ('$' + #numbers.formatDecimal(suscripcion.precio,1,'COMMA',2,'POINT')) : '--'}">--</div>
+                        </div>
+                        <div>
+                            <div class="reporte-suscripcion-label">Fecha Inicio</div>
+                            <div class="reporte-suscripcion-value" th:text="${suscripcion.fechaInicio != null ? #temporals.format(suscripcion.fechaInicio,'dd/MM/yyyy') : '--'}">--</div>
+                        </div>
+                        <div>
+                            <div class="reporte-suscripcion-label">Fecha Fin</div>
+                            <div class="reporte-suscripcion-value" th:text="${suscripcion.fechaFin != null ? #temporals.format(suscripcion.fechaFin,'dd/MM/yyyy') : '--'}">--</div>
+                        </div>
+                        <div>
+                            <div class="reporte-suscripcion-label">Días restantes</div>
+                            <div class="reporte-suscripcion-value"
+                                 th:text="${susDiasRestantes != null ? (!susVencida ? susDiasRestantes + ' días' : 'Vencida') : '--'}">--</div>
+                        </div>
+                        <div>
+                            <div class="reporte-suscripcion-label">Duración</div>
+                            <div class="reporte-suscripcion-value" th:text="${susDiasTotales != null ? susDiasTotales + ' días' : '--'}">--</div>
+                        </div>
+                    </div>
+                    <div class="reporte-suscripcion-progress" th:if="${susAvance != null}">
+                        <div class="progress-label">
+                            <span>Progreso</span>
+                            <span th:text="${susAvance} + '%'">0%</span>
+                        </div>
+                        <div class="progress">
+                            <div class="progress-bar" role="progressbar" th:style="${'width:' + susAvance + '%;'}" aria-valuemin="0" aria-valuemax="100"></div>
+                        </div>
+                    </div>
+                    <div class="reporte-suscripcion-actions">
+                        <a class="btn btn-outline-secondary" th:href="@{/cliente/suscripcion/historial}"><i class="fas fa-clock-rotate-left me-1"></i> Historial</a>
+                        <a class="btn btn-outline-primary" th:href="@{/cliente/suscripcion}"><i class="fas fa-eye me-1"></i> Detalle</a>
+                        <a class="btn btn-success" th:href="@{/cliente/listaEntrenadores}" th:if="${nombreEntrenador == null}"><i class="fas fa-search me-1"></i> Buscar Entrenador</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div th:unless="${suscripcion != null}" class="col-md-6">
+            <div class="reporte-suscripcion-card">
+                <div class="reporte-suscripcion-header">
+                    <h5><i class="fas fa-id-card-clip me-2"></i> Tu Suscripción</h5>
+                    <div class="reporte-suscripcion-badge pendiente">Sin activa</div>
+                </div>
+                <div class="reporte-suscripcion-body">
+                    <p class="mb-3" style="color:#475569; font-weight:500;">
+                        <i class="fas fa-info-circle me-2"></i>No tienes una suscripción activa. ¡Explora entrenadores para comenzar!
+                    </p>
+                    <div class="reporte-suscripcion-actions">
+                        <a class="btn btn-primary" th:href="@{/cliente/listaEntrenadores}"><i class="fas fa-search me-1"></i> Explorar entrenadores</a>
+                    </div>
                 </div>
             </div>
         </div>

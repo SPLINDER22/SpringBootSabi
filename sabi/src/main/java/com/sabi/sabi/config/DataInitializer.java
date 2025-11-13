@@ -74,7 +74,7 @@ public class    DataInitializer implements CommandLineRunner {
                         "gimnasio y casa", "Tendinitis en codo", "Diabetes tipo 2 controlada", 7L,
                         "Dieta para diabéticos");
 
-                // 5 clientes adicionales con diagnósticos variados
+                // 5 clientes adicionales with varied diagnoses
                 crearClienteConDiagnosticoDetallado("Roberto Gómez", "cliente6@sabi.com", "1234567",
                         85.0, 180.0, NivelExperiencia.INTERMEDIO, "5 veces por semana, 60 min",
                         "gimnasio completo", "Lesión antigua de rodilla", "ninguna", 7L,
@@ -167,6 +167,7 @@ public class    DataInitializer implements CommandLineRunner {
                 crearEjerciciosSiNoExisten();
                 crearRutinaDeEjemplo();
                 crearRutinaGlobalLibre(); // Nueva rutina global sin cliente ni entrenador ni estadoRutina
+                crearRutinaCompuesta(); // Nueva rutina compuesta gratuita
 
                 // Crear suscripciones de ejemplo (mezcla de estados)
                 inicializarSuscripcionesDemo();
@@ -616,5 +617,89 @@ public class    DataInitializer implements CommandLineRunner {
                 .estado(true)
                 .build();
         serieRepository.save(serie);
+    }
+
+    private void crearRutinaCompuesta() {
+        // Verificar si ya existe para no duplicar
+        final String nombreRutina = "Rutina Compuesta";
+        boolean existe = rutinaRepository.findAll().stream()
+                .anyMatch(r -> nombreRutina.equalsIgnoreCase(r.getNombre()));
+        if (existe) return;
+
+        // Tomar dos ejercicios globales existentes (si no hay, abortar)
+        Ejercicio ejercicioGlobal1 = ejercicioRepository.findAll().stream()
+                .filter(e -> e.getTipo().name().equals("GLOBAL"))
+                .findFirst()
+                .orElse(null);
+        Ejercicio ejercicioGlobal2 = ejercicioRepository.findAll().stream()
+                .filter(e -> e.getTipo().name().equals("GLOBAL") && (ejercicioGlobal1 == null || !e.getNombre().equalsIgnoreCase(ejercicioGlobal1.getNombre())))
+                .findFirst()
+                .orElse(null);
+        if (ejercicioGlobal1 == null || ejercicioGlobal2 == null) return; // No se puede crear sin al menos dos ejercicios globales
+
+        // Crear rutina sin cliente, sin entrenador y sin estadoRutina explícito
+        Rutina rutina = Rutina.builder()
+                .nombre(nombreRutina)
+                .objetivo("Definición muscular")
+                .descripcion("Rutina compuesta gratuita con 2 semanas, 2 días por semana, 2 ejercicios por día y 2 series por ejercicio.")
+                .fechaCreacion(java.time.LocalDate.now())
+                .numeroSemanas(2L)
+                .estado(true)
+                .build();
+        rutinaRepository.save(rutina);
+
+        // Crear 2 semanas
+        for (long numSemana = 1L; numSemana <= 2L; numSemana++) {
+            Semana semana = Semana.builder()
+                    .numeroSemana(numSemana)
+                    .descripcion("Semana " + numSemana + " - Rutina compuesta")
+                    .numeroDias(2L)
+                    .rutina(rutina)
+                    .estado(true)
+                    .build();
+            semanaRepository.save(semana);
+
+            // Crear 2 días por semana
+            for (long numDia = 1L; numDia <= 2L; numDia++) {
+                Dia dia = Dia.builder()
+                        .numeroDia(numDia)
+                        .descripcion("Semana " + numSemana + " - Día " + numDia + ": Entrenamiento compuesto")
+                        .numeroEjercicios(2L)
+                        .semana(semana)
+                        .estado(true)
+                        .build();
+                diaRepository.save(dia);
+
+                // Crear 2 ejercicios por día
+                Ejercicio[] ejerciciosDelDia = {ejercicioGlobal1, ejercicioGlobal2};
+                for (int i = 0; i < 2; i++) {
+                    Ejercicio ejercicio = ejerciciosDelDia[i];
+                    EjercicioAsignado ejercicioAsignado = EjercicioAsignado.builder()
+                            .orden((long) (i + 1))
+                            .comentarios("Mantener técnica controlada")
+                            .numeroSeries(2L)
+                            .dia(dia)
+                            .ejercicio(ejercicio)
+                            .estado(true)
+                            .build();
+                    ejercicioAsignadoRepository.save(ejercicioAsignado);
+
+                    // Crear 2 series por ejercicio asignado
+                    for (long numSerie = 1L; numSerie <= 2L; numSerie++) {
+                        Serie serie = Serie.builder()
+                                .orden(numSerie)
+                                .repeticiones(numSerie == 1 ? "12" : "10")
+                                .peso(ejercicio.getNombre().toLowerCase().contains("sentadilla") ? (numSerie == 1 ? 50.0 : 55.0) : (numSerie == 1 ? 35.0 : 40.0))
+                                .descanso("60 segundos")
+                                .intensidad(null)
+                                .comentarios(numSerie == 1 ? "Serie de calentamiento" : "Serie de trabajo")
+                                .ejercicioAsignado(ejercicioAsignado)
+                                .estado(true)
+                                .build();
+                        serieRepository.save(serie);
+                    }
+                }
+            }
+        }
     }
 }
