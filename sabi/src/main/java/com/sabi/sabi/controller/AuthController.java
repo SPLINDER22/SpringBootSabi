@@ -34,18 +34,30 @@ public class AuthController {
     @GetMapping("/login")
     public String login(Authentication authentication) {
         if (authentication != null && authentication.isAuthenticated()) {
-            if (authentication.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_CLIENTE"))) {
-                return "redirect:/cliente/dashboard";
-            } else if (authentication.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_ENTRENADOR"))) {
-                return "redirect:/entrenador/dashboard";
+            // Verificar que no sea usuario anónimo
+            if (authentication.getPrincipal() instanceof org.springframework.security.core.userdetails.UserDetails) {
+                if (authentication.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_CLIENTE"))) {
+                    return "redirect:/cliente/dashboard";
+                } else if (authentication.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_ENTRENADOR"))) {
+                    return "redirect:/entrenador/dashboard";
+                }
             }
-            return "redirect:/";
         }
         return "auth/login";
     }
 
     @GetMapping("/registro")
-    public String registroForm(Model model) {
+    public String registroForm(Model model, Authentication authentication) {
+        // Si el usuario ya está autenticado, redirigir al dashboard correspondiente
+        if (authentication != null && authentication.isAuthenticated()) {
+            if (authentication.getPrincipal() instanceof org.springframework.security.core.userdetails.UserDetails) {
+                if (authentication.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_CLIENTE"))) {
+                    return "redirect:/cliente/dashboard";
+                } else if (authentication.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_ENTRENADOR"))) {
+                    return "redirect:/entrenador/dashboard";
+                }
+            }
+        }
         model.addAttribute("usuarioDTO", new UsuarioDTO());
         return "auth/registro";
     }
@@ -63,6 +75,17 @@ public class AuthController {
                                    Model model) {
 
         try {
+            // IMPORTANTE: Verificar PRIMERO si el email ya existe
+            try {
+                usuarioService.obtenerPorEmail(usuarioDTO.getEmail());
+                // Si no lanza excepción, significa que el usuario existe
+                model.addAttribute("error", "El correo electrónico ya está registrado. Por favor, usa otro correo o inicia sesión.");
+                model.addAttribute("usuarioDTO", usuarioDTO);
+                return "auth/registro";
+            } catch (RuntimeException e) {
+                // Usuario no existe, continuamos con el registro
+            }
+
             // Convertir los parámetros String a los tipos enum correspondientes
             if (genero != null && !genero.isEmpty()) {
                 usuarioDTO.setSexo(com.sabi.sabi.entity.enums.Sexo.valueOf(genero));
@@ -92,26 +115,19 @@ public class AuthController {
                 usuarioDTO.setTelefono(telefono);
             }
 
-            // Asignar rol temporal CLIENTE
-            usuarioDTO.setRol(Rol.CLIENTE);
-
-            // Guardar raw contraseña para autenticación programática
+            // Guardar raw contraseña para después
             String rawContraseña = usuarioDTO.getContraseña();
 
-            // Encriptar la contraseña antes de guardar
+            // Encriptar la contraseña
             usuarioDTO.setContraseña(passwordEncoder.encode(rawContraseña));
 
-            usuarioService.createUsuario(usuarioDTO);
+            // NO crear el usuario todavía, solo guardar datos en sesión
+            request.getSession().setAttribute("usuarioRegistro", usuarioDTO);
+            request.getSession().setAttribute("rawContraseña", rawContraseña);
 
-            // Autenticar al usuario automáticamente para que pueda seleccionar rol
-            UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(usuarioDTO.getEmail(), rawContraseña);
-            Authentication auth = authenticationManager.authenticate(authToken);
-            SecurityContextHolder.getContext().setAuthentication(auth);
-
-            // Guardar la autenticación en la sesión HTTP
-            request.getSession().setAttribute("SPRING_SECURITY_CONTEXT", SecurityContextHolder.getContext());
-
+            // Redirigir a seleccionar rol SIN autenticar aún
             return "redirect:/auth/seleccionar-rol";
+
         } catch (EmailYaExisteException e) {
             model.addAttribute("error", "El correo electrónico ya está registrado. Por favor, usa otro correo o inicia sesión.");
             model.addAttribute("usuarioDTO", usuarioDTO);
@@ -124,87 +140,73 @@ public class AuthController {
     }
 
     @GetMapping("/seleccionar-rol")
-    public String seleccionarRolForm() {
+    public String seleccionarRolForm(HttpServletRequest request, Model model) {
+        // Verificar que hay datos de registro en sesión
+        UsuarioDTO usuarioDTO = (UsuarioDTO) request.getSession().getAttribute("usuarioRegistro");
+        if (usuarioDTO == null) {
+            // No hay datos de registro, redirigir a registro
+            return "redirect:/auth/registro";
+        }
         return "auth/seleccionar-rol";
     }
 
     @PostMapping("/seleccionar-rol")
     public String seleccionarRol(
             @RequestParam Rol rol,
-            @AuthenticationPrincipal UserDetails userDetails,
             HttpServletRequest request
     ) {
-        // Obtener el usuario desde el contexto de seguridad o desde userDetails
-        String username;
-        if (userDetails != null) {
-            username = userDetails.getUsername();
-        } else {
-            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-            if (auth != null && auth.getPrincipal() instanceof UserDetails) {
-                username = ((UserDetails) auth.getPrincipal()).getUsername();
-            } else if (auth != null && auth.getName() != null) {
-                username = auth.getName();
-            } else {
-                return "redirect:/auth/login";
-            }
+        // Obtener datos de registro de la sesión
+        UsuarioDTO usuarioDTO = (UsuarioDTO) request.getSession().getAttribute("usuarioRegistro");
+        String rawContraseña = (String) request.getSession().getAttribute("rawContraseña");
+
+        if (usuarioDTO == null || rawContraseña == null) {
+            return "redirect:/auth/registro";
         }
 
-        Usuario usuario = usuarioService.obtenerPorEmail(username);
+        try {
+            // Asignar el rol seleccionado
+            usuarioDTO.setRol(rol);
+            usuarioDTO.setEstado(true);
 
-        if (rol == Rol.CLIENTE) {
-            // Para clientes, simplemente cambiar el rol y redirigir
-            usuario.setRol(rol);
-            usuarioService.actualizarUsuario(usuario);
+            // CREAR el usuario con el rol correcto desde el inicio
+            usuarioService.createUsuario(usuarioDTO);
 
-            // Recargar el usuario actualizado desde la BD
-            Usuario usuarioActualizado = usuarioService.obtenerPorEmail(username);
+            // Limpiar datos de sesión
+            request.getSession().removeAttribute("usuarioRegistro");
+            request.getSession().removeAttribute("rawContraseña");
 
-            // Enviar correo de bienvenida personalizado
-            emailService.enviarCorreoBienvenida(usuarioActualizado);
-
-            // Crear CustomUserDetails con el usuario actualizado
-            com.sabi.sabi.security.CustomUserDetails customUserDetails = new com.sabi.sabi.security.CustomUserDetails(usuarioActualizado);
-
-            // Actualizar el contexto de seguridad con el nuevo rol usando CustomUserDetails
+            // Autenticar al usuario
             UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
-                    customUserDetails, // Usar CustomUserDetails como principal
-                    customUserDetails.getPassword(),
-                    customUserDetails.getAuthorities()
+                usuarioDTO.getEmail(),
+                rawContraseña
             );
-            SecurityContextHolder.getContext().setAuthentication(authToken);
-
-            // Guardar la autenticación en la sesión HTTP
+            Authentication auth = authenticationManager.authenticate(authToken);
+            SecurityContextHolder.getContext().setAuthentication(auth);
             request.getSession().setAttribute("SPRING_SECURITY_CONTEXT", SecurityContextHolder.getContext());
 
-            return "redirect:/cliente/dashboard";
-        } else if (rol == Rol.ENTRENADOR) {
-            // Para entrenadores, cambiar el rol temporalmente y redirigir al formulario adicional
-            usuario.setRol(rol);
-            usuarioService.actualizarUsuario(usuario);
+            // Obtener usuario actualizado desde BD
+            Usuario usuario = usuarioService.obtenerPorEmail(usuarioDTO.getEmail());
 
-            // Recargar el usuario actualizado desde la BD
-            Usuario usuarioActualizado = usuarioService.obtenerPorEmail(username);
+            // Enviar correo de bienvenida
+            emailService.enviarCorreoBienvenida(usuario);
 
-            // Enviar correo de bienvenida personalizado
-            emailService.enviarCorreoBienvenida(usuarioActualizado);
+            if (rol == Rol.CLIENTE) {
+                return "redirect:/cliente/dashboard";
+            } else if (rol == Rol.ENTRENADOR) {
+                return "redirect:/auth/completar-perfil-entrenador";
+            } else {
+                return "redirect:/";
+            }
 
-            // Crear CustomUserDetails con el usuario actualizado
-            com.sabi.sabi.security.CustomUserDetails customUserDetails = new com.sabi.sabi.security.CustomUserDetails(usuarioActualizado);
-
-            // Actualizar el contexto de seguridad usando CustomUserDetails
-            UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
-                    customUserDetails, // Usar CustomUserDetails como principal
-                    customUserDetails.getPassword(),
-                    customUserDetails.getAuthorities()
-            );
-            SecurityContextHolder.getContext().setAuthentication(authToken);
-
-            // Guardar la autenticación en la sesión HTTP
-            request.getSession().setAttribute("SPRING_SECURITY_CONTEXT", SecurityContextHolder.getContext());
-
-            return "redirect:/auth/completar-perfil-entrenador";
-        } else {
-            return "redirect:/";
+        } catch (EmailYaExisteException e) {
+            // Email ya existe
+            request.getSession().removeAttribute("usuarioRegistro");
+            request.getSession().removeAttribute("rawContraseña");
+            return "redirect:/auth/login?error=emailExiste";
+        } catch (Exception e) {
+            e.printStackTrace();
+            request.getSession().setAttribute("error", "Error al crear usuario: " + e.getMessage());
+            return "redirect:/auth/registro";
         }
     }
 
@@ -235,13 +237,23 @@ public class AuthController {
             return "redirect:/";
         }
 
+        // Si el entrenador ya completó su perfil (tiene especialidades o experiencia), redirigir al dashboard
+        if (usuario instanceof com.sabi.sabi.entity.Entrenador entrenador) {
+            if ((entrenador.getEspecialidades() != null && !entrenador.getEspecialidades().isEmpty()) ||
+                (entrenador.getAniosExperiencia() != null && entrenador.getAniosExperiencia() > 0)) {
+                return "redirect:/entrenador/dashboard";
+            }
+        }
+
         model.addAttribute("usuario", usuario);
         return "auth/completar-perfil-entrenador";
     }
 
     @PostMapping("/completar-perfil-entrenador")
     public String completarPerfilEntrenador(
-            @RequestParam String especialidad,
+            @RequestParam String especialidades,
+            @RequestParam Double precioMinimo,
+            @RequestParam Double precioMaximo,
             @RequestParam Integer aniosExperiencia,
             @RequestParam(required = false) org.springframework.web.multipart.MultipartFile[] certificaciones,
             @AuthenticationPrincipal UserDetails userDetails,
@@ -272,7 +284,14 @@ public class AuthController {
 
             // Actualizar los datos del entrenador
             if (usuario instanceof com.sabi.sabi.entity.Entrenador entrenador) {
-                entrenador.setEspecialidad(especialidad);
+                entrenador.setEspecialidades(especialidades);
+                // Mantener compatibilidad con especialidad singular (usar la primera)
+                if (especialidades != null && !especialidades.isEmpty()) {
+                    String primeraEspecialidad = especialidades.split(",")[0].trim();
+                    entrenador.setEspecialidad(primeraEspecialidad);
+                }
+                entrenador.setPrecioMinimo(precioMinimo);
+                entrenador.setPrecioMaximo(precioMaximo);
                 entrenador.setAniosExperiencia(aniosExperiencia);
 
                 // Procesar archivos PDF de certificaciones

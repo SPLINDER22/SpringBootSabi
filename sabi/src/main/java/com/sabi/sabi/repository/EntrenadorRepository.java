@@ -17,7 +17,7 @@ public interface EntrenadorRepository extends JpaRepository<Entrenador,Long> {
     @Query("SELECT e FROM Entrenador e " +
             "WHERE e.estado = true " +
             "AND (:nombre IS NULL OR LOWER(e.nombre) LIKE LOWER(CONCAT('%', :nombre, '%'))) " +
-            "AND (:especialidad IS NULL OR LOWER(e.especialidad) LIKE LOWER(CONCAT('%', :especialidad, '%'))) " +
+            "AND (:especialidad IS NULL OR LOWER(e.especialidades) LIKE LOWER(CONCAT('%', :especialidad, '%')) OR LOWER(e.especialidad) LIKE LOWER(CONCAT('%', :especialidad, '%'))) " +
             "AND (:min IS NULL OR e.calificacionPromedio >= :min) " +
             "AND (:max IS NULL OR e.calificacionPromedio <= :max) " +
             "AND (:minExperiencia IS NULL OR e.aniosExperiencia >= :minExperiencia) " +

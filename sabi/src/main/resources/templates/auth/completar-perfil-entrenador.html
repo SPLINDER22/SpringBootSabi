@@ -7,6 +7,7 @@
     <!-- Usar los mismos estilos que el registro -->
     <link rel="stylesheet" th:href="@{/css/login.css}">
     <link rel="stylesheet" th:href="@{/css/registro.css}">
+    <link rel="stylesheet" th:href="@{/css/entrenador-form.css}">
     <link href="/vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
     <style>
         .form-select, select.form-select {
@@ -115,10 +116,64 @@
         .file-item .remove-file:hover {
             color: #dc2626;
         }
+
+        /* Estilos para las especialidades badges */
+        .especialidad-badge {
+            display: inline-flex;
+            align-items: center;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 2rem;
+            margin: 0.25rem;
+            font-size: 0.9rem;
+            font-weight: 500;
+            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .especialidad-badge:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+
+        .especialidad-badge i {
+            transition: all 0.2s;
+        }
+
+        .especialidad-badge i:hover {
+            transform: scale(1.2);
+            color: #fecaca;
+        }
+
+        #especialidadesContainer {
+            min-height: 50px;
+            padding: 1rem;
+            background: #f8f9fa;
+            border-radius: 0.75rem;
+            border: 2px dashed #e2e8f0;
+        }
+
+        #especialidadesContainer:has(.especialidad-badge) {
+            border-style: solid;
+            border-color: #cbd5e1;
+            background: #ffffff;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            transition: all 0.3s;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
     </style>
     <link rel="icon" type="image/png" th:href="@{/img/logoF.png}">
 </head>
-<body>
+<body class="entrenador-form">
 <div class="login-container">
     <div class="login-form-section mx-auto" style="max-width: 600px; width: 100%;">
         <h1 class="login-title">
@@ -148,35 +203,87 @@
             <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
 
             <div class="form-group">
-                <label for="especialidad">
-                    <i class="fas fa-dumbbell"></i> Especialidad *
+                <label for="especialidades">
+                    <i class="fas fa-dumbbell"></i> Especialidades *
                 </label>
-                <input type="text"
-                       class="form-control"
-                       id="especialidad"
-                       name="especialidad"
-                       list="especialidades-list"
-                       placeholder="Ej: Velocidad, Potencia, Resistencia..."
-                       required>
-                <datalist id="especialidades-list">
-                    <option value="Fuerza y Acondicionamiento">
-                    <option value="Pérdida de Peso">
-                    <option value="Ganancia Muscular">
-                    <option value="Yoga">
-                    <option value="Pilates">
-                    <option value="CrossFit">
-                    <option value="Entrenamiento Funcional">
-                    <option value="Cardio y Resistencia">
-                    <option value="Deportes Específicos">
-                    <option value="Rehabilitación y Fisioterapia">
-                    <option value="Nutrición Deportiva">
-                    <option value="Entrenamiento Personal General">
-                    <option value="Velocidad">
-                    <option value="Potencia">
-                    <option value="Movilidad">
-                </datalist>
-                <small style="color: #64748b; font-size: 0.85rem;">
-                    Escribe tu especialidad o selecciona una sugerida. Puedes crear una nueva categoría.
+
+                <!-- Contenedor de especialidades seleccionadas -->
+                <div id="especialidadesContainer" style="margin-bottom: 1rem;">
+                    <!-- Aquí se agregarán las especialidades dinámicamente -->
+                </div>
+
+                <!-- Select para agregar especialidad -->
+                <div class="d-flex gap-2">
+                    <select class="form-select" id="especialidadSelect" style="flex: 1;">
+                        <option value="">Selecciona una especialidad...</option>
+                        <option value="Fuerza y Acondicionamiento">Fuerza y Acondicionamiento</option>
+                        <option value="Pérdida de Peso">Pérdida de Peso</option>
+                        <option value="Ganancia Muscular">Ganancia Muscular</option>
+                        <option value="Yoga">Yoga</option>
+                        <option value="Pilates">Pilates</option>
+                        <option value="CrossFit">CrossFit</option>
+                        <option value="Entrenamiento Funcional">Entrenamiento Funcional</option>
+                        <option value="Cardio y Resistencia">Cardio y Resistencia</option>
+                        <option value="Deportes Específicos">Deportes Específicos</option>
+                        <option value="Rehabilitación">Rehabilitación</option>
+                        <option value="Nutrición Deportiva">Nutrición Deportiva</option>
+                        <option value="Entrenamiento Personal">Entrenamiento Personal</option>
+                        <option value="Powerlifting">Powerlifting</option>
+                        <option value="Calistenia">Calistenia</option>
+                        <option value="Running">Running</option>
+                        <option value="Ciclismo">Ciclismo</option>
+                        <option value="Natación">Natación</option>
+                        <option value="Boxeo">Boxeo</option>
+                        <option value="Artes Marciales">Artes Marciales</option>
+                        <option value="Movilidad y Flexibilidad">Movilidad y Flexibilidad</option>
+                    </select>
+                    <button type="button" class="btn btn-primary" onclick="agregarEspecialidad()" style="white-space: nowrap;">
+                        <i class="fas fa-plus"></i> Agregar
+                    </button>
+                </div>
+
+                <!-- Input hidden que contendrá las especialidades separadas por comas -->
+                <input type="hidden" id="especialidades" name="especialidades" required>
+
+                <small style="color: #64748b; font-size: 0.85rem; display: block; margin-top: 0.5rem;">
+                    Selecciona tus especialidades una por una. Puedes agregar varias.
+                </small>
+
+                <div id="errorEspecialidades" style="color: #ef4444; font-size: 0.85rem; margin-top: 0.5rem; display: none;">
+                    Por favor, agrega al menos una especialidad.
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="precioMinimo">
+                    <i class="fas fa-dollar-sign"></i> Rango de Precio por Sesión *
+                </label>
+                <div class="row">
+                    <div class="col-6">
+                        <input type="number"
+                               class="form-control"
+                               id="precioMinimo"
+                               name="precioMinimo"
+                               min="0"
+                               step="0.01"
+                               required
+                               placeholder="Precio mínimo">
+                        <small style="color: #64748b; font-size: 0.85rem;">Mínimo</small>
+                    </div>
+                    <div class="col-6">
+                        <input type="number"
+                               class="form-control"
+                               id="precioMaximo"
+                               name="precioMaximo"
+                               min="0"
+                               step="0.01"
+                               required
+                               placeholder="Precio máximo">
+                        <small style="color: #64748b; font-size: 0.85rem;">Máximo</small>
+                    </div>
+                </div>
+                <small style="color: #64748b; font-size: 0.85rem; display: block; margin-top: 0.5rem;">
+                    Indica tu rango de precios por sesión/trabajo en COP (pesos colombianos)
                 </small>
             </div>
 
@@ -232,6 +339,92 @@
 </div>
 
 <script>
+    // Array para almacenar las especialidades seleccionadas
+    let especialidadesSeleccionadas = [];
+
+    // Función para agregar especialidad
+    function agregarEspecialidad() {
+        const select = document.getElementById('especialidadSelect');
+        const especialidad = select.value;
+
+        if (!especialidad) {
+            alert('Por favor, selecciona una especialidad');
+            return;
+        }
+
+        // Verificar si ya está agregada
+        if (especialidadesSeleccionadas.includes(especialidad)) {
+            alert('Esta especialidad ya está agregada');
+            return;
+        }
+
+        // Agregar al array
+        especialidadesSeleccionadas.push(especialidad);
+
+        // Actualizar la vista
+        actualizarVistaEspecialidades();
+
+        // Limpiar el select
+        select.value = '';
+
+        // Ocultar mensaje de error
+        document.getElementById('errorEspecialidades').style.display = 'none';
+    }
+
+    // Función para eliminar especialidad
+    function eliminarEspecialidad(especialidad) {
+        especialidadesSeleccionadas = especialidadesSeleccionadas.filter(e => e !== especialidad);
+        actualizarVistaEspecialidades();
+    }
+
+    // Función para actualizar la vista de especialidades
+    function actualizarVistaEspecialidades() {
+        const container = document.getElementById('especialidadesContainer');
+        const hiddenInput = document.getElementById('especialidades');
+
+        // Actualizar el input hidden con las especialidades separadas por comas
+        hiddenInput.value = especialidadesSeleccionadas.join(', ');
+
+        // Limpiar el contenedor
+        container.innerHTML = '';
+
+        // Crear las badges
+        if (especialidadesSeleccionadas.length > 0) {
+            especialidadesSeleccionadas.forEach(especialidad => {
+                const badge = document.createElement('div');
+                badge.className = 'especialidad-badge';
+                badge.innerHTML = `
+                    <span>${especialidad}</span>
+                    <i class="fas fa-times" onclick="eliminarEspecialidad('${especialidad}')" style="cursor: pointer; margin-left: 8px;"></i>
+                `;
+                container.appendChild(badge);
+            });
+        } else {
+            container.innerHTML = '<p style="color: #94a3b8; font-size: 0.9rem; margin: 0;">No has agregado especialidades aún</p>';
+        }
+    }
+
+    // Validación antes de enviar el formulario
+    document.querySelector('form').addEventListener('submit', function(e) {
+        if (especialidadesSeleccionadas.length === 0) {
+            e.preventDefault();
+            document.getElementById('errorEspecialidades').style.display = 'block';
+            document.getElementById('especialidadSelect').scrollIntoView({ behavior: 'smooth', block: 'center' });
+            return false;
+        }
+    });
+
+    // Permitir agregar con Enter en el select
+    document.getElementById('especialidadSelect').addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            agregarEspecialidad();
+        }
+    });
+
+    // Inicializar la vista
+    actualizarVistaEspecialidades();
+
     function handleFileSelect(event) {
         const fileList = document.getElementById('fileList');
         const files = Array.from(event.target.files);

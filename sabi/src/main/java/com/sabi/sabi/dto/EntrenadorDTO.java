@@ -13,7 +13,14 @@ import java.util.List;
 public class EntrenadorDTO extends UsuarioDTO{
     private Long idUsuario;
 
+    @Deprecated // Mantener por compatibilidad
     private String especialidad;
+
+    private String especialidades; // Múltiples especialidades separadas por comas
+
+    private Double precioMinimo; // Precio mínimo por sesión/servicio
+
+    private Double precioMaximo; // Precio máximo por sesión/servicio
 
     private Double calificacionPromedio;
 

@@ -22,8 +22,29 @@
                 </div>
                 <div class="col-12 col-md-3">
                     <label for="inputEspecialidad" class="form-label mb-1">Especialidad</label>
-                    <input id="inputEspecialidad" type="text" name="especialidad" class="form-control"
-                           placeholder="Ej: fuerza, yoga" th:value="${especialidad}">
+                    <select id="inputEspecialidad" name="especialidad" class="form-select">
+                        <option value="">Todas las especialidades</option>
+                        <option value="Fuerza y Acondicionamiento" th:selected="${especialidad == 'Fuerza y Acondicionamiento'}">Fuerza y Acondicionamiento</option>
+                        <option value="Pérdida de Peso" th:selected="${especialidad == 'Pérdida de Peso'}">Pérdida de Peso</option>
+                        <option value="Ganancia Muscular" th:selected="${especialidad == 'Ganancia Muscular'}">Ganancia Muscular</option>
+                        <option value="Yoga" th:selected="${especialidad == 'Yoga'}">Yoga</option>
+                        <option value="Pilates" th:selected="${especialidad == 'Pilates'}">Pilates</option>
+                        <option value="CrossFit" th:selected="${especialidad == 'CrossFit'}">CrossFit</option>
+                        <option value="Entrenamiento Funcional" th:selected="${especialidad == 'Entrenamiento Funcional'}">Entrenamiento Funcional</option>
+                        <option value="Cardio y Resistencia" th:selected="${especialidad == 'Cardio y Resistencia'}">Cardio y Resistencia</option>
+                        <option value="Deportes Específicos" th:selected="${especialidad == 'Deportes Específicos'}">Deportes Específicos</option>
+                        <option value="Rehabilitación" th:selected="${especialidad == 'Rehabilitación'}">Rehabilitación</option>
+                        <option value="Nutrición Deportiva" th:selected="${especialidad == 'Nutrición Deportiva'}">Nutrición Deportiva</option>
+                        <option value="Entrenamiento Personal" th:selected="${especialidad == 'Entrenamiento Personal'}">Entrenamiento Personal</option>
+                        <option value="Powerlifting" th:selected="${especialidad == 'Powerlifting'}">Powerlifting</option>
+                        <option value="Calistenia" th:selected="${especialidad == 'Calistenia'}">Calistenia</option>
+                        <option value="Running" th:selected="${especialidad == 'Running'}">Running</option>
+                        <option value="Ciclismo" th:selected="${especialidad == 'Ciclismo'}">Ciclismo</option>
+                        <option value="Natación" th:selected="${especialidad == 'Natación'}">Natación</option>
+                        <option value="Boxeo" th:selected="${especialidad == 'Boxeo'}">Boxeo</option>
+                        <option value="Artes Marciales" th:selected="${especialidad == 'Artes Marciales'}">Artes Marciales</option>
+                        <option value="Movilidad y Flexibilidad" th:selected="${especialidad == 'Movilidad y Flexibilidad'}">Movilidad y Flexibilidad</option>
+                    </select>
                 </div>
                 <div class="col-6 col-md-2">
                     <label for="inputMinPuntuacion" class="form-label mb-1">Puntuación mín.</label>
@@ -39,6 +60,16 @@
                     <label for="inputMinExperiencia" class="form-label mb-1">Experiencia mín. (años)</label>
                     <input id="inputMinExperiencia" type="number" name="minExperiencia" class="form-control" min="0"
                            max="50" placeholder="Años" th:value="${minExperiencia}">
+                </div>
+                <div class="col-6 col-md-3">
+                    <label for="inputMinPrecio" class="form-label mb-1">Precio mín.</label>
+                    <input id="inputMinPrecio" type="number" name="minPrecio" class="form-control" min="0"
+                           step="1000" placeholder="COP" th:value="${minPrecio}">
+                </div>
+                <div class="col-6 col-md-3">
+                    <label for="inputMaxPrecio" class="form-label mb-1">Precio máx.</label>
+                    <input id="inputMaxPrecio" type="number" name="maxPrecio" class="form-control" min="0"
+                           step="1000" placeholder="COP" th:value="${maxPrecio}">
                 </div>
                 <div class="col-12 col-md-6">
                     <label for="inputCertificaciones" class="form-label mb-1">Certificaciones</label>
@@ -96,8 +127,11 @@
                         <div class="trainer-footer">
                             <div class="trainer-meta">
                                 <div class="trainer-meta-item">
-                                    <h6>Especialidad</h6>
-                                    <span th:text="${entrenador.especialidad} ?: 'No especificado'">No especificado</span>
+                                    <h6>Especialidades</h6>
+                                    <span th:if="${entrenador.especialidades != null and !entrenador.especialidades.isEmpty()}"
+                                          th:text="${entrenador.especialidades}">Especialidades</span>
+                                    <span th:if="${entrenador.especialidades == null or entrenador.especialidades.isEmpty()}"
+                                          th:text="${entrenador.especialidad} ?: 'No especificado'">No especificado</span>
                                 </div>
                                 <div class="trainer-meta-item">
                                     <h6>Experiencia</h6>
@@ -105,6 +139,15 @@
                                         th:text="${entrenador.aniosExperiencia != null ? entrenador.aniosExperiencia + ' años' : '0 años'}">0
                                         años
                                     </span>
+                                </div>
+                                <div class="trainer-meta-item" th:if="${entrenador.precioMinimo != null or entrenador.precioMaximo != null}">
+                                    <h6>Precio por sesión</h6>
+                                    <span th:if="${entrenador.precioMinimo != null and entrenador.precioMaximo != null}"
+                                          th:text="${#numbers.formatDecimal(entrenador.precioMinimo, 0, 'COMMA', 0, 'POINT')} + ' - ' + ${#numbers.formatDecimal(entrenador.precioMaximo, 0, 'COMMA', 0, 'POINT')} + ' COP'">Rango</span>
+                                    <span th:if="${entrenador.precioMinimo != null and entrenador.precioMaximo == null}"
+                                          th:text="'Desde ' + ${#numbers.formatDecimal(entrenador.precioMinimo, 0, 'COMMA', 0, 'POINT')} + ' COP'">Desde</span>
+                                    <span th:if="${entrenador.precioMinimo == null and entrenador.precioMaximo != null}"
+                                          th:text="'Hasta ' + ${#numbers.formatDecimal(entrenador.precioMaximo, 0, 'COMMA', 0, 'POINT')} + ' COP'">Hasta</span>
                                 </div>
                             </div>
                             <div class="trainer-actions">
@@ -158,12 +201,16 @@
                                 <p id="modalEntrenadorEmail" class="text-muted"></p>
                             </div>
                             <div class="mb-3">
-                                <h6 class="text-success"><i class="fas fa-dumbbell me-2"></i> Especialidad</h6>
+                                <h6 class="text-success"><i class="fas fa-dumbbell me-2"></i> Especialidades</h6>
                                 <p id="modalEntrenadorEspecialidades" class="text-muted"></p>
                             </div>
                             <div class="mb-3">
                                 <h6 class="text-success"><i class="fas fa-calendar-alt me-2"></i> Experiencia</h6>
                                 <p id="modalEntrenadorExperiencia" class="text-muted"></p>
+                            </div>
+                            <div class="mb-3" id="modalEntrenadorPrecioContainer" style="display: none;">
+                                <h6 class="text-success"><i class="fas fa-dollar-sign me-2"></i> Precio por sesión</h6>
+                                <p id="modalEntrenadorPrecio" class="text-muted"></p>
                             </div>
                             <div class="mb-3" id="modalEntrenadorCertificacionesContainer" style="display: none;">
                                 <h6 class="text-success"><i class="fas fa-certificate me-2"></i> Certificaciones</h6>
@@ -284,6 +331,22 @@
                     if (telefono) {
                         document.getElementById('modalEntrenadorTelefono').textContent = telefono;
                         document.getElementById('modalEntrenadorTelefonoContainer').style.display = 'block';
+                    }
+
+                    // Mostrar precio si está disponible
+                    const precioMin = info.precioMinimo;
+                    const precioMax = info.precioMaximo;
+                    if (precioMin != null || precioMax != null) {
+                        let precioTexto = '';
+                        if (precioMin != null && precioMax != null) {
+                            precioTexto = `$${precioMin.toLocaleString('es-CO')} - $${precioMax.toLocaleString('es-CO')} COP`;
+                        } else if (precioMin != null) {
+                            precioTexto = `Desde $${precioMin.toLocaleString('es-CO')} COP`;
+                        } else if (precioMax != null) {
+                            precioTexto = `Hasta $${precioMax.toLocaleString('es-CO')} COP`;
+                        }
+                        document.getElementById('modalEntrenadorPrecio').textContent = precioTexto;
+                        document.getElementById('modalEntrenadorPrecioContainer').style.display = 'block';
                     }
 
                     const certificaciones = (info.certificaciones || '').toString().trim();

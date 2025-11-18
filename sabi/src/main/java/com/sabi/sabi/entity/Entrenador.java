@@ -15,7 +15,17 @@ import java.util.List;
 @SuperBuilder
 public class Entrenador extends Usuario {
 
+    @Deprecated // Mantener por compatibilidad pero usar especialidades
     private String especialidad;
+
+    @Column(length = 500)
+    private String especialidades; // Múltiples especialidades separadas por comas
+
+    @Column(name = "precio_minimo")
+    private Double precioMinimo; // Precio mínimo por sesión/servicio
+
+    @Column(name = "precio_maximo")
+    private Double precioMaximo; // Precio máximo por sesión/servicio
 
     @Column(name = "calificacion_promedio")
     private Double calificacionPromedio;

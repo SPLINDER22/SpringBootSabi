@@ -102,6 +102,15 @@ public class EntrenadorServiceImpl implements EntrenadorService {
         if (entrenadorDTO.getEspecialidad() != null) {
             existingEntrenador.setEspecialidad(entrenadorDTO.getEspecialidad());
         }
+        if (entrenadorDTO.getEspecialidades() != null) {
+            existingEntrenador.setEspecialidades(entrenadorDTO.getEspecialidades());
+        }
+        if (entrenadorDTO.getPrecioMinimo() != null) {
+            existingEntrenador.setPrecioMinimo(entrenadorDTO.getPrecioMinimo());
+        }
+        if (entrenadorDTO.getPrecioMaximo() != null) {
+            existingEntrenador.setPrecioMaximo(entrenadorDTO.getPrecioMaximo());
+        }
         if (entrenadorDTO.getCalificacionPromedio() != null) {
             existingEntrenador.setCalificacionPromedio(entrenadorDTO.getCalificacionPromedio());
         }

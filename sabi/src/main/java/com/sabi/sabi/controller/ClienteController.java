@@ -168,6 +168,8 @@ public class ClienteController {
         @RequestParam(value = "minPuntuacion", required = false) Double minPuntuacion,
         @RequestParam(value = "maxPuntuacion", required = false) Double maxPuntuacion,
         @RequestParam(value = "minExperiencia", required = false) Integer minExperiencia,
+        @RequestParam(value = "minPrecio", required = false) Double minPrecio,
+        @RequestParam(value = "maxPrecio", required = false) Double maxPrecio,
         @RequestParam(value = "certificaciones", required = false) String certificaciones,
         Model model) {
 
@@ -177,7 +179,7 @@ public class ClienteController {
 
         DiagnosticoDTO diagnosticoActual = clienteService.getDiagnosticoActualByClienteId(clienteId);
         if (diagnosticoActual == null) {
-            return "redirect:/cliente/diagnostico/crear?motivo=obligatorio";
+            return "redirect:/diagnostico/cliente";
         }
         boolean tieneDiagnostico = diagnosticoActual != null;
 
@@ -186,12 +188,28 @@ public class ClienteController {
     String cert = (certificaciones != null) ? certificaciones.trim() : null;
     boolean hasRange = (minPuntuacion != null && minPuntuacion >= 0) || (maxPuntuacion != null && maxPuntuacion >= 0);
     boolean hasExperience = (minExperiencia != null && minExperiencia >= 0);
+    boolean hasPrecio = (minPrecio != null && minPrecio >= 0) || (maxPrecio != null && maxPrecio >= 0);
     boolean hasCertificaciones = (cert != null && !cert.isEmpty());
-    boolean noFilters = (criterio == null || criterio.isEmpty()) && (esp == null || esp.isEmpty()) && !hasRange && !hasExperience && !hasCertificaciones;
+    boolean noFilters = (criterio == null || criterio.isEmpty()) && (esp == null || esp.isEmpty()) && !hasRange && !hasExperience && !hasPrecio && !hasCertificaciones;
 
     List<EntrenadorDTO> entrenadores = noFilters
         ? entrenadorService.getAllActiveEntrenadores()
         : entrenadorService.buscarEntrenadores(criterio, esp, minPuntuacion, maxPuntuacion, minExperiencia, cert);
+
+    // Filtrar por precio si se especificó
+    if (hasPrecio && entrenadores != null) {
+        entrenadores = entrenadores.stream()
+            .filter(e -> {
+                if (minPrecio != null && e.getPrecioMinimo() != null && e.getPrecioMinimo() < minPrecio) {
+                    return false;
+                }
+                if (maxPrecio != null && e.getPrecioMaximo() != null && e.getPrecioMaximo() > maxPrecio) {
+                    return false;
+                }
+                return true;
+            })
+            .collect(java.util.stream.Collectors.toList());
+    }
 
         model.addAttribute("entrenadores", entrenadores);
         model.addAttribute("tieneDiagnostico", tieneDiagnostico);
@@ -200,6 +218,8 @@ public class ClienteController {
         model.addAttribute("minPuntuacion", minPuntuacion);
         model.addAttribute("maxPuntuacion", maxPuntuacion);
         model.addAttribute("minExperiencia", minExperiencia);
+        model.addAttribute("minPrecio", minPrecio);
+        model.addAttribute("maxPrecio", maxPrecio);
         model.addAttribute("certificaciones", certificaciones);
         return "cliente/listaEntrenadores";
     }
@@ -350,13 +370,20 @@ public class ClienteController {
             info.put("email", entrenador.getEmail());
             info.put("fotoPerfilUrl",
                     entrenador.getFotoPerfilUrl() != null ? entrenador.getFotoPerfilUrl() : "/img/fotoPerfil.png");
-            info.put("especialidades", entrenador.getEspecialidad());
+            // Priorizar especialidades múltiples sobre especialidad singular
+            String especialidadesTexto = entrenador.getEspecialidades();
+            if (especialidadesTexto == null || especialidadesTexto.isEmpty()) {
+                especialidadesTexto = entrenador.getEspecialidad();
+            }
+            info.put("especialidades", especialidadesTexto);
             info.put("experiencia", entrenador.getAniosExperiencia() != null ? entrenador.getAniosExperiencia() : 0);
             info.put("certificaciones", entrenador.getCertificaciones());
             info.put("calificacionPromedio",
                     entrenador.getCalificacionPromedio() != null ? entrenador.getCalificacionPromedio() : 0.0);
             info.put("telefono", entrenador.getTelefono());
             info.put("descripcion", entrenador.getDescripcion());
+            info.put("precioMinimo", entrenador.getPrecioMinimo());
+            info.put("precioMaximo", entrenador.getPrecioMaximo());
             info.put("id", entrenador.getId());
 
             return org.springframework.http.ResponseEntity.ok(info);

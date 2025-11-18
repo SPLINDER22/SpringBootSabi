@@ -100,69 +100,78 @@ public class    DataInitializer implements CommandLineRunner {
                         "gimnasio básico", "Dolor lumbar ocasional", "ninguna", 7L,
                         "Dieta mediterránea");
 
-                // Entrenadores
+                // Entrenadores con especialidades múltiples y precios
                 crearEntrenadorDetalladoSiNoExiste(
                         "Ernesto", "Espinel", "entrenador@sabi.com", "1234567",
                         Sexo.MASCULINO, LocalDate.of(1987, 5, 14), Departamento.CUNDINAMARCA, "Bogotá",
                         TipoDocumento.CC, "1012456789", "3101234567",
-                        "Fuerza e hipertrofia", 4.6, 8,
-                        "Entrenador con enfoque en fuerza e hipertrofia, planificación y técnica correcta."
+                        "Fuerza y Acondicionamiento, Ganancia Muscular, Powerlifting", 4.6, 8,
+                        "Entrenador con enfoque en fuerza e hipertrofia, planificación y técnica correcta.",
+                        50000.0, 80000.0
                 );
                 crearEntrenadorDetalladoSiNoExiste(
                         "Ana", "García", "entrenador1@sabi.com", "1234567",
                         Sexo.FEMENINO, LocalDate.of(1990, 9, 22), Departamento.ANTIOQUIA, "Medellín",
                         TipoDocumento.CC, "1033345698", "3129876543",
-                        "CrossFit y HIIT", 4.3, 6,
-                        "Especialista en entrenamiento metabólico y acondicionamiento de alta intensidad."
+                        "CrossFit, Cardio y Resistencia, Entrenamiento Funcional", 4.3, 6,
+                        "Especialista en entrenamiento metabólico y acondicionamiento de alta intensidad.",
+                        45000.0, 75000.0
                 );
                 crearEntrenadorDetalladoSiNoExiste(
                         "Luis", "Martínez", "entrenador2@sabi.com", "1234567",
                         Sexo.MASCULINO, LocalDate.of(1985, 3, 8), Departamento.VALLE_DEL_CAUCA, "Cali",
                         TipoDocumento.CC, "1009876523", "3004567890",
-                        "Pérdida de peso y funcional", 4.1, 10,
-                        "Acompañamiento integral para reducción de grasa y hábitos saludables."
+                        "Pérdida de Peso, Entrenamiento Funcional, Nutrición Deportiva", 4.1, 10,
+                        "Acompañamiento integral para reducción de grasa y hábitos saludables.",
+                        40000.0, 70000.0
                 );
                 crearEntrenadorDetalladoSiNoExiste(
                         "María", "López", "entrenador3@sabi.com", "1234567",
                         Sexo.FEMENINO, LocalDate.of(1992, 12, 11), Departamento.ATLANTICO, "Barranquilla",
                         TipoDocumento.CC, "1015678923", "3011237894",
-                        "Funcional y movilidad", 4.4, 4,
-                        "Trabajo de movilidad articular, estabilidad y funcionalidad para la vida diaria."
+                        "Entrenamiento Funcional, Movilidad y Flexibilidad, Rehabilitación", 4.4, 4,
+                        "Trabajo de movilidad articular, estabilidad y funcionalidad para la vida diaria.",
+                        35000.0, 60000.0
                 );
                 crearEntrenadorDetalladoSiNoExiste(
                         "Carlos", "Pérez", "entrenador4@sabi.com", "1234567",
                         Sexo.MASCULINO, LocalDate.of(1988, 7, 19), Departamento.SANTANDER, "Bucaramanga",
                         TipoDocumento.CC, "1098765432", "3159988776",
-                        "Resistencia y running", 4.2, 7,
-                        "Planificación de carreras 5K-21K, técnica de carrera y fortalecimiento específico."
+                        "Running, Cardio y Resistencia, Deportes Específicos", 4.2, 7,
+                        "Planificación de carreras 5K-21K, técnica de carrera y fortalecimiento específico.",
+                        30000.0, 55000.0
                 );
                 crearEntrenadorDetalladoSiNoExiste(
                         "Sofía", "Rodríguez", "entrenador5@sabi.com", "1234567",
                         Sexo.FEMENINO, LocalDate.of(1995, 4, 30), Departamento.BOLIVAR, "Cartagena",
                         TipoDocumento.CC, "1012349987", "3176655443",
-                        "Pilates y core", 4.5, 5,
-                        "Fortalecimiento de core, postura y prevención de dolor lumbar con métodos de pilates."
+                        "Pilates, Yoga, Movilidad y Flexibilidad", 4.5, 5,
+                        "Fortalecimiento de core, postura y prevención de dolor lumbar con métodos de pilates.",
+                        40000.0, 65000.0
                 );
                 crearEntrenadorDetalladoSiNoExiste(
                         "Jorge", "Hernández", "entrenador6@sabi.com", "1234567",
                         Sexo.MASCULINO, LocalDate.of(1984, 2, 2), Departamento.CUNDINAMARCA, "Chía",
                         TipoDocumento.CC, "1004567812", "3114455667",
-                        "Halterofilia y olímpicos", 4.7, 12,
-                        "Entrenamientos de levantamiento olímpico, técnica de arranque y envión."
+                        "Powerlifting, Fuerza y Acondicionamiento, Ganancia Muscular", 4.7, 12,
+                        "Entrenamientos de levantamiento olímpico, técnica de arranque y envión.",
+                        60000.0, 100000.0
                 );
                 crearEntrenadorDetalladoSiNoExiste(
                         "Lucía", "Fernández", "entrenador7@sabi.com", "1234567",
                         Sexo.FEMENINO, LocalDate.of(1993, 11, 5), Departamento.BOGOTA, "Bogotá",
                         TipoDocumento.CC, "1023456780", "3193344556",
-                        "Yoga y movilidad", 4.0, 3,
-                        "Sesiones de yoga enfocadas en flexibilidad, respiración y control postural."
+                        "Yoga, Pilates, Movilidad y Flexibilidad", 4.0, 3,
+                        "Sesiones de yoga enfocadas en flexibilidad, respiración y control postural.",
+                        35000.0, 55000.0
                 );
                 crearEntrenadorDetalladoSiNoExiste(
                         "Diego", "Gómez", "entrenador8@sabi.com", "1234567",
                         Sexo.MASCULINO, LocalDate.of(1989, 1, 17), Departamento.ANTIOQUIA, "Envigado",
                         TipoDocumento.CC, "1001234599", "3135566778",
-                        "Calistenia y street workout", 4.3, 6,
-                        "Progresiones de calistenia, dominadas, fondos y trabajo de fuerza con peso corporal."
+                        "Calistenia, Entrenamiento Funcional, Fuerza y Acondicionamiento", 4.3, 6,
+                        "Progresiones de calistenia, dominadas, fondos y trabajo de fuerza con peso corporal.",
+                        38000.0, 62000.0
                 );
                 crearEjerciciosSiNoExisten();
                 crearRutinaDeEjemplo();
@@ -302,13 +311,18 @@ public class    DataInitializer implements CommandLineRunner {
                         String nombre, String apellido, String email, String rawPassword,
                         Sexo sexo, LocalDate fechaNacimiento, Departamento departamento, String ciudad,
                         TipoDocumento tipoDocumento, String numeroDocumento, String telefono,
-                        String especialidad, Double calificacionPromedio, Integer aniosExperiencia,
-                        String descripcion) {
+                        String especialidades, Double calificacionPromedio, Integer aniosExperiencia,
+                        String descripcion, Double precioMinimo, Double precioMaximo) {
 
                 if (usuarioRepository.findByEmail(email).isPresent()) {
                         System.out.println("Usuario ya existe: " + email + " (no se muestra contraseña raw)");
                         return;
                 }
+
+                // La primera especialidad se guarda también en el campo legacy
+                String primeraEspecialidad = especialidades.contains(",")
+                        ? especialidades.split(",")[0].trim()
+                        : especialidades;
 
                 Entrenador entrenador = Entrenador.builder()
                                 .nombre(nombre)
@@ -325,12 +339,15 @@ public class    DataInitializer implements CommandLineRunner {
                                 .telefono(telefono)
                                 .descripcion(descripcion)
                                 .estado(true)
-                                .especialidad(especialidad)
+                                .especialidad(primeraEspecialidad) // Campo legacy
+                                .especialidades(especialidades) // Nuevo campo con todas
+                                .precioMinimo(precioMinimo)
+                                .precioMaximo(precioMaximo)
                                 .calificacionPromedio(calificacionPromedio)
                                 .aniosExperiencia(aniosExperiencia)
                                 .build();
                 usuarioRepository.save(entrenador);
-                System.out.println("Usuario creado: " + nombre + " " + apellido + " | " + email + " | contraseña (raw): " + rawPassword);
+                System.out.println("Usuario creado: " + nombre + " " + apellido + " | " + email + " | Especialidades: " + especialidades + " | Precio: $" + precioMinimo + " - $" + precioMaximo);
         }
 
     // Helpers para obtener clientes/entrenadores por email

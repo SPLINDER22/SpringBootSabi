@@ -1,0 +1,380 @@
+/* ==================================================
+   FORMULARIO DE ENTRENADOR - ESTILOS MEJORADOS
+   ================================================== */
+
+/* Variables CSS */
+:root {
+    --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    --secondary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    --success-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+    --shadow-sm: 0 2px 8px rgba(0,0,0,0.08);
+    --shadow-md: 0 4px 16px rgba(0,0,0,0.12);
+    --shadow-lg: 0 8px 32px rgba(0,0,0,0.16);
+    --radius-sm: 0.5rem;
+    --radius-md: 1rem;
+    --radius-lg: 1.5rem;
+}
+
+/* Fondo Animado */
+body.entrenador-form {
+    background: linear-gradient(-45deg, #667eea, #764ba2, #f093fb, #f5576c);
+    background-size: 400% 400%;
+    animation: gradientShift 15s ease infinite;
+    min-height: 100vh;
+    padding: 2rem 0;
+}
+
+@keyframes gradientShift {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+/* Contenedor del Formulario */
+.entrenador-form .login-form-section {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-lg);
+    padding: 3rem 2.5rem;
+    animation: slideUp 0.6s ease;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Título */
+.entrenador-form .login-title {
+    background: var(--primary-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    font-size: 2rem;
+    font-weight: 800;
+    margin-bottom: 0.5rem;
+    text-align: center;
+    animation: fadeIn 0.8s ease;
+}
+
+.entrenador-form .login-title i {
+    animation: pulse 2s ease infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+/* Subtítulo */
+.entrenador-form .subtitle {
+    color: #64748b;
+    font-size: 1rem;
+    margin-bottom: 2rem;
+    text-align: center;
+    animation: fadeIn 1s ease;
+}
+
+/* Form Groups */
+.entrenador-form .form-group {
+    margin-bottom: 1.5rem;
+    animation: slideInLeft 0.6s ease;
+}
+
+@keyframes slideInLeft {
+    from {
+        opacity: 0;
+        transform: translateX(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.entrenador-form .form-group label {
+    display: block;
+    font-weight: 600;
+    color: #334155;
+    margin-bottom: 0.5rem;
+    font-size: 1rem;
+}
+
+.entrenador-form .form-group label i {
+    margin-right: 0.5rem;
+    background: var(--primary-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+/* Inputs y Selects */
+.entrenador-form .form-control,
+.entrenador-form .form-select {
+    border-radius: var(--radius-md) !important;
+    border: 2px solid #e2e8f0;
+    background: #ffffff;
+    font-size: 1rem;
+    padding: 0.75rem 1rem;
+    transition: all 0.3s ease;
+    box-shadow: var(--shadow-sm);
+}
+
+.entrenador-form .form-control:focus,
+.entrenador-form .form-select:focus {
+    border-color: #667eea;
+    box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.15);
+    background: #ffffff;
+    outline: none;
+    transform: translateY(-2px);
+}
+
+.entrenador-form .form-control:hover,
+.entrenador-form .form-select:hover {
+    border-color: #cbd5e1;
+}
+
+/* Info Box */
+.entrenador-form .info-box {
+    background: linear-gradient(135deg, #e0f2fe 0%, #dbeafe 100%);
+    border-left: 4px solid #3b82f6;
+    padding: 1.25rem;
+    border-radius: var(--radius-md);
+    margin-bottom: 2rem;
+    font-size: 0.95rem;
+    box-shadow: var(--shadow-sm);
+    animation: slideInRight 0.6s ease;
+}
+
+@keyframes slideInRight {
+    from {
+        opacity: 0;
+        transform: translateX(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.entrenador-form .info-box i {
+    color: #3b82f6;
+    margin-right: 0.75rem;
+    font-size: 1.2rem;
+}
+
+/* Especialidades Container */
+.entrenador-form #especialidadesContainer {
+    min-height: 80px;
+    padding: 1.25rem;
+    background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+    border-radius: var(--radius-md);
+    border: 2px dashed #cbd5e1;
+    transition: all 0.3s ease;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.entrenador-form #especialidadesContainer:has(.especialidad-badge) {
+    border-style: solid;
+    border-color: #667eea;
+    background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+    box-shadow: var(--shadow-sm);
+}
+
+/* Especialidad Badge */
+.entrenador-form .especialidad-badge {
+    display: inline-flex;
+    align-items: center;
+    background: var(--primary-gradient);
+    color: white;
+    padding: 0.6rem 1.2rem;
+    border-radius: 2rem;
+    font-size: 0.9rem;
+    font-weight: 600;
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+    transition: all 0.3s ease;
+    animation: bounceIn 0.5s ease;
+}
+
+@keyframes bounceIn {
+    0% {
+        opacity: 0;
+        transform: scale(0.3);
+    }
+    50% {
+        transform: scale(1.05);
+    }
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.entrenador-form .especialidad-badge:hover {
+    transform: translateY(-3px) scale(1.05);
+    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+}
+
+.entrenador-form .especialidad-badge i {
+    margin-left: 0.5rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-size: 1rem;
+}
+
+.entrenador-form .especialidad-badge i:hover {
+    transform: rotate(90deg) scale(1.3);
+    color: #fef2f2;
+}
+
+/* Botones */
+.entrenador-form .btn-primary {
+    background: var(--primary-gradient);
+    border: none;
+    color: white;
+    padding: 0.75rem 1.5rem;
+    border-radius: var(--radius-md);
+    font-weight: 600;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+    cursor: pointer;
+}
+
+.entrenador-form .btn-primary:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+}
+
+.entrenador-form .btn-primary:active {
+    transform: translateY(-1px);
+}
+
+.entrenador-form .login-button {
+    width: 100%;
+    padding: 1rem;
+    font-size: 1.1rem;
+    background: var(--secondary-gradient);
+    border: none;
+    border-radius: var(--radius-md);
+    color: white;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    box-shadow: 0 4px 16px rgba(245, 87, 108, 0.4);
+    transition: all 0.3s ease;
+    margin-top: 2rem;
+}
+
+.entrenador-form .login-button:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 24px rgba(245, 87, 108, 0.5);
+}
+
+/* File Upload */
+.entrenador-form .file-upload-label {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1.5rem;
+    background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+    border: 2px dashed #cbd5e1;
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    transition: all 0.3s;
+    color: #64748b;
+    font-weight: 500;
+}
+
+.entrenador-form .file-upload-label:hover {
+    border-color: #667eea;
+    background: linear-gradient(135deg, #eef2ff 0%, #e0e7ff 100%);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+}
+
+.entrenador-form .file-upload-label i {
+    margin-right: 0.75rem;
+    font-size: 1.5rem;
+    color: #667eea;
+}
+
+.entrenador-form .file-item {
+    display: flex;
+    align-items: center;
+    padding: 0.75rem 1rem;
+    background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
+    border-radius: var(--radius-sm);
+    margin-bottom: 0.5rem;
+    animation: slideInLeft 0.4s ease;
+    border: 1px solid #fecaca;
+}
+
+.entrenador-form .file-item i.fa-file-pdf {
+    color: #ef4444;
+    margin-right: 0.75rem;
+    font-size: 1.2rem;
+}
+
+.entrenador-form .file-item .file-name {
+    flex: 1;
+    color: #7f1d1d;
+    font-weight: 500;
+}
+
+.entrenador-form .file-item .remove-file {
+    color: #ef4444;
+    cursor: pointer;
+    font-size: 1.2rem;
+    transition: all 0.2s;
+}
+
+.entrenador-form .file-item .remove-file:hover {
+    color: #dc2626;
+    transform: rotate(90deg) scale(1.2);
+}
+
+/* Error message */
+.entrenador-form #errorEspecialidades {
+    background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
+    color: #dc2626;
+    padding: 0.75rem 1rem;
+    border-radius: var(--radius-sm);
+    border-left: 4px solid #ef4444;
+    font-weight: 600;
+    animation: shake 0.5s ease;
+}
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-10px); }
+    75% { transform: translateX(10px); }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .entrenador-form .login-form-section {
+        padding: 2rem 1.5rem;
+    }
+
+    .entrenador-form .especialidad-badge {
+        font-size: 0.85rem;
+        padding: 0.5rem 1rem;
+    }
+}
+
