@@ -3,10 +3,14 @@ package com.sabi.sabi.controller;
 import com.sabi.sabi.entity.Cliente;
 import com.sabi.sabi.entity.Entrenador;
 import com.sabi.sabi.entity.Usuario;
+import com.sabi.sabi.security.CustomUserDetails;
 import com.sabi.sabi.service.UsuarioService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -71,10 +75,14 @@ public class PerfilController {
                 usuario.setDescripcion(descripcion);
             }
 
+            // Variable para saber si se actualizó la foto
+            boolean fotoActualizada = false;
+
             // Subir foto de perfil si se proporcionó
             if (fotoPerfil != null && !fotoPerfil.isEmpty()) {
                 String fotoUrl = guardarFotoPerfil(fotoPerfil);
                 usuario.setFotoPerfilUrl(fotoUrl);
+                fotoActualizada = true;
             }
 
             // Actualizar campos específicos según el rol
@@ -87,8 +95,13 @@ public class PerfilController {
             // Nota: La especialidad, años de experiencia y certificaciones del entrenador
             // NO son editables desde el perfil. Solo se establecen durante el registro inicial.
 
-            // Guardar cambios
+            // Guardar cambios en la base de datos
             usuarioService.actualizarUsuario(usuario);
+
+            // Si se actualizó la foto, refrescar el contexto de seguridad
+            if (fotoActualizada) {
+                actualizarContextoSeguridad(usuario);
+            }
 
             model.addAttribute("success", "Perfil actualizado exitosamente");
         } catch (Exception e) {
@@ -96,6 +109,29 @@ public class PerfilController {
         }
 
         return "redirect:/perfil";
+    }
+
+    /**
+     * Actualiza el contexto de seguridad de Spring con los datos más recientes del usuario
+     * Esto es necesario para que los cambios (como la foto de perfil) se reflejen inmediatamente
+     * en el navbar sin necesidad de cerrar sesión para que sirva ESTA LOCURAAAAAAA
+     */
+    private void actualizarContextoSeguridad(Usuario usuarioActualizado) {
+        // Obtener la autenticación actual
+        Authentication currentAuth = SecurityContextHolder.getContext().getAuthentication();
+
+        // Crear un nuevo CustomUserDetails con los datos actualizados
+        CustomUserDetails updatedUserDetails = new CustomUserDetails(usuarioActualizado);
+
+        // Crear nueva autenticación con los datos actualizados
+        UsernamePasswordAuthenticationToken newAuth = new UsernamePasswordAuthenticationToken(
+            updatedUserDetails,
+            currentAuth.getCredentials(),
+            updatedUserDetails.getAuthorities()
+        );
+
+        // Actualizar el contexto de seguridad
+        SecurityContextHolder.getContext().setAuthentication(newAuth);
     }
 
     private String guardarFotoPerfil(MultipartFile file) throws IOException {
