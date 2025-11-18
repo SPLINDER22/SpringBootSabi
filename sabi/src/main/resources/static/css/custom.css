@@ -14,3 +14,32 @@
 /* Prevent parent wrappers from clipping content unexpectedly */
 html, body { height: auto; overflow: auto !important; }
 #content, #content-wrapper { overflow-y: auto !important; overflow-x: visible !important; }
+
+/* SweetAlert2 - Estilos personalizados para alertas de éxito */
+.swal2-popup.swal2-toast .swal2-title {
+	color: #ffffff !important; /* Texto blanco */
+	font-weight: 600;
+}
+
+.swal2-popup.swal2-toast .swal2-html-container {
+	color: #ffffff !important; /* Texto blanco */
+}
+
+/* Fondo verde para alertas de éxito tipo toast */
+.swal2-popup.swal2-toast.swal2-icon-success {
+	background-color: #28a745 !important; /* Verde éxito */
+}
+
+/* Ícono de éxito blanco */
+.swal2-popup.swal2-toast .swal2-success {
+	border-color: #ffffff !important;
+}
+
+.swal2-popup.swal2-toast .swal2-success [class^='swal2-success-line'] {
+	background-color: #ffffff !important;
+}
+
+.swal2-popup.swal2-toast .swal2-success .swal2-success-ring {
+	border-color: rgba(255, 255, 255, 0.3) !important;
+}
+
