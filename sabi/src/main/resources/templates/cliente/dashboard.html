@@ -73,7 +73,7 @@
         <div class="category-header">
             <h3>📋 Mi Diagnóstico</h3>
             <div class="category-status" th:classappend="${diagnosticoActual != null} ? 'completed' : 'pending'">
-                <span th:if="${diagnosticoActual != null}" class="status-text">✅ Completado</span>
+                <span th:if="${diagnosticoActual != null}" class="status-text" style="color: white;">✅ Completado</span>
                 <span th:unless="${diagnosticoActual != null}" class="status-text">⏳ Pendiente</span>
             </div>
         </div>
