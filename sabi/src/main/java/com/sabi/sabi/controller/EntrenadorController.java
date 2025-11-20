@@ -1,26 +1,31 @@
 package com.sabi.sabi.controller;
 
-import com.sabi.sabi.service.EntrenadorService;
-import com.sabi.sabi.service.SuscripcionService;
-import com.sabi.sabi.service.ReportePdfService;
-import com.sabi.sabi.service.UsuarioService;
-import com.sabi.sabi.dto.SuscripcionDTO;
-import com.sabi.sabi.entity.enums.EstadoSuscripcion;
-import com.sabi.sabi.service.ClienteService;
-import com.sabi.sabi.service.RutinaService; // añadido
-import com.sabi.sabi.service.EmailService;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.stereotype.Controller; // añadido
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import com.sabi.sabi.dto.SuscripcionDTO;
+import com.sabi.sabi.entity.enums.EstadoSuscripcion;
+import com.sabi.sabi.service.ClienteService;
+import com.sabi.sabi.service.EmailService;
+import com.sabi.sabi.service.EntrenadorService;
+import com.sabi.sabi.service.ReportePdfService;
+import com.sabi.sabi.service.RutinaService;
+import com.sabi.sabi.service.SuscripcionService;
+import com.sabi.sabi.service.UsuarioService;
 
 @Controller
 public class EntrenadorController {
@@ -46,7 +51,73 @@ public class EntrenadorController {
     private EmailService emailService;
 
     @GetMapping("/entrenador/dashboard")
-    public String entrenadorDashboard() {
+    public String entrenadorDashboard(@AuthenticationPrincipal UserDetails userDetails, Model model) {
+        if (userDetails == null) {
+            return "redirect:/auth/login";
+        }
+        
+        var usuario = usuarioService.obtenerPorEmail(userDetails.getUsername());
+        var entrenadorId = usuario.getId();
+        
+        // Obtener todas las suscripciones del entrenador
+        var todasSuscripciones = suscripcionService.getAllSuscripciones().stream()
+            .filter(s -> s.getIdEntrenador() != null && s.getIdEntrenador().equals(entrenadorId))
+            .toList();
+        
+        // Suscripciones activas (ACEPTADA)
+        var suscripcionesActivas = todasSuscripciones.stream()
+            .filter(s -> s.getEstadoSuscripcion() == EstadoSuscripcion.ACEPTADA)
+            .toList();
+        
+        // Solicitudes pendientes (PENDIENTE)
+        var solicitudesPendientes = todasSuscripciones.stream()
+            .filter(s -> s.getEstadoSuscripcion() == EstadoSuscripcion.PENDIENTE)
+            .toList();
+        
+        // Clientes activos únicos
+        var clientesActivos = suscripcionesActivas.stream()
+            .map(SuscripcionDTO::getIdCliente)
+            .filter(Objects::nonNull)
+            .distinct()
+            .toList();
+        
+        // Obtener todas las rutinas creadas por el entrenador
+        var rutinasCreadas = rutinaService.getRutinasPorUsuario(entrenadorId);
+        
+        // Rutinas activas (asignadas a clientes)
+        var rutinasActivas = clientesActivos.stream()
+            .map(rutinaService::getRutinaActivaCliente)
+            .filter(Objects::nonNull)
+            .toList();
+        
+        // Calificación promedio del entrenador
+        var entrenadorDTO = entrenadorService.getEntrenadorById(entrenadorId);
+        Double calificacionPromedio = entrenadorDTO != null ? entrenadorDTO.getCalificacionPromedio() : null;
+        Integer aniosExperiencia = entrenadorDTO != null ? entrenadorDTO.getAniosExperiencia() : null;
+        
+        // Información de solicitudes pendientes con datos del cliente
+        var solicitudesInfo = solicitudesPendientes.stream()
+            .map(s -> {
+                var cliente = clienteService.getClienteById(s.getIdCliente());
+                Map<String, Object> info = new java.util.HashMap<>();
+                info.put("suscripcion", s);
+                info.put("clienteNombre", cliente != null ? cliente.getNombre() : "Cliente");
+                info.put("clienteFoto", cliente != null && cliente.getFotoPerfilUrl() != null ? 
+                    cliente.getFotoPerfilUrl() : "/img/fotoPerfil.png");
+                return info;
+            })
+            .toList();
+        
+        // Agregar atributos al modelo
+        model.addAttribute("totalClientes", clientesActivos.size());
+        model.addAttribute("totalRutinas", rutinasCreadas.size());
+        model.addAttribute("rutinasActivas", rutinasActivas.size());
+        model.addAttribute("solicitudesPendientes", solicitudesPendientes.size());
+        model.addAttribute("calificacionPromedio", calificacionPromedio != null ? calificacionPromedio : 0.0);
+        model.addAttribute("aniosExperiencia", aniosExperiencia != null ? aniosExperiencia : 0);
+        model.addAttribute("solicitudesInfo", solicitudesInfo);
+        model.addAttribute("usuario", usuario);
+        
         return "entrenador/dashboard";
     }
 

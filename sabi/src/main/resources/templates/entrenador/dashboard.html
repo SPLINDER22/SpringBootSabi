@@ -2,54 +2,327 @@
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Dashboard Entrenador</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Entrenador - SABI</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/dashboard-cliente.css}">
+    <style>
+        .dashboard-header {
+            background: #0ea5e9;
+            border-radius: 20px;
+            padding: 2rem;
+            color: white;
+            margin-bottom: 2rem;
+            box-shadow: 0 10px 30px rgba(14, 165, 233, 0.3);
+        }
+
+        .stats-card {
+            background: white;
+            border-radius: 16px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+            transition: all 0.3s;
+            border-left: 4px solid;
+            height: 100%;
+        }
+
+        .stats-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+
+        .stats-card.primary {
+            border-left-color: #0ea5e9;
+        }
+
+        .stats-card.success {
+            border-left-color: #0c4a6e;
+        }
+
+        .stats-card.warning {
+            border-left-color: #0284c7;
+        }
+
+        .stats-card.info {
+            border-left-color: #0369a1;
+        }
+
+        .stats-number {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin: 0.5rem 0;
+        }
+
+        .stats-label {
+            font-size: 1rem;
+            color: #64748b;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .stats-icon {
+            font-size: 2.5rem;
+            opacity: 0.2;
+            position: absolute;
+            right: 1.5rem;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        .solicitud-card {
+            background: white;
+            border-radius: 12px;
+            padding: 1.25rem;
+            margin-bottom: 1rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            transition: all 0.3s;
+            border-left: 4px solid #0284c7;
+        }
+
+        .solicitud-card:hover {
+            box-shadow: 0 4px 15px rgba(0,0,0,0.12);
+            transform: translateX(5px);
+        }
+
+        .solicitud-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .solicitud-foto {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid #0ea5e9;
+        }
+
+        .solicitud-info h6 {
+            margin: 0;
+            font-weight: 700;
+            color: #1e293b;
+        }
+
+        .solicitud-info small {
+            color: #64748b;
+            font-size: 0.95rem;
+        }
+
+        .rating-stars {
+            color: #fbbf24;
+            font-size: 1.2rem;
+        }
+
+        .rating-number {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: #92400e;
+        }
+
+        .section-title {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .section-title i {
+            color: #0ea5e9;
+        }
+
+        .btn-action {
+            border-radius: 8px;
+            font-weight: 600;
+            padding: 0.5rem 1rem;
+            transition: all 0.3s;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem 1rem;
+            background: #e0f2fe;
+            border-radius: 16px;
+            color: #0c4a6e;
+        }
+
+        .empty-state i {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            opacity: 0.3;
+        }
+    </style>
 </head>
 <body th:replace="layout/layout :: layout('Dashboard Entrenador', ~{::section})">
 <section th:fragment="section">
-    <h1 class="h3 mb-4 text-gray-800">Dashboard Entrenador</h1>
-    <div class="row">
-        <div class="col-12">
-            <p class="mb-4">Bienvenido a tu panel de control como entrenador.</p>
-
-            <div class="row">
-                <div class="col-xl-3 col-md-6 mb-4">
-                    <div class="card border-left-primary shadow h-100 py-2">
-                        <div class="card-body">
-                            <div class="row no-gutters align-items-center">
-                                <div class="col mr-2">
-                                    <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
-                                        Rutinas Creadas</div>
-                                    <div class="h5 mb-0 font-weight-bold text-gray-800">0</div>
-                                </div>
-                                <div class="col-auto">
-                                    <i class="fas fa-dumbbell fa-2x text-gray-300"></i>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+    <!-- Dashboard Header -->
+    <div class="dashboard-header">
+        <div class="d-flex justify-content-between align-items-center flex-wrap">
+            <div>
+                <h2 style="margin: 0; font-weight: 800;">
+                    <i class="fas fa-dumbbell me-2"></i>Panel del Entrenador
+                </h2>
+                <p style="margin: 0.5rem 0 0 0; opacity: 0.9;" th:text="'Bienvenido, ' + ${usuario.nombre}">Bienvenido</p>
+            </div>
+            <div class="text-end">
+                <div th:if="${aniosExperiencia != null && aniosExperiencia > 0}" style="font-size: 0.9rem; opacity: 0.9;">
+                    <i class="fas fa-medal"></i> <span th:text="${aniosExperiencia}">0</span> años de experiencia
                 </div>
+            </div>
+        </div>
+    </div>
 
-                <div class="col-xl-3 col-md-6 mb-4">
-                    <div class="card border-left-success shadow h-100 py-2">
-                        <div class="card-body">
-                            <div class="row no-gutters align-items-center">
-                                <div class="col mr-2">
-                                    <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
-                                        Clientes Activos</div>
-                                    <div class="h5 mb-0 font-weight-bold text-gray-800">0</div>
-                                </div>
-                                <div class="col-auto">
-                                    <i class="fas fa-users fa-2x text-gray-300"></i>
-                                </div>
-                            </div>
-                        </div>
+    <!-- Métricas Principales -->
+    <div class="row mb-4">
+        <div class="col-lg-4 col-md-6 mb-3">
+            <div class="stats-card primary position-relative">
+                <div class="stats-label">
+                    <i class="fas fa-users me-1"></i>Clientes Activos
+                </div>
+                <div class="stats-number" style="color: #0ea5e9;" th:text="${totalClientes}">0</div>
+                <small class="text-muted" style="font-size: 0.95rem;">Con suscripción aceptada</small>
+                <i class="fas fa-users stats-icon" style="color: #0ea5e9;"></i>
+            </div>
+        </div>
+
+        <div class="col-lg-4 col-md-6 mb-3">
+            <div class="stats-card success position-relative">
+                <div class="stats-label">
+                    <i class="fas fa-dumbbell me-1"></i>Rutinas Creadas
+                </div>
+                <div class="stats-number" style="color: #0c4a6e;" th:text="${totalRutinas}">0</div>
+                <small class="text-muted" style="font-size: 0.95rem;">Total de rutinas diseñadas</small>
+                <i class="fas fa-dumbbell stats-icon" style="color: #0c4a6e;"></i>
+            </div>
+        </div>
+
+        <div class="col-lg-4 col-md-6 mb-3">
+            <div class="stats-card warning position-relative">
+                <div class="stats-label">
+                    <i class="fas fa-clock me-1"></i>Solicitudes
+                </div>
+                <div class="stats-number" style="color: #0284c7;" th:text="${solicitudesPendientes}">0</div>
+                <small class="text-muted" style="font-size: 0.95rem;">Peticiones pendientes</small>
+                <i class="fas fa-bell stats-icon" style="color: #0284c7;"></i>
+            </div>
+        </div>
+    </div>
+
+    <!-- Calificación del Entrenador -->
+    <div class="row mb-4" th:if="${calificacionPromedio != null && calificacionPromedio > 0}">
+        <div class="col-12">
+            <div class="stats-card" style="border-left-color: #fbbf24;">
+                <h5 class="mb-3">
+                    <i class="fas fa-star text-warning me-2"></i>Tu Calificación
+                </h5>
+                <div class="d-flex align-items-center gap-3 flex-wrap">
+                    <div class="rating-stars">
+                        <i th:each="i : ${#numbers.sequence(1, 5)}" 
+                           th:class="${i <= calificacionPromedio ? 'fas fa-star' : 'far fa-star'}"></i>
+                    </div>
+                    <div>
+                        <span class="rating-number" th:text="${#numbers.formatDecimal(calificacionPromedio, 1, 1)}">0.0</span>
+                        <small class="text-muted ms-2" style="font-size: 1rem;">de 5.0</small>
+                    </div>
+                    <div class="ms-auto">
+                        <small class="text-muted" style="font-size: 1rem;">Valoración promedio de tus clientes</small>
                     </div>
                 </div>
             </div>
+        </div>
+    </div>
 
-            <div class="mt-4">
-                <a th:href="@{/rutinas}" class="btn btn-primary">Ver Rutinas</a>
-                <a th:href="@{/ejercicios}" class="btn btn-secondary">Ver Ejercicios</a>
+    <!-- Solicitudes Pendientes -->
+    <div class="row mb-4" th:if="${solicitudesPendientes > 0}">
+        <div class="col-12">
+            <h4 class="section-title">
+                <i class="fas fa-bell"></i> Solicitudes Pendientes
+            </h4>
+            
+            <div th:each="solicitud : ${solicitudesInfo}" class="solicitud-card">
+                <div class="solicitud-header">
+                    <img th:src="${solicitud.clienteFoto}" alt="Cliente" class="solicitud-foto">
+                    <div class="solicitud-info flex-grow-1">
+                        <h6 th:text="${solicitud.clienteNombre}">Cliente</h6>
+                        <small>
+                            <i class="fas fa-calendar me-1"></i>
+                            Solicitud: <span th:text="${#temporals.format(solicitud.suscripcion.fechaInicio, 'dd/MM/yyyy')}">--</span>
+                        </small>
+                    </div>
+                    <div>
+                        <span class="badge text-white" style="background-color: #0284c7;">
+                            <i class="fas fa-clock me-1"></i>Pendiente
+                        </span>
+                    </div>
+                </div>
+                <div class="d-flex gap-2 mt-3">
+                    <a th:href="@{/entrenador/suscripciones}" class="btn btn-action flex-grow-1" style="background-color: #0ea5e9; color: white;">
+                        <i class="fas fa-check-circle me-1"></i>Revisar Solicitudes
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Estado cuando no hay solicitudes -->
+    <div class="row mb-4" th:unless="${solicitudesPendientes > 0}">
+        <div class="col-12">
+            <h4 class="section-title">
+                <i class="fas fa-bell"></i> Solicitudes Pendientes
+            </h4>
+            <div class="empty-state">
+                <i class="fas fa-check-circle"></i>
+                <h5 style="color: #0c4a6e;">No hay solicitudes pendientes</h5>
+                <p class="mb-0">Todas las solicitudes han sido revisadas</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Información adicional -->
+    <div class="row mt-4">
+        <div class="col-md-6 mb-3">
+            <div class="stats-card" style="border-left-color: #0ea5e9;">
+                <h5 class="mb-3" style="color: #0c4a6e;">
+                    <i class="fas fa-info-circle me-2" style="color: #0ea5e9;"></i>Gestión de Clientes
+                </h5>
+                <p class="mb-2" style="font-size: 1rem;">
+                    <i class="fas fa-check me-2" style="color: #0c4a6e;"></i>Revisa las solicitudes de nuevos clientes
+                </p>
+                <p class="mb-2" style="font-size: 1rem;">
+                    <i class="fas fa-check me-2" style="color: #0c4a6e;"></i>Asigna rutinas personalizadas
+                </p>
+                <p class="mb-2" style="font-size: 1rem;">
+                    <i class="fas fa-check me-2" style="color: #0c4a6e;"></i>Monitorea el progreso de cada cliente
+                </p>
+                <p class="mb-0" style="font-size: 1rem;">
+                    <i class="fas fa-check me-2" style="color: #0c4a6e;"></i>Visualiza diagnósticos y métricas
+                </p>
+            </div>
+        </div>
+
+        <div class="col-md-6 mb-3">
+            <div class="stats-card" style="border-left-color: #0c4a6e;">
+                <h5 class="mb-3" style="color: #0c4a6e;">
+                    <i class="fas fa-lightbulb me-2" style="color: #0ea5e9;"></i>Consejos
+                </h5>
+                <p class="mb-2" style="font-size: 1rem;">
+                    <i class="fas fa-arrow-right me-2" style="color: #0ea5e9;"></i>Mantén actualizados los diagnósticos de tus clientes
+                </p>
+                <p class="mb-2" style="font-size: 1rem;">
+                    <i class="fas fa-arrow-right me-2" style="color: #0ea5e9;"></i>Crea rutinas variadas y efectivas
+                </p>
+                <p class="mb-2" style="font-size: 1rem;">
+                    <i class="fas fa-arrow-right me-2" style="color: #0ea5e9;"></i>Responde rápido a las solicitudes pendientes
+                </p>
+                <p class="mb-0" style="font-size: 1rem;">
+                    <i class="fas fa-arrow-right me-2" style="color: #0ea5e9;"></i>Mantén comunicación constante con tus clientes
+                </p>
             </div>
         </div>
     </div>
