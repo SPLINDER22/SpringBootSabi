@@ -46,4 +46,8 @@ public class Entrenador extends Usuario {
 
     @OneToMany(mappedBy = "entrenador", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Calificacion> calificaciones;
+
+    // Nueva relación: comentarios (reseñas de cliente tras finalizar rutina)
+    @OneToMany(mappedBy = "entrenador", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Comentario> comentarios;
 }
