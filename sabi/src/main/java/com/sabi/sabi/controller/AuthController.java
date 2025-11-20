@@ -1,25 +1,29 @@
 package com.sabi.sabi.controller;
 
-import com.sabi.sabi.dto.UsuarioDTO;
-import com.sabi.sabi.entity.Usuario;
-import com.sabi.sabi.entity.enums.Rol;
-import com.sabi.sabi.exception.EmailYaExisteException;
-import com.sabi.sabi.service.UsuarioService;
-import com.sabi.sabi.service.EmailService;
-import lombok.RequiredArgsConstructor;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
+import com.sabi.sabi.dto.UsuarioDTO;
+import com.sabi.sabi.entity.Usuario;
+import com.sabi.sabi.entity.enums.Rol;
+import com.sabi.sabi.exception.EmailYaExisteException;
+import com.sabi.sabi.service.EmailService;
+import com.sabi.sabi.service.UsuarioService;
 
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.RequiredArgsConstructor;
 
 @Controller
 @RequestMapping("/auth")
@@ -254,7 +258,7 @@ public class AuthController {
             @RequestParam String especialidades,
             @RequestParam Double precioMinimo,
             @RequestParam Double precioMaximo,
-            @RequestParam Integer aniosExperiencia,
+            @RequestParam Integer anioInicioExperiencia,
             @RequestParam(required = false) org.springframework.web.multipart.MultipartFile[] certificaciones,
             @AuthenticationPrincipal UserDetails userDetails,
             Model model
@@ -292,6 +296,10 @@ public class AuthController {
                 }
                 entrenador.setPrecioMinimo(precioMinimo);
                 entrenador.setPrecioMaximo(precioMaximo);
+                
+                // Calcular años de experiencia a partir del año de inicio
+                int anioActual = java.time.Year.now().getValue();
+                int aniosExperiencia = anioActual - anioInicioExperiencia;
                 entrenador.setAniosExperiencia(aniosExperiencia);
 
                 // Procesar archivos PDF de certificaciones

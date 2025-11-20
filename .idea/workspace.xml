@@ -4,18 +4,12 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="f5d52025-a0fc-48c5-8cc8-d55f70bed372" name="Changes" comment="Correciones JIRA">
+    <list default="true" id="f5d52025-a0fc-48c5-8cc8-d55f70bed372" name="Changes" comment="Update banner">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sabi/src/main/java/com/sabi/sabi/controller/ClienteController.java" beforeDir="false" afterPath="$PROJECT_DIR$/sabi/src/main/java/com/sabi/sabi/controller/ClienteController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sabi/src/main/resources/static/css/dashboard-cliente.css" beforeDir="false" afterPath="$PROJECT_DIR$/sabi/src/main/resources/static/css/dashboard-cliente.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sabi/src/main/resources/static/css/diagnostico-form.css" beforeDir="false" afterPath="$PROJECT_DIR$/sabi/src/main/resources/static/css/diagnostico-form.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sabi/src/main/resources/static/css/registro.css" beforeDir="false" afterPath="$PROJECT_DIR$/sabi/src/main/resources/static/css/registro.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sabi/src/main/resources/static/js/diagnostico-form.js" beforeDir="false" afterPath="$PROJECT_DIR$/sabi/src/main/resources/static/js/diagnostico-form.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sabi/src/main/resources/templates/auth/registro.html" beforeDir="false" afterPath="$PROJECT_DIR$/sabi/src/main/resources/templates/auth/registro.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sabi/src/main/resources/templates/cliente/dashboard.html" beforeDir="false" afterPath="$PROJECT_DIR$/sabi/src/main/resources/templates/cliente/dashboard.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sabi/src/main/resources/templates/cliente/diagnostico-form.html" beforeDir="false" afterPath="$PROJECT_DIR$/sabi/src/main/resources/templates/cliente/diagnostico-form.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sabi/src/main/resources/templates/cliente/diagnostico-historial.html" beforeDir="false" afterPath="$PROJECT_DIR$/sabi/src/main/resources/templates/cliente/diagnostico-historial.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sabi/src/main/resources/templates/entrenador/ver-historial-diagnosticos.html" beforeDir="false" afterPath="$PROJECT_DIR$/sabi/src/main/resources/templates/entrenador/ver-historial-diagnosticos.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sabi/src/main/java/com/sabi/sabi/controller/AuthController.java" beforeDir="false" afterPath="$PROJECT_DIR$/sabi/src/main/java/com/sabi/sabi/controller/AuthController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sabi/src/main/java/com/sabi/sabi/controller/PerfilController.java" beforeDir="false" afterPath="$PROJECT_DIR$/sabi/src/main/java/com/sabi/sabi/controller/PerfilController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sabi/src/main/resources/templates/auth/completar-perfil-entrenador.html" beforeDir="false" afterPath="$PROJECT_DIR$/sabi/src/main/resources/templates/auth/completar-perfil-entrenador.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sabi/src/main/resources/templates/perfil.html" beforeDir="false" afterPath="$PROJECT_DIR$/sabi/src/main/resources/templates/perfil.html" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -67,11 +61,29 @@
       <option name="presentableId" value="Default" />
       <updated>1763595477295</updated>
     </task>
+    <task id="LOCAL-00001" summary="Correciones JIRA">
+      <option name="closed" value="true" />
+      <created>1763641996167</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1763641996167</updated>
+    </task>
+    <task id="LOCAL-00002" summary="Update banner">
+      <option name="closed" value="true" />
+      <created>1763642434091</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1763642434091</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="Correciones JIRA" />
-    <option name="LAST_COMMIT_MESSAGE" value="Correciones JIRA" />
+    <MESSAGE value="Update banner" />
+    <option name="LAST_COMMIT_MESSAGE" value="Update banner" />
   </component>
   <component name="github-copilot-workspace">
     <instructionFileLocations>

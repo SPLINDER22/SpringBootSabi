@@ -107,15 +107,15 @@
 
         /* Sección especial para entrenador */
         .entrenador-info-section {
-            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+            background: linear-gradient(135deg, #e0f2fe 0%, #bae6fd 100%);
             border-radius: 16px;
             padding: 2rem;
             margin-top: 2rem;
-            border: 3px solid #f59e0b;
+            border: 3px solid #0ea5e9;
         }
 
         .entrenador-info-section h4 {
-            color: #92400e;
+            color: #0c4a6e;
             margin-bottom: 1.5rem;
             font-size: 1.4rem;
             display: flex;
@@ -139,7 +139,7 @@
             background: white;
             padding: 1.25rem;
             border-radius: 12px;
-            border-left: 4px solid #f59e0b;
+            border-left: 4px solid #0ea5e9;
         }
 
         .readonly-badge {
@@ -336,34 +336,46 @@
                 <p th:text="${objetivo}" style="background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%); padding: 1.5rem; border-radius: 12px; color: #1e40af; border-left: 4px solid #3b82f6; font-weight: 600; line-height: 1.6;"></p>
             </div>
 
-            <!-- Sección Profesional del Entrenador (NO EDITABLE) -->
+            <!-- Sección Profesional del Entrenador -->
             <div class="entrenador-info-section" th:if="${usuario.rol == T(com.sabi.sabi.entity.enums.Rol).ENTRENADOR}">
                 <h4>
                     <i class="fas fa-dumbbell"></i> Información Profesional
-                    <span class="readonly-badge">
-                        <i class="fas fa-lock"></i> NO EDITABLE
-                    </span>
                 </h4>
-                <p style="color: #78350f; margin-bottom: 1.5rem; font-size: 0.95rem;">
+                <p style="color: #0c4a6e; margin-bottom: 1.5rem; font-size: 0.95rem;">
                     <i class="fas fa-info-circle"></i>
-                    <strong>Esta información es visible para tus clientes</strong> y no puede ser modificada después del registro inicial.
+                    <strong>Esta información es visible para tus clientes.</strong> Puedes editar tus especialidades más abajo.
                 </p>
 
                 <div class="entrenador-grid">
-                    <!-- Especialidad -->
-                    <div class="entrenador-item" th:if="${especialidad != null}">
-                        <div class="info-label" style="color: #92400e;">
-                            <i class="fas fa-award"></i> ESPECIALIDAD
+                    <!-- Especialidades -->
+                    <div class="entrenador-item" style="grid-column: 1 / -1;" th:if="${especialidades != null && !especialidades.isEmpty()}">
+                        <div class="info-label" style="color: #0c4a6e;">
+                            <i class="fas fa-award"></i> ESPECIALIDADES
                         </div>
-                        <div class="info-value" style="color: #78350f;" th:text="${especialidad}">-</div>
+                        <div style="display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.75rem;">
+                            <span th:each="esp : ${especialidades}" 
+                                  class="especialidad-badge-display"
+                                  style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                                         color: white;
+                                         padding: 0.5rem 1rem;
+                                         border-radius: 25px;
+                                         font-weight: 600;
+                                         font-size: 0.9rem;
+                                         display: inline-flex;
+                                         align-items: center;
+                                         gap: 0.5rem;">
+                                <i class="fas fa-check-circle"></i>
+                                <span th:text="${esp}"></span>
+                            </span>
+                        </div>
                     </div>
 
                     <!-- Años de Experiencia -->
                     <div class="entrenador-item" th:if="${aniosExperiencia != null}">
-                        <div class="info-label" style="color: #92400e;">
+                        <div class="info-label" style="color: #0c4a6e;">
                             <i class="fas fa-calendar-check"></i> AÑOS DE EXPERIENCIA
                         </div>
-                        <div class="info-value" style="color: #78350f;">
+                        <div class="info-value" style="color: #0c4a6e;">
                             <span th:text="${aniosExperiencia}">0</span>
                             <span th:text="${aniosExperiencia == 1 ? 'año' : 'años'}">años</span>
                         </div>
@@ -371,25 +383,19 @@
 
                     <!-- Certificaciones -->
                     <div class="entrenador-item" style="grid-column: 1 / -1;" th:if="${certificaciones != null && !certificaciones.isEmpty()}">
-                        <div class="info-label" style="color: #92400e;">
+                        <div class="info-label" style="color: #0c4a6e;">
                             <i class="fas fa-certificate"></i> CERTIFICACIONES
                         </div>
                         <div class="certificaciones-list">
                             <div class="certificacion-item" th:each="cert : ${certificaciones}">
                                 <i class="fas fa-file-pdf"></i>
-                                <a th:href="${cert}" target="_blank" style="color: #2563eb; font-weight: 600; text-decoration: none;">
-                                    Ver Certificación
+                                <a th:href="${cert}" target="_blank" th:download="${#strings.substringAfterLast(cert, '/')}" 
+                                   style="color: #2563eb; font-weight: 600; text-decoration: none;">
+                                    <span th:text="${#strings.substringAfterLast(cert, '/')}">Certificación</span>
                                 </a>
                             </div>
                         </div>
                     </div>
-                </div>
-
-                <div style="margin-top: 1.5rem; padding: 1rem; background: white; border-radius: 8px; border-left: 4px solid #dc2626;">
-                    <p style="margin: 0; color: #7c2d12; font-size: 0.9rem;">
-                        <i class="fas fa-exclamation-triangle"></i>
-                        <strong>Nota:</strong> Si necesitas actualizar esta información, contacta al administrador del sistema.
-                    </p>
                 </div>
             </div>
         </div>
@@ -438,12 +444,52 @@
                               th:text="${objetivo}"></textarea>
                 </div>
 
-                <!-- Mensaje para entrenadores sobre especialidad -->
+                <!-- Campo especialidades para entrenadores -->
+                <div class="form-group" th:if="${usuario.rol == T(com.sabi.sabi.entity.enums.Rol).ENTRENADOR}">
+                    <label for="especialidades">
+                        <i class="fas fa-dumbbell"></i> Especialidades
+                    </label>
+                    <small style="color: #64748b; display: block; margin-bottom: 0.75rem; font-size: 0.9rem;">
+                        ✨ Selecciona tus especialidades. Puedes agregar varias.
+                    </small>
+
+                    <!-- Contenedor de especialidades seleccionadas -->
+                    <div id="especialidadesContainer" style="margin-bottom: 1rem; min-height: 50px; padding: 1rem; background: #f8f9fa; border-radius: 0.75rem; border: 2px dashed #e2e8f0;">
+                        <!-- Aquí se agregarán las especialidades dinámicamente -->
+                    </div>
+
+                    <!-- Select para agregar especialidad -->
+                    <div style="display: flex; gap: 0.75rem;">
+                        <select class="form-control" id="especialidadSelect" style="flex: 1;">
+                            <option value="">Selecciona una especialidad...</option>
+                            <option value="Fuerza y Acondicionamiento">Fuerza y Acondicionamiento</option>
+                            <option value="Pérdida de Peso">Pérdida de Peso</option>
+                            <option value="Ganancia Muscular">Ganancia Muscular</option>
+                            <option value="Yoga">Yoga</option>
+                            <option value="Pilates">Pilates</option>
+                            <option value="CrossFit">CrossFit</option>
+                            <option value="Entrenamiento Funcional">Entrenamiento Funcional</option>
+                            <option value="Entrenamiento de Alta Intensidad (HIIT)">Entrenamiento de Alta Intensidad (HIIT)</option>
+                            <option value="Preparación Física Deportiva">Preparación Física Deportiva</option>
+                            <option value="Rehabilitación y Recuperación">Rehabilitación y Recuperación</option>
+                            <option value="Entrenamiento para Personas Mayores">Entrenamiento para Personas Mayores</option>
+                            <option value="Nutrición y Coaching">Nutrición y Coaching</option>
+                        </select>
+                        <button type="button" class="btn btn-primary" onclick="agregarEspecialidad()" style="white-space: nowrap; padding: 0.875rem 1.5rem;">
+                            <i class="fas fa-plus"></i> Agregar
+                        </button>
+                    </div>
+
+                    <!-- Input hidden que contendrá las especialidades separadas por comas -->
+                    <input type="hidden" id="especialidades" name="especialidades">
+                </div>
+
+                <!-- Nota sobre experiencia y certificaciones para entrenadores -->
                 <div th:if="${usuario.rol == T(com.sabi.sabi.entity.enums.Rol).ENTRENADOR}"
-                     style="background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%); padding: 1.25rem; border-radius: 12px; margin-bottom: 1.5rem; border-left: 4px solid #f59e0b;">
-                    <p style="margin: 0; color: #78350f; font-weight: 600;">
+                     style="background: linear-gradient(135deg, #e0f2fe 0%, #bae6fd 100%); padding: 1.25rem; border-radius: 12px; margin-bottom: 1.5rem; border-left: 4px solid #0ea5e9;">
+                    <p style="margin: 0; color: #0c4a6e; font-weight: 600;">
                         <i class="fas fa-lock"></i>
-                        <strong>Nota:</strong> Tu especialidad, años de experiencia y certificaciones no pueden ser editadas desde aquí.
+                        <strong>Nota:</strong> Tus años de experiencia y certificaciones no pueden ser editadas desde aquí.
                         Esta información fue establecida durante tu registro y es visible para tus clientes.
                     </p>
                 </div>
@@ -455,7 +501,117 @@
         </div>
     </div>
 
-    <script>
+    <script th:inline="javascript">
+        // Array para almacenar las especialidades seleccionadas
+        let especialidadesSeleccionadas = [];
+
+        // Inicializar especialidades si existen
+        document.addEventListener('DOMContentLoaded', function() {
+            const hiddenInput = document.getElementById('especialidades');
+            if (hiddenInput) {
+                // Cargar especialidades existentes desde Thymeleaf
+                const especialidadesExistentes = [[${especialidades}]];
+                if (especialidadesExistentes && Array.isArray(especialidadesExistentes) && especialidadesExistentes.length > 0) {
+                    especialidadesSeleccionadas = especialidadesExistentes.filter(e => e && e.trim());
+                    actualizarVistaEspecialidades();
+                }
+            }
+        });
+
+        // Función para agregar especialidad
+        function agregarEspecialidad() {
+            const select = document.getElementById('especialidadSelect');
+            if (!select) return;
+            
+            const especialidad = select.value;
+
+            if (!especialidad) {
+                alert('Por favor, selecciona una especialidad');
+                return;
+            }
+
+            // Verificar si ya está agregada
+            if (especialidadesSeleccionadas.includes(especialidad)) {
+                alert('Esta especialidad ya está agregada');
+                return;
+            }
+
+            // Agregar al array
+            especialidadesSeleccionadas.push(especialidad);
+
+            // Actualizar la vista
+            actualizarVistaEspecialidades();
+
+            // Limpiar el select
+            select.value = '';
+        }
+
+        // Función para eliminar especialidad
+        function eliminarEspecialidad(especialidad) {
+            especialidadesSeleccionadas = especialidadesSeleccionadas.filter(e => e !== especialidad);
+            actualizarVistaEspecialidades();
+        }
+
+        // Función para actualizar la vista de especialidades
+        function actualizarVistaEspecialidades() {
+            const container = document.getElementById('especialidadesContainer');
+            const hiddenInput = document.getElementById('especialidades');
+
+            if (!container || !hiddenInput) return;
+
+            // Actualizar el input hidden con las especialidades separadas por comas
+            hiddenInput.value = especialidadesSeleccionadas.join(', ');
+
+            // Limpiar el contenedor
+            container.innerHTML = '';
+
+            // Actualizar estilo del contenedor
+            if (especialidadesSeleccionadas.length > 0) {
+                container.style.borderStyle = 'solid';
+                container.style.borderColor = '#cbd5e1';
+                container.style.background = '#ffffff';
+            } else {
+                container.style.borderStyle = 'dashed';
+                container.style.borderColor = '#e2e8f0';
+                container.style.background = '#f8f9fa';
+            }
+
+            // Si no hay especialidades, mostrar mensaje
+            if (especialidadesSeleccionadas.length === 0) {
+                container.innerHTML = '<p style="text-align: center; color: #94a3b8; margin: 0; font-size: 0.9rem;">No hay especialidades seleccionadas</p>';
+                return;
+            }
+
+            // Crear badges para cada especialidad
+            especialidadesSeleccionadas.forEach(esp => {
+                const badge = document.createElement('div');
+                badge.className = 'especialidad-badge';
+                badge.style.cssText = `
+                    display: inline-flex;
+                    align-items: center;
+                    gap: 0.5rem;
+                    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                    color: white;
+                    padding: 0.75rem 1.25rem;
+                    border-radius: 25px;
+                    margin: 0.25rem;
+                    font-weight: 600;
+                    box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+                    transition: all 0.3s;
+                `;
+                badge.innerHTML = `
+                    <i class="fas fa-dumbbell"></i>
+                    <span>${esp}</span>
+                    <i class="fas fa-times-circle" 
+                       onclick="eliminarEspecialidad('${esp}')" 
+                       style="cursor: pointer; margin-left: 0.5rem; transition: all 0.2s;"
+                       onmouseover="this.style.color='#fecaca'"
+                       onmouseout="this.style.color='white'"></i>
+                `;
+                container.appendChild(badge);
+            });
+        }
+
         function validarYSubirImagen(input) {
             const file = input.files[0];
 
