@@ -11,8 +11,8 @@
 <body>
     <header class="header">
         <div class="container">
-            <div style="display:flex;align-items:baseline;gap:.6rem;">
-                <h1 class="logo">SABI</h1>
+            <div class="logo-container">
+                <img th:src="@{/img/logoLargo.png}" alt="SABI" class="logo-img">
                 <small class="logo-sub">Salud y Bienestar</small>
             </div>
             <nav>
@@ -27,43 +27,113 @@
     <main>
         <!-- Hero nuevo: encabezado visual con CTA -->
         <section class="hero">
-            <div class="hero-inner container">
-                <div class="hero-text">
-                    <h2>Transforma tu salud con <span class="brand">SABI</span></h2>
-                    <p class="hero-sub">Rutinas personalizadas, diagnósticos claros y entrenadores que te acompañan en cada paso.</p>
-                    <div class="hero-ctas">
-                        <a class="btn btn-primary" href="/auth/registro">Comenzar ahora</a>
-                        <a class="btn btn-ghost" href="/auth/login">Ya tengo cuenta</a>
+            <div class="hero-content-full">
+                <div class="hero-text-centered">
+                    <h1 class="hero-title">SABI - Tu Plataforma Digital de Entrenamiento</h1>
+                    <p class="hero-subtitle">🎯 <strong>Conecta con entrenadores certificados</strong> • 📋 <strong>Recibe rutinas personalizadas</strong> • 📊 <strong>Haz seguimiento de tu progreso</strong></p>
+                    <p class="hero-description">La primera plataforma que digitaliza completamente tu experiencia de entrenamiento: desde diagnósticos personalizados hasta rutinas adaptadas a tus objetivos.</p>
+                    
+                    <div class="hero-buttons-center">
+                        <a class="btn btn-register-xl" href="/auth/registro">
+                            <div class="btn-content-xl">
+                                <span class="btn-icon-xl">🚀</span>
+                                <div class="btn-text-group">
+                                    <span class="btn-main-xl">Comenzar Gratis</span>
+                                    <span class="btn-sub-xl">Quiero comenzar con SABI</span>
+                                </div>
+                            </div>
+                        </a>
+                        
+                        <div class="buttons-divider">
+                            <span class="divider-text">o</span>
+                        </div>
+                        
+                        <a class="btn btn-login-xl" href="/auth/login">
+                            <div class="btn-content-xl">
+                                <span class="btn-icon-xl">🔑</span>
+                                <div class="btn-text-group">
+                                    <span class="btn-main-xl">Iniciar Sesión</span>
+                                    <span class="btn-sub-xl">Ya tengo mi cuenta SABI</span>
+                                </div>
+                            </div>
+                        </a>
                     </div>
-                </div>
-                <div class="hero-visual" aria-hidden="true">
-                    <!-- contenedor Lottie (se intentará cargar si hay conexión) -->
-                    <div class="lottie-player" data-lottie-url="https://assets2.lottiefiles.com/packages/lf20_Stt1R7.json" aria-hidden="true"></div>
-                    <!-- SVG decorativo inline: formas y líneas animadas (ligero y editable) -->
-                    <svg class="hero-fallback-svg" width="100%" height="100%" viewBox="0 0 600 360" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                        <defs>
-                            <linearGradient id="g1" x1="0" x2="1">
-                                <stop offset="0%" stop-color="#2a7ae4" stop-opacity="0.95"/>
-                                <stop offset="100%" stop-color="#43a047" stop-opacity="0.95"/>
-                            </linearGradient>
-                        </defs>
-                        <g class="hero-svg-group" transform="translate(0,0)">
-                            <circle class="blob blob1" cx="480" cy="60" r="90" fill="url(#g1)" opacity="0.14" />
-                            <circle class="blob blob2" cx="120" cy="260" r="100" fill="#ffd166" opacity="0.10" />
-                            <g class="figure" transform="translate(160,60)">
-                                <circle cx="100" cy="70" r="46" fill="#ffffff" opacity="0.95" />
-                                <rect x="60" y="120" width="140" height="90" rx="18" fill="#ffffff" opacity="0.9" />
-                                <path d="M40 220 C 120 180, 220 180, 300 220" stroke="#cfe9ff" stroke-width="6" fill="none" stroke-linecap="round" opacity="0.9"/>
-                            </g>
-                            <g class="pulse-rings" transform="translate(360,200)">
-                                <circle class="ring r1" r="8" cx="0" cy="0" fill="#2a7ae4" opacity="0.14" />
-                                <circle class="ring r2" r="28" cx="0" cy="0" fill="none" stroke="#2a7ae4" stroke-width="2" opacity="0.08" />
-                            </g>
-                        </g>
-                    </svg>
+                    
+                    <div class="hero-trust-indicators">
+                        <div class="trust-item">
+                            <span class="trust-icon">✅</span>
+                            <span class="trust-text">100% Gratis</span>
+                        </div>
+                        <div class="trust-item">
+                            <span class="trust-icon">🔒</span>
+                            <span class="trust-text">Datos Seguros</span>
+                        </div>
+                        <div class="trust-item">
+                            <span class="trust-icon">⚡</span>
+                            <span class="trust-text">Setup Rápido</span>
+                        </div>
+                    </div>
                 </div>
             </div>
         </section>
+
+        <!-- Separador elegante -->
+        <div class="section-divider">
+            <div class="divider-line"></div>
+            <div class="divider-icon">✨</div>
+            <div class="divider-line"></div>
+        </div>
+
+        <!-- Nueva sección de características principales -->
+        <section class="features-section">
+            <div class="container">
+                <h2 class="features-title">¿Por qué elegir SABI?</h2>
+                <div class="features-grid">
+                    <div class="feature-card">
+                        <div class="feature-icon">🏋️‍♀️</div>
+                        <h3>Entrenadores Certificados</h3>
+                        <p>Conecta directamente con profesionales verificados que diseñan planes específicos para ti</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">📊</div>
+                        <h3>Diagnósticos Inteligentes</h3>
+                        <p>Análisis completo de tu condición física y hábitos para crear el plan perfecto</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">📱</div>
+                        <h3>Seguimiento Digital</h3>
+                        <p>Registra tu progreso, ve tus mejoras y recibe ajustes automáticos en tiempo real</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">⚡</div>
+                        <h3>Todo en Una Plataforma</h3>
+                        <p>Sin apps múltiples ni complicaciones - todo tu entrenamiento centralizado aquí</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">💰</div>
+                        <h3>Precios Transparentes</h3>
+                        <p>Sin costos ocultos ni suscripciones sorpresa - sabes exactamente qué pagas</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">🎯</div>
+                        <h3>Resultados Comprobados</h3>
+                        <p>Metodologías basadas en ciencia y testimonios reales de transformaciones exitosas</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Separador temático -->
+        <div class="section-divider theme-divider">
+            <div class="divider-content">
+                <span class="divider-text">¿Quieres conocer más sobre nosotros?</span>
+                <div class="divider-decoration">
+                    <div class="decoration-dot"></div>
+                    <div class="decoration-dot"></div>
+                    <div class="decoration-dot"></div>
+                </div>
+            </div>
+        </div>
 
         <section id="quienes-somos" class="section">
             <div class="container">
@@ -80,6 +150,103 @@
                 </ul>
             </div>
         </section>
+        
+        <!-- Separador de proceso -->
+        <div class="section-divider process-divider">
+            <div class="process-badge">
+                <span class="badge-text">🚀 ¿Cómo empezar?</span>
+            </div>
+        </div>
+        
+        <!-- Sección de demo/preview del proceso -->
+        <section class="demo-section section">
+            <div class="container">
+                <h2>¿Cómo funciona SABI?</h2>
+                <p class="demo-intro">En solo 3 pasos simples, comenzarás tu transformación:</p>
+                <div class="demo-steps">
+                    <div class="demo-step">
+                        <div class="step-number">1</div>
+                        <div class="step-visual">📋</div>
+                        <h3>Diagnóstico</h3>
+                        <p>Completa un formulario inteligente sobre tu condición física, objetivos y disponibilidad</p>
+                    </div>
+                    <div class="demo-arrow">→</div>
+                    <div class="demo-step">
+                        <div class="step-number">2</div>
+                        <div class="step-visual">🤝</div>
+                        <h3>Conexión</h3>
+                        <p>Te conectamos con el entrenador perfecto según tu perfil y ubicación</p>
+                    </div>
+                    <div class="demo-arrow">→</div>
+                    <div class="demo-step">
+                        <div class="step-number">3</div>
+                        <div class="step-visual">🚀</div>
+                        <h3>Entrenamiento</h3>
+                        <p>Recibe tu rutina personalizada y comienza a entrenar con seguimiento en tiempo real</p>
+                    </div>
+                </div>
+                <div class="demo-preview">
+                    <h3>Vista previa real de la plataforma:</h3>
+                    <p class="preview-subtitle">Así se ve realmente SABI cuando lo usas</p>
+                    <div class="dashboard-showcase">
+                        <div class="dashboard-card client-dashboard">
+                            <div class="dashboard-header">
+                                <span class="dashboard-badge client-badge">👤 Para Clientes</span>
+                                <h4>Dashboard Cliente</h4>
+                            </div>
+                            <div class="dashboard-image">
+                                <img th:src="@{/img/dashfoto/DashCliente.png}" alt="Dashboard Cliente SABI" class="dash-screenshot">
+                                <div class="image-overlay">
+                                    <div class="overlay-content">
+                                        <span class="overlay-text">✨ Dashboard Real</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="dashboard-features">
+                                <div class="feature-tag">📊 Progreso en tiempo real</div>
+                                <div class="feature-tag">💪 Rutinas personalizadas</div>
+                                <div class="feature-tag">📈 Estadísticas detalladas</div>
+                            </div>
+                        </div>
+                        
+                        <div class="dashboard-card trainer-dashboard">
+                            <div class="dashboard-header">
+                                <span class="dashboard-badge trainer-badge">🏋️‍♀️ Para Entrenadores</span>
+                                <h4>Dashboard Entrenador</h4>
+                            </div>
+                            <div class="dashboard-image">
+                                <img th:src="@{/img/dashfoto/DashEntrenador.png}" alt="Dashboard Entrenador SABI" class="dash-screenshot">
+                                <div class="image-overlay">
+                                    <div class="overlay-content">
+                                        <span class="overlay-text">✨ Dashboard Real</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="dashboard-features">
+                                <div class="feature-tag">👥 Gestión de clientes</div>
+                                <div class="feature-tag">📋 Creación de rutinas</div>
+                                <div class="feature-tag">📊 Analytics completos</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="preview-cta">
+                        <p>¿Te gusta lo que ves? <strong>Pruébalo gratis ahora</strong></p>
+                        <a href="/auth/registro" class="preview-btn">Ver mi dashboard 🚀</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Separador de casos de uso -->
+        <div class="section-divider cases-divider">
+            <div class="divider-line gradient-line"></div>
+            <div class="divider-badge">
+                <span class="badge-icon">🎯</span>
+                <span class="badge-text">Encuentra tu camino</span>
+            </div>
+            <div class="divider-line gradient-line"></div>
+        </div>
+
         <section id="objetivo" class="section section-bg">
             <div class="container">
                 <h2>¿Qué buscamos solucionar?</h2>
@@ -92,6 +259,56 @@
                 </ul>
             </div>
         </section>
+        
+        <!-- Sección de casos de uso -->
+        <section class="use-cases-section section-bg">
+            <div class="container">
+                <h2>¿Eres Cliente o Entrenador?</h2>
+                <div class="cases-grid">
+                    <div class="case-card client-case">
+                        <div class="case-header">
+                            <div class="case-icon">👤</div>
+                            <h3>Para Clientes</h3>
+                        </div>
+                        <div class="case-scenario">
+                            <h4>"Quiero estar en forma pero no sé por dónde empezar"</h4>
+                            <ul class="case-benefits">
+                                <li>✅ Diagnóstico personalizado en minutos</li>
+                                <li>✅ Rutina diseñada específicamente para ti</li>
+                                <li>✅ Entrenador asignado para dudas y motivación</li>
+                                <li>✅ Progreso visible semana a semana</li>
+                            </ul>
+                            <a href="/auth/registro" class="case-cta">Empezar mi transformación</a>
+                        </div>
+                    </div>
+                    <div class="case-card trainer-case">
+                        <div class="case-header">
+                            <div class="case-icon">💪</div>
+                            <h3>Para Entrenadores</h3>
+                        </div>
+                        <div class="case-scenario">
+                            <h4>"Quiero escalar mi negocio y tener más clientes"</h4>
+                            <ul class="case-benefits">
+                                <li>✅ Herramientas para crear rutinas rápidamente</li>
+                                <li>✅ Base de clientes que buscan entrenadores</li>
+                                <li>✅ Seguimiento automático del progreso</li>
+                                <li>✅ Comunicación centralizada con todos tus clientes</li>
+                            </ul>
+                            <a href="/auth/registro" class="case-cta trainer-cta">Unirme como entrenador</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Separador final -->
+        <div class="section-divider team-divider">
+            <div class="team-intro">
+                <h3>👥 Conoce al equipo detrás de SABI</h3>
+                <p>Los desarrolladores que hacen posible tu transformación</p>
+            </div>
+        </div>
+        
         <section id="equipo" class="section">
             <div class="container">
                 <h2>Scrum Team</h2>
@@ -110,9 +327,7 @@
             <p>&copy; 2025 SABI. Todos los derechos reservados.</p>
         </div>
     </footer>
-    <!-- Script Lottie (CDN) -->
-    <script src="https://unpkg.com/lottie-web@5.10.1/build/player/lottie.min.js"></script>
-    <!-- Script específico para hero: parallax, lottie y reveal -->
+    <!-- Script específico para hero: parallax y reveal -->
     <script th:src="@{/js/hero.js}"></script>
     <script th:src="@{/js/index.js}"></script>
 </body>

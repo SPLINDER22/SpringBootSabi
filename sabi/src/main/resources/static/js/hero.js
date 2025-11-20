@@ -1,46 +1,6 @@
-// Pequeño script para animar el hero: parallax ligero, interacción y reveal
+// Script para animar el hero: parallax ligero, interacción y reveal
 (function(){
     'use strict';
-
-    // Lottie init: si la librería está disponible, intentamos cargar la animación definida en data-lottie-url
-    function initLottie(){
-        try{
-            const player = document.querySelector('.lottie-player');
-            if(!player) return Promise.resolve(false);
-            const url = player.getAttribute('data-lottie-url');
-            if(!url || !window.lottie) return Promise.resolve(false);
-
-            // crear un contenedor para la animación
-            const animContainer = document.createElement('div');
-            animContainer.style.width = '100%';
-            animContainer.style.height = '100%';
-            player.appendChild(animContainer);
-
-            return new Promise((resolve, reject)=>{
-                try{
-                    const anim = window.lottie.loadAnimation({
-                        container: animContainer,
-                        renderer: 'svg',
-                        loop: true,
-                        autoplay: true,
-                        path: url
-                    });
-                    anim.addEventListener('DOMLoaded', ()=>{
-                        // esconder el SVG fallback
-                        const svg = document.querySelector('.hero-fallback-svg');
-                        if(svg) svg.style.display = 'none';
-                        resolve(true);
-                    });
-                    // fallback: si error
-                    setTimeout(()=>{ resolve(true); }, 1200);
-                }catch(e){
-                    resolve(false);
-                }
-            });
-        }catch(e){
-            return Promise.resolve(false);
-        }
-    }
 
     // Detectar si el dispositivo es táctil o pointer coarse
     function isTouchDevice(){
@@ -128,11 +88,6 @@
         initParallax();
         initPulseRings();
         initReveal();
-        // intentar Lottie (no bloqueante)
-        initLottie().then((ok)=>{
-            // si no OK, dejamos SVG fallback visible
-            console.debug('Lottie loaded:', ok);
-        });
     }
 
     if(document.readyState === 'loading'){
