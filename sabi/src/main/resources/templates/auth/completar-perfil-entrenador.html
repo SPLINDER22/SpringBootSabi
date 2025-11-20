@@ -288,19 +288,19 @@
             </div>
 
             <div class="form-group">
-                <label for="aniosExperiencia">
-                    <i class="fas fa-calendar-alt"></i> Años de Experiencia *
+                <label for="anioInicioExperiencia">
+                    <i class="fas fa-calendar-alt"></i> Año de Inicio como Entrenador *
                 </label>
                 <input type="number"
                        class="form-control"
-                       id="aniosExperiencia"
-                       name="aniosExperiencia"
-                       min="0"
-                       max="50"
+                       id="anioInicioExperiencia"
+                       name="anioInicioExperiencia"
+                       min="1950"
+                       th:max="${#temporals.year(#temporals.createNow())}"
                        required
-                       placeholder="Ej: 5">
+                       placeholder="Ej: 2018">
                 <small style="color: #64748b; font-size: 0.85rem;">
-                    ¿Cuántos años llevas entrenando profesionalmente?
+                    ¿En qué año comenzaste a entrenar profesionalmente? <span id="experienciaCalculada" style="font-weight: 700; color: #667eea;"></span>
                 </small>
             </div>
 
@@ -424,6 +424,24 @@
 
     // Inicializar la vista
     actualizarVistaEspecialidades();
+
+    // Calcular años de experiencia automáticamente
+    const anioInput = document.getElementById('anioInicioExperiencia');
+    const experienciaSpan = document.getElementById('experienciaCalculada');
+    
+    if (anioInput) {
+        anioInput.addEventListener('input', function() {
+            const anioInicio = parseInt(this.value);
+            const anioActual = new Date().getFullYear();
+            
+            if (anioInicio && anioInicio >= 1950 && anioInicio <= anioActual) {
+                const aniosExp = anioActual - anioInicio;
+                experienciaSpan.textContent = `(${aniosExp} ${aniosExp === 1 ? 'año' : 'años'} de experiencia)`;
+            } else {
+                experienciaSpan.textContent = '';
+            }
+        });
+    }
 
     function handleFileSelect(event) {
         const fileList = document.getElementById('fileList');

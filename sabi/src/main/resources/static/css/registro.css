@@ -40,30 +40,70 @@ body {
 
 /* Form section should scroll if it's taller than viewport */
 .login-form-section, .registro-form-section {
-    flex: 1 1 60%;
+    flex: 1 1 65%;
     padding: 40px 36px;
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
     align-items: stretch;
-    max-height: calc(100vh - 120px);
+    max-height: calc(100vh - 80px);
     overflow-y: auto;
 }
 
 /* Logo section sizing */
 .logo-section {
-    flex: 0 0 40%;
+    flex: 0 0 35%;
     min-width: 260px;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
     padding: 30px;
+    background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
 }
 
 /* Make sure form inputs expand fully and are visible */
 .login-form .form-group, .login-form .form-row-compact, .login-form .form-field, .registro-form .form-group {
     width: 100%;
+}
+
+/* Form labels */
+.form-label {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #374151;
+    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.form-label i {
+    color: #2563eb;
+    font-size: 0.875rem;
+}
+
+/* Form controls */
+.form-control, .form-select {
+    padding: 0.625rem 0.875rem;
+    border: 1.5px solid #e2e8f0;
+    border-radius: 0.5rem;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    background: #f8fafc;
+    color: #374151;
+}
+
+.form-control:focus, .form-select:focus {
+    outline: none;
+    border-color: #2563eb;
+    background: white;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+.form-control::placeholder {
+    color: #94a3b8;
+    font-style: italic;
 }
 
 /* Ensure the register button sticks to bottom area visually but not overlapping */

@@ -1,21 +1,36 @@
 package com.sabi.sabi.controller;
 
-import com.sabi.sabi.dto.*;
-import com.sabi.sabi.service.*;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import com.sabi.sabi.security.CustomUserDetails;
+import org.springframework.http.ContentDisposition;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.http.ContentDisposition;
-import org.springframework.http.HttpStatus;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
-import java.util.List;
+import com.sabi.sabi.dto.DiaDTO;
+import com.sabi.sabi.dto.DiagnosticoDTO;
+import com.sabi.sabi.dto.EntrenadorDTO;
+import com.sabi.sabi.dto.RutinaDTO;
+import com.sabi.sabi.dto.SuscripcionDTO;
+import com.sabi.sabi.security.CustomUserDetails;
+import com.sabi.sabi.service.ClienteService;
+import com.sabi.sabi.service.DiaService;
+import com.sabi.sabi.service.DiagnosticoService;
+import com.sabi.sabi.service.EntrenadorService;
+import com.sabi.sabi.service.ExcelService;
+import com.sabi.sabi.service.RutinaService;
+import com.sabi.sabi.service.SuscripcionService;
 
 @Controller
 public class ClienteController {
@@ -283,7 +298,55 @@ public class ClienteController {
     @GetMapping("/cliente/diagnostico/crear")
     public String mostrarFormularioDiagnostico(Model model,
             @RequestParam(value = "motivo", required = false) String motivo) {
-        model.addAttribute("diagnostico", new DiagnosticoDTO());
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        CustomUserDetails userDetails = (CustomUserDetails) auth.getPrincipal();
+        Long clienteId = userDetails.getUsuario().getId();
+        
+        // Obtener el diagnóstico actual para prellenar campos
+        DiagnosticoDTO diagnosticoActual = clienteService.getDiagnosticoActualByClienteId(clienteId);
+        
+        // Crear un nuevo diagnóstico vacío para el formulario
+        DiagnosticoDTO diagnosticoFormulario = new DiagnosticoDTO();
+        
+        // Si existe diagnóstico actual, prellenar los campos para facilitar la actualización
+        if (diagnosticoActual != null) {
+            diagnosticoFormulario.setPeso(diagnosticoActual.getPeso());
+            diagnosticoFormulario.setEstatura(diagnosticoActual.getEstatura());
+            diagnosticoFormulario.setNivelExperiencia(diagnosticoActual.getNivelExperiencia());
+            diagnosticoFormulario.setObjetivo(diagnosticoActual.getObjetivo());
+            diagnosticoFormulario.setDisponibilidadTiempo(diagnosticoActual.getDisponibilidadTiempo());
+            diagnosticoFormulario.setAccesoRecursos(diagnosticoActual.getAccesoRecursos());
+            diagnosticoFormulario.setLesiones(diagnosticoActual.getLesiones());
+            diagnosticoFormulario.setCondicionesMedicas(diagnosticoActual.getCondicionesMedicas());
+            diagnosticoFormulario.setHorasSueno(diagnosticoActual.getHorasSueno());
+            diagnosticoFormulario.setHabitosAlimenticios(diagnosticoActual.getHabitosAlimenticios());
+            
+            // Campos opcionales
+            diagnosticoFormulario.setPorcentajeGrasaCorporal(diagnosticoActual.getPorcentajeGrasaCorporal());
+            diagnosticoFormulario.setCircunferenciaCintura(diagnosticoActual.getCircunferenciaCintura());
+            diagnosticoFormulario.setCircunferenciaCadera(diagnosticoActual.getCircunferenciaCadera());
+            diagnosticoFormulario.setCircunferenciaBrazo(diagnosticoActual.getCircunferenciaBrazo());
+            diagnosticoFormulario.setCircunferenciaPierna(diagnosticoActual.getCircunferenciaPierna());
+            diagnosticoFormulario.setFrecuenciaCardiacaReposo(diagnosticoActual.getFrecuenciaCardiacaReposo());
+            diagnosticoFormulario.setPresionArterial(diagnosticoActual.getPresionArterial());
+            
+            // Información para el entrenador
+            diagnosticoFormulario.setPreferenciasEntrenamiento(diagnosticoActual.getPreferenciasEntrenamiento());
+            diagnosticoFormulario.setExperienciaPreviaDeportes(diagnosticoActual.getExperienciaPreviaDeportes());
+            diagnosticoFormulario.setDiasDisponiblesSemana(diagnosticoActual.getDiasDisponiblesSemana());
+            diagnosticoFormulario.setHorarioPreferido(diagnosticoActual.getHorarioPreferido());
+            diagnosticoFormulario.setNivelEstres(diagnosticoActual.getNivelEstres());
+            diagnosticoFormulario.setLimitacionesFisicas(diagnosticoActual.getLimitacionesFisicas());
+            diagnosticoFormulario.setMotivacionPrincipal(diagnosticoActual.getMotivacionPrincipal());
+            diagnosticoFormulario.setSuplementosActuales(diagnosticoActual.getSuplementosActuales());
+            diagnosticoFormulario.setFumador(diagnosticoActual.getFumador());
+            diagnosticoFormulario.setConsumeAlcohol(diagnosticoActual.getConsumeAlcohol());
+            diagnosticoFormulario.setFrecuenciaAlcohol(diagnosticoActual.getFrecuenciaAlcohol());
+        }
+        
+        model.addAttribute("diagnostico", diagnosticoFormulario);
+        model.addAttribute("diagnosticoActual", diagnosticoActual); // Para comparación visual
+        
         if (motivo != null && motivo.equals("obligatorio")) {
             model.addAttribute("mensajeObligatorio",
                     "Debes completar tu diagnóstico para acceder al resto de la plataforma.");

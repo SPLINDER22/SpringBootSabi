@@ -17,28 +17,70 @@
     color: #2563eb;
     margin-bottom: 1rem;
 }
+
+/* Caja IMC con colores sutiles y profesionales */
 .imc-box {
-    background: #e3f2fd;
-    border: 1px solid #2563eb;
+    background: #f0f4ff;
+    border: 2px solid #cbd5e1;
     border-radius: 10px;
     padding: 1rem;
-    margin-bottom: 1rem;
+    margin-bottom: 0.5rem;
     font-size: 1.1rem;
-    color: #2563eb;
-    transition: background 0.3s;
+    font-weight: 600;
+    color: #475569;
+    transition: all 0.3s ease;
 }
 .imc-box.imc-ok {
-    background: #d4edda;
-    color: #155724;
+    background: #ecfdf5;
+    border-color: #86efac;
+    color: #065f46;
 }
 .imc-box.imc-warning {
-    background: #fff3cd;
-    color: #856404;
+    background: #fef9e7;
+    border-color: #fde68a;
+    color: #78350f;
 }
 .imc-box.imc-danger {
-    background: #f8d7da;
-    color: #721c24;
+    background: #fee2e2;
+    border-color: #fca5a5;
+    color: #991b1b;
 }
+
+/* Badges de comparativa con colores sutiles */
+.comparativa-badge {
+    display: inline-block;
+    padding: 0.4rem 0.8rem;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    margin-top: 0.5rem;
+    transition: all 0.3s ease;
+}
+
+.comparativa-badge.incremento {
+    background: #dbeafe;
+    color: #1e40af;
+    border: 1px solid #93c5fd;
+}
+
+.comparativa-badge.decremento {
+    background: #e0e7ff;
+    color: #4338ca;
+    border: 1px solid #a5b4fc;
+}
+
+.comparativa-badge.sin-cambio {
+    background: #f1f5f9;
+    color: #64748b;
+    border: 1px solid #cbd5e1;
+}
+
+.comparativa-badge.nivel-up {
+    background: #d1fae5;
+    color: #065f46;
+    border: 1px solid #6ee7b7;
+}
+
 .form-label {
     font-weight: 500;
 }
@@ -59,3 +101,4 @@
 .invalid-feedback {
     display: block;
 }
+
