@@ -4,11 +4,18 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="f5d52025-a0fc-48c5-8cc8-d55f70bed372" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/sabi/src/main/resources/static/css/index.css" beforeDir="false" afterPath="$PROJECT_DIR$/sabi/src/main/resources/static/css/index.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sabi/src/main/resources/static/js/hero.js" beforeDir="false" afterPath="$PROJECT_DIR$/sabi/src/main/resources/static/js/hero.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sabi/src/main/resources/static/js/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/sabi/src/main/resources/static/js/index.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sabi/src/main/resources/templates/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/sabi/src/main/resources/templates/index.html" afterDir="false" />
+    <list default="true" id="f5d52025-a0fc-48c5-8cc8-d55f70bed372" name="Changes" comment="Correciones JIRA">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sabi/src/main/java/com/sabi/sabi/controller/ClienteController.java" beforeDir="false" afterPath="$PROJECT_DIR$/sabi/src/main/java/com/sabi/sabi/controller/ClienteController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sabi/src/main/resources/static/css/dashboard-cliente.css" beforeDir="false" afterPath="$PROJECT_DIR$/sabi/src/main/resources/static/css/dashboard-cliente.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sabi/src/main/resources/static/css/diagnostico-form.css" beforeDir="false" afterPath="$PROJECT_DIR$/sabi/src/main/resources/static/css/diagnostico-form.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sabi/src/main/resources/static/css/registro.css" beforeDir="false" afterPath="$PROJECT_DIR$/sabi/src/main/resources/static/css/registro.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sabi/src/main/resources/static/js/diagnostico-form.js" beforeDir="false" afterPath="$PROJECT_DIR$/sabi/src/main/resources/static/js/diagnostico-form.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sabi/src/main/resources/templates/auth/registro.html" beforeDir="false" afterPath="$PROJECT_DIR$/sabi/src/main/resources/templates/auth/registro.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sabi/src/main/resources/templates/cliente/dashboard.html" beforeDir="false" afterPath="$PROJECT_DIR$/sabi/src/main/resources/templates/cliente/dashboard.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sabi/src/main/resources/templates/cliente/diagnostico-form.html" beforeDir="false" afterPath="$PROJECT_DIR$/sabi/src/main/resources/templates/cliente/diagnostico-form.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sabi/src/main/resources/templates/cliente/diagnostico-historial.html" beforeDir="false" afterPath="$PROJECT_DIR$/sabi/src/main/resources/templates/cliente/diagnostico-historial.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sabi/src/main/resources/templates/entrenador/ver-historial-diagnosticos.html" beforeDir="false" afterPath="$PROJECT_DIR$/sabi/src/main/resources/templates/entrenador/ver-historial-diagnosticos.html" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -18,47 +25,40 @@
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
-  <component name="GitHubPullRequestSearchHistory"><![CDATA[{
-  "lastFilter": {
-    "state": "OPEN",
-    "assignee": "Zantiago2320"
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPEN&quot;,
+    &quot;assignee&quot;: &quot;Zantiago2320&quot;
   }
-}]]></component>
+}</component>
   <component name="GithubPullRequestsUISettings"><![CDATA[{
   "selectedUrlAndAccountId": {
     "url": "https://github.com/SPLINDER22/SpringBootSabi.git",
-    "accountId": "17bbd35f-3357-4ccf-802d-6cf8d394712d"
+    "accountId": "6cb5b7d8-490d-4801-91b9-3e9199db508d"
   }
 }]]></component>
-  <component name="ProjectColorInfo"><![CDATA[{
-  "associatedIndex": 7
-}]]></component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 7
+}</component>
   <component name="ProjectId" id="35iaj7TvcoxHgSO8OqY2dVTn4sW" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "Application.SabiApplication.executor": "Run",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultModelSelectionForGA.v1": "true",
-    "dart.analysis.tool.window.visible": "false",
-    "git-widget-placeholder": "main",
-    "junie.onboarding.icon.badge.shown": "true",
-    "kotlin-language-version-configured": "true",
-    "to.speed.mode.migration.done": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Application.SabiApplication.executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultModelSelectionForGA.v1&quot;: &quot;true&quot;,
+    &quot;dart.analysis.tool.window.visible&quot;: &quot;false&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;junie.onboarding.icon.badge.shown&quot;: &quot;true&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;to.speed.mode.migration.done&quot;: &quot;true&quot;
   }
-}]]></component>
-  <component name="SharedIndexes">
-    <attachedChunks>
-      <set>
-        <option value="bundled-jdk-9823dce3aa75-bf35d07a577b-intellij.indexing.shared.core-IU-252.27397.103" />
-      </set>
-    </attachedChunks>
-  </component>
+}</component>
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
       <changelist id="f5d52025-a0fc-48c5-8cc8-d55f70bed372" name="Changes" comment="" />
@@ -68,6 +68,10 @@
       <updated>1763595477295</updated>
     </task>
     <servers />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="Correciones JIRA" />
+    <option name="LAST_COMMIT_MESSAGE" value="Correciones JIRA" />
   </component>
   <component name="github-copilot-workspace">
     <instructionFileLocations>

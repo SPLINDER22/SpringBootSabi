@@ -32,16 +32,22 @@
                     <input type="number" step="0.1" min="30" max="300" class="form-control" id="peso" th:field="*{peso}" required placeholder="Ej: 70.5">
                     <small class="text-muted">Ingrese su peso actual en kilogramos.</small>
                     <div class="invalid-feedback">Este campo es obligatorio.</div>
+                    <!-- Comparativa con diagnóstico anterior -->
+                    <div class="comparativa-badge" id="pesoComparativa" style="display: none;"></div>
                 </div>
                 <div class="col-md-4">
                     <label for="estatura" class="form-label">Estatura (cm)</label>
                     <input type="number" step="0.1" min="100" max="250" class="form-control" id="estatura" th:field="*{estatura}" required placeholder="Ej: 175">
                     <small class="text-muted">Ingrese su estatura en centímetros.</small>
                     <div class="invalid-feedback">Este campo es obligatorio.</div>
+                    <!-- Comparativa con diagnóstico anterior -->
+                    <div class="comparativa-badge" id="estaturaComparativa" style="display: none;"></div>
                 </div>
                 <div class="col-md-4">
                     <div id="imcBox" class="imc-box">IMC: <span id="imcValue">--</span></div>
                     <small class="text-muted">El IMC se calcula automáticamente.</small>
+                    <!-- Comparativa con diagnóstico anterior -->
+                    <div class="comparativa-badge" id="imcComparativa" style="display: none;"></div>
                 </div>
                 <div class="col-md-4">
                     <label for="nivelExperiencia" class="form-label">Nivel de experiencia</label>
@@ -53,6 +59,8 @@
                     </select>
                     <small class="text-muted">Seleccione su nivel de experiencia física.</small>
                     <div class="invalid-feedback">Este campo es obligatorio.</div>
+                    <!-- Comparativa con diagnóstico anterior -->
+                    <div class="comparativa-badge" id="nivelExperienciaComparativa" style="display: none;"></div>
                 </div>
                 <div class="col-md-4">
                     <label for="disponibilidadTiempo" class="form-label">Disponibilidad de tiempo</label>
@@ -289,7 +297,19 @@
         </div>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-<script th:src="@{/js/diagnostico-form.js}"></// Funcion para mostrar preview de las imagenes
+<!-- Datos del diagnóstico actual para comparación (Thymeleaf) -->
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    var diagnosticoAnterior = {
+        peso: /*[[${diagnosticoActual?.peso}]]*/ null,
+        estatura: /*[[${diagnosticoActual?.estatura}]]*/ null,
+        nivelExperiencia: /*[[${diagnosticoActual?.nivelExperiencia}]]*/ null
+    };
+    /*]]>*/
+</script>
+<script th:src="@{/js/diagnostico-form.js}"></script>
+<script>
+/// Funcion para mostrar preview de las imagenes
     function previewImage(input, previewId) {
         const file = input.files[0];
         const preview = document.getElementById(previewId);

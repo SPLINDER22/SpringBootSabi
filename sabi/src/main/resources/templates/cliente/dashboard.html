@@ -47,21 +47,7 @@
 <body th:replace="layout/layout :: layout('Dashboard Cliente', ~{::section})">
 <section th:fragment="section">
     <!-- Alerta recordatorio completar perfil -->
-    <div th:if="${usuario != null && (usuario.descripcion == null || usuario.descripcion.isEmpty())}"
-         class="alert alert-info alert-dismissible fade show animate__animated animate__fadeInDown"
-         role="alert"
-         style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; box-shadow: 0 4px 15px rgba(0,0,0,0.2);">
-        <h5 class="alert-heading">
-            <i class="fas fa-user-edit me-2"></i>¡Bienvenido a SABI!
-        </h5>
-        <p class="mb-0">
-            <i class="fas fa-info-circle me-2"></i>
-            Recuerda completar tu información personal en la sección de
-            <a href="/perfil" style="color: #ffe066; font-weight: bold; text-decoration: underline;">Perfil</a>
-            para una mejor experiencia personalizada.
-        </p>
-        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert" aria-label="Close"></button>
-    </div>
+    <!-- Alerta de bienvenida eliminada - ahora es un toast -->
 
     <div class="welcome-section text-center">
         <h2>🏃‍♂️ ¡Bienvenido a SABI!</h2>
@@ -445,11 +431,72 @@
                     }
                 });
 
-                // Redirigir al formulario de diagnóstico
                 window.location.href = '/diagnostico/cliente';
             }
         });
     });
+
+    // Toast de bienvenida para completar perfil
+    document.addEventListener('DOMContentLoaded', function() {
+        const perfilIncompleto = /*[[${usuario != null && (usuario.descripcion == null || usuario.descripcion.isEmpty())}]]*/ false;
+        const toastShown = sessionStorage.getItem('welcomeToastShown');
+        
+        if (perfilIncompleto && !toastShown) {
+            // Esperar 1 segundo para que cargue la página
+            setTimeout(() => {
+                const Toast = Swal.mixin({
+                    toast: true,
+                    position: 'top-end',
+                    showConfirmButton: true,
+                    confirmButtonText: 'Ir al Perfil',
+                    timer: 8000,
+                    timerProgressBar: true,
+                    didOpen: (toast) => {
+                        toast.addEventListener('mouseenter', Swal.stopTimer);
+                        toast.addEventListener('mouseleave', Swal.resumeTimer);
+                    },
+                    customClass: {
+                        popup: 'colored-toast',
+                        confirmButton: 'btn-toast-confirm'
+                    }
+                });
+
+                Toast.fire({
+                    icon: 'info',
+                    title: '¡Bienvenido a SABI!',
+                    html: '<div style="font-size: 0.9rem;">Completa tu <strong>perfil</strong> para una mejor experiencia personalizada 📝</div>',
+                    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                    color: '#fff',
+                    iconColor: '#fff'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        window.location.href = '/perfil';
+                    }
+                });
+
+                // Marcar que ya se mostró en esta sesión
+                sessionStorage.setItem('welcomeToastShown', 'true');
+            }, 1000);
+        }
+    });
 </script>
+<style>
+    .colored-toast .swal2-icon {
+        border: none !important;
+    }
+    .btn-toast-confirm {
+        background: rgba(255, 255, 255, 0.9) !important;
+        color: #667eea !important;
+        border: none !important;
+        font-weight: 600 !important;
+        padding: 8px 20px !important;
+        border-radius: 6px !important;
+        font-size: 0.875rem !important;
+    }
+    .btn-toast-confirm:hover {
+        background: #fff !important;
+        transform: scale(1.05);
+    }
+</style>
 </body>
 </html>
