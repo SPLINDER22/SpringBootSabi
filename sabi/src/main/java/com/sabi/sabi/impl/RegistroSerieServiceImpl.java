@@ -99,6 +99,7 @@ public class RegistroSerieServiceImpl implements RegistroSerieService {
         existingRegistroSerie.setRepeticionesReales(registroSerieDTO.getRepeticionesReales());
         existingRegistroSerie.setPesoReal(registroSerieDTO.getPesoReal());
         existingRegistroSerie.setDescansoReal(registroSerieDTO.getDescansoReal());
+        existingRegistroSerie.setIntensidadReal(registroSerieDTO.getIntensidadReal());
         existingRegistroSerie.setFechaEjecucion(registroSerieDTO.getFechaEjecucion());
         existingRegistroSerie.setComentariosCliente(registroSerieDTO.getComentariosCliente());
         existingRegistroSerie.setEstado(registroSerieDTO.getEstado());
@@ -161,6 +162,7 @@ public class RegistroSerieServiceImpl implements RegistroSerieService {
         entity.setRepeticionesReales(registroSerieDTO.getRepeticionesReales());
         entity.setPesoReal(registroSerieDTO.getPesoReal());
         entity.setDescansoReal(registroSerieDTO.getDescansoReal());
+        entity.setIntensidadReal(registroSerieDTO.getIntensidadReal());
         entity.setFechaEjecucion(registroSerieDTO.getFechaEjecucion());
         entity.setComentariosCliente(registroSerieDTO.getComentariosCliente());
         entity.setEstado(registroSerieDTO.getEstado());

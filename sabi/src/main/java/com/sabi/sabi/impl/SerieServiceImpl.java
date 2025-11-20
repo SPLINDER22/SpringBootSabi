@@ -28,7 +28,13 @@ public class SerieServiceImpl implements SerieService {
     public List<SerieDTO> getAllSeries() {
         List<Serie> serie = serieRepository.findAll();
         return serie.stream()
-                .map(serie1 -> modelMapper.map(serie1, SerieDTO.class))
+                .map(s -> {
+                    SerieDTO dto = modelMapper.map(s, SerieDTO.class);
+                    if (s.getEjercicioAsignado() != null) {
+                        dto.setIdEjercicioAsignado(s.getEjercicioAsignado().getIdEjercicioAsignado());
+                    }
+                    return dto;
+                })
                 .toList();
     }
 
@@ -36,7 +42,13 @@ public class SerieServiceImpl implements SerieService {
     public List<SerieDTO> getAllActiveSeries() {
         List<Serie> series = serieRepository.findByEstadoTrue();
         return series.stream()
-                .map(serie -> modelMapper.map(serie, SerieDTO.class))
+                .map(s -> {
+                    SerieDTO dto = modelMapper.map(s, SerieDTO.class);
+                    if (s.getEjercicioAsignado() != null) {
+                        dto.setIdEjercicioAsignado(s.getEjercicioAsignado().getIdEjercicioAsignado());
+                    }
+                    return dto;
+                })
                 .toList();
     }
 
@@ -52,7 +64,11 @@ public class SerieServiceImpl implements SerieService {
                 .stream()
                 .findFirst()
                 .orElseThrow(() -> new RuntimeException("Serie not found with id: " + id));
-        return modelMapper.map(serie, SerieDTO.class);
+        SerieDTO resultado = modelMapper.map(serie, SerieDTO.class);
+        if (serie.getEjercicioAsignado() != null) {
+            resultado.setIdEjercicioAsignado(serie.getEjercicioAsignado().getIdEjercicioAsignado());
+        }
+        return resultado;
     }
 
     @Override
@@ -102,7 +118,9 @@ public class SerieServiceImpl implements SerieService {
         eje.setNumeroSeries(numSeries + 1);
         ejercicioAsignadoRepository.save(eje);
 
-        return modelMapper.map(nueva, SerieDTO.class);
+        SerieDTO resultado = modelMapper.map(nueva, SerieDTO.class);
+        resultado.setIdEjercicioAsignado(eje.getIdEjercicioAsignado());
+        return resultado;
     }
 
     @Override
@@ -151,7 +169,10 @@ public class SerieServiceImpl implements SerieService {
 
         serieRepository.saveAll(series);
         serieRepository.save(existingSerie);
-        return modelMapper.map(existingSerie, SerieDTO.class);
+
+        SerieDTO resultado = modelMapper.map(existingSerie, SerieDTO.class);
+        resultado.setIdEjercicioAsignado(existingSerie.getEjercicioAsignado().getIdEjercicioAsignado());
+        return resultado;
     }
 
     @Override

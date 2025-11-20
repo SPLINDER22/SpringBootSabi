@@ -1,5 +1,6 @@
 package com.sabi.sabi.entity;
 
+import com.sabi.sabi.entity.enums.Intensidad;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
@@ -35,6 +36,10 @@ public class RegistroSerie {
     // Descanso real en segundos
     @Min(value = 0, message = "El descanso no puede ser negativo")
     private Long descansoReal;
+
+    // Intensidad real con la que realizó el ejercicio
+    @Enumerated(EnumType.STRING)
+    private Intensidad intensidadReal;
 
     // Fecha y hora en que el cliente realizó la serie
     @NotNull(message = "La fecha de ejecución es obligatoria")

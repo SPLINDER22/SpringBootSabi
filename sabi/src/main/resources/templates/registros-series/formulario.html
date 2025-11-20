@@ -142,9 +142,16 @@
                                th:value="${reg != null ? reg.descansoReal : null}" placeholder="0"
                                th:disabled="${readonly}">
                     </td>
-                    <td>
+                    <td class="celda-form">
                         <div class="plan-label">Plan</div>
                         <div class="plan-valor" th:text="${serie.intensidad != null ? serie.intensidad : '-'}"></div>
+                        <div class="plan-label mt-2">Real</div>
+                        <select name="intensidadReal" class="form-select" th:disabled="${readonly}">
+                            <option value="">-- Seleccionar --</option>
+                            <option value="BAJA" th:selected="${reg != null and reg.intensidadReal != null and reg.intensidadReal.name() == 'BAJA'}">Baja</option>
+                            <option value="MEDIA" th:selected="${reg != null and reg.intensidadReal != null and reg.intensidadReal.name() == 'MEDIA'}">Media</option>
+                            <option value="ALTA" th:selected="${reg != null and reg.intensidadReal != null and reg.intensidadReal.name() == 'ALTA'}">Alta</option>
+                        </select>
                     </td>
                     <td class="celda-form">
                         <div class="plan-label">Comentario</div>
