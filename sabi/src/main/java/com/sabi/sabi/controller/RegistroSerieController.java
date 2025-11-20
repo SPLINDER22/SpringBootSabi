@@ -71,6 +71,7 @@ public class RegistroSerieController {
                         dto.setPesoReal(r.getPesoReal());
                         dto.setRepeticionesReales(r.getRepeticionesReales());
                         dto.setDescansoReal(r.getDescansoReal());
+                        dto.setIntensidadReal(r.getIntensidadReal());
                         dto.setComentariosCliente(r.getComentariosCliente());
                         dto.setFechaEjecucion(r.getFechaEjecucion());
                         registrosMap.put(r.getSerie().getId(), dto);

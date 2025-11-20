@@ -46,7 +46,7 @@
             <th style="width:10%"># Día</th>
             <th style="width:48%">Descripción</th>
             <th style="width:12%">N° Ejercicios</th>
-            <th style="width:8%">Completado</th>
+            <th sec:authorize="hasAnyRole('CLIENTE')" th:if="${!readonly}" style="width:8%">Completado</th>
             <th style="width:22%">Acciones</th>
         </tr>
         </thead>
@@ -55,7 +55,7 @@
             <td th:text="${dia.numeroDia}"></td>
             <td th:text="${dia.descripcion}"></td>
             <td th:text="${dia.numeroEjercicios}"></td>
-            <td>
+            <td sec:authorize="hasAnyRole('CLIENTE')" th:if="${!readonly}">
                 <span th:class="${dia.estado} ? 'status-badge badge-complete' : 'status-badge badge-pending'">
                     <i th:class="${dia.estado} ? 'fas fa-check-circle' : 'far fa-circle'"></i>
                     <span th:text="${dia.estado} ? 'Completado' : 'Pendiente'"></span>

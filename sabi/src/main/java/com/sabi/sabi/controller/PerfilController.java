@@ -1,11 +1,12 @@
 package com.sabi.sabi.controller;
 
-import com.sabi.sabi.entity.Cliente;
-import com.sabi.sabi.entity.Entrenador;
-import com.sabi.sabi.entity.Usuario;
-import com.sabi.sabi.security.CustomUserDetails;
-import com.sabi.sabi.service.UsuarioService;
-import lombok.RequiredArgsConstructor;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
+import java.util.UUID;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -14,15 +15,19 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
-import java.util.UUID;
+import com.sabi.sabi.entity.Cliente;
+import com.sabi.sabi.entity.Entrenador;
+import com.sabi.sabi.entity.Usuario;
+import com.sabi.sabi.security.CustomUserDetails;
+import com.sabi.sabi.service.UsuarioService;
+
+import lombok.RequiredArgsConstructor;
 
 @Controller
 @RequestMapping("/perfil")
@@ -47,6 +52,20 @@ public class PerfilController {
             model.addAttribute("especialidad", entrenador.getEspecialidad());
             model.addAttribute("aniosExperiencia", entrenador.getAniosExperiencia());
 
+            // Pasar especialidades como lista
+            String especialidadesStr = entrenador.getEspecialidades();
+            if (especialidadesStr != null && !especialidadesStr.isEmpty()) {
+                java.util.List<String> listaEspecialidades = java.util.Arrays.asList(especialidadesStr.split(","));
+                // Trim cada especialidad
+                listaEspecialidades = listaEspecialidades.stream()
+                    .map(String::trim)
+                    .filter(s -> !s.isEmpty())
+                    .collect(java.util.stream.Collectors.toList());
+                model.addAttribute("especialidades", listaEspecialidades);
+            } else {
+                model.addAttribute("especialidades", java.util.Collections.emptyList());
+            }
+
             // Pasar certificaciones si existen
             String certificaciones = entrenador.getCertificaciones();
             if (certificaciones != null && !certificaciones.isEmpty()) {
@@ -64,6 +83,7 @@ public class PerfilController {
             @AuthenticationPrincipal UserDetails userDetails,
             @RequestParam(required = false) String descripcion,
             @RequestParam(required = false) String objetivo,
+            @RequestParam(required = false) String especialidades,
             @RequestParam(required = false) MultipartFile fotoPerfil,
             Model model) {
 
@@ -91,8 +111,17 @@ public class PerfilController {
                 if (objetivo != null && !objetivo.isEmpty()) {
                     cliente.setObjetivo(objetivo);
                 }
+            } else if (usuario instanceof Entrenador) {
+                Entrenador entrenador = (Entrenador) usuario;
+                // Actualizar especialidades
+                if (especialidades != null && !especialidades.isEmpty()) {
+                    entrenador.setEspecialidades(especialidades);
+                    // Mantener compatibilidad con especialidad singular (usar la primera)
+                    String primeraEspecialidad = especialidades.split(",")[0].trim();
+                    entrenador.setEspecialidad(primeraEspecialidad);
+                }
             }
-            // Nota: La especialidad, años de experiencia y certificaciones del entrenador
+            // Nota: Los años de experiencia y certificaciones del entrenador
             // NO son editables desde el perfil. Solo se establecen durante el registro inicial.
 
             // Guardar cambios en la base de datos

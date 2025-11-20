@@ -1,5 +1,6 @@
 package com.sabi.sabi.dto;
 
+import com.sabi.sabi.entity.enums.Intensidad;
 import lombok.*;
 
 import java.time.LocalDateTime;
@@ -23,6 +24,9 @@ public class RegistroSerieDTO {
 
     // Descanso real en segundos
     private Long descansoReal;
+
+    // Intensidad real con la que realizó el ejercicio
+    private Intensidad intensidadReal;
 
     // Fecha y hora en que el cliente realizó la serie
     private LocalDateTime fechaEjecucion;

@@ -3,155 +3,246 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Completar Perfil de Entrenador - SABI</title>
-    <!-- Usar los mismos estilos que el registro -->
-    <link rel="stylesheet" th:href="@{/css/login.css}">
-    <link rel="stylesheet" th:href="@{/css/registro.css}">
-    <link rel="stylesheet" th:href="@{/css/entrenador-form.css}">
-    <link href="/vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
+    <title>Completar Perfil - Entrenador</title>
+
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+
     <style>
-        .form-select, select.form-select {
-            border-radius: 0.75rem !important;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.07);
-            border: 1.5px solid #bfc9d1;
-            background-color: #f8f9fa;
-            font-size: 1.1rem;
-            margin-bottom: 1rem;
-            transition: border-color 0.2s, box-shadow 0.2s;
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
-        .form-select:focus {
-            border-color: #2563eb;
-            box-shadow: 0 0 0 3px rgba(37,99,235,0.12);
-            background: #fff;
+
+        body {
+            font-family: 'Arial', sans-serif;
+            min-height: 100vh;
+            overflow-x: hidden;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" fill="%23e8f4ff"><g fill="%2393c5fd" opacity="0.3"><path d="M20 20h10v5h-5v5h-5zM30 30h5v10h-5zM40 25h5v5h-5zM15 35h5v5h-5z"/><circle cx="25" cy="45" r="3"/><circle cx="35" cy="15" r="2"/><path d="M50 40l5-5v10l-5-5zM60 30h8v2h-8zM65 35h6v2h-6z"/><circle cx="70" cy="20" r="2"/><path d="M10 60h5v5h-5zM20 65h3v3h-3zM30 55h4v4h-4z"/><circle cx="45" cy="65" r="2"/><path d="M60 60l3-3v6l-3-3zM70 55h5v2h-5zM75 60h4v2h-4z"/><circle cx="80" cy="45" r="3"/></g></svg>') repeat;
+            background-size: 100px 100px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem 1rem;
         }
-        .login-form-section {
-            background: #fff;
-            border-radius: 1.5rem;
-            box-shadow: 0 8px 32px rgba(37,99,235,0.08);
-            padding: 48px 36px;
+
+        .perfil-container {
+            width: 100%;
+            max-width: 1100px;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            margin: 2rem auto;
         }
-        .login-title {
-            margin-bottom: 1.5rem;
-        }
-        .subtitle {
-            color: #64748b;
-            font-size: 0.95rem;
-            margin-bottom: 2rem;
+
+        .perfil-header {
+            background: linear-gradient(135deg, #2461E9, #1d4ed8);
+            padding: 2.5rem 3rem;
+            color: white;
             text-align: center;
+            position: relative;
+            overflow: hidden;
         }
-        .login-button {
-            border-radius: 0.75rem;
-            font-size: 1.1rem;
-            padding: 0.75rem 0;
-            margin-top: 1.2rem;
+
+        .perfil-header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" fill="none"><g stroke="%23ffffff" stroke-width="0.5" opacity="0.1"><path d="M20 20h10v5h-5v5h-5zM30 30h5v10h-5zM40 25h5v5h-5zM15 35h5v5h-5z"/><circle cx="25" cy="45" r="3"/><circle cx="35" cy="15" r="2"/><path d="M50 40l5-5v10l-5-5zM60 30h8v2h-8zM65 35h6v2h-6z"/><circle cx="70" cy="20" r="2"/></g></svg>') repeat;
+            background-size: 80px 80px;
+            animation: float 20s infinite linear;
         }
+
+        @keyframes float {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(-100px, -100px); }
+        }
+
+        .perfil-header h1 {
+            font-size: 2rem;
+            font-weight: bold;
+            margin: 0 0 0.5rem 0;
+            position: relative;
+            z-index: 2;
+        }
+
+        .perfil-header p {
+            font-size: 1rem;
+            margin: 0;
+            opacity: 0.95;
+            position: relative;
+            z-index: 2;
+        }
+
+        .perfil-body {
+            padding: 3rem;
+        }
+
         .info-box {
-            background: #f0f9ff;
-            border-left: 4px solid #3b82f6;
-            padding: 1rem;
+            background: #e0f2fe;
+            border-left: 4px solid #2461E9;
+            padding: 1rem 1.25rem;
+            margin-bottom: 2rem;
             border-radius: 0.5rem;
-            margin-bottom: 1.5rem;
-            font-size: 0.9rem;
+            font-size: 0.95rem;
+            color: #0c4a6e;
         }
+
         .info-box i {
-            color: #3b82f6;
+            color: #2461E9;
             margin-right: 0.5rem;
         }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+        }
+
+        .form-section {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 0;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 0.5rem;
+            font-size: 0.95rem;
+        }
+
+        .form-group label i {
+            color: #2461E9;
+            margin-right: 0.5rem;
+        }
+
+        .form-control, .form-select {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 10px;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+            background: #f9fafb;
+        }
+
+        .form-control:focus, .form-select:focus {
+            outline: none;
+            border-color: #2461E9;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(36, 97, 233, 0.1);
+        }
+
+        .form-control::placeholder {
+            color: #9ca3af;
+        }
+
         .file-upload-wrapper {
             position: relative;
             overflow: hidden;
             display: inline-block;
             width: 100%;
         }
+
         .file-upload-wrapper input[type=file] {
             position: absolute;
             left: -9999px;
         }
+
         .file-upload-label {
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 1rem;
-            background-color: #f8f9fa;
-            border: 2px dashed #bfc9d1;
-            border-radius: 0.75rem;
+            padding: 1.5rem 1rem;
+            background: #f8f9fa;
+            border: 2px dashed #cbd5e1;
+            border-radius: 10px;
             cursor: pointer;
-            transition: all 0.3s;
-            font-size: 0.95rem;
             color: #64748b;
+            font-size: 0.9rem;
+            transition: all 0.3s;
+            margin: 0;
         }
+
         .file-upload-label:hover {
-            border-color: #2563eb;
-            background-color: #f0f9ff;
+            background: #e0f2fe;
+            border-color: #2461E9;
+            color: #0c4a6e;
         }
+
         .file-upload-label i {
-            margin-right: 0.5rem;
-            font-size: 1.2rem;
+            font-size: 1.25rem;
+            margin-right: 0.75rem;
         }
+
         .file-list {
-            margin-top: 0.5rem;
-            font-size: 0.85rem;
+            margin-top: 0.75rem;
         }
+
         .file-item {
             display: flex;
             align-items: center;
-            padding: 0.5rem;
-            background: #f8f9fa;
-            border-radius: 0.5rem;
+            padding: 0.65rem;
+            background: #f1f5f9;
+            border-radius: 8px;
             margin-bottom: 0.5rem;
-        }
-        .file-item i {
-            color: #ef4444;
-            margin-right: 0.5rem;
-        }
-        .file-item .file-name {
-            flex: 1;
-            color: #334155;
-        }
-        .file-item .remove-file {
-            color: #ef4444;
-            cursor: pointer;
-            font-size: 1.2rem;
-        }
-        .file-item .remove-file:hover {
-            color: #dc2626;
+            font-size: 0.85rem;
         }
 
-        /* Estilos para las especialidades badges */
+        .file-item i.fa-file-pdf {
+            color: #ef4444;
+            margin-right: 0.75rem;
+            font-size: 1.1rem;
+        }
+
+        .file-name {
+            flex: 1;
+            color: #475569;
+        }
+
+        .remove-file {
+            color: #94a3b8;
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+
+        .remove-file:hover {
+            color: #ef4444;
+        }
+
         .especialidad-badge {
             display: inline-flex;
             align-items: center;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
             padding: 0.5rem 1rem;
-            border-radius: 2rem;
             margin: 0.25rem;
-            font-size: 0.9rem;
+            background: #2461E9;
+            color: white;
+            border-radius: 2rem;
+            font-size: 0.85rem;
             font-weight: 500;
-            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
-            transition: all 0.3s ease;
-        }
-
-        .especialidad-badge:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
-        }
-
-        .especialidad-badge i {
-            transition: all 0.2s;
-        }
-
-        .especialidad-badge i:hover {
-            transform: scale(1.2);
-            color: #fecaca;
         }
 
         #especialidadesContainer {
             min-height: 50px;
-            padding: 1rem;
+            padding: 0.75rem;
             background: #f8f9fa;
-            border-radius: 0.75rem;
+            border-radius: 10px;
             border: 2px dashed #e2e8f0;
+            margin-bottom: 0.75rem;
         }
 
         #especialidadesContainer:has(.especialidad-badge) {
@@ -160,178 +251,314 @@
             background: #ffffff;
         }
 
-        .btn-primary {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        .btn-add-especialidad {
+            background: #2461E9;
+            color: white;
             border: none;
+            padding: 0.75rem 1.25rem;
+            border-radius: 10px;
+            font-weight: 600;
             transition: all 0.3s;
         }
 
-        .btn-primary:hover {
+        .btn-add-especialidad:hover {
+            background: #1d4ed8;
             transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+            box-shadow: 0 4px 12px rgba(36, 97, 233, 0.3);
+        }
+
+        .submit-button {
+            width: 100%;
+            padding: 1rem;
+            background: linear-gradient(135deg, #2461E9, #1d4ed8);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 2rem;
+        }
+
+        .submit-button:hover {
+            background: linear-gradient(135deg, #1d4ed8, #1e40af);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(36, 97, 233, 0.3);
+        }
+
+        small.helper-text {
+            color: #64748b;
+            font-size: 0.85rem;
+            display: block;
+            margin-top: 0.4rem;
+        }
+
+        .error-message {
+            background: #fee2e2;
+            border-left: 4px solid #ef4444;
+            padding: 1rem 1.25rem;
+            margin-bottom: 1.5rem;
+            border-radius: 0.5rem;
+        }
+
+        .error-message p {
+            color: #ef4444;
+            font-size: 0.95rem;
+            margin: 0;
+        }
+
+        #errorEspecialidades {
+            color: #ef4444;
+            font-size: 0.85rem;
+            margin-top: 0.5rem;
+            display: none;
+        }
+
+        .full-width-section {
+            grid-column: 1 / -1;
+        }
+
+        .warning-box {
+            background: #fef3c7;
+            border-left: 4px solid #f59e0b;
+            padding: 1rem 1.25rem;
+            margin-top: 1.5rem;
+            border-radius: 0.5rem;
+            font-size: 0.9rem;
+            color: #92400e;
+        }
+
+        .warning-box i {
+            color: #f59e0b;
+            margin-right: 0.5rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            body {
+                padding: 1rem 0.5rem;
+            }
+
+            .perfil-container {
+                border-radius: 15px;
+                margin: 1rem auto;
+            }
+
+            .perfil-header {
+                padding: 2rem 1.5rem;
+            }
+
+            .perfil-header h1 {
+                font-size: 1.5rem;
+            }
+
+            .perfil-header p {
+                font-size: 0.9rem;
+            }
+
+            .perfil-body {
+                padding: 2rem 1.5rem;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+
+            .full-width-section {
+                grid-column: 1;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .perfil-header {
+                padding: 1.5rem 1rem;
+            }
+
+            .perfil-body {
+                padding: 1.5rem 1rem;
+            }
+
+            .info-box, .warning-box {
+                padding: 0.85rem 1rem;
+                font-size: 0.85rem;
+            }
         }
     </style>
     <link rel="icon" type="image/png" th:href="@{/img/logoF.png}">
 </head>
-<body class="entrenador-form">
-<div class="login-container">
-    <div class="login-form-section mx-auto" style="max-width: 600px; width: 100%;">
-        <h1 class="login-title">
+<body>
+<div class="perfil-container">
+    <div class="perfil-header">
+        <h1>
             <i class="fas fa-user-tie me-2"></i>
             Completar Perfil de Entrenador
         </h1>
+        <p>Proporciona tu información profesional para conectar con los clientes más adecuados</p>
+    </div>
 
-        <p class="subtitle">
-            Por favor, proporciona la siguiente información para verificar tu perfil como entrenador profesional
-        </p>
-
+    <div class="perfil-body">
         <div class="info-box">
             <i class="fas fa-info-circle"></i>
-            <strong>¿Por qué necesitamos esta información?</strong><br>
-            Estos datos nos ayudan a conectarte con los clientes más adecuados y a garantizar la calidad de nuestros servicios.
+            <strong>¿Por qué necesitamos esta información?</strong> Estos datos nos ayudan a conectarte con los clientes más adecuados y a garantizar la calidad de nuestros servicios.
         </div>
 
         <!-- Mensajes de error/éxito -->
         <div th:if="${error}" class="error-message">
-            <p style="color: #ef4444; font-size: 0.9rem; margin-bottom: 15px;">
+            <p>
                 <i class="fas fa-exclamation-triangle me-2"></i>
                 <span th:text="${error}"></span>
             </p>
         </div>
 
-        <form th:action="@{/auth/completar-perfil-entrenador}" method="post" enctype="multipart/form-data" class="login-form">
+        <form th:action="@{/auth/completar-perfil-entrenador}" method="post" enctype="multipart/form-data">
             <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
 
-            <div class="form-group">
-                <label for="especialidades">
-                    <i class="fas fa-dumbbell"></i> Especialidades *
-                </label>
+            <div class="form-grid">
+                <!-- COLUMNA IZQUIERDA -->
+                <div class="form-section">
+                    <!-- Especialidades -->
+                    <div class="form-group">
+                        <label for="especialidades">
+                            <i class="fas fa-dumbbell"></i> Especialidades *
+                        </label>
 
-                <!-- Contenedor de especialidades seleccionadas -->
-                <div id="especialidadesContainer" style="margin-bottom: 1rem;">
-                    <!-- Aquí se agregarán las especialidades dinámicamente -->
-                </div>
+                        <!-- Contenedor de especialidades seleccionadas -->
+                        <div id="especialidadesContainer">
+                            <p style="color: #94a3b8; font-size: 0.9rem; margin: 0;">No has agregado especialidades aún</p>
+                        </div>
 
-                <!-- Select para agregar especialidad -->
-                <div class="d-flex gap-2">
-                    <select class="form-select" id="especialidadSelect" style="flex: 1;">
-                        <option value="">Selecciona una especialidad...</option>
-                        <option value="Fuerza y Acondicionamiento">Fuerza y Acondicionamiento</option>
-                        <option value="Pérdida de Peso">Pérdida de Peso</option>
-                        <option value="Ganancia Muscular">Ganancia Muscular</option>
-                        <option value="Yoga">Yoga</option>
-                        <option value="Pilates">Pilates</option>
-                        <option value="CrossFit">CrossFit</option>
-                        <option value="Entrenamiento Funcional">Entrenamiento Funcional</option>
-                        <option value="Cardio y Resistencia">Cardio y Resistencia</option>
-                        <option value="Deportes Específicos">Deportes Específicos</option>
-                        <option value="Rehabilitación">Rehabilitación</option>
-                        <option value="Nutrición Deportiva">Nutrición Deportiva</option>
-                        <option value="Entrenamiento Personal">Entrenamiento Personal</option>
-                        <option value="Powerlifting">Powerlifting</option>
-                        <option value="Calistenia">Calistenia</option>
-                        <option value="Running">Running</option>
-                        <option value="Ciclismo">Ciclismo</option>
-                        <option value="Natación">Natación</option>
-                        <option value="Boxeo">Boxeo</option>
-                        <option value="Artes Marciales">Artes Marciales</option>
-                        <option value="Movilidad y Flexibilidad">Movilidad y Flexibilidad</option>
-                    </select>
-                    <button type="button" class="btn btn-primary" onclick="agregarEspecialidad()" style="white-space: nowrap;">
-                        <i class="fas fa-plus"></i> Agregar
-                    </button>
-                </div>
+                        <!-- Select para agregar especialidad -->
+                        <div class="d-flex gap-2">
+                            <select class="form-select" id="especialidadSelect" style="flex: 1;">
+                                <option value="">Selecciona una especialidad...</option>
+                                <option value="Fuerza y Acondicionamiento">Fuerza y Acondicionamiento</option>
+                                <option value="Pérdida de Peso">Pérdida de Peso</option>
+                                <option value="Ganancia Muscular">Ganancia Muscular</option>
+                                <option value="Yoga">Yoga</option>
+                                <option value="Pilates">Pilates</option>
+                                <option value="CrossFit">CrossFit</option>
+                                <option value="Entrenamiento Funcional">Entrenamiento Funcional</option>
+                                <option value="Cardio y Resistencia">Cardio y Resistencia</option>
+                                <option value="Deportes Específicos">Deportes Específicos</option>
+                                <option value="Rehabilitación">Rehabilitación</option>
+                                <option value="Nutrición Deportiva">Nutrición Deportiva</option>
+                                <option value="Entrenamiento Personal">Entrenamiento Personal</option>
+                                <option value="Powerlifting">Powerlifting</option>
+                                <option value="Calistenia">Calistenia</option>
+                                <option value="Running">Running</option>
+                                <option value="Ciclismo">Ciclismo</option>
+                                <option value="Natación">Natación</option>
+                                <option value="Boxeo">Boxeo</option>
+                                <option value="Artes Marciales">Artes Marciales</option>
+                                <option value="Movilidad y Flexibilidad">Movilidad y Flexibilidad</option>
+                            </select>
+                            <button type="button" class="btn btn-add-especialidad" onclick="agregarEspecialidad()">
+                                <i class="fas fa-plus"></i> Agregar
+                            </button>
+                        </div>
 
-                <!-- Input hidden que contendrá las especialidades separadas por comas -->
-                <input type="hidden" id="especialidades" name="especialidades" required>
+                        <!-- Input hidden que contendrá las especialidades separadas por comas -->
+                        <input type="hidden" id="especialidades" name="especialidades" required>
 
-                <small style="color: #64748b; font-size: 0.85rem; display: block; margin-top: 0.5rem;">
-                    Selecciona tus especialidades una por una. Puedes agregar varias.
-                </small>
+                        <small class="helper-text">
+                            Selecciona tus especialidades una por una. Puedes agregar varias.
+                        </small>
 
-                <div id="errorEspecialidades" style="color: #ef4444; font-size: 0.85rem; margin-top: 0.5rem; display: none;">
-                    Por favor, agrega al menos una especialidad.
-                </div>
-            </div>
+                        <div id="errorEspecialidades">
+                            Por favor, agrega al menos una especialidad.
+                        </div>
+                    </div>
 
-            <div class="form-group">
-                <label for="precioMinimo">
-                    <i class="fas fa-dollar-sign"></i> Rango de Precio por Sesión *
-                </label>
-                <div class="row">
-                    <div class="col-6">
+                    <!-- Rango de Precios -->
+                    <div class="form-group">
+                        <label for="precioMinimo">
+                            <i class="fas fa-dollar-sign"></i> Rango de Precio por Sesión *
+                        </label>
+                        <div class="row g-2">
+                            <div class="col-6">
+                                <input type="number"
+                                       class="form-control"
+                                       id="precioMinimo"
+                                       name="precioMinimo"
+                                       min="0"
+                                       step="0.01"
+                                       required
+                                       placeholder="Precio mínimo">
+                                <small class="helper-text">Mínimo</small>
+                            </div>
+                            <div class="col-6">
+                                <input type="number"
+                                       class="form-control"
+                                       id="precioMaximo"
+                                       name="precioMaximo"
+                                       min="0"
+                                       step="0.01"
+                                       required
+                                       placeholder="Precio máximo">
+                                <small class="helper-text">Máximo</small>
+                            </div>
+                        </div>
+                        <small class="helper-text">
+                            Indica tu rango de precios por sesión/trabajo en COP (pesos colombianos)
+                        </small>
+                    </div>
+
+                    <!-- Año de Inicio -->
+                    <div class="form-group">
+                        <label for="anioInicioExperiencia">
+                            <i class="fas fa-calendar-alt"></i> Año de Inicio como Entrenador *
+                        </label>
                         <input type="number"
                                class="form-control"
-                               id="precioMinimo"
-                               name="precioMinimo"
-                               min="0"
-                               step="0.01"
+                               id="anioInicioExperiencia"
+                               name="anioInicioExperiencia"
+                               min="1950"
+                               th:max="${#temporals.year(#temporals.createNow())}"
                                required
-                               placeholder="Precio mínimo">
-                        <small style="color: #64748b; font-size: 0.85rem;">Mínimo</small>
-                    </div>
-                    <div class="col-6">
-                        <input type="number"
-                               class="form-control"
-                               id="precioMaximo"
-                               name="precioMaximo"
-                               min="0"
-                               step="0.01"
-                               required
-                               placeholder="Precio máximo">
-                        <small style="color: #64748b; font-size: 0.85rem;">Máximo</small>
+                               placeholder="Ej: 2018">
+                        <small class="helper-text">
+                            ¿En qué año comenzaste a entrenar profesionalmente? <span id="experienciaCalculada" style="font-weight: 700; color: #2461E9;"></span>
+                        </small>
                     </div>
                 </div>
-                <small style="color: #64748b; font-size: 0.85rem; display: block; margin-top: 0.5rem;">
-                    Indica tu rango de precios por sesión/trabajo en COP (pesos colombianos)
-                </small>
-            </div>
 
-            <div class="form-group">
-                <label for="aniosExperiencia">
-                    <i class="fas fa-calendar-alt"></i> Años de Experiencia *
-                </label>
-                <input type="number"
-                       class="form-control"
-                       id="aniosExperiencia"
-                       name="aniosExperiencia"
-                       min="0"
-                       max="50"
-                       required
-                       placeholder="Ej: 5">
-                <small style="color: #64748b; font-size: 0.85rem;">
-                    ¿Cuántos años llevas entrenando profesionalmente?
-                </small>
-            </div>
-
-            <div class="form-group">
-                <label for="certificaciones">
-                    <i class="fas fa-certificate"></i> Certificaciones (Opcional)
-                </label>
-                <div class="file-upload-wrapper">
-                    <input type="file"
-                           id="certificaciones"
-                           name="certificaciones"
-                           accept=".pdf"
-                           multiple
-                           onchange="handleFileSelect(event)">
-                    <label for="certificaciones" class="file-upload-label">
-                        <i class="fas fa-cloud-upload-alt"></i>
-                        Haz clic para subir archivos PDF de tus certificaciones
-                    </label>
+                <!-- COLUMNA DERECHA -->
+                <div class="form-section">
+                    <!-- Certificaciones -->
+                    <div class="form-group">
+                        <label for="certificaciones">
+                            <i class="fas fa-certificate"></i> Certificaciones (Opcional)
+                        </label>
+                        <div class="file-upload-wrapper">
+                            <input type="file"
+                                   id="certificaciones"
+                                   name="certificaciones"
+                                   accept=".pdf"
+                                   multiple
+                                   onchange="handleFileSelect(event)">
+                            <label for="certificaciones" class="file-upload-label">
+                                <i class="fas fa-cloud-upload-alt"></i>
+                                Haz clic para subir archivos PDF de tus certificaciones
+                            </label>
+                        </div>
+                        <small class="helper-text">
+                            Puedes subir uno o varios documentos en formato PDF (máx. 10MB cada uno)
+                        </small>
+                        <div id="fileList" class="file-list"></div>
+                    </div>
                 </div>
-                <small style="color: #64748b; font-size: 0.85rem; display: block; margin-top: 0.5rem;">
-                    Puedes subir uno o varios documentos en formato PDF (máx. 10MB cada uno)
-                </small>
-                <div id="fileList" class="file-list"></div>
             </div>
 
-            <div class="info-box" style="background: #fef3c7; border-left-color: #f59e0b;">
-                <i class="fas fa-shield-alt" style="color: #f59e0b;"></i>
-                <small>Toda la información proporcionada será revisada y será visible para los clientes que busquen entrenadores.</small>
+            <!-- Warning Box Full Width -->
+            <div class="warning-box">
+                <i class="fas fa-shield-alt"></i>
+                Toda la información proporcionada será revisada y será visible para los clientes que busquen entrenadores.
             </div>
 
-            <button type="submit" class="btn login-button w-100">
+            <!-- Botón de Envío -->
+            <button type="submit" class="submit-button">
                 <i class="fas fa-check-circle me-2"></i>Completar Registro
             </button>
         </form>
@@ -424,6 +651,24 @@
 
     // Inicializar la vista
     actualizarVistaEspecialidades();
+
+    // Calcular años de experiencia automáticamente
+    const anioInput = document.getElementById('anioInicioExperiencia');
+    const experienciaSpan = document.getElementById('experienciaCalculada');
+    
+    if (anioInput) {
+        anioInput.addEventListener('input', function() {
+            const anioInicio = parseInt(this.value);
+            const anioActual = new Date().getFullYear();
+            
+            if (anioInicio && anioInicio >= 1950 && anioInicio <= anioActual) {
+                const aniosExp = anioActual - anioInicio;
+                experienciaSpan.textContent = `(${aniosExp} ${aniosExp === 1 ? 'año' : 'años'} de experiencia)`;
+            } else {
+                experienciaSpan.textContent = '';
+            }
+        });
+    }
 
     function handleFileSelect(event) {
         const fileList = document.getElementById('fileList');
