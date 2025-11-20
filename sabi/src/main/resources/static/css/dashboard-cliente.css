@@ -5,6 +5,7 @@
     gap: 30px;
     max-width: 1200px;
     margin: 0 auto;
+    padding: 0 20px;
 }
 
 .category-section {
@@ -28,6 +29,7 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
+    border-radius: 15px 15px 0 0;
 }
 
 .category-header h3 {
@@ -41,6 +43,7 @@
     border-radius: 25px;
     font-size: 0.9rem;
     font-weight: 500;
+    white-space: nowrap;
 }
 
 .category-status.completed {
@@ -83,6 +86,25 @@
     color: #1f2937;
     font-size: 1.1rem;
     font-weight: 600;
+}
+
+.welcome-section {
+    padding: 30px 20px;
+    background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+    border-radius: 15px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+
+.welcome-section h2 {
+    color: #1e40af;
+    margin-bottom: 10px;
+    font-weight: 700;
+}
+
+.welcome-section p {
+    color: #475569;
+    margin: 5px 0;
 }
 
 .diagnostic-empty, .rutinas-empty, .entrenadores-empty {
@@ -576,6 +598,285 @@
 
     .valor-actual {
         font-size: 1.3rem;
+    }
+}
+
+/* ========== MEJORAS DE RESPONSIVIDAD ========== */
+
+/* Tablets y pantallas medianas (768px - 1024px) */
+@media (max-width: 1024px) {
+    .categories-container {
+        gap: 20px;
+        padding: 0 15px;
+    }
+
+    .category-header h3 {
+        font-size: 1.2rem;
+    }
+
+    .category-content {
+        padding: 20px;
+    }
+
+    .diagnostic-info .info-grid {
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 15px;
+    }
+
+    .welcome-section h2 {
+        font-size: 1.8rem;
+    }
+}
+
+/* Móviles y pantallas pequeñas (max 768px) */
+@media (max-width: 768px) {
+    .categories-container {
+        gap: 15px;
+        padding: 0 10px;
+    }
+
+    .category-header {
+        padding: 15px 20px;
+        flex-direction: column;
+        gap: 10px;
+        text-align: center;
+    }
+
+    .category-header h3 {
+        font-size: 1.1rem;
+    }
+
+    .category-status {
+        width: 100%;
+        text-align: center;
+    }
+
+    .category-content {
+        padding: 15px;
+    }
+
+    .diagnostic-info .info-grid {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+
+    .info-item {
+        padding: 12px;
+        background: #f8fafc;
+        border-radius: 8px;
+        border: 1px solid #e2e8f0;
+    }
+
+    .info-label {
+        font-size: 0.85rem;
+    }
+
+    .info-value {
+        font-size: 1rem;
+    }
+
+    .welcome-section {
+        padding: 20px 15px;
+    }
+
+    .welcome-section h2 {
+        font-size: 1.5rem;
+    }
+
+    .welcome-section p {
+        font-size: 0.95rem;
+    }
+
+    /* IMC responsive */
+    .imc-container {
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .imc-value-box {
+        text-align: center;
+        padding: 15px;
+    }
+
+    .imc-number {
+        font-size: 2rem;
+    }
+
+    .imc-interpretation {
+        text-align: center;
+    }
+
+    .imc-badge {
+        display: inline-block;
+        width: auto;
+        padding: 10px 20px;
+    }
+
+    /* Botones más grandes en móvil */
+    .btn {
+        padding: 12px 20px;
+        font-size: 1rem;
+    }
+
+    .btn-primary, .btn-secondary {
+        width: 100%;
+        margin-bottom: 10px;
+    }
+
+    /* Cards de rutinas y entrenadores */
+    .rutina-card, .entrenador-card {
+        margin-bottom: 15px;
+    }
+
+    .diagnostic-empty, .rutinas-empty, .entrenadores-empty {
+        padding: 30px 15px;
+    }
+
+    .empty-icon {
+        font-size: 3rem;
+    }
+
+    /* Reporte de suscripción */
+    .reporte-suscripcion-rows {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+
+    .reporte-suscripcion-header {
+        flex-direction: column;
+        gap: 10px;
+        text-align: center;
+    }
+
+    .reporte-suscripcion-body {
+        padding: 14px;
+    }
+
+    .reporte-suscripcion-actions {
+        flex-direction: column;
+    }
+
+    .reporte-suscripcion-actions .btn {
+        width: 100%;
+    }
+}
+
+/* Móviles pequeños (max 480px) */
+@media (max-width: 480px) {
+    .category-header {
+        padding: 12px 15px;
+    }
+
+    .category-header h3 {
+        font-size: 1rem;
+    }
+
+    .category-content {
+        padding: 12px;
+    }
+
+    .welcome-section h2 {
+        font-size: 1.3rem;
+    }
+
+    .info-label {
+        font-size: 0.8rem;
+    }
+
+    .info-value {
+        font-size: 0.95rem;
+    }
+
+    .imc-number {
+        font-size: 1.8rem;
+    }
+
+    .imc-badge {
+        font-size: 0.85rem;
+        padding: 8px 16px;
+    }
+
+    .btn {
+        padding: 10px 16px;
+        font-size: 0.9rem;
+    }
+
+    .empty-icon {
+        font-size: 2.5rem;
+    }
+
+    .diagnostic-empty h4, .rutinas-empty h4, .entrenadores-empty h4 {
+        font-size: 1.1rem;
+    }
+
+    /* Comparativa de diagnóstico */
+    .comparativa-section {
+        padding: 20px 15px;
+    }
+
+    .comparativa-title {
+        font-size: 1.3rem;
+    }
+
+    .comparativa-item {
+        padding: 12px;
+    }
+
+    .comparativa-label {
+        font-size: 0.8rem;
+    }
+
+    .comparativa-values {
+        font-size: 0.9rem;
+    }
+
+    .valor-anterior, .valor-actual {
+        font-size: 1.1rem;
+    }
+
+    .comparativa-cambio {
+        font-size: 0.85rem;
+        padding: 5px 10px;
+    }
+}
+
+/* Landscape en móviles */
+@media (max-height: 600px) and (orientation: landscape) {
+    .welcome-section {
+        padding: 15px;
+    }
+
+    .welcome-section h2 {
+        font-size: 1.2rem;
+        margin-bottom: 5px;
+    }
+
+    .category-header {
+        padding: 10px 15px;
+    }
+
+    .category-content {
+        padding: 15px;
+    }
+
+    .diagnostic-info .info-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+    }
+}
+
+/* Pantallas grandes (> 1440px) */
+@media (min-width: 1440px) {
+    .categories-container {
+        max-width: 1400px;
+    }
+
+    .diagnostic-info .info-grid {
+        grid-template-columns: repeat(4, 1fr);
+    }
+
+    .category-header h3 {
+        font-size: 1.5rem;
     }
 }
 
