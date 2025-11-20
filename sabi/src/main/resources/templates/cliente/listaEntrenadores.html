@@ -9,98 +9,119 @@
 
 <body th:replace="layout/layout :: layout('Lista de entrenadores', ~{::section})">
 <section th:fragment="section">
-    <div class="container mb-4">
-        <h1 class="h3 mb-4 text-dark text-center">Entrenadores Disponibles</h1>
-    </div>
-    <div class="container mb-4">
-        <form action="#" th:action="@{/cliente/listaEntrenadores}" method="get" class="mb-4">
-            <div class="row g-2 align-items-end">
-                <div class="col-12 col-md-3">
-                    <label for="inputNombre" class="form-label mb-1">Nombre</label>
-                    <input id="inputNombre" type="text" name="nombre" class="form-control"
-                           placeholder="Buscar por nombre" th:value="${nombre}">
-                </div>
-                <div class="col-12 col-md-3">
-                    <label for="inputEspecialidad" class="form-label mb-1">Especialidad</label>
-                    <select id="inputEspecialidad" name="especialidad" class="form-select">
-                        <option value="">Todas las especialidades</option>
-                        <option value="Fuerza y Acondicionamiento" th:selected="${especialidad == 'Fuerza y Acondicionamiento'}">Fuerza y Acondicionamiento</option>
-                        <option value="Pérdida de Peso" th:selected="${especialidad == 'Pérdida de Peso'}">Pérdida de Peso</option>
-                        <option value="Ganancia Muscular" th:selected="${especialidad == 'Ganancia Muscular'}">Ganancia Muscular</option>
-                        <option value="Yoga" th:selected="${especialidad == 'Yoga'}">Yoga</option>
-                        <option value="Pilates" th:selected="${especialidad == 'Pilates'}">Pilates</option>
-                        <option value="CrossFit" th:selected="${especialidad == 'CrossFit'}">CrossFit</option>
-                        <option value="Entrenamiento Funcional" th:selected="${especialidad == 'Entrenamiento Funcional'}">Entrenamiento Funcional</option>
-                        <option value="Cardio y Resistencia" th:selected="${especialidad == 'Cardio y Resistencia'}">Cardio y Resistencia</option>
-                        <option value="Deportes Específicos" th:selected="${especialidad == 'Deportes Específicos'}">Deportes Específicos</option>
-                        <option value="Rehabilitación" th:selected="${especialidad == 'Rehabilitación'}">Rehabilitación</option>
-                        <option value="Nutrición Deportiva" th:selected="${especialidad == 'Nutrición Deportiva'}">Nutrición Deportiva</option>
-                        <option value="Entrenamiento Personal" th:selected="${especialidad == 'Entrenamiento Personal'}">Entrenamiento Personal</option>
-                        <option value="Powerlifting" th:selected="${especialidad == 'Powerlifting'}">Powerlifting</option>
-                        <option value="Calistenia" th:selected="${especialidad == 'Calistenia'}">Calistenia</option>
-                        <option value="Running" th:selected="${especialidad == 'Running'}">Running</option>
-                        <option value="Ciclismo" th:selected="${especialidad == 'Ciclismo'}">Ciclismo</option>
-                        <option value="Natación" th:selected="${especialidad == 'Natación'}">Natación</option>
-                        <option value="Boxeo" th:selected="${especialidad == 'Boxeo'}">Boxeo</option>
-                        <option value="Artes Marciales" th:selected="${especialidad == 'Artes Marciales'}">Artes Marciales</option>
-                        <option value="Movilidad y Flexibilidad" th:selected="${especialidad == 'Movilidad y Flexibilidad'}">Movilidad y Flexibilidad</option>
-                    </select>
-                </div>
-                <div class="col-6 col-md-2">
-                    <label for="inputMinPuntuacion" class="form-label mb-1">Puntuación mín.</label>
-                    <input id="inputMinPuntuacion" type="number" name="minPuntuacion" class="form-control" min="0"
-                           max="5" step="0.1" th:value="${minPuntuacion}">
-                </div>
-                <div class="col-6 col-md-2">
-                    <label for="inputMaxPuntuacion" class="form-label mb-1">Puntuación máx.</label>
-                    <input id="inputMaxPuntuacion" type="number" name="maxPuntuacion" class="form-control" min="0"
-                           max="5" step="0.1" th:value="${maxPuntuacion}">
-                </div>
-                <div class="col-6 col-md-2">
-                    <label for="inputMinExperiencia" class="form-label mb-1">Experiencia mín. (años)</label>
-                    <input id="inputMinExperiencia" type="number" name="minExperiencia" class="form-control" min="0"
-                           max="50" placeholder="Años" th:value="${minExperiencia}">
-                </div>
-                <div class="col-6 col-md-3">
-                    <label for="inputMinPrecio" class="form-label mb-1">Precio mín.</label>
-                    <input id="inputMinPrecio" type="number" name="minPrecio" class="form-control" min="0"
-                           step="1000" placeholder="COP" th:value="${minPrecio}">
-                </div>
-                <div class="col-6 col-md-3">
-                    <label for="inputMaxPrecio" class="form-label mb-1">Precio máx.</label>
-                    <input id="inputMaxPrecio" type="number" name="maxPrecio" class="form-control" min="0"
-                           step="1000" placeholder="COP" th:value="${maxPrecio}">
-                </div>
-                <div class="col-12 col-md-6">
-                    <label for="inputCertificaciones" class="form-label mb-1">Certificaciones</label>
-                    <input id="inputCertificaciones" type="text" name="certificaciones" class="form-control"
-                           placeholder="Ej: ACE, NASM" th:value="${certificaciones}">
-                </div>
-                <div class="col-12 mt-2">
-                    <div class="d-flex gap-2">
-                        <button class="btn btn-primary" type="submit">
-                            <i class="fas fa-search"></i> Buscar
-                        </button>
-                        <a class="btn btn-outline-secondary" th:href="@{/cliente/listaEntrenadores}">Limpiar</a>
+    <div class="page-entrenadores">
+        <!-- Panel de filtros ampliado -->
+        <div class="filters-panel">
+            <h1 class="h3 mb-3 text-dark text-center">Entrenadores Disponibles</h1>
+            <form th:action="@{/cliente/listaEntrenadores}" method="get">
+                <div class="filters-grid">
+                    <!-- Nombre -->
+                    <div>
+                        <label for="inputNombre">Nombre</label>
+                        <input id="inputNombre" type="text" name="nombre" class="form-control"
+                               placeholder="Buscar por nombre" th:value="${nombre}">
+                    </div>
+                    <!-- Especialidad -->
+                    <div>
+                        <label for="inputEspecialidad">Especialidad</label>
+                        <select id="inputEspecialidad" name="especialidad" class="form-select">
+                            <option value="">Todas</option>
+                            <option value="Fuerza y Acondicionamiento"
+                                    th:selected="${especialidad == 'Fuerza y Acondicionamiento'}">Fuerza y Acondicionamiento
+                            </option>
+                            <option value="Pérdida de Peso" th:selected="${especialidad == 'Pérdida de Peso'}">Pérdida de
+                                Peso
+                            </option>
+                            <option value="Ganancia Muscular" th:selected="${especialidad == 'Ganancia Muscular'}">Ganancia
+                                Muscular
+                            </option>
+                            <option value="Yoga" th:selected="${especialidad == 'Yoga'}">Yoga</option>
+                            <option value="Pilates" th:selected="${especialidad == 'Pilates'}">Pilates</option>
+                            <option value="CrossFit" th:selected="${especialidad == 'CrossFit'}">CrossFit</option>
+                            <option value="Entrenamiento Funcional"
+                                    th:selected="${especialidad == 'Entrenamiento Funcional'}">Entrenamiento Funcional
+                            </option>
+                            <option value="Cardio y Resistencia"
+                                    th:selected="${especialidad == 'Cardio y Resistencia'}">Cardio y Resistencia
+                            </option>
+                            <option value="Deportes Específicos"
+                                    th:selected="${especialidad == 'Deportes Específicos'}">Deportes Específicos
+                            </option>
+                            <option value="Rehabilitación" th:selected="${especialidad == 'Rehabilitación'}">Rehabilitación
+                            </option>
+                            <option value="Nutrición Deportiva" th:selected="${especialidad == 'Nutrición Deportiva'}">Nutrición
+                                Deportiva
+                            </option>
+                            <option value="Entrenamiento Personal" th:selected="${especialidad == 'Entrenamiento Personal'}">
+                                Entrenamiento Personal
+                            </option>
+                            <option value="Powerlifting" th:selected="${especialidad == 'Powerlifting'}">Powerlifting
+                            </option>
+                            <option value="Calistenia" th:selected="${especialidad == 'Calistenia'}">Calistenia</option>
+                            <option value="Running" th:selected="${especialidad == 'Running'}">Running</option>
+                            <option value="Ciclismo" th:selected="${especialidad == 'Ciclismo'}">Ciclismo</option>
+                            <option value="Natación" th:selected="${especialidad == 'Natación'}">Natación</option>
+                            <option value="Boxeo" th:selected="${especialidad == 'Boxeo'}">Boxeo</option>
+                            <option value="Artes Marciales" th:selected="${especialidad == 'Artes Marciales'}">Artes
+                                Marciales
+                            </option>
+                            <option value="Movilidad y Flexibilidad"
+                                    th:selected="${especialidad == 'Movilidad y Flexibilidad'}">Movilidad y Flexibilidad
+                            </option>
+                        </select>
+                    </div>
+                    <!-- Puntuación mínima -->
+                    <div>
+                        <label for="inputMinPuntuacion">Puntuación mín.</label>
+                        <input id="inputMinPuntuacion" type="number" name="minPuntuacion" class="form-control" min="0"
+                               max="5" step="0.1" th:value="${minPuntuacion}">
+                    </div>
+                    <!-- Puntuación máxima -->
+                    <div>
+                        <label for="inputMaxPuntuacion">Puntuación máx.</label>
+                        <input id="inputMaxPuntuacion" type="number" name="maxPuntuacion" class="form-control" min="0"
+                               max="5" step="0.1" th:value="${maxPuntuacion}">
+                    </div>
+                    <!-- Experiencia mínima -->
+                    <div>
+                        <label for="inputMinExperiencia">Experiencia mín.</label>
+                        <input id="inputMinExperiencia" type="number" name="minExperiencia" class="form-control" min="0"
+                               max="50" th:value="${minExperiencia}" placeholder="Años">
+                    </div>
+                    <!-- Precio mínimo -->
+                    <div>
+                        <label for="inputMinPrecio">Precio mín.</label>
+                        <input id="inputMinPrecio" type="number" name="minPrecio" class="form-control" min="0"
+                               step="1000" th:value="${minPrecio}" placeholder="COP">
+                    </div>
+                    <!-- Precio máximo -->
+                    <div>
+                        <label for="inputMaxPrecio">Precio máx.</label>
+                        <input id="inputMaxPrecio" type="number" name="maxPrecio" class="form-control" min="0"
+                               step="1000" th:value="${maxPrecio}" placeholder="COP">
+                    </div>
+                    <!-- Certificaciones -->
+                    <div class="span-2" style="grid-column:span 2;">
+                        <label for="inputCertificaciones">Certificaciones</label>
+                        <input id="inputCertificaciones" type="text" name="certificaciones" class="form-control"
+                               placeholder="Ej: ACE, NASM" th:value="${certificaciones}">
                     </div>
                 </div>
-            </div>
-        </form>
-    </div>
-
-    <div class="container">
-        <div class="row" th:if="${#lists.isEmpty(entrenadores)}">
-            <div class="col-12 d-flex justify-content-center">
-                <div class="alert alert-info text-center w-50 mt-5" role="alert">
-                    <strong>Aún no hay entrenadores disponibles</strong><br>
-                    Cuando haya entrenadores, aquí se mostrarán.
+                <div class="filters-actions justify-content-center mt-3">
+                    <button class="btn btn-primary btn-search-wide" type="submit"><i class="fas fa-search me-1"></i>
+                        Buscar
+                    </button>
+                    <a class="btn btn-outline-secondary btn-search-wide" th:href="@{/cliente/listaEntrenadores}"><i
+                            class="fas fa-eraser me-1"></i> Limpiar</a>
                 </div>
-            </div>
+            </form>
         </div>
-        <div class="row" th:if="${!#lists.isEmpty(entrenadores)}">
-            <th:block th:each="entrenador : ${entrenadores}">
-                <div class="col-12 col-md-4 mb-5 d-flex">
-                    <div class="trainer-card w-100">
+
+        <!-- Grid de entrenadores -->
+        <div class="entrenadores-grid-wrapper" th:if="${!#lists.isEmpty(entrenadores)}">
+            <div class="entrenadores-grid">
+                <th:block th:each="entrenador : ${entrenadores}">
+                    <div class="trainer-card">
                         <div class="trainer-header">
                             <div class="trainer-avatar-wrapper">
                                 <div class="ring">
@@ -141,7 +162,7 @@
                                     </span>
                                 </div>
                                 <div class="trainer-meta-item" th:if="${entrenador.precioMinimo != null or entrenador.precioMaximo != null}">
-                                    <h6>Precio por sesión</h6>
+                                    <h6>Precio sesión</h6>
                                     <span th:if="${entrenador.precioMinimo != null and entrenador.precioMaximo != null}"
                                           th:text="${#numbers.formatDecimal(entrenador.precioMinimo, 0, 'COMMA', 0, 'POINT')} + ' - ' + ${#numbers.formatDecimal(entrenador.precioMaximo, 0, 'COMMA', 0, 'POINT')} + ' COP'">Rango</span>
                                     <span th:if="${entrenador.precioMinimo != null and entrenador.precioMaximo == null}"
@@ -165,8 +186,14 @@
                             </div>
                         </div>
                     </div>
-                </div>
-            </th:block>
+                </th:block>
+            </div>
+        </div>
+
+        <!-- Mensaje cuando no hay entrenadores -->
+        <div th:if="${#lists.isEmpty(entrenadores)}" class="alert alert-info text-center no-entrenadores-alert"
+             role="alert">
+            <strong>Aún no hay entrenadores disponibles</strong><br>Cuando haya entrenadores, aquí se mostrarán.
         </div>
     </div>
 
@@ -233,6 +260,24 @@
                         <i class="fas fa-info-circle me-2"></i> El entrenador aún no ha agregado una descripción
                         personal.
                     </div>
+
+                    <!-- Sección Comentarios -->
+                    <div class="mb-3">
+                        <h6 class="text-success mb-3"><i class="fas fa-comments me-2"></i> Opiniones de Clientes</h6>
+                        <div id="comentariosLoader" class="text-center py-3" style="display:none;">
+                            <div class="spinner-border text-success" role="status">
+                                <span class="sr-only">Cargando...</span>
+                            </div>
+                            <p class="mt-2 mb-0 text-muted small">Cargando comentarios...</p>
+                        </div>
+                        <div id="comentariosError" class="alert alert-danger py-2 px-3" style="display:none;"></div>
+                        <div id="comentariosVacio" class="alert alert-info py-2 px-3" style="display:none;">
+                            <i class="fas fa-info-circle me-1"></i> Aún no hay comentarios para este entrenador.
+                        </div>
+                        <div id="comentariosLista" class="comentarios-lista" style="max-height:300px; overflow-y:auto;">
+                            <!-- Comentarios se insertan aquí -->
+                        </div>
+                    </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
@@ -275,50 +320,142 @@
 
 
     <script>
-        // Script para cargar info del entrenador y abrir modal solo si carga OK
+        // =========================================================
+        // Funciones utilitarias (solo una vez, evitar duplicados)
+        // =========================================================
+        function abrirVisualizadorPDF(rutaPDF, nombreArchivo) {
+            document.getElementById('pdfTitulo').textContent = nombreArchivo;
+            document.getElementById('pdfViewer').src = rutaPDF;
+            document.getElementById('pdfDownloadLink').href = rutaPDF;
+            document.getElementById('pdfDownloadLink').download = nombreArchivo;
+            if (window.jQuery && typeof jQuery.fn.modal === 'function') {
+                jQuery('#modalVisualizadorPDF').modal('show');
+            } else if (window.bootstrap && window.bootstrap.Modal) {
+                window.bootstrap.Modal.getOrCreateInstance(document.getElementById('modalVisualizadorPDF')).show();
+            }
+        }
+
+        function formatearFecha(fechaIso) {
+            if (!fechaIso) return '';
+            try {
+                const d = new Date(fechaIso);
+                if (isNaN(d.getTime())) return '';
+                return `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}/${d.getFullYear()} ${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
+            } catch (e) {
+                return '';
+            }
+        }
+
+        function construirEstrellas(valor) {
+            if (valor == null || isNaN(valor)) return '<span class="text-muted small">Sin calificación</span>';
+            const full = Math.floor(valor), frac = valor - full;
+            let html = '';
+            for (let i = 1; i <= 5; i++) {
+                if (i <= full) html += '<i class="fas fa-star text-warning"></i>';
+                else if (i === full + 1 && frac >= 0.5) html += '<i class="fas fa-star-half-alt text-warning"></i>';
+                else html += '<i class="far fa-star text-warning"></i>';
+            }
+            return `<span class="me-2 fw-semibold">${valor.toFixed(1)}</span>${html}`;
+        }
+
+        async function cargarComentariosEntrenador(id) {
+            const loader = document.getElementById('comentariosLoader');
+            const lista = document.getElementById('comentariosLista');
+            const vacio = document.getElementById('comentariosVacio');
+            const errorBox = document.getElementById('comentariosError');
+            if (!loader || !lista) return; // seguridad
+            loader.style.display = 'block';
+            lista.innerHTML = '';
+            vacio.style.display = 'none';
+            errorBox.style.display = 'none';
+            try {
+                const resp = await fetch(`/api/cliente/entrenador/${id}/comentarios`, {credentials: 'same-origin'});
+                if (!resp.ok) throw new Error('HTTP ' + resp.status);
+                const data = await resp.json();
+                loader.style.display = 'none';
+                if (!Array.isArray(data) || data.length === 0) {
+                    vacio.style.display = 'block';
+                    return;
+                }
+                const fragment = document.createDocumentFragment();
+                data.forEach(c => {
+                    const card = document.createElement('div');
+                    card.className = 'comentario-item mb-3 p-3 rounded shadow-sm';
+                    card.style.border = '1px solid #e3e6f0';
+                    const header = `<div class="d-flex justify-content-between align-items-start mb-2"><div class="fw-semibold">${c.clienteNombre ? c.clienteNombre : 'Cliente'}</div><div class="text-end">${construirEstrellas(c.calificacion)}</div></div>`;
+                    const cuerpo = `<p class="mb-2" style="white-space:pre-wrap;">${c.texto ? c.texto : '<span class=\"text-muted\">(Sin texto)</span>'}</p>`;
+                    const pie = `<div class="text-muted small"><i class="far fa-clock me-1"></i>${formatearFecha(c.fechaCreacion)}</div>`;
+                    card.innerHTML = header + cuerpo + pie;
+                    fragment.appendChild(card);
+                });
+                lista.appendChild(fragment);
+            } catch (err) {
+                loader.style.display = 'none';
+                errorBox.textContent = 'No se pudieron cargar los comentarios: ' + err.message;
+                errorBox.style.display = 'block';
+            }
+        }
+
+        function resetModal() {
+            const estrellasVacias = '<i class="far fa-star text-warning"></i>'.repeat(5);
+            const ids = ['modalEntrenadorFoto', 'modalEntrenadorNombre', 'modalEntrenadorEmail', 'modalEntrenadorEspecialidades', 'modalEntrenadorExperiencia', 'modalEntrenadorCalificacion', 'modalEstrellas', 'modalEntrenadorTelefono', 'modalEntrenadorDescripcion'];
+            ids.forEach(id => {
+                const el = document.getElementById(id);
+                if (el) {
+                    if (id === 'modalEntrenadorFoto') el.src = '/img/fotoPerfil.png';
+                    else if (id === 'modalEstrellas') el.innerHTML = estrellasVacias;
+                    else el.textContent = '';
+                }
+            });
+            ['modalEntrenadorTelefonoContainer', 'modalEntrenadorPrecioContainer', 'modalEntrenadorCertificacionesContainer', 'modalEntrenadorDescripcionContainer', 'modalSinDescripcion'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.style.display = 'none';
+            });
+            const certs = document.getElementById('modalEntrenadorCertificaciones');
+            if (certs) certs.innerHTML = '';
+            const comLista = document.getElementById('comentariosLista');
+            if (comLista) comLista.innerHTML = '';
+            const comError = document.getElementById('comentariosError');
+            if (comError) comError.style.display = 'none';
+            const comVacio = document.getElementById('comentariosVacio');
+            if (comVacio) comVacio.style.display = 'none';
+            const loader = document.getElementById('comentariosLoader');
+            if (loader) loader.style.display = 'none';
+        }
+
+        function mostrarModal() {
+            const modal = document.getElementById('modalInfoEntrenador');
+            if (window.jQuery && typeof jQuery.fn.modal === 'function') {
+                jQuery(modal).modal('show');
+            } else if (window.bootstrap && window.bootstrap.Modal) {
+                window.bootstrap.Modal.getOrCreateInstance(modal).show();
+            } else {
+                modal.style.display = 'block';
+            }
+        }
+
+        // =========================================================
+        // Listener único para los botones Detalles
+        // =========================================================
         document.querySelectorAll('.btn-ver-info-entrenador').forEach(btn => {
-            btn.addEventListener('click', async function (e) {
+            btn.addEventListener('click', async (e) => {
                 e.preventDefault();
-                const entrenadorId = this.getAttribute('data-entrenador-id');
+                const entrenadorId = btn.getAttribute('data-entrenador-id');
                 if (!entrenadorId) return;
-
-                // Resetear contenido a un estado base antes de cargar
-                document.getElementById('modalEntrenadorFoto').src = '/img/fotoPerfil.png';
-                document.getElementById('modalEntrenadorNombre').textContent = '';
-                document.getElementById('modalEntrenadorEmail').textContent = '';
-                document.getElementById('modalEntrenadorEspecialidades').textContent = '';
-                document.getElementById('modalEntrenadorExperiencia').textContent = '';
-                document.getElementById('modalEntrenadorCalificacion').textContent = '0.0';
-                document.getElementById('modalEstrellas').innerHTML = '<i class="far fa-star text-warning"></i>'.repeat(5);
-                document.getElementById('modalEntrenadorTelefono').textContent = '';
-                document.getElementById('modalEntrenadorTelefonoContainer').style.display = 'none';
-                document.getElementById('modalEntrenadorCertificaciones').textContent = '';
-                document.getElementById('modalEntrenadorCertificacionesContainer').style.display = 'none';
-                document.getElementById('modalEntrenadorDescripcion').textContent = '';
-                document.getElementById('modalEntrenadorDescripcionContainer').style.display = 'none';
-                document.getElementById('modalSinDescripcion').style.display = 'none';
-
+                resetModal();
                 try {
-                    const response = await fetch(`/api/cliente/entrenador/${entrenadorId}/info`, { credentials: 'same-origin' });
-                    if (!response.ok) {
-                        const txt = await response.text();
-                        console.error('Modal info fetch failed', response.status, txt);
-                        throw new Error('Error al cargar información');
-                    }
-
-                    const info = await response.json();
-
-                    // Actualizar modal con datos reales
+                    const resp = await fetch(`/api/cliente/entrenador/${entrenadorId}/info`, {credentials: 'same-origin'});
+                    if (!resp.ok) throw new Error('Error al cargar información');
+                    const info = await resp.json();
+                    // Cargar datos básicos
                     document.getElementById('modalEntrenadorFoto').src = info.fotoPerfilUrl || '/img/fotoPerfil.png';
                     document.getElementById('modalEntrenadorNombre').textContent = info.nombre || '';
                     document.getElementById('modalEntrenadorEmail').textContent = info.email || '';
                     document.getElementById('modalEntrenadorEspecialidades').textContent = info.especialidades || 'No especificado';
                     document.getElementById('modalEntrenadorExperiencia').textContent = (info.experiencia || 0) + ' años';
-
                     const cal = typeof info.calificacionPromedio === 'number' ? info.calificacionPromedio : 0;
                     document.getElementById('modalEntrenadorCalificacion').textContent = cal.toFixed(1);
-                    const full = Math.floor(cal);
-                    const frac = cal - full;
+                    const full = Math.floor(cal), frac = cal - full;
                     let estrellasHTML = '';
                     for (let i = 1; i <= 5; i++) {
                         if (i <= full) estrellasHTML += '<i class="fas fa-star text-warning"></i>';
@@ -326,117 +463,62 @@
                         else estrellasHTML += '<i class="far fa-star text-warning"></i>';
                     }
                     document.getElementById('modalEstrellas').innerHTML = estrellasHTML;
-
-                    const telefono = (info.telefono || '').toString().trim();
-                    if (telefono) {
-                        document.getElementById('modalEntrenadorTelefono').textContent = telefono;
+                    const tel = (info.telefono || '').trim();
+                    if (tel) {
+                        document.getElementById('modalEntrenadorTelefono').textContent = tel;
                         document.getElementById('modalEntrenadorTelefonoContainer').style.display = 'block';
                     }
-
-                    // Mostrar precio si está disponible
-                    const precioMin = info.precioMinimo;
-                    const precioMax = info.precioMaximo;
-                    if (precioMin != null || precioMax != null) {
-                        let precioTexto = '';
-                        if (precioMin != null && precioMax != null) {
-                            precioTexto = `$${precioMin.toLocaleString('es-CO')} - $${precioMax.toLocaleString('es-CO')} COP`;
-                        } else if (precioMin != null) {
-                            precioTexto = `Desde $${precioMin.toLocaleString('es-CO')} COP`;
-                        } else if (precioMax != null) {
-                            precioTexto = `Hasta $${precioMax.toLocaleString('es-CO')} COP`;
-                        }
-                        document.getElementById('modalEntrenadorPrecio').textContent = precioTexto;
+                    const pMin = info.precioMinimo, pMax = info.precioMaximo;
+                    if (pMin != null || pMax != null) {
+                        let txt = '';
+                        if (pMin != null && pMax != null) txt = `$${pMin.toLocaleString('es-CO')} - $${pMax.toLocaleString('es-CO')} COP`;
+                        else if (pMin != null) txt = `Desde $${pMin.toLocaleString('es-CO')} COP`;
+                        else if (pMax != null) txt = `Hasta $${pMax.toLocaleString('es-CO')} COP`;
+                        document.getElementById('modalEntrenadorPrecio').textContent = txt;
                         document.getElementById('modalEntrenadorPrecioContainer').style.display = 'block';
                     }
-
-                    const certificaciones = (info.certificaciones || '').toString().trim();
-                    if (certificaciones) {
-                        const certContainer = document.getElementById('modalEntrenadorCertificaciones');
-                        certContainer.innerHTML = '';
-
-                        // Las certificaciones son rutas de archivos separadas por coma
-                        const archivos = certificaciones.split(',');
-                        archivos.forEach((ruta, index) => {
-                            const nombreArchivo = ruta.split('/').pop();
-
-                            // Crear contenedor para cada certificación
-                            const certItem = document.createElement('div');
-                            certItem.className = 'cert-item d-flex align-items-center justify-content-between p-2 mb-2 bg-light rounded';
-                            certItem.style.border = '1px solid #dee2e6';
-
-                            // Nombre del archivo con icono
-                            const fileInfo = document.createElement('div');
-                            fileInfo.className = 'flex-grow-1';
-                            fileInfo.innerHTML = `<i class="fas fa-file-pdf text-danger me-2"></i><span class="text-dark">${nombreArchivo}</span>`;
-
-                            // Botón para visualizar
-                            const btnVer = document.createElement('button');
-                            btnVer.className = 'btn btn-sm btn-primary';
-                            btnVer.innerHTML = '<i class="fas fa-eye me-1"></i> Ver';
-                            btnVer.onclick = function(e) {
-                                e.preventDefault();
-                                abrirVisualizadorPDF('/' + ruta, nombreArchivo);
-                            };
-
-                            certItem.appendChild(fileInfo);
-                            certItem.appendChild(btnVer);
-                            certContainer.appendChild(certItem);
-                        });
-
-                        document.getElementById('modalEntrenadorCertificacionesContainer').style.display = 'block';
-                    }
-
-                    const desc = (info.descripcion || '').toString().trim();
+                    const desc = (info.descripcion || '').trim();
                     if (desc) {
                         document.getElementById('modalEntrenadorDescripcion').textContent = desc;
                         document.getElementById('modalEntrenadorDescripcionContainer').style.display = 'block';
                     } else {
                         document.getElementById('modalSinDescripcion').style.display = 'block';
                     }
-
-                    // Actualizar formulario de cotización
-                    document.getElementById('modalFormSolicitar').action = `/entrenadores/solicitar/${info.id}`;
-
-                    // Abrir modal solo si todo OK
-                    if (window.jQuery && typeof jQuery.fn.modal === 'function') {
-                        jQuery('#modalInfoEntrenador').modal('show');
-                    } else if (window.bootstrap && window.bootstrap.Modal) {
-                        const modal = document.getElementById('modalInfoEntrenador');
-                        const bsModal = window.bootstrap.Modal.getOrCreateInstance(modal);
-                        bsModal.show();
-                    } else {
-                        // fallback: simulate click if attributes exist
-                        document.getElementById('modalInfoEntrenador').style.display = 'block';
+                    const certs = (info.certificaciones || '').trim();
+                    if (certs) {
+                        const cont = document.getElementById('modalEntrenadorCertificaciones');
+                        cont.innerHTML = '';
+                        certs.split(',').forEach(ruta => {
+                            const nombre = ruta.split('/').pop();
+                            const item = document.createElement('div');
+                            item.className = 'cert-item d-flex align-items-center justify-content-between p-2 mb-2 bg-light rounded';
+                            item.style.border = '1px solid #dee2e6';
+                            const infoDiv = document.createElement('div');
+                            infoDiv.className = 'flex-grow-1';
+                            infoDiv.innerHTML = `<i class=\"fas fa-file-pdf text-danger me-2\"></i><span class=\"text-dark\">${nombre}</span>`;
+                            const btnVer = document.createElement('button');
+                            btnVer.className = 'btn btn-sm btn-primary';
+                            btnVer.innerHTML = '<i class="fas fa-eye me-1"></i> Ver';
+                            btnVer.onclick = (ev) => {
+                                ev.preventDefault();
+                                abrirVisualizadorPDF('/' + ruta, nombre);
+                            };
+                            item.appendChild(infoDiv);
+                            item.appendChild(btnVer);
+                            cont.appendChild(item);
+                        });
+                        document.getElementById('modalEntrenadorCertificacionesContainer').style.display = 'block';
                     }
-
-                } catch (error) {
-                    console.error('Error abriendo modal:', error);
+                    document.getElementById('modalFormSolicitar').action = `/entrenadores/solicitar/${info.id || entrenadorId}`;
+                    // Comentarios
+                    cargarComentariosEntrenador(info.id || entrenadorId);
+                    mostrarModal();
+                } catch (err) {
+                    console.error(err);
                     alert('Error al cargar la información del entrenador');
                 }
             });
         });
-
-        // Función para abrir el visualizador de PDF
-        function abrirVisualizadorPDF(rutaPDF, nombreArchivo) {
-            // Actualizar título del modal
-            document.getElementById('pdfTitulo').textContent = nombreArchivo;
-
-            // Cargar PDF en el iframe
-            document.getElementById('pdfViewer').src = rutaPDF;
-
-            // Configurar enlace de descarga
-            document.getElementById('pdfDownloadLink').href = rutaPDF;
-            document.getElementById('pdfDownloadLink').download = nombreArchivo;
-
-            // Abrir modal de visualización
-            if (window.jQuery && typeof jQuery.fn.modal === 'function') {
-                jQuery('#modalVisualizadorPDF').modal('show');
-            } else if (window.bootstrap && window.bootstrap.Modal) {
-                const modal = document.getElementById('modalVisualizadorPDF');
-                const bsModal = window.bootstrap.Modal.getOrCreateInstance(modal);
-                bsModal.show();
-            }
-        }
     </script>
 </section>
 </body>

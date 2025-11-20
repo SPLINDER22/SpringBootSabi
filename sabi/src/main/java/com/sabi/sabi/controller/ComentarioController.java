@@ -63,7 +63,7 @@ public class ComentarioController {
         return "comentarios/lista";
     }
 
-    // FORM NUEVO comentario: requiere rutina finalizada (opcional si llega rutinaId)
+    // creacion de comentario cuando finaliza rutina (cliente)
     @GetMapping("/comentarios/nuevo")
     public String nuevoComentarioView(@AuthenticationPrincipal UserDetails userDetails,
                                       @RequestParam(value = "rutinaId", required = false) Long rutinaId,

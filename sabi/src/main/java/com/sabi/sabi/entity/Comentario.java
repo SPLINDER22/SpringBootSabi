@@ -3,7 +3,6 @@ package com.sabi.sabi.entity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 import java.time.LocalDateTime;
 
@@ -18,13 +17,13 @@ public class Comentario {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotBlank
+    // Comentario opcional al finalizar rutina (puede ser null o vacío)
     @Column(length = 1000)
     private String texto; // contenido del comentario
 
     @Min(0)
     @Max(5)
-    private Double calificacion; // estrellas 0.0 a 5.0 (permitimos decimales)
+    private Double calificacion; // estrellas 0.0 a 5.0 (permitimos decimales, opcional)
 
     @Column(name = "fecha_creacion", nullable = false)
     private LocalDateTime fechaCreacion;
@@ -51,4 +50,3 @@ public class Comentario {
         }
     }
 }
-

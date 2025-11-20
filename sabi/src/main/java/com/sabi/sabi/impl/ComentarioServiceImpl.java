@@ -72,12 +72,13 @@ public class ComentarioServiceImpl implements ComentarioService {
     @Override
     @Transactional
     public ComentarioDTO crearComentario(ComentarioDTO dto) {
-        if (dto.getCalificacion() == null || dto.getCalificacion() < 0 || dto.getCalificacion() > 5) {
+        // Validar rango solo si se envía calificación
+        if (dto.getCalificacion() != null && (dto.getCalificacion() < 0 || dto.getCalificacion() > 5)) {
             throw new IllegalArgumentException("La calificacion debe estar entre 0 y 5");
         }
         Comentario c = new Comentario();
-        c.setTexto(dto.getTexto());
-        c.setCalificacion(dto.getCalificacion());
+        c.setTexto(dto.getTexto()); // puede ser null o vacío
+        c.setCalificacion(dto.getCalificacion()); // puede ser null
         c.setEstado(dto.getEstado() != null ? dto.getEstado() : true);
         Cliente cliente = clienteRepository.findById(dto.getIdCliente())
                 .orElseThrow(() -> new RuntimeException("Cliente no encontrado: " + dto.getIdCliente()));

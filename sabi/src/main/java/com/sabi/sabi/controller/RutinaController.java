@@ -1,10 +1,12 @@
 package com.sabi.sabi.controller;
 
 import com.sabi.sabi.dto.RutinaDTO;
+import com.sabi.sabi.dto.ComentarioDTO; // nuevo
 import com.sabi.sabi.entity.Usuario;
 import com.sabi.sabi.service.RutinaService;
 import com.sabi.sabi.service.SemanaService;
 import com.sabi.sabi.service.UsuarioService;
+import com.sabi.sabi.service.ComentarioService; // nuevo
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -21,6 +23,8 @@ public class RutinaController {
     private UsuarioService usuarioService;
     @Autowired
     private SemanaService semanaService;
+    @Autowired
+    private ComentarioService comentarioService; // nuevo
 
     @GetMapping("/rutina/cliente")
     public String verRutinaCliente(@AuthenticationPrincipal UserDetails userDetails, Model model) {
@@ -82,6 +86,59 @@ public class RutinaController {
         Usuario usuario = usuarioService.obtenerPorEmail(userDetails.getUsername());
         rutinaService.finalizarRutinaCliente(idRutina, usuario.getId());
         redirectAttributes.addFlashAttribute("success", "Rutina finalizada. Ya puedes elegir otra.");
+        return "redirect:/rutina/cliente";
+    }
+
+    @PostMapping("/rutinas/finalizar-comentario/{idRutina}")
+    public String finalizarRutinaConComentario(@PathVariable Long idRutina,
+                                               @AuthenticationPrincipal UserDetails userDetails,
+                                               @RequestParam(name = "texto", required = false) String texto,
+                                               @RequestParam(name = "calificacion", required = false) Double calificacion,
+                                               RedirectAttributes redirectAttributes) {
+        if (userDetails == null) return "redirect:/auth/login";
+        Usuario usuario = usuarioService.obtenerPorEmail(userDetails.getUsername());
+        RutinaDTO rutina = rutinaService.getRutinaById(idRutina);
+        if (rutina == null || rutina.getIdCliente() == null || !rutina.getIdCliente().equals(usuario.getId())) {
+            redirectAttributes.addFlashAttribute("error", "Rutina no válida para finalizar.");
+            return "redirect:/rutina/cliente";
+        }
+        try {
+            rutinaService.finalizarRutinaCliente(idRutina, usuario.getId());
+            boolean hayTexto = texto != null && !texto.isBlank();
+            boolean hayCal = calificacion != null;
+            if (hayCal && (calificacion < 0 || calificacion > 5)) {
+                redirectAttributes.addFlashAttribute("error", "La calificación debe estar entre 0 y 5.");
+                return "redirect:/rutina/cliente";
+            }
+            if (hayTexto || hayCal) {
+                if (rutina.getIdEntrenador() != null) {
+                    ComentarioDTO dto = new ComentarioDTO();
+                    dto.setTexto(hayTexto ? texto.trim() : null);
+                    dto.setCalificacion(hayCal ? calificacion : null);
+                    dto.setIdCliente(usuario.getId());
+                    dto.setIdEntrenador(rutina.getIdEntrenador());
+                    dto.setIdRutina(idRutina);
+                    try {
+                        comentarioService.crearComentario(dto);
+                        if (hayTexto && hayCal) {
+                            redirectAttributes.addFlashAttribute("success", "Rutina finalizada, comentario y calificación registrados.");
+                        } else if (hayTexto) {
+                            redirectAttributes.addFlashAttribute("success", "Rutina finalizada y comentario registrado.");
+                        } else {
+                            redirectAttributes.addFlashAttribute("success", "Rutina finalizada y calificación registrada.");
+                        }
+                    } catch (Exception ex) {
+                        redirectAttributes.addFlashAttribute("warning", "Rutina finalizada, pero el comentario/calificación no se guardó: " + ex.getMessage());
+                    }
+                } else {
+                    redirectAttributes.addFlashAttribute("warning", "Rutina finalizada. No se encontró entrenador para asociar el comentario/calificación.");
+                }
+            } else {
+                redirectAttributes.addFlashAttribute("success", "Rutina finalizada correctamente.");
+            }
+        } catch (Exception ex) {
+            redirectAttributes.addFlashAttribute("error", "No se pudo finalizar la rutina: " + ex.getMessage());
+        }
         return "redirect:/rutina/cliente";
     }
 

@@ -1,5 +1,5 @@
 /* Estilos para tarjetas de la lista de entrenadores */
-.trainer-card {background: linear-gradient(135deg,#ffffff,#f3f9ff); border: none; border-radius: 22px; position: relative; overflow: hidden; box-shadow: 0 10px 20px -5px rgba(0,0,0,.15); transition: transform .3s ease, box-shadow .3s ease; min-height:430px;}
+.trainer-card {background: linear-gradient(135deg,#ffffff,#f3f9ff); border: none; border-radius: 22px; position: relative; overflow: hidden; box-shadow: 0 10px 20px -5px rgba(0,0,0,.15); transition: transform .3s ease, box-shadow .3s ease; min-height:430px; display:flex; flex-direction:column;}
 .trainer-card:hover {transform: translateY(-6px); box-shadow:0 18px 30px -8px rgba(0,0,0,.25);}
 .trainer-avatar-wrapper {width: 120px; height: 120px; margin: -50px auto 14px; position: relative;}
 .trainer-avatar-wrapper .ring {position:absolute; inset:0; border-radius:50%; padding:4px; background: linear-gradient(135deg,#00c176,#1e7e34);}
@@ -17,7 +17,29 @@
 .btn-cotizar:hover {background:#129553;}
 .btn-detalles {flex:1; background:#ffffff; border:2px solid #19b869; color:#19b869; font-weight:600; border-radius:14px; padding:10px 14px;}
 .btn-detalles:hover {background:#19b869; color:#fff;}
-.trainer-footer {padding:0 18px 18px;}
+.trainer-footer {padding:0 18px 18px; display:flex; flex-direction:column; flex:1;}
 .floating-badge {position:absolute; top:12px; right:14px; background:#19b869; color:#fff; padding:5px 12px; border-radius:20px; font-size:.7rem; font-weight:600; letter-spacing:.5px; box-shadow:0 4px 8px rgba(0,0,0,.15);}
 .rating-value {font-size:.75rem; font-weight:700; color:#555; background:#e9f7ef; padding:3px 8px; border-radius:12px;}
 @media (max-width: 768px){.trainer-meta{flex-direction:column;} .trainer-avatar-wrapper{margin:-55px auto 18px;} .trainer-avatar-wrapper{width:110px;height:110px;} .trainer-header { padding-top:90px; }}
+
+/* NUEVO: Layout ampliado y responsive */
+.page-entrenadores {max-width:100%; padding:0 24px 40px;}
+.filters-panel {max-width:1800px; margin:0 auto 1.5rem; background:#ffffff; border:1px solid #e2e8f0; border-radius:20px; padding:22px 26px; box-shadow:0 8px 22px -6px rgba(0,0,0,.12);}
+.filters-panel h1 {font-weight:700; letter-spacing:.5px;}
+.filters-grid {display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:16px; align-items:end;}
+.filters-actions {display:flex; gap:12px; flex-wrap:wrap; margin-top:8px;}
+.entrenadores-grid-wrapper {max-width:1900px; margin:0 auto;}
+.entrenadores-grid {display:grid; gap:34px; grid-template-columns:repeat(auto-fit,minmax(360px,1fr)); align-items:stretch;}
+@media (max-width:1400px){ .entrenadores-grid{grid-template-columns:repeat(auto-fit,minmax(340px,1fr));} }
+@media (max-width:1100px){ .entrenadores-grid{grid-template-columns:repeat(auto-fit,minmax(320px,1fr));} }
+@media (max-width:992px){ .entrenadores-grid{grid-template-columns:repeat(auto-fit,minmax(300px,1fr));} }
+@media (max-width:768px){ .entrenadores-grid{grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:26px;} }
+@media (max-width:576px){ .entrenadores-grid{grid-template-columns:1fr; gap:22px;} .filters-panel{padding:18px 18px;} }
+
+/* Ajustes de inputs y selects para la grilla */
+.filters-panel .form-control, .filters-panel .form-select {border-radius:14px; border:1px solid #cfd8dc;}
+.filters-panel label {font-size:.75rem; font-weight:600; text-transform:uppercase; letter-spacing:.5px; color:#256249; margin-bottom:4px;}
+.btn-search-wide {padding:10px 22px; font-weight:600; border-radius:14px;}
+
+/* Mejora visual de estado sin entrenadores */
+.no-entrenadores-alert {max-width:900px; margin:40px auto; border-radius:18px;}

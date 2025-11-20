@@ -2,6 +2,7 @@ package com.sabi.sabi.controller;
 
 import java.util.List;
 
+import com.sabi.sabi.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ContentDisposition;
 import org.springframework.http.HttpHeaders;
@@ -24,13 +25,11 @@ import com.sabi.sabi.dto.EntrenadorDTO;
 import com.sabi.sabi.dto.RutinaDTO;
 import com.sabi.sabi.dto.SuscripcionDTO;
 import com.sabi.sabi.security.CustomUserDetails;
-import com.sabi.sabi.service.ClienteService;
-import com.sabi.sabi.service.DiaService;
-import com.sabi.sabi.service.DiagnosticoService;
-import com.sabi.sabi.service.EntrenadorService;
-import com.sabi.sabi.service.ExcelService;
-import com.sabi.sabi.service.RutinaService;
-import com.sabi.sabi.service.SuscripcionService;
+
+
+import java.util.HashMap; // nuevo
+import java.util.Map; // nuevo
+import java.util.stream.Collectors; // nuevo
 
 @Controller
 public class ClienteController {
@@ -52,6 +51,8 @@ public class ClienteController {
     private RutinaService rutinaService;
     @Autowired
     private DiaService diaService;
+    @Autowired
+    private ComentarioService comentarioService; // nuevo
 
     @GetMapping("/cliente/dashboard")
     public String clienteDashboard(Model model) {
@@ -194,7 +195,8 @@ public class ClienteController {
 
         DiagnosticoDTO diagnosticoActual = clienteService.getDiagnosticoActualByClienteId(clienteId);
         if (diagnosticoActual == null) {
-            return "redirect:/diagnostico/cliente";
+            // Redirect correcto a formulario de diagnóstico
+            return "redirect:/cliente/diagnostico/crear?motivo=obligatorio";
         }
         boolean tieneDiagnostico = diagnosticoActual != null;
 
@@ -236,6 +238,11 @@ public class ClienteController {
         model.addAttribute("minPrecio", minPrecio);
         model.addAttribute("maxPrecio", maxPrecio);
         model.addAttribute("certificaciones", certificaciones);
+        // Limpiar posible atributo 'error' heredado de un flash anterior que solo contenga 'Error'
+        Object err = model.getAttribute("error");
+        if (err instanceof String str && str.trim().equalsIgnoreCase("Error")) {
+            model.addAttribute("error", null);
+        }
         return "cliente/listaEntrenadores";
     }
 
@@ -450,6 +457,57 @@ public class ClienteController {
             info.put("id", entrenador.getId());
 
             return org.springframework.http.ResponseEntity.ok(info);
+        } catch (Exception e) {
+            return org.springframework.http.ResponseEntity.status(500).body("Error: " + e.getMessage());
+        }
+    }
+
+    @GetMapping("/api/cliente/entrenador/{entrenadorId}/comentarios")
+    @ResponseBody
+    public org.springframework.http.ResponseEntity<?> obtenerComentariosEntrenador(@PathVariable Long entrenadorId) {
+        try {
+            var entrenador = entrenadorService.getEntrenadorById(entrenadorId);
+            if (entrenador == null) {
+                return org.springframework.http.ResponseEntity.notFound().build();
+            }
+            var lista = comentarioService.getComentariosPorEntrenador(entrenadorId);
+            // Ordenar por fechaCreacion DESC (nulls al final) y deduplicar por idComentario
+            lista = lista.stream()
+                    .filter(c -> c != null)
+                    .sorted((a,b) -> {
+                        if (a.getFechaCreacion()==null && b.getFechaCreacion()==null) return 0;
+                        if (a.getFechaCreacion()==null) return 1;
+                        if (b.getFechaCreacion()==null) return -1;
+                        return b.getFechaCreacion().compareTo(a.getFechaCreacion());
+                    })
+                    .collect(java.util.stream.Collectors.toMap(
+                            c -> c.getIdComentario(),
+                            c -> c,
+                            (c1,c2) -> c1, // si hay duplicado id tomar primero
+                            java.util.LinkedHashMap::new))
+                    .values().stream().toList();
+            java.util.List<java.util.Map<String, Object>> respuesta = lista.stream().map(c -> {
+                java.util.Map<String, Object> m = new java.util.HashMap<>();
+                m.put("idComentario", c.getIdComentario());
+                m.put("texto", c.getTexto());
+                m.put("calificacion", c.getCalificacion());
+                m.put("fechaCreacion", c.getFechaCreacion());
+                String nombreCliente = null;
+                if (c.getIdCliente() != null) {
+                    try {
+                        var cli = clienteService.getClienteById(c.getIdCliente());
+                        if (cli != null) {
+                            nombreCliente = cli.getNombre();
+                            if (cli.getApellido() != null && !cli.getApellido().isBlank()) {
+                                nombreCliente += " " + cli.getApellido();
+                            }
+                        }
+                    } catch (Exception ignored) {}
+                }
+                m.put("clienteNombre", nombreCliente);
+                return m;
+            }).toList();
+            return org.springframework.http.ResponseEntity.ok(respuesta);
         } catch (Exception e) {
             return org.springframework.http.ResponseEntity.status(500).body("Error: " + e.getMessage());
         }

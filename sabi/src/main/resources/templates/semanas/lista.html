@@ -10,33 +10,18 @@
         .action-buttons form { display:inline-block; margin:0; }
         .action-buttons .btn i { margin-right:.25rem; }
         .table thead th { white-space:nowrap; }
-
-        /* Estilo específico para el botón de finalizar rutina (vista cliente) */
-        .btn-finalizar-rutina {
-            display: inline-flex;
-            align-items: center;
-            font-weight: 500;
-            padding: .5rem .9rem;
-            line-height: 1.2;
-            border-width: 1px;
-            box-shadow: 0 1px 2px rgba(0,0,0,.08);
-        }
+        .btn-finalizar-rutina { display: inline-flex; align-items: center; font-weight: 500; padding: .5rem .9rem; line-height: 1.2; border-width: 1px; box-shadow: 0 1px 2px rgba(0,0,0,.08); }
         .btn-finalizar-rutina i { margin-right: .4rem; }
         .btn-finalizar-rutina:hover { filter: brightness(.95); }
         .btn-finalizar-rutina:active { transform: translateY(1px); }
-        @media (max-width: 576px) {
-            .btn-finalizar-rutina { width:100%; margin-top:.5rem; justify-content:center; }
-        }
-
+        @media (max-width: 576px) { .btn-finalizar-rutina { width:100%; margin-top:.5rem; justify-content:center; } }
         .status-badge {display:inline-flex;align-items:center;font-size:.75rem;padding:.30rem .55rem;border-radius:1rem;font-weight:500;border:1px solid transparent;letter-spacing:.2px}
         .badge-complete{background:#e6ffed;border-color:#b2f2bb;color:#166534}
         .badge-pending{background:#f8f9fa;border-color:#d9dde1;color:#6c757d}
         .status-badge i{font-size:.9rem;margin-right:.35rem}
         .btn-toggle-completa i{margin-right:.25rem}
         .btn-toggle-completa{min-width:110px}
-        @media (max-width: 576px){
-            .btn-toggle-completa{width:100%;margin-bottom:.4rem}
-        }
+        @media (max-width: 576px){ .btn-toggle-completa{width:100%;margin-bottom:.4rem} }
     </style>
 </head>
 <body th:replace="layout/layout :: layout('Lista de Semanas', ~{::section})">
@@ -55,13 +40,11 @@
             <a sec:authorize="hasAnyRole('ENTRENADOR')" th:if="${!readonly && rutina != null && rutina.idRutina != null}" th:href="@{/semanas/crear/{idRutina}(idRutina=${rutina.idRutina})}" class="btn btn-success">
                 <i class="fas fa-plus"></i> Nueva Semana
             </a>
-            <form sec:authorize="hasAnyRole('CLIENTE')" th:if="${!readonly}" th:action="@{/rutinas/finalizar/{idRutina}(idRutina=${rutina.idRutina})}" method="post" onsubmit="return confirm('¿Seguro que deseas finalizar esta rutina? Después podrás adoptar otra.')">
-                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
-                <button type="submit" class="btn btn-danger btn-finalizar-rutina" title="Finalizar esta rutina">
-                    <i class="fas fa-flag-checkered"></i>
-                    <span>Finalizar Rutina</span>
-                </button>
-            </form>
+            <!-- Botón para modal finalizar rutina con comentario (solo cliente en modo edición) -->
+            <button sec:authorize="hasAnyRole('CLIENTE')" th:if="${!readonly}" type="button" class="btn btn-danger btn-finalizar-rutina" data-bs-toggle="modal" data-bs-target="#modalFinalizarRutina" data-toggle="modal" data-target="#modalFinalizarRutina" title="Finalizar esta rutina">
+                <i class="fas fa-flag-checkered"></i>
+                <span>Finalizar Rutina</span>
+            </button>
         </div>
     </div>
 
@@ -80,19 +63,16 @@
             <td th:text="${semana.descripcion}"></td>
             <td th:text="${semana.numeroDias}"></td>
             <td>
-                <!-- Vista cliente edición -->
                 <div sec:authorize="hasAnyRole('CLIENTE')" th:if="${!readonly}">
                     <a th:href="@{/dias/detallar/{idSemana}(idSemana=${semId}, readonly=${readonly})}" class="btn btn-sm btn-info">
                         <i class="fas fa-calendar-day"></i> Ver Días
                     </a>
                 </div>
-                <!-- Vista cliente readonly (solo navegar) -->
                 <div sec:authorize="hasAnyRole('CLIENTE')" th:if="${readonly}" class="action-buttons">
                     <a th:href="@{/dias/detallar/{idSemana}(idSemana=${semId}, readonly=${readonly})}" class="btn btn-sm btn-info">
                         <i class="fas fa-calendar-day"></i> Ver Días
                     </a>
                 </div>
-                <!-- Vista entrenador modo edición -->
                 <div sec:authorize="hasAnyRole('ENTRENADOR')" class="action-buttons" th:if="${!readonly}">
                     <a th:href="@{/dias/detallar/{idSemana}(idSemana=${semId}, readonly=${readonly})}" class="btn btn-sm btn-info">
                         <i class="fas fa-calendar-day"></i> Ver Días
@@ -107,7 +87,6 @@
                         </button>
                     </form>
                 </div>
-                <!-- Vista entrenador modo lectura -->
                 <div sec:authorize="hasAnyRole('ENTRENADOR')" th:if="${readonly}" class="action-buttons">
                     <a th:href="@{/dias/detallar/{idSemana}(idSemana=${semId}, readonly=${readonly})}" class="btn btn-sm btn-info">
                         <i class="fas fa-calendar-day"></i> Ver Días
@@ -120,6 +99,83 @@
         </tr>
         </tbody>
     </table>
+
+    <!-- Modal Finalizar Rutina con Comentario -->
+    <div class="modal fade" id="modalFinalizarRutina" tabindex="-1" aria-labelledby="modalFinalizarRutinaLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalFinalizarRutinaLabel"><i class="fas fa-flag-checkered me-2"></i>Finalizar Rutina</h5>
+                    <!-- Botón cierre compatible con BS4 y BS5 -->
+                    <button type="button" class="btn-close close" data-bs-dismiss="modal" data-dismiss="modal" aria-label="Cerrar"><span aria-hidden="true">&times;</span></button>
+                </div>
+                <form th:action="@{/rutinas/finalizar-comentario/{idRutina}(idRutina=${rutina.idRutina})}" method="post" id="formFinalizarRutina">
+                    <div class="modal-body">
+                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                        <p class="mb-3">Estás por finalizar la rutina <strong th:text="${rutina.nombre}"></strong>. Después podrás adoptar otra. Puedes (opcional) dejar un comentario y calificación para tu entrenador.</p>
+                        <div class="mb-3">
+                            <label for="textoComentario" class="form-label">Comentario (opcional)</label>
+                            <textarea class="form-control" id="textoComentario" name="texto" rows="4" placeholder="¿Cómo fue tu experiencia con esta rutina?" maxlength="500"></textarea>
+                            <small class="text-muted">Máx 500 caracteres.</small>
+                        </div>
+                        <div class="mb-3">
+                            <label for="calificacion" class="form-label">Calificación (0 - 5, opcional)</label>
+                            <div class="d-flex align-items-center">
+                                <input type="number" class="form-control" style="max-width:140px" id="calificacion" name="calificacion" min="0" max="5" step="0.5" placeholder="Ej: 4.5" />
+                                <div class="ms-3" id="previewEstrellas"></div>
+                            </div>
+                            <small class="text-muted">Puedes dejarlo vacío si no deseas calificar.</small>
+                        </div>
+                        <div class="alert alert-info py-2" id="infoSinComentario" style="display:none;">
+                            Se finalizará la rutina sin comentario ni calificación.
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal" data-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-danger"><i class="fas fa-check"></i> Confirmar Finalización</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script th:inline="javascript">
+        // Mostrar mensaje si ambos campos están vacíos antes de enviar
+        const txt = document.getElementById('textoComentario');
+        const calInput = document.getElementById('calificacion');
+        const infoBox = document.getElementById('infoSinComentario');
+        const previewEstrellas = document.getElementById('previewEstrellas');
+        function actualizarInfo(){
+            const textoVal = txt.value.trim();
+            const calVal = calInput.value;
+            if(!textoVal && !calVal){ infoBox.style.display='block'; } else { infoBox.style.display='none'; }
+            // Preview estrellas
+            previewEstrellas.innerHTML='';
+            if(calVal){
+                const v = parseFloat(calVal); if(!isNaN(v)){
+                    let html='';
+                    for(let i=1;i<=5;i++){ html += `<i class="fas ${i<=Math.floor(v)?'fa-star text-warning':'fa-star text-secondary'}"></i>`; }
+                    previewEstrellas.innerHTML=html;
+                }
+            }
+        }
+        txt && txt.addEventListener('input', actualizarInfo);
+        calInput && calInput.addEventListener('input', actualizarInfo);
+        // Fallback para abrir modal si estamos en Bootstrap 4 (sin window.bootstrap)
+        document.addEventListener('DOMContentLoaded', function(){
+            if (!window.bootstrap) {
+                // Usar jQuery modal si existe
+                if (window.jQuery) {
+                    jQuery(document).on('click', '[data-bs-toggle="modal"],[data-toggle="modal"]', function(e){
+                        const target = jQuery(this).attr('data-bs-target') || jQuery(this).attr('data-target');
+                        if (target) {
+                            jQuery(target).modal('show');
+                        }
+                    });
+                }
+            }
+        });
+    </script>
 </section>
 </body>
 </html>

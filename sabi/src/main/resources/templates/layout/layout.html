@@ -86,68 +86,80 @@
         $('.alert.auto-dismiss').alert('close');
     },4000);
 
-    // Convertir alertas Bootstrap a SweetAlert2
+    // Utilidad para obtener texto limpio (sin icono de cierre)
+    function extraerTextoAlerta(alertEl){
+        if(!alertEl) return '';
+        // Clonar y quitar botón close si existe
+        const clone = alertEl.cloneNode(true);
+        clone.querySelectorAll('button.close, button.btn-close').forEach(b=>b.remove());
+        return clone.textContent.trim();
+    }
+
     document.addEventListener('DOMContentLoaded', function() {
         // Success alerts
         const successAlerts = document.querySelectorAll('.alert-success');
         successAlerts.forEach(alert => {
-            if (!alert.classList.contains('no-sweet')) {
-                const message = alert.textContent.trim();
-                alert.style.display = 'none';
-                Swal.fire({
-                    icon: 'success',
-                    title: '¡Éxito!',
-                    text: message,
-                    timer: 3000,
-                    showConfirmButton: false,
-                    toast: true,
-                    position: 'bottom-end'
-                });
-            }
+            if (alert.classList.contains('no-sweet')) return;
+            const message = extraerTextoAlerta(alert);
+            if(!message) return; // ignorar vacío
+            console.log('[FLASH SUCCESS]', message);
+            alert.style.display = 'none';
+            Swal.fire({
+                icon: 'success',
+                title: 'Éxito',
+                text: message,
+                timer: 3000,
+                showConfirmButton: false,
+                toast: true,
+                position: 'bottom-end'
+            });
         });
 
         // Error alerts
         const errorAlerts = document.querySelectorAll('.alert-danger');
         errorAlerts.forEach(alert => {
-            if (!alert.classList.contains('no-sweet')) {
-                const message = alert.textContent.trim();
-                alert.style.display = 'none';
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Error',
-                    text: message,
-                    confirmButtonText: 'Entendido',
-                    confirmButtonColor: '#dc3545'
-                });
+            if (alert.classList.contains('no-sweet')) return;
+            const message = extraerTextoAlerta(alert);
+            if(!message) return; // ignorar vacío
+            // Ignorar mensajes que sean exactamente 'Error'
+            if(message.toLowerCase() === 'error') {
+                console.warn('[FLASH ERROR ignorado por ser genérico]');
+                alert.style.display='none';
+                return;
             }
+            console.log('[FLASH ERROR]', message);
+            alert.style.display = 'none';
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: message,
+                confirmButtonText: 'Entendido',
+                confirmButtonColor: '#dc3545'
+            });
         });
 
         // Warning alerts
         const warningAlerts = document.querySelectorAll('.alert-warning');
         warningAlerts.forEach(alert => {
-            if (!alert.classList.contains('no-sweet')) {
-                const message = alert.textContent.trim();
-                alert.style.display = 'none';
-                Swal.fire({
-                    icon: 'warning',
-                    title: 'Advertencia',
-                    text: message,
-                    confirmButtonText: 'OK',
-                    confirmButtonColor: '#ffc107'
-                });
-            }
+            if (alert.classList.contains('no-sweet')) return;
+            const message = extraerTextoAlerta(alert);
+            if(!message) return;
+            console.log('[FLASH WARNING]', message);
+            alert.style.display = 'none';
+            Swal.fire({
+                icon: 'warning',
+                title: 'Advertencia',
+                text: message,
+                confirmButtonText: 'OK',
+                confirmButtonColor: '#ffc107'
+            });
         });
-
-        // Info alerts
-        const infoAlerts = document.querySelectorAll('.alert-info:not(.no-sweet)');
-        infoAlerts.forEach(alert => {
-            // Dejar las alertas de info normales, no convertir a Sweet
-        });
+        // Info alerts (dejar normales a menos que tengan clase sweet)
     });
 
-    // Fix para que el modal de perfil funcione con Bootstrap 5
+    // Fix para modales (Bootstrap 5 / 4)
     document.querySelectorAll('[data-bs-toggle="modal"]').forEach(function(btn) {
-        btn.addEventListener('click', function(e) {
+        btn.addEventListener('click', function() {
             var target = btn.getAttribute('data-bs-target');
             if (window.bootstrap && target) {
                 var modal = document.querySelector(target);
