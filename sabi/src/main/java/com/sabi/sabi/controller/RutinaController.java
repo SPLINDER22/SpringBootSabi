@@ -147,9 +147,6 @@ public class RutinaController {
                                 @RequestParam(value = "asignar", required = false) Boolean asignar,
                                 @RequestParam(value = "idCliente", required = false) Long idCliente,
                                 Model model) {
-        if (userDetails == null) {
-            return "redirect:/auth/login";
-        }
         Usuario usuario;
         try {
             usuario = usuarioService.obtenerPorEmail(userDetails.getUsername());
@@ -168,6 +165,14 @@ public class RutinaController {
         model.addAttribute("modoAsignar", modoAsignar);
         model.addAttribute("idClienteAsignacion", idCliente);
         return "rutinas/lista";
+    }
+
+    @GetMapping("/rutinas/rutinas-asignables/{idSuscripcion}")
+    public String listarRutinasAsignables(@PathVariable Long idSuscripcion,
+                                           @AuthenticationPrincipal UserDetails userDetails,
+                                           Model model) {
+        //model.addAttribute("rutinas", rutinaService.);
+        return "rutinas/rutinas-asignables";
     }
 
     @PostMapping("/rutinas/asignar/{idRutina}")

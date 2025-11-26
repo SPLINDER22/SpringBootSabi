@@ -32,9 +32,9 @@
             </div>
             <div class="col-md-4" th:if="${serie.id != null}">
                 <label for="orden" class="form-label">Orden de serie</label>
-                <input type="number" id="orden" th:field="*{orden}" class="form-control" min="1" th:attr="max=${ejercicioAsignado != null && ejercicioAsignado.numeroSeries != null ? ejercicioAsignado.numeroSeries : totalSeries}" required/>
+                <input type="number" id="orden" th:field="*{orden}" class="form-control" min="1" th:attr="max=${totalSeries}" required/>
                 <div class="form-text">
-                    Máximo permitido: <span th:text="${ejercicioAsignado != null && ejercicioAsignado.numeroSeries != null ? ejercicioAsignado.numeroSeries : totalSeries}"></span>
+                    Máximo permitido: <span th:text="${totalSeries}"></span>
                 </div>
                 <div id="ordenError" class="text-danger mt-1" style="display:none"></div>
             </div>
