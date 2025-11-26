@@ -86,6 +86,7 @@ public class DiagnosticoServiceImpl implements DiagnosticoService {
         System.out.println("   Estado en BD: " + diagnostico.getEstado());
         System.out.println("   Cliente ID en BD: " + (diagnostico.getCliente() != null ? diagnostico.getCliente().getId() : "null"));
         System.out.println("   Fecha: " + diagnostico.getFecha());
+        System.out.println("   🎯 Objetivo guardado en diagnóstico (historial): " + (diagnostico.getObjetivo() != null ? "\"" + diagnostico.getObjetivo() + "\"" : "NULL"));
 
         // Verificar cuántos diagnósticos tiene ahora el cliente
         List<Diagnostico> todosLosDelCliente = diagnosticoRepository.findByClienteIdAndEstadoTrue(diagnostico.getCliente().getId());
@@ -123,6 +124,7 @@ public class DiagnosticoServiceImpl implements DiagnosticoService {
             existingDiagnostico.setFecha(diagnosticoDTO.getFecha());
         }
         existingDiagnostico.setProximoDiagnostico(diagnosticoDTO.getProximoDiagnostico());
+        existingDiagnostico.setObjetivo(diagnosticoDTO.getObjetivo()); // Guardar objetivo para historial
         existingDiagnostico.setPeso(diagnosticoDTO.getPeso());
         existingDiagnostico.setEstatura(diagnosticoDTO.getEstatura());
         existingDiagnostico.setNivelExperiencia(diagnosticoDTO.getNivelExperiencia());

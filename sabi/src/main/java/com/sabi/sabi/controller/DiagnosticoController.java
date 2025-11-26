@@ -153,14 +153,18 @@ public class DiagnosticoController {
             System.out.println("   ID del diagnóstico guardado: " + resultado.getIdDiagnostico());
             System.out.println("   Estado: " + resultado.getEstado());
 
-            // 🎯 IMPORTANTE: Actualizar el objetivo en el PERFIL del cliente desde el parámetro del formulario
-            String objetivoFormulario = diagnosticoDTO.getObjetivo(); // Viene del formulario
+            // 🎯 IMPORTANTE: El objetivo se guarda en DOS lugares
+            // 1. En el PERFIL del cliente (para mostrar en dashboard)
+            // 2. En el DIAGNÓSTICO (para historial - recordar meta de ese momento)
+            String objetivoFormulario = diagnosticoDTO.getObjetivo();
             if (objetivoFormulario != null && !objetivoFormulario.isEmpty()) {
                 com.sabi.sabi.dto.ClienteDTO clienteDTO = clienteService.getClienteById(clienteId);
                 clienteDTO.setObjetivo(objetivoFormulario);
                 clienteService.updateCliente(clienteId, clienteDTO);
-                System.out.println("   🎯 Objetivo actualizado en PERFIL del cliente: \"" + objetivoFormulario + "\"");
-                System.out.println("   ✅ Este objetivo se mostrará en el dashboard");
+                System.out.println("   🎯 Objetivo guardado en:");
+                System.out.println("      ✅ PERFIL del cliente (se mostrará en dashboard)");
+                System.out.println("      ✅ DIAGNÓSTICO (historial - meta de ese momento)");
+                System.out.println("      📝 Texto: \"" + objetivoFormulario + "\"");
             }
 
             System.out.println("   ➡️ Redirigiendo a dashboard");

@@ -26,6 +26,10 @@ public class Diagnostico {
     @JoinColumn(name = "cliente_id", nullable = false)
     private Cliente cliente;
 
+    // Campo objetivo: copia del objetivo del cliente en este momento (historial)
+    // Se guarda para recordar cuál era la meta del cliente cuando hizo este diagnóstico
+    @Column(length = 500)
+    private String objetivo;
 
     // Obligatorios
     private Double peso;                 // en kg

@@ -226,6 +226,9 @@ public class    DataInitializer implements CommandLineRunner {
         }
         // Crear diagnóstico obligatorio si no existe
         if (diagnosticoRepository.findByClienteIdAndEstadoTrue(cliente.getId()).isEmpty()) {
+            // Copiar el objetivo del perfil al diagnóstico (historial)
+            String objetivoDiagnostico = cliente.getObjetivo() != null ? cliente.getObjetivo() : "Mejorar condición física general";
+
             Diagnostico diagnostico = Diagnostico.builder()
                     .cliente(cliente)
                     .fecha(java.time.LocalDate.now())
@@ -238,10 +241,12 @@ public class    DataInitializer implements CommandLineRunner {
                     .condicionesMedicas("ninguna")
                     .horasSueno(8L)
                     .habitosAlimenticios("Dieta balanceada")
+                    .objetivo(objetivoDiagnostico) // Guardar objetivo para historial
                     .estado(true)
                     .build();
             diagnosticoRepository.save(diagnostico);
             System.out.println("Diagnóstico creado para cliente: " + email);
+            System.out.println("  🎯 Con objetivo: " + objetivoDiagnostico);
         }
     }
 
@@ -272,7 +277,7 @@ public class    DataInitializer implements CommandLineRunner {
             // Definir objetivo específico según el peso y nivel del cliente
             String objetivoParaPerfil = determinarObjetivoSegunPerfil(peso, estatura, nivelExperiencia);
 
-            // Actualizar el objetivo en el PERFIL del cliente (no en el diagnóstico)
+            // Actualizar el objetivo en el PERFIL del cliente
             cliente.setObjetivo(objetivoParaPerfil);
             usuarioRepository.save(cliente);
 
@@ -288,6 +293,7 @@ public class    DataInitializer implements CommandLineRunner {
                     .condicionesMedicas(condicionesMedicas)
                     .horasSueno(horasSueno)
                     .habitosAlimenticios(habitosAlimenticios)
+                    .objetivo(objetivoParaPerfil) // Guardar en diagnóstico también (historial)
                     .estado(true)
                     .build();
             diagnosticoRepository.save(diagnostico);

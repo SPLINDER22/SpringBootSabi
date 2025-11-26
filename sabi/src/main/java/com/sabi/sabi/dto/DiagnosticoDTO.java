@@ -28,7 +28,7 @@ public class DiagnosticoDTO {
 
     private Long idCliente;
 
-    // Campo para recibir el objetivo del formulario (se guarda en el PERFIL del cliente, NO en tabla diagnosticos)
+    // Campo objetivo: se guarda en el PERFIL del cliente Y en el diagnóstico (historial)
     private String objetivo;
 
     // Obligatorios
