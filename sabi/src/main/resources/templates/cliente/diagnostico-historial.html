@@ -294,6 +294,14 @@
                                 <h5 class="mb-3"><i class="fas fa-weight"></i> Información Básica</h5>
                                 <ul class="list-group mb-3">
                                     <li class="list-group-item"><strong>📅 Fecha:</strong> ${data.fecha}</li>
+                                    ${data.objetivo ? `
+                                        <li class="list-group-item" style="background: linear-gradient(135deg, #fef9e7 0%, #fffaec 100%); border-left: 4px solid #ffc107;">
+                                            <strong>🎯 Objetivo en ese momento:</strong><br>
+                                            <span style="font-size: 1.1rem; color: #856404; font-weight: 600; display: block; margin-top: 5px;">
+                                                "${data.objetivo}"
+                                            </span>
+                                        </li>
+                                    ` : ''}
                                     <li class="list-group-item"><strong>⚖️ Peso:</strong> ${data.peso} kg</li>
                                     <li class="list-group-item"><strong>📏 Estatura:</strong> ${data.estatura} cm</li>
                                     <li class="list-group-item">
