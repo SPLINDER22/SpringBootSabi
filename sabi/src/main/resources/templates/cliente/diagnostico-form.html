@@ -123,21 +123,19 @@
         <div class="categoria">
             <div class="categoria-titulo">Fotos del Diagnóstico <span class="badge bg-danger">Obligatorio</span></div>
             <small class="text-muted d-block mb-3">
-                📸 <span th:if="${diagnostico?.idDiagnostico == null}">Las 3 fotos son obligatorias para crear tu diagnóstico.</span>
-                <span th:if="${diagnostico?.idDiagnostico != null}">Sube nuevas fotos solo si quieres cambiarlas (opcional).</span>
+                📸 <span>Las fotos son opcionales pero recomendadas para un mejor seguimiento de tu progreso.</span>
                 Sube cualquier imagen desde tu PC (máx. 10MB cada una)
             </small>
             <div class="row g-3">
                 <div class="col-md-4">
                     <label for="fotoFrontal" class="form-label">
-                        <i class="fas fa-camera"></i> Foto Frontal *
+                        <i class="fas fa-camera"></i> Foto Frontal
                     </label>
                     <input type="file"
                            class="form-control"
                            id="fotoFrontal"
                            name="fotoFrontal"
                            accept="image/*"
-                           th:required="${diagnostico?.idDiagnostico == null}"
                            onchange="previewImage(this, 'preview-frontal')">
                     <small class="text-muted">Foto de frente, posición relajada</small>
                     <div class="mt-2">
@@ -150,14 +148,13 @@
                 </div>
                 <div class="col-md-4">
                     <label for="fotoLateral" class="form-label">
-                        <i class="fas fa-camera"></i> Foto Lateral *
+                        <i class="fas fa-camera"></i> Foto Lateral
                     </label>
                     <input type="file"
                            class="form-control"
                            id="fotoLateral"
                            name="fotoLateral"
                            accept="image/*"
-                           th:required="${diagnostico?.idDiagnostico == null}"
                            onchange="previewImage(this, 'preview-lateral')">
                     <small class="text-muted">Foto de perfil lateral</small>
                     <div class="mt-2">
@@ -170,14 +167,13 @@
                 </div>
                 <div class="col-md-4">
                     <label for="fotoTrasera" class="form-label">
-                        <i class="fas fa-camera"></i> Foto Trasera *
+                        <i class="fas fa-camera"></i> Foto Trasera
                     </label>
                     <input type="file"
                            class="form-control"
                            id="fotoTrasera"
                            name="fotoTrasera"
                            accept="image/*"
-                           th:required="${diagnostico?.idDiagnostico == null}"
                            onchange="previewImage(this, 'preview-trasera')">
                     <small class="text-muted">Foto de espalda</small>
                     <div class="mt-2">
@@ -361,14 +357,8 @@
         const fotoLateral = document.getElementById('fotoLateral');
         const fotoTrasera = document.getElementById('fotoTrasera');
         
-        // Verificar si es creación (las fotos son required) o actualización (opcionales)
-        const esCreacion = fotoFrontal.required;
-
-        if (esCreacion && (!fotoFrontal.files.length || !fotoLateral.files.length || !fotoTrasera.files.length)) {
-            e.preventDefault();
-            alert('Las 3 fotos son obligatorias para crear el diagnóstico:\n\n✓ Foto Frontal\n✓ Foto Lateral\n✓ Foto Trasera\n\nPor favor, sube todas las fotos antes de continuar.');
-            return false;
-        }
+        // ✅ Las fotos ahora son opcionales - no se valida que estén presentes
+        // El usuario puede crear diagnóstico con o sin fotos
     });
 </script>
 </section>

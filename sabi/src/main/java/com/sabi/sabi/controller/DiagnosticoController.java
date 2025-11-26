@@ -108,14 +108,8 @@ public class DiagnosticoController {
             if (esCreacion) {
                 diagnosticoDTO.setFecha(java.time.LocalDate.now());
                 
-                // Para creación, las 3 fotos son obligatorias
-                if (fotoFrontal == null || fotoFrontal.isEmpty() || 
-                    fotoLateral == null || fotoLateral.isEmpty() || 
-                    fotoTrasera == null || fotoTrasera.isEmpty()) {
-                    model.addAttribute("error", "Las 3 fotos (frontal, lateral y trasera) son obligatorias para crear un diagnóstico");
-                    model.addAttribute("diagnostico", diagnosticoDTO);
-                    return "cliente/diagnostico-form";
-                }
+                // ✅ Las fotos ahora son OPCIONALES (no obligatorias)
+                // El usuario puede crear diagnóstico con o sin fotos
             }
 
             // Gestionar las fotos (para creación o actualización)
