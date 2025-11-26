@@ -270,7 +270,14 @@
                             <span th:text="${porcentajeCompletado} + '%'">0%</span>
                         </div>
                         <div class="progress">
-                            <div class="progress-bar" role="progressbar" th:style="${'width:' + porcentajeCompletado + '%;'}" aria-valuemin="0" aria-valuemax="100"></div>
+                            <div class="progress-bar"
+                                 role="progressbar"
+                                 th:classappend="${porcentajeCompletado < 25 ? 'bg-danger' : (porcentajeCompletado >= 75 ? 'bg-success' : 'bg-warning')}"
+                                 th:style="${'width:' + porcentajeCompletado + '%;'}"
+                                 th:attr="aria-valuenow=${porcentajeCompletado}"
+                                 aria-valuemin="0"
+                                 aria-valuemax="100">
+                            </div>
                         </div>
                     </div>
                     <div class="reporte-suscripcion-actions">

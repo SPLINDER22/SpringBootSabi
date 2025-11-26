@@ -20,6 +20,8 @@ public class SemanasController {
     private SemanaService semanaService;
     @Autowired
     private RutinaService rutinaService;
+    @Autowired
+    private com.sabi.sabi.service.DiaService diaService;
 
     private boolean hasRole(UserDetails userDetails, String role) {
         if (userDetails == null) return false;
@@ -36,6 +38,13 @@ public class SemanasController {
         boolean esEntrenador = hasRole(userDetails, "ENTRENADOR");
         // Cliente ya no va en modo readonly por defecto: sólo modo readonly cuando el ENTRENADOR consulta con flag
         boolean readonlyEffective = esEntrenador && Boolean.TRUE.equals(readonly);
+
+        // Calcular porcentaje de progreso si estamos en modo readonly (entrenador viendo progreso de cliente)
+        if (readonlyEffective && rutinaDTO != null && rutinaDTO.getIdCliente() != null) {
+            long porcentajeCompletado = diaService.calcularProgresoRutina(rutinaDTO.getIdCliente());
+            model.addAttribute("porcentajeCompletado", porcentajeCompletado);
+        }
+
         model.addAttribute("semanas", semanas);
         model.addAttribute("totalSemanas", semanas.size());
         model.addAttribute("rutina", rutinaDTO);
