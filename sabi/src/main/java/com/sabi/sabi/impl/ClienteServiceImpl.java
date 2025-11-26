@@ -141,11 +141,20 @@ public class ClienteServiceImpl implements ClienteService {
 
     @Override
     public DiagnosticoDTO getDiagnosticoActualByClienteId(Long clienteId) {
-        List<Diagnostico> diagnosticos = diagnosticoRepository.findByClienteIdAndEstadoTrue(clienteId);
-        if (diagnosticos.isEmpty()) return null;
-        Diagnostico diagnosticoActual = diagnosticos.stream()
-            .max((d1, d2) -> d1.getFecha().compareTo(d2.getFecha()))
-            .orElse(diagnosticos.get(0));
+        // Usar el método que ya ordena por fecha DESC en la consulta SQL
+        List<Diagnostico> diagnosticos = diagnosticoRepository.findByClienteIdAndEstadoTrueOrderByFechaDesc(clienteId);
+        if (diagnosticos == null || diagnosticos.isEmpty()) return null;
+
+        // El primero de la lista es el MÁS RECIENTE (fecha DESC)
+        Diagnostico diagnosticoActual = diagnosticos.get(0);
+
+        System.out.println("🔍 getDiagnosticoActualByClienteId - Cliente ID: " + clienteId);
+        System.out.println("   📋 Total diagnósticos encontrados: " + diagnosticos.size());
+        System.out.println("   ✅ Diagnóstico MÁS RECIENTE:");
+        System.out.println("      - ID: " + diagnosticoActual.getId());
+        System.out.println("      - Fecha: " + diagnosticoActual.getFecha());
+        System.out.println("      - Peso: " + diagnosticoActual.getPeso() + " kg");
+
         return modelMapper.map(diagnosticoActual, DiagnosticoDTO.class);
     }
 

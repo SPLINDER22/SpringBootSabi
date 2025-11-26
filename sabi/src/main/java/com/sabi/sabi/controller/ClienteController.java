@@ -26,10 +26,7 @@ import com.sabi.sabi.dto.RutinaDTO;
 import com.sabi.sabi.dto.SuscripcionDTO;
 import com.sabi.sabi.security.CustomUserDetails;
 
-
-import java.util.HashMap; // nuevo
-import java.util.Map; // nuevo
-import java.util.stream.Collectors; // nuevo
+import jakarta.servlet.http.HttpServletResponse;
 
 @Controller
 public class ClienteController {
@@ -55,7 +52,13 @@ public class ClienteController {
     private ComentarioService comentarioService; // nuevo
 
     @GetMapping("/cliente/dashboard")
-    public String clienteDashboard(Model model) {
+    public String clienteDashboard(Model model,
+                                   HttpServletResponse response) {
+        // ⚠️ IMPORTANTE: Evitar caché del navegador para que siempre cargue datos frescos
+        response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
+        response.setHeader("Pragma", "no-cache");
+        response.setDateHeader("Expires", 0);
+
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         CustomUserDetails userDetails = (CustomUserDetails) auth.getPrincipal();
         Long clienteId = userDetails.getUsuario().getId();
@@ -63,6 +66,18 @@ public class ClienteController {
         // Obtener diagnostico actual
         DiagnosticoDTO diagnosticoActual = clienteService.getDiagnosticoActualByClienteId(clienteId);
         boolean tieneDiagnostico = diagnosticoActual != null;
+
+        System.out.println("\n╔════════════════════════════════════════════════════════╗");
+        System.out.println("║  🔄 CARGANDO DASHBOARD - CLIENTE ID: " + clienteId);
+        System.out.println("╠════════════════════════════════════════════════════════╣");
+        if (diagnosticoActual != null) {
+            System.out.println("║  📋 Diagnóstico ID: " + diagnosticoActual.getIdDiagnostico());
+            System.out.println("║  📅 Fecha: " + diagnosticoActual.getFecha());
+            System.out.println("║  🎯 OBJETIVO: " + (diagnosticoActual.getObjetivo() != null ? "\"" + diagnosticoActual.getObjetivo() + "\"" : "SIN OBJETIVO"));
+        } else {
+            System.out.println("║  ⚠️ NO HAY DIAGNÓSTICO");
+        }
+        System.out.println("╚════════════════════════════════════════════════════════╝\n");
 
         // Obtener historial completo para comparativa
         List<DiagnosticoDTO> historial = clienteService.getHistorialDiagnosticosByClienteId(clienteId);
@@ -157,6 +172,25 @@ public class ClienteController {
             model.addAttribute("susAvance", null);
             model.addAttribute("susVencida", false);
         }
+
+        // 🎯 Mostrar objetivo del cliente: usar el objetivo del PERFIL (más simple y directo)
+        String objetivoCliente = null;
+        try {
+            com.sabi.sabi.dto.ClienteDTO clienteDTO = clienteService.getClienteById(clienteId);
+            if (clienteDTO != null && clienteDTO.getObjetivo() != null && !clienteDTO.getObjetivo().isEmpty()) {
+                objetivoCliente = clienteDTO.getObjetivo();
+            }
+        } catch (Exception e) {
+            System.err.println("⚠️ Error al obtener objetivo del perfil: " + e.getMessage());
+        }
+
+        System.out.println("🎯 OBJETIVO PARA DASHBOARD (desde PERFIL):");
+        System.out.println("   - Cliente ID: " + clienteId);
+        System.out.println("   - Objetivo del perfil: " + (objetivoCliente != null ? "\"" + objetivoCliente + "\"" : "SIN OBJETIVO"));
+        System.out.println("   - Se mostrará: " + (objetivoCliente != null ? "SÍ ✅" : "NO ❌"));
+
+        model.addAttribute("objetivoCliente", objetivoCliente);
+
         return "cliente/dashboard";
     }
 

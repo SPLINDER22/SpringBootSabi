@@ -23,6 +23,24 @@
             <div class="row g-3 align-items-end">
                 <div class="col-md-12">
                     <label for="objetivo" class="form-label">¿Cuál es tu objetivo?</label>
+
+                    <!-- Mensaje informativo sobre el objetivo -->
+                    <div class="alert alert-info" style="background: linear-gradient(135deg, #d1ecf1 0%, #bee5eb 100%); border-left: 4px solid #17a2b8; margin-bottom: 12px;">
+                        <div style="display: flex; align-items: start; gap: 10px;">
+                            <i class="fas fa-info-circle" style="font-size: 1.3rem; color: #0c5460; margin-top: 2px;"></i>
+                            <div style="flex: 1;">
+                                <strong style="color: #0c5460; display: block; margin-bottom: 4px;">
+                                    <i class="fas fa-bullseye"></i> Tu objetivo es fundamental
+                                </strong>
+                                <small style="color: #0c5460; line-height: 1.5;">
+                                    El objetivo que definas aquí se guardará en tu <strong>perfil</strong> y será visible tanto para <strong>ti</strong> como para tu <strong>entrenador</strong>.
+                                    Es esencial para crear un plan de entrenamiento personalizado que se ajuste a tus metas.
+                                    Puedes actualizarlo en cualquier momento desde tu perfil.
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+
                     <textarea class="form-control" id="objetivo" th:field="*{objetivo}" rows="2" required placeholder="Ej: Perder peso, ganar masa muscular, mejorar resistencia..."></textarea>
                     <small class="text-muted">Describe qué quieres lograr con tu entrenamiento.</small>
                     <div class="invalid-feedback">Este campo es obligatorio.</div>

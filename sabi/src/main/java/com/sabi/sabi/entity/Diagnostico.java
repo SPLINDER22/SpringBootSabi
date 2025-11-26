@@ -26,9 +26,6 @@ public class Diagnostico {
     @JoinColumn(name = "cliente_id", nullable = false)
     private Cliente cliente;
 
-    // Campo para el objetivo del cliente
-    @Column(length = 500)
-    private String objetivo;
 
     // Obligatorios
     private Double peso;                 // en kg

@@ -123,7 +123,6 @@ public class DiagnosticoServiceImpl implements DiagnosticoService {
             existingDiagnostico.setFecha(diagnosticoDTO.getFecha());
         }
         existingDiagnostico.setProximoDiagnostico(diagnosticoDTO.getProximoDiagnostico());
-        existingDiagnostico.setObjetivo(diagnosticoDTO.getObjetivo());
         existingDiagnostico.setPeso(diagnosticoDTO.getPeso());
         existingDiagnostico.setEstatura(diagnosticoDTO.getEstatura());
         existingDiagnostico.setNivelExperiencia(diagnosticoDTO.getNivelExperiencia());

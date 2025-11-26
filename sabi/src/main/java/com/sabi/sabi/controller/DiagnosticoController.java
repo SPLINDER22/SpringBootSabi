@@ -95,6 +95,7 @@ public class DiagnosticoController {
             System.out.println("   ID establecido en: null");
             System.out.println("   Estado: true");
             System.out.println("   Fecha: " + diagnosticoDTO.getFecha());
+            System.out.println("   🎯 Objetivo: " + (diagnosticoDTO.getObjetivo() != null ? diagnosticoDTO.getObjetivo() : "SIN OBJETIVO"));
 
             boolean esCreacion = true;
 
@@ -152,19 +153,24 @@ public class DiagnosticoController {
             System.out.println("   ID del diagnóstico guardado: " + resultado.getIdDiagnostico());
             System.out.println("   Estado: " + resultado.getEstado());
 
-            // Si el objetivo fue proporcionado, actualizarlo también en el perfil del cliente
-            if (diagnosticoDTO.getObjetivo() != null && !diagnosticoDTO.getObjetivo().isEmpty()) {
+            // 🎯 IMPORTANTE: Actualizar el objetivo en el PERFIL del cliente desde el parámetro del formulario
+            String objetivoFormulario = diagnosticoDTO.getObjetivo(); // Viene del formulario
+            if (objetivoFormulario != null && !objetivoFormulario.isEmpty()) {
                 com.sabi.sabi.dto.ClienteDTO clienteDTO = clienteService.getClienteById(clienteId);
-                clienteDTO.setObjetivo(diagnosticoDTO.getObjetivo());
+                clienteDTO.setObjetivo(objetivoFormulario);
                 clienteService.updateCliente(clienteId, clienteDTO);
+                System.out.println("   🎯 Objetivo actualizado en PERFIL del cliente: \"" + objetivoFormulario + "\"");
+                System.out.println("   ✅ Este objetivo se mostrará en el dashboard");
             }
 
             System.out.println("   ➡️ Redirigiendo a dashboard");
             System.out.println("████████████████████████████████████████\n");
 
+            // Agregar parámetro de timestamp para evitar caché del navegador
+            long timestamp = System.currentTimeMillis();
             model.addAttribute("success", esCreacion ? "Diagnóstico creado correctamente" : "Diagnóstico actualizado correctamente");
-            return "redirect:/cliente/dashboard";
-            
+            return "redirect:/cliente/dashboard?refresh=" + timestamp;
+
         } catch (IOException e) {
             model.addAttribute("error", "Error al guardar las fotos: " + e.getMessage());
             model.addAttribute("diagnostico", diagnosticoDTO);

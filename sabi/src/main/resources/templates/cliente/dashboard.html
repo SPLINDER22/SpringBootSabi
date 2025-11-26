@@ -53,6 +53,28 @@
         <h2>🏃‍♂️ ¡Bienvenido a SABI!</h2>
         <p sec:authentication="name">Hola, </p>
         <p>Tu plataforma de entrenamiento personalizado</p>
+
+        <!-- Mostrar objetivo del cliente si existe (resaltado y grande) -->
+        <div th:if="${objetivoCliente != null}" class="objetivo-cliente mt-3" style="background: linear-gradient(90deg,#eef2ff, #e0f2fe); padding:12px 18px; border-radius:12px; display:inline-block;">
+            <div style="font-size:1rem;color:#0f172a;font-weight:700;margin-bottom:4px;">🎯 Tu objetivo</div>
+            <div style="font-size:1.4rem;color:#0b5ed7;font-weight:800;line-height:1.1;">"<span th:text="${objetivoCliente}">--</span>"</div>
+        </div>
+
+        <!-- Mensaje cuando NO hay objetivo configurado -->
+        <div th:unless="${objetivoCliente != null}" class="sin-objetivo mt-3" style="background: linear-gradient(135deg, #fff3cd 0%, #fff8dc 100%); padding:18px 24px; border-radius:12px; display:inline-block; border-left: 4px solid #ffc107; max-width: 500px;">
+            <div style="display: flex; align-items: center; gap: 12px;">
+                <i class="fas fa-exclamation-circle" style="font-size: 2rem; color: #ff9800;"></i>
+                <div style="text-align: left;">
+                    <div style="font-size:1.1rem;color:#856404;font-weight:700;margin-bottom:6px;">⚠️ No tienes un objetivo configurado</div>
+                    <div style="font-size:0.95rem;color:#856404;line-height:1.4;margin-bottom:10px;">
+                        Define tu objetivo para que tu entrenador pueda crear un plan personalizado adaptado a tus metas.
+                    </div>
+                    <a th:href="@{/perfil}" class="btn btn-warning btn-sm" style="font-weight:600;">
+                        <i class="fas fa-bullseye me-1"></i> Configurar mi objetivo
+                    </a>
+                </div>
+            </div>
+        </div>
     </div>
     <!-- Diagnóstico principal -->
     <div class="category-section mt-4">

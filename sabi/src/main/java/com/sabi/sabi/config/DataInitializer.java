@@ -269,6 +269,13 @@ public class    DataInitializer implements CommandLineRunner {
 
         // Crear diagnóstico personalizado si no existe
         if (diagnosticoRepository.findByClienteIdAndEstadoTrue(cliente.getId()).isEmpty()) {
+            // Definir objetivo específico según el peso y nivel del cliente
+            String objetivoParaPerfil = determinarObjetivoSegunPerfil(peso, estatura, nivelExperiencia);
+
+            // Actualizar el objetivo en el PERFIL del cliente (no en el diagnóstico)
+            cliente.setObjetivo(objetivoParaPerfil);
+            usuarioRepository.save(cliente);
+
             Diagnostico diagnostico = Diagnostico.builder()
                     .cliente(cliente)
                     .fecha(java.time.LocalDate.now())
@@ -284,7 +291,32 @@ public class    DataInitializer implements CommandLineRunner {
                     .estado(true)
                     .build();
             diagnosticoRepository.save(diagnostico);
-            System.out.println("Diagnóstico personalizado creado para cliente: " + email);
+            System.out.println("✅ Diagnóstico creado para " + email);
+            System.out.println("   🎯 Objetivo guardado en PERFIL: " + objetivoParaPerfil);
+        }
+    }
+
+    // Método auxiliar para determinar un objetivo realista según el perfil
+    private String determinarObjetivoSegunPerfil(Double peso, Double estatura, NivelExperiencia nivel) {
+        if (peso == null || estatura == null) return "Mejorar condición física general";
+
+        // Calcular IMC aproximado
+        double estaturaM = estatura / 100.0;
+        double imc = peso / (estaturaM * estaturaM);
+
+        // Determinar objetivo según IMC y nivel de experiencia
+        if (imc < 18.5) {
+            return nivel == NivelExperiencia.PRINCIPIANTE
+                ? "Ganar peso y masa muscular saludable"
+                : "Aumentar masa muscular y fuerza";
+        } else if (imc >= 18.5 && imc < 25) {
+            return nivel == NivelExperiencia.AVANZADO
+                ? "Definición muscular y rendimiento deportivo"
+                : "Mantener peso y mejorar composición corporal";
+        } else if (imc >= 25 && imc < 30) {
+            return "Perder grasa y tonificar el cuerpo";
+        } else {
+            return "Perder peso de forma saludable y mejorar salud cardiovascular";
         }
     }
 
