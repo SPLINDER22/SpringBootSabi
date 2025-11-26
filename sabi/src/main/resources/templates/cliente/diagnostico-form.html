@@ -17,6 +17,17 @@
     <form th:action="@{/diagnostico/crear}" method="post" enctype="multipart/form-data" class="needs-validation" novalidate th:object="${diagnostico}">
         <!-- Campo oculto para ID del diagnóstico en caso de actualización -->
         <input type="hidden" th:field="*{idDiagnostico}" th:if="${diagnostico?.idDiagnostico != null}"/>
+
+        <!-- Botón superior para guardar (mejor accesibilidad) -->
+        <div class="row mb-4">
+            <div class="col-12 text-end">
+                <button type="submit" class="btn btn-primary btn-lg"
+                        th:text="${diagnosticoActual != null ? 'Actualizar Diagnóstico' : 'Crear Diagnóstico'}">
+                    Guardar diagnóstico
+                </button>
+            </div>
+        </div>
+
          <!-- Obligatorios -->
         <div class="categoria">
             <div class="categoria-titulo">Datos físicos <span class="badge bg-danger">Obligatorio</span></div>
@@ -121,7 +132,7 @@
 
         <!-- FOTOS OBLIGATORIAS -->
         <div class="categoria">
-            <div class="categoria-titulo">Fotos del Diagnóstico <span class="badge bg-danger">Obligatorio</span></div>
+            <div class="categoria-titulo">Fotos del Diagnóstico <span class="badge bg-info">Opcional</span></div>
             <small class="text-muted d-block mb-3">
                 📸 <span>Las fotos son opcionales pero recomendadas para un mejor seguimiento de tu progreso.</span>
                 Sube cualquier imagen desde tu PC (máx. 10MB cada una)
@@ -297,19 +308,14 @@
                         <option value="true">Si</option>
                     </select>
                 </div>
-                </div>
                 <div class="col-md-6" th:if="${diagnosticoActual?.consumeAlcohol == true}">
                     <label for="frecuenciaAlcohol" class="form-label">Frecuencia de Consumo de Alcohol</label>
                     <input type="text" class="form-control" id="frecuenciaAlcohol" name="frecuenciaAlcohol" th:field="*{frecuenciaAlcohol}" placeholder="Ej: 1 vez por semana, 2-3 veces/semana">
                     <small class="text-muted">¿Con que frecuencia consumes alcohol?</small>
                 </div>
-        <div class="col-12 text-end">
-            <button type="submit" class="btn btn-primary" 
-                    th:text="${diagnostico?.idDiagnostico == null ? 'Crear diagnóstico' : 'Actualizar diagnóstico'}">
-                    Guardar diagnóstico
-            </button>
+            </div>
         </div>
-</div>
+</form>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <!-- Datos del diagnóstico actual para comparación (Thymeleaf) -->
 <script th:inline="javascript">

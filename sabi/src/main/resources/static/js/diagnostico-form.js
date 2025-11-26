@@ -41,24 +41,56 @@ function calcularIMC() {
     }
 }
 
-// Función para mostrar comparativas
+// Función para mostrar comparativas con mensajes descriptivos
 function mostrarComparativa(elementId, valorActual, valorAnterior, etiqueta) {
     var elemento = document.getElementById(elementId);
     if (!elemento) return;
     
     var diferencia = valorActual - valorAnterior;
     var porcentaje = ((diferencia / valorAnterior) * 100).toFixed(1);
-    
+    var mensajeDescriptivo = '';
+    var icono = '';
+
+    // Determinar el mensaje según el tipo de medida
     if (Math.abs(diferencia) < 0.1) {
-        elemento.innerHTML = '⚪ Sin cambios';
+        // Sin cambios
+        icono = '⚪';
+        if (etiqueta === 'IMC') {
+            mensajeDescriptivo = 'Tu IMC se mantiene igual';
+        } else if (etiqueta === 'Peso') {
+            mensajeDescriptivo = 'Tu peso se mantiene estable';
+        } else if (etiqueta === 'Estatura') {
+            mensajeDescriptivo = 'Tu estatura es la misma';
+        }
+        elemento.innerHTML = icono + ' ' + mensajeDescriptivo + ' <small>(Sin cambios)</small>';
         elemento.className = 'comparativa-badge sin-cambio';
         elemento.style.display = 'block';
+
     } else if (diferencia > 0) {
-        elemento.innerHTML = '▲ +' + diferencia.toFixed(1) + ' (' + (porcentaje > 0 ? '+' : '') + porcentaje + '%)';
+        // Incremento
+        icono = '📈';
+        if (etiqueta === 'IMC') {
+            mensajeDescriptivo = 'Tu IMC aumentó';
+        } else if (etiqueta === 'Peso') {
+            mensajeDescriptivo = '¡Ganaste peso!';
+        } else if (etiqueta === 'Estatura') {
+            mensajeDescriptivo = 'Tu estatura aumentó';
+        }
+        elemento.innerHTML = icono + ' ' + mensajeDescriptivo + ' <small>(+' + diferencia.toFixed(1) + ' | +' + Math.abs(porcentaje) + '%)</small>';
         elemento.className = 'comparativa-badge incremento';
         elemento.style.display = 'block';
+
     } else {
-        elemento.innerHTML = '▼ ' + diferencia.toFixed(1) + ' (' + porcentaje + '%)';
+        // Decremento
+        icono = '📉';
+        if (etiqueta === 'IMC') {
+            mensajeDescriptivo = 'Tu IMC disminuyó';
+        } else if (etiqueta === 'Peso') {
+            mensajeDescriptivo = '¡Perdiste peso!';
+        } else if (etiqueta === 'Estatura') {
+            mensajeDescriptivo = 'Tu estatura disminuyó';
+        }
+        elemento.innerHTML = icono + ' ' + mensajeDescriptivo + ' <small>(' + diferencia.toFixed(1) + ' | ' + porcentaje + '%)</small>';
         elemento.className = 'comparativa-badge decremento';
         elemento.style.display = 'block';
     }
