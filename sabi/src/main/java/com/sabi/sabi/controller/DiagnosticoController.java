@@ -44,18 +44,24 @@ public class DiagnosticoController {
         model.addAttribute("diagnosticoActual", diagnosticoActual);
         model.addAttribute("historial", historial);
         
-        // ⚠️ IMPORTANTE: SIEMPRE crear formulario vacío para NUEVO diagnóstico
-        // Esto evita que se actualice el diagnóstico existente
+        // ✅ Prellenar formulario con datos del diagnóstico anterior para facilitar
         DiagnosticoDTO diagnosticoFormulario = new DiagnosticoDTO();
 
-        // Si tiene diagnóstico actual, pre-llenar algunos campos que típicamente no cambian
-        if (diagnosticoActual != null && "actualizar".equals(action)) {
-            // Solo si explícitamente se pide actualizar, cargar el actual
-            diagnosticoFormulario = diagnosticoActual;
-        } else if (diagnosticoActual != null) {
-            // Para nuevo diagnóstico, solo copiar datos básicos que no suelen cambiar
+        if (diagnosticoActual != null && !"actualizar".equals(action)) {
+            // Para nuevo diagnóstico: prellenar con datos anteriores
+            // Usuario solo actualiza lo que cambió (peso, medidas, etc.)
+            diagnosticoFormulario.setPeso(diagnosticoActual.getPeso());
             diagnosticoFormulario.setEstatura(diagnosticoActual.getEstatura());
             diagnosticoFormulario.setNivelExperiencia(diagnosticoActual.getNivelExperiencia());
+            diagnosticoFormulario.setDisponibilidadTiempo(diagnosticoActual.getDisponibilidadTiempo());
+            diagnosticoFormulario.setAccesoRecursos(diagnosticoActual.getAccesoRecursos());
+            diagnosticoFormulario.setLesiones(diagnosticoActual.getLesiones());
+            diagnosticoFormulario.setCondicionesMedicas(diagnosticoActual.getCondicionesMedicas());
+            diagnosticoFormulario.setHorasSueno(diagnosticoActual.getHorasSueno());
+            diagnosticoFormulario.setHabitosAlimenticios(diagnosticoActual.getHabitosAlimenticios());
+        } else if ("actualizar".equals(action) && diagnosticoActual != null) {
+            // Solo si explícitamente se pide actualizar, cargar el actual completo
+            diagnosticoFormulario = diagnosticoActual;
         }
 
         model.addAttribute("diagnostico", diagnosticoFormulario);

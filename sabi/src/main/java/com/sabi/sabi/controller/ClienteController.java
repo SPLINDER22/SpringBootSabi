@@ -343,25 +343,25 @@ public class ClienteController {
         CustomUserDetails userDetails = (CustomUserDetails) auth.getPrincipal();
         Long clienteId = userDetails.getUsuario().getId();
         
-        // Obtener el diagnóstico actual para prellenar campos
+        // Obtener el diagnóstico actual para prellenar campos y facilitar la actualización
         DiagnosticoDTO diagnosticoActual = clienteService.getDiagnosticoActualByClienteId(clienteId);
         
         // Crear un nuevo diagnóstico vacío para el formulario
         DiagnosticoDTO diagnosticoFormulario = new DiagnosticoDTO();
         
-        // Si existe diagnóstico actual, prellenar los campos para facilitar la actualización
+        // ✅ Prellenar TODOS los campos del diagnóstico anterior
+        // Esto facilita al usuario: solo actualiza lo que cambió (peso, medidas, etc.)
         if (diagnosticoActual != null) {
             diagnosticoFormulario.setPeso(diagnosticoActual.getPeso());
             diagnosticoFormulario.setEstatura(diagnosticoActual.getEstatura());
             diagnosticoFormulario.setNivelExperiencia(diagnosticoActual.getNivelExperiencia());
-            diagnosticoFormulario.setObjetivo(diagnosticoActual.getObjetivo());
             diagnosticoFormulario.setDisponibilidadTiempo(diagnosticoActual.getDisponibilidadTiempo());
             diagnosticoFormulario.setAccesoRecursos(diagnosticoActual.getAccesoRecursos());
             diagnosticoFormulario.setLesiones(diagnosticoActual.getLesiones());
             diagnosticoFormulario.setCondicionesMedicas(diagnosticoActual.getCondicionesMedicas());
             diagnosticoFormulario.setHorasSueno(diagnosticoActual.getHorasSueno());
             diagnosticoFormulario.setHabitosAlimenticios(diagnosticoActual.getHabitosAlimenticios());
-            
+
             // Campos opcionales
             diagnosticoFormulario.setPorcentajeGrasaCorporal(diagnosticoActual.getPorcentajeGrasaCorporal());
             diagnosticoFormulario.setCircunferenciaCintura(diagnosticoActual.getCircunferenciaCintura());
@@ -370,7 +370,7 @@ public class ClienteController {
             diagnosticoFormulario.setCircunferenciaPierna(diagnosticoActual.getCircunferenciaPierna());
             diagnosticoFormulario.setFrecuenciaCardiacaReposo(diagnosticoActual.getFrecuenciaCardiacaReposo());
             diagnosticoFormulario.setPresionArterial(diagnosticoActual.getPresionArterial());
-            
+
             // Información para el entrenador
             diagnosticoFormulario.setPreferenciasEntrenamiento(diagnosticoActual.getPreferenciasEntrenamiento());
             diagnosticoFormulario.setExperienciaPreviaDeportes(diagnosticoActual.getExperienciaPreviaDeportes());
