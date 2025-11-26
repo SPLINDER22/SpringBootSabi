@@ -7,6 +7,7 @@ import com.sabi.sabi.service.RutinaService;
 import com.sabi.sabi.service.SemanaService;
 import com.sabi.sabi.service.UsuarioService;
 import com.sabi.sabi.service.ComentarioService; // nuevo
+import com.sabi.sabi.service.SuscripcionService; // nuevo
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -14,6 +15,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import java.util.List;
 
 @Controller
 public class RutinaController {
@@ -25,6 +28,10 @@ public class RutinaController {
     private SemanaService semanaService;
     @Autowired
     private ComentarioService comentarioService; // nuevo
+    @Autowired
+    private SuscripcionService suscripcionService; // nuevo
+    @Autowired
+    private com.sabi.sabi.service.ClienteService clienteService; // nuevo
 
     @GetMapping("/rutina/cliente")
     public String verRutinaCliente(@AuthenticationPrincipal UserDetails userDetails, Model model) {
@@ -157,11 +164,30 @@ public class RutinaController {
         if (usuario.getRol() == null || !usuario.getRol().name().equalsIgnoreCase("ENTRENADOR")) {
             return "redirect:/rutina/cliente";
         }
-        model.addAttribute("rutinas", rutinaService.getRutinasPorUsuario(usuario.getId()));
-        model.addAttribute("idUsuarioActual", usuario.getId());
-        model.addAttribute("isCliente", false);
+
         // Modo asignar rutina a un cliente (desde suscripción aceptada)
         boolean modoAsignar = Boolean.TRUE.equals(asignar) && idCliente != null;
+
+        if (modoAsignar) {
+            // Obtener la suscripción activa del cliente para filtrar por duración en semanas
+            var suscripcionActiva = suscripcionService.getSuscripcionActualByClienteId(idCliente);
+            if (suscripcionActiva != null && suscripcionActiva.getDuracionSemanas() != null) {
+                // Filtrar rutinas que coincidan con la duración de la suscripción
+                Long duracionSemanas = suscripcionActiva.getDuracionSemanas().longValue();
+                model.addAttribute("rutinas", rutinaService.getRutinasPorNumeroSemanasYEntrenador(duracionSemanas, usuario.getId()));
+                model.addAttribute("duracionSemanasFiltro", duracionSemanas);
+            } else {
+                // Si no hay suscripción activa o no tiene duración definida, mostrar todas las rutinas del entrenador
+                model.addAttribute("rutinas", rutinaService.getRutinasPorUsuario(usuario.getId()));
+                model.addAttribute("duracionSemanasFiltro", null);
+            }
+        } else {
+            // Modo normal: mostrar todas las rutinas del entrenador
+            model.addAttribute("rutinas", rutinaService.getRutinasPorUsuario(usuario.getId()));
+        }
+
+        model.addAttribute("idUsuarioActual", usuario.getId());
+        model.addAttribute("isCliente", false);
         model.addAttribute("modoAsignar", modoAsignar);
         model.addAttribute("idClienteAsignacion", idCliente);
         return "rutinas/lista";
@@ -173,6 +199,47 @@ public class RutinaController {
                                            Model model) {
         //model.addAttribute("rutinas", rutinaService.);
         return "rutinas/rutinas-asignables";
+    }
+
+    @GetMapping("/rutinas/seleccionar-cliente/{idRutina}")
+    public String seleccionarClienteParaRutina(@PathVariable Long idRutina,
+                                                @AuthenticationPrincipal UserDetails userDetails,
+                                                Model model,
+                                                RedirectAttributes redirectAttributes) {
+        if (userDetails == null) return "redirect:/auth/login";
+        Usuario entrenador = usuarioService.obtenerPorEmail(userDetails.getUsername());
+        if (entrenador.getRol() == null || !entrenador.getRol().name().equalsIgnoreCase("ENTRENADOR")) {
+            redirectAttributes.addFlashAttribute("error", "No autorizado.");
+            return "redirect:/rutinas";
+        }
+
+        // Obtener la rutina para conocer su número de semanas
+        RutinaDTO rutina = rutinaService.getRutinaById(idRutina);
+        if (rutina == null) {
+            redirectAttributes.addFlashAttribute("error", "Rutina no encontrada.");
+            return "redirect:/rutinas";
+        }
+
+        // Obtener suscripciones con la misma duración en semanas (solo ACEPTADAS)
+        List<com.sabi.sabi.dto.SuscripcionDTO> suscripcionesFiltradas = List.of();
+        if (rutina.getNumeroSemanas() != null) {
+            suscripcionesFiltradas = suscripcionService.getSuscripcionesByDuracionSemanas(rutina.getNumeroSemanas().intValue());
+        }
+
+        // Crear un mapa de ID de cliente -> nombre de cliente
+        java.util.Map<Long, String> nombresClientes = suscripcionesFiltradas.stream()
+                .filter(s -> s.getIdCliente() != null)
+                .collect(java.util.stream.Collectors.toMap(
+                        com.sabi.sabi.dto.SuscripcionDTO::getIdCliente,
+                        s -> clienteService.getClienteById(s.getIdCliente()).getNombre(),
+                        (existing, replacement) -> existing // En caso de duplicados, mantener el primero
+                ));
+
+        model.addAttribute("rutina", rutina);
+        model.addAttribute("suscripciones", suscripcionesFiltradas);
+        model.addAttribute("nombresClientes", nombresClientes);
+        model.addAttribute("numeroSemanasFiltro", rutina.getNumeroSemanas());
+        return "rutinas/seleccionar-cliente";
     }
 
     @PostMapping("/rutinas/asignar/{idRutina}")

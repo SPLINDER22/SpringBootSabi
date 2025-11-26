@@ -60,6 +60,9 @@
                     <a th:href="@{'/rutinas/editar/' + ${rutina.idRutina}}" class="btn btn-sm btn-primary">
                         <i class="fas fa-edit"></i> Editar
                     </a>
+                    <a th:href="@{'/rutinas/seleccionar-cliente/' + ${rutina.idRutina}}" class="btn btn-sm btn-success">
+                        <i class="fas fa-user-plus"></i> Asignar a Cliente
+                    </a>
                     <form th:action="@{'/rutinas/desactivate/' + ${rutina.idRutina}}" method="post" onsubmit="return confirm('¿Eliminar rutina?')">
                         <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
                         <button type="submit" class="btn btn-sm btn-danger">

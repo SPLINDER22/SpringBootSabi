@@ -153,4 +153,15 @@ public class SuscripcionServiceImpl implements SuscripcionService {
     public boolean existsSuscripcionActivaByClienteId(Long clienteId) {
         return suscripcionRepository.existsByCliente_IdAndEstadoTrueAndEstadoSuscripcionIsNot(clienteId, EstadoSuscripcion.RECHAZADA);
     }
+
+    @Override
+    public List<SuscripcionDTO> getSuscripcionesByDuracionSemanas(Integer duracionSemanas) {
+        if (duracionSemanas == null) {
+            return List.of();
+        }
+        return suscripcionRepository.findByEstadoTrueAndEstadoSuscripcionAndDuracionSemanas(EstadoSuscripcion.ACEPTADA, duracionSemanas)
+                .stream()
+                .map(s -> modelMapper.map(s, SuscripcionDTO.class))
+                .collect(Collectors.toList());
+    }
 }
