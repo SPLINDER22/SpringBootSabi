@@ -392,14 +392,13 @@ public class    DataInitializer implements CommandLineRunner {
 
     private void crearSuscripcionSiNoExiste(Cliente cliente, Entrenador entrenador,
                                             EstadoSuscripcion estado,
-                                            Double precio, LocalDate inicio, LocalDate fin) {
+                                            Double precio, Integer duracionSemanas) {
         if (cliente == null || entrenador == null) return;
         boolean existe = suscripcionRepository.findAll().stream()
                 .anyMatch(s -> s.getCliente().getId().equals(cliente.getId())
                         && s.getEntrenador().getId().equals(entrenador.getId())
                         && s.getEstadoSuscripcion() == estado
-                        && java.util.Objects.equals(s.getFechaInicio(), inicio)
-                        && java.util.Objects.equals(s.getFechaFin(), fin)
+                        && java.util.Objects.equals(s.getDuracionSemanas(), duracionSemanas)
                         && java.util.Objects.equals(s.getPrecio(), precio));
         if (existe) return;
         Suscripcion s = Suscripcion.builder()
@@ -407,8 +406,7 @@ public class    DataInitializer implements CommandLineRunner {
                 .entrenador(entrenador)
                 .estadoSuscripcion(estado)
                 .precio(precio)
-                .fechaInicio(inicio)
-                .fechaFin(fin)
+                .duracionSemanas(duracionSemanas)
                 .estado(true)
                 .build();
         suscripcionRepository.save(s);
@@ -425,26 +423,20 @@ public class    DataInitializer implements CommandLineRunner {
         Entrenador e0 = getEntrenadorPorEmail("entrenador@sabi.com").orElse(null);
 
         // PENDIENTE sin precio/fechas
-        crearSuscripcionSiNoExiste(c2, e0, EstadoSuscripcion.PENDIENTE, null, null, null);
-        crearSuscripcionSiNoExiste(c3, e0, EstadoSuscripcion.PENDIENTE, null, null, null);
+        crearSuscripcionSiNoExiste(c2, e0, EstadoSuscripcion.PENDIENTE, null, null);
+        crearSuscripcionSiNoExiste(c3, e0, EstadoSuscripcion.PENDIENTE, null, null);
 
-        // COTIZADA con precio y fechas propuestas
-        crearSuscripcionSiNoExiste(c1, e0, EstadoSuscripcion.COTIZADA, 180.0,
-                LocalDate.now().plusDays(3), LocalDate.now().plusMonths(1).plusDays(3));
-        crearSuscripcionSiNoExiste(c4, e0, EstadoSuscripcion.COTIZADA, 220.0,
-                LocalDate.now().plusDays(7), LocalDate.now().plusMonths(2).plusDays(7));
+        // COTIZADA con precio y duración propuestas
+        crearSuscripcionSiNoExiste(c1, e0, EstadoSuscripcion.COTIZADA, 180.0, 4);
+        crearSuscripcionSiNoExiste(c4, e0, EstadoSuscripcion.COTIZADA, 220.0, 8);
 
         // ACEPTADA activa
-        crearSuscripcionSiNoExiste(c5, e0, EstadoSuscripcion.ACEPTADA, 200.0,
-                LocalDate.now().minusDays(5), LocalDate.now().plusMonths(1));
+        crearSuscripcionSiNoExiste(c5, e0, EstadoSuscripcion.ACEPTADA, 200.0, 4);
 
         // RECHAZADA (para historial)
-        crearSuscripcionSiNoExiste(c3, e0, EstadoSuscripcion.RECHAZADA, 190.0,
-                LocalDate.now().minusMonths(2), LocalDate.now().minusMonths(1));
-        crearSuscripcionSiNoExiste(c4, e0, EstadoSuscripcion.RECHAZADA, 210.0,
-                LocalDate.now().minusMonths(4), LocalDate.now().minusMonths(3));
-        crearSuscripcionSiNoExiste(c2, e0, EstadoSuscripcion.RECHAZADA, 175.0,
-                LocalDate.now().minusMonths(3), LocalDate.now().minusMonths(2));
+        crearSuscripcionSiNoExiste(c3, e0, EstadoSuscripcion.RECHAZADA, 190.0, 6);
+        crearSuscripcionSiNoExiste(c4, e0, EstadoSuscripcion.RECHAZADA, 210.0, 6);
+        crearSuscripcionSiNoExiste(c2, e0, EstadoSuscripcion.RECHAZADA, 175.0, 5);
     }
 
     private void crearEjerciciosSiNoExisten() {

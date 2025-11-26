@@ -60,6 +60,8 @@ public class SuscripcionServiceImpl implements SuscripcionService {
         }
         // Asegurar que el precio del DTO se refleje
         suscripcion.setPrecio(suscripcionDTO.getPrecio());
+        // Duración en semanas
+        suscripcion.setDuracionSemanas(suscripcionDTO.getDuracionSemanas());
         // Flag vista diagnostico
         suscripcion.setVistaDiagnostico(suscripcionDTO.getVistaDiagnostico() != null ? suscripcionDTO.getVistaDiagnostico() : false);
         if (suscripcionDTO.getIdCliente() != null) {
@@ -95,9 +97,8 @@ public class SuscripcionServiceImpl implements SuscripcionService {
                     .orElseThrow(() -> new RuntimeException("Entrenador not found with id: " + suscripcionDTO.getIdEntrenador()));
             existingSuscripcion.setEntrenador(entrenador);
         }
-    existingSuscripcion.setPrecio(suscripcionDTO.getPrecio());
-        existingSuscripcion.setFechaInicio(suscripcionDTO.getFechaInicio());
-        existingSuscripcion.setFechaFin(suscripcionDTO.getFechaFin());
+        existingSuscripcion.setPrecio(suscripcionDTO.getPrecio());
+        existingSuscripcion.setDuracionSemanas(suscripcionDTO.getDuracionSemanas());
         existingSuscripcion.setEstadoSuscripcion(suscripcionDTO.getEstadoSuscripcion());
         existingSuscripcion.setVistaDiagnostico(suscripcionDTO.getVistaDiagnostico() != null ? suscripcionDTO.getVistaDiagnostico() : existingSuscripcion.getVistaDiagnostico());
 

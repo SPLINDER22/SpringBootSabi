@@ -3,8 +3,6 @@ package com.sabi.sabi.dto;
 import com.sabi.sabi.entity.enums.EstadoSuscripcion;
 import lombok.*;
 
-import java.time.LocalDate;
-
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -15,8 +13,7 @@ public class SuscripcionDTO {
 
     private Double precio;
 
-    private LocalDate fechaInicio;
-    private LocalDate fechaFin;
+    private Integer duracionSemanas;
 
     private EstadoSuscripcion estadoSuscripcion;
 

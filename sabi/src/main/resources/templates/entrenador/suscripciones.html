@@ -126,24 +126,16 @@
                             </div>
                             <div class="col-12 col-md-4">
                                 <div class="p-2">
-                                    <div class="text-muted small mb-1"><i class="fas fa-play text-primary me-1"></i>Inicio
+                                    <div class="text-muted small mb-1"><i class="fas fa-play text-primary me-1"></i>Duración
                                     </div>
                                     <div class="fw-semibold"
-                                         th:text="${suscripcion.fechaInicio != null ? #temporals.format(suscripcion.fechaInicio, 'yyyy-MM-dd') : 'Por Definirse'}">
+                                         th:text="${suscripcion.duracionSemanas != null ? suscripcion.duracionSemanas + ' semana(s)' : 'Por Definirse'}">
                                         Por Definirse
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-12 col-md-4">
-                                <div class="p-2">
-                                    <div class="text-muted small mb-1"><i
-                                            class="fas fa-flag-checkered text-primary me-1"></i>Fin
-                                    </div>
-                                    <div class="fw-semibold"
-                                         th:text="${suscripcion.fechaFin != null ? #temporals.format(suscripcion.fechaFin, 'yyyy-MM-dd') : 'Por Definirse'}">
-                                        Por Definirse
-                                    </div>
-                                </div>
+                            <div class="col-12 col-md-4" style="display:none;">
+                                <!-- antiguo campo de fin eliminado, se mantiene solo para estructura si es necesario -->
                             </div>
                         </div>
                     </div>
@@ -151,7 +143,7 @@
                         <div class="d-flex flex-wrap gap-2 w-100 justify-content-center">
                             <button th:if="${estado == 'PENDIENTE' && suscripcion.vistaDiagnostico}" type="button"
                                     class="btn btn-success btn-action flex-fill btn-cotizar-diagnostico"
-                                    th:attr="data-id=${suscripcion.idSuscripcion},data-cliente=${suscripcion.idCliente},data-entrenador=${suscripcion.idEntrenador},data-precio=${suscripcion.precio},data-fechainicio=${suscripcion.fechaInicio},data-fechafin=${suscripcion.fechaFin},data-estado=${suscripcion.estadoSuscripcion}">
+                                    th:attr="data-id=${suscripcion.idSuscripcion},data-cliente=${suscripcion.idCliente},data-entrenador=${suscripcion.idEntrenador},data-precio=${suscripcion.precio},data-estado=${suscripcion.estadoSuscripcion}">
                                 <i class="fas fa-hand-holding-usd me-1"></i> Cotizar
                             </button>
                             <button th:if="${estado == 'PENDIENTE' && !suscripcion.vistaDiagnostico}" type="button"
@@ -203,8 +195,7 @@
                                     <th>Cliente</th>
                                     <th>Estado</th>
                                     <th>Precio</th>
-                                    <th>Inicio</th>
-                                    <th>Fin</th>
+                                    <th>Duración</th>
                                     <th class="text-end">Acciones</th>
                                 </tr>
                                 </thead>
@@ -228,10 +219,7 @@
                                     <td th:text="${suscripcion.precio != null ? #numbers.formatDecimal(suscripcion.precio, 1, 'COMMA', 2, 'POINT') : 'Por Definirse'}">
                                         Por Definirse
                                     </td>
-                                    <td th:text="${suscripcion.fechaInicio != null ? #temporals.format(suscripcion.fechaInicio, 'yyyy-MM-dd') : 'Por Definirse'}">
-                                        Por Definirse
-                                    </td>
-                                    <td th:text="${suscripcion.fechaFin != null ? #temporals.format(suscripcion.fechaFin, 'yyyy-MM-dd') : 'Por Definirse'}">
+                                    <td th:text="${suscripcion.duracionSemanas != null ? suscripcion.duracionSemanas + ' semana(s)' : 'Por Definirse'}">
                                         Por Definirse
                                     </td>
                                     <td class="text-end acciones-cell">
@@ -239,7 +227,7 @@
                                             <!-- Botón Cotizar Diagnóstico (cambiado a verde) -->
                                             <button th:if="${estado == 'PENDIENTE' && suscripcion.vistaDiagnostico}" type="button"
                                                     class="btn btn-success btn-action btn-cotizar-diagnostico"
-                                                    th:attr="data-id=${suscripcion.idSuscripcion},data-cliente=${suscripcion.idCliente},data-entrenador=${suscripcion.idEntrenador},data-precio=${suscripcion.precio},data-fechainicio=${suscripcion.fechaInicio},data-fechafin=${suscripcion.fechaFin},data-estado=${suscripcion.estadoSuscripcion}">
+                                                    th:attr="data-id=${suscripcion.idSuscripcion},data-cliente=${suscripcion.idCliente},data-entrenador=${suscripcion.idEntrenador},data-precio=${suscripcion.precio},data-estado=${suscripcion.estadoSuscripcion}">
                                                 <i class="fas fa-hand-holding-usd"></i>
                                             </button>
                                             <button th:if="${estado == 'PENDIENTE' && !suscripcion.vistaDiagnostico}" type="button"
@@ -374,8 +362,8 @@
                         </div>
 
                         <!-- Inputs ocultos reales para backend -->
-                        <input type="hidden" id="modal-fechainicio" name="fechaInicio">
-                        <input type="hidden" id="modal-fechafin" name="fechaFin">
+                        <input type="hidden" id="modal-fechainicio" name="fechaInicio" th:if="${false}">
+                        <input type="hidden" id="modal-fechafin" name="fechaFin" th:if="${false}">
 
                         <div id="modal-rango-preview" class="mt-2 small text-muted" style="display:none;"></div>
 

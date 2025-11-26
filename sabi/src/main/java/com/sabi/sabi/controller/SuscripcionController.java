@@ -118,8 +118,8 @@ public class SuscripcionController {
                 suscripcionDTO.setIdEntrenador(existente.getIdEntrenador());
 
                 // VALIDACIÓN: Verificar que el entrenador haya visto el diagnóstico
-                // Esto se hace verificando si existe un diagnóstico actual para el cliente
-                if (suscripcionDTO.getFechaInicio() != null && suscripcionDTO.getFechaFin() != null) {
+                // Ahora se valida por duración en semanas en lugar de fechas
+                if (suscripcionDTO.getDuracionSemanas() != null && suscripcionDTO.getDuracionSemanas() > 0) {
                     // Verificar que el cliente tenga diagnóstico
                     var diagnostico = clienteService.getDiagnosticoActualByClienteId(existente.getIdCliente());
                     if (diagnostico == null) {

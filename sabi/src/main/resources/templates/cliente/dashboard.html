@@ -327,12 +327,8 @@
                             <div class="reporte-suscripcion-value" th:text="${suscripcion.precio != null ? ('$' + #numbers.formatDecimal(suscripcion.precio,1,'COMMA',2,'POINT')) : '--'}">--</div>
                         </div>
                         <div>
-                            <div class="reporte-suscripcion-label">Fecha Inicio</div>
-                            <div class="reporte-suscripcion-value" th:text="${suscripcion.fechaInicio != null ? #temporals.format(suscripcion.fechaInicio,'dd/MM/yyyy') : '--'}">--</div>
-                        </div>
-                        <div>
-                            <div class="reporte-suscripcion-label">Fecha Fin</div>
-                            <div class="reporte-suscripcion-value" th:text="${suscripcion.fechaFin != null ? #temporals.format(suscripcion.fechaFin,'dd/MM/yyyy') : '--'}">--</div>
+                            <div class="reporte-suscripcion-label">Duración</div>
+                            <div class="reporte-suscripcion-value" th:text="${suscripcion.duracionSemanas != null ? suscripcion.duracionSemanas + ' semana(s)' : '--'}">--</div>
                         </div>
                         <div>
                             <div class="reporte-suscripcion-label">Días restantes</div>
@@ -340,7 +336,7 @@
                                  th:text="${susDiasRestantes != null ? (!susVencida ? susDiasRestantes + ' días' : 'Vencida') : '--'}">--</div>
                         </div>
                         <div>
-                            <div class="reporte-suscripcion-label">Duración</div>
+                            <div class="reporte-suscripcion-label">Duración total (días)</div>
                             <div class="reporte-suscripcion-value" th:text="${susDiasTotales != null ? susDiasTotales + ' días' : '--'}">--</div>
                         </div>
                     </div>

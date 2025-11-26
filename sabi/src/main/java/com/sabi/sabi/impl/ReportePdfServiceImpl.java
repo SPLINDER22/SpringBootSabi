@@ -320,11 +320,11 @@ public class ReportePdfServiceImpl implements ReportePdfService {
                 detalle.addCell(precioStr);
                 detalle.addCell(s.getEstadoSuscripcion() != null ? s.getEstadoSuscripcion().name() : "-");
                 String rango = "";
-                if (s.getFechaInicio() != null)
-                    rango += DF.format(s.getFechaInicio());
-                rango += " - ";
-                if (s.getFechaFin() != null)
-                    rango += DF.format(s.getFechaFin());
+                if (s.getDuracionSemanas() != null) {
+                    rango = s.getDuracionSemanas() + " semana(s)";
+                } else {
+                    rango = "Por Definirse";
+                }
                 detalle.addCell(rango);
             }
             doc.add(detalle);

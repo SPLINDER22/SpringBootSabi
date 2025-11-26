@@ -48,18 +48,13 @@
                 <div class="col-12 col-md-4">
                   <div class="d-flex flex-column align-items-center p-2">
                     <div class="fs-6 text-dark mb-1">
-                      <i class="fas fa-play text-primary me-2"></i> Fecha de Inicio
+                      <i class="fas fa-play text-primary me-2"></i> Duración
                     </div>
-                    <div class="fw-semibold fs-6" th:text="${suscripcion.fechaInicio != null ? #temporals.format(suscripcion.fechaInicio, 'yyyy-MM-dd') : 'Por Definirse'}">Por Definirse</div>
+                    <div class="fw-semibold fs-6" th:text="${suscripcion.duracionSemanas != null ? suscripcion.duracionSemanas + ' semana(s)' : 'Por Definirse'}">Por Definirse</div>
                   </div>
                 </div>
-                <div class="col-12 col-md-4">
-                  <div class="d-flex flex-column align-items-center p-2">
-                    <div class="fs-6 text-dark mb-1">
-                      <i class="fas fa-flag-checkered text-primary me-2"></i> Fecha de Fin
-                    </div>
-                    <div class="fw-semibold fs-6" th:text="${suscripcion.fechaFin != null ? #temporals.format(suscripcion.fechaFin, 'yyyy-MM-dd') : 'Por Definirse'}">Por Definirse</div>
-                  </div>
+                <div class="col-12 col-md-4" style="display:none;">
+                  <!-- antiguo campo fecha fin removido -->
                 </div>
               </div>
             </div>

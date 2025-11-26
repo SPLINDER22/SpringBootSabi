@@ -142,25 +142,15 @@ public class ClienteController {
             }
         }
         // Calcular métricas de suscripción en el backend para evitar errores en la vista
-        if (suscripcionActual != null && suscripcionActual.getFechaInicio() != null && suscripcionActual.getFechaFin() != null) {
+        if (suscripcionActual != null && suscripcionActual.getDuracionSemanas() != null) {
             try {
-                long diasTotales = java.time.temporal.ChronoUnit.DAYS.between(suscripcionActual.getFechaInicio(), suscripcionActual.getFechaFin());
-                long diasRestantes = java.time.temporal.ChronoUnit.DAYS.between(java.time.LocalDate.now(), suscripcionActual.getFechaFin());
-                // Asegurar valores no negativos en avance y evitar division por cero
-                Long avance = null;
-                if (diasTotales > 0) {
-                    long transcurridos = diasTotales - diasRestantes;
-                    double porcentaje = (transcurridos * 100.0) / diasTotales;
-                    if (porcentaje < 0) porcentaje = 0; // si fechas invertidas o futuro
-                    if (porcentaje > 100) porcentaje = 100;
-                    avance = Math.round(porcentaje);
-                }
+                long diasTotales = suscripcionActual.getDuracionSemanas() * 7L;
+                // No contamos con fecha de inicio/fin en la nueva implementación, por lo que días restantes no pueden calcularse aquí
                 model.addAttribute("susDiasTotales", diasTotales >= 0 ? diasTotales : null);
-                model.addAttribute("susDiasRestantes", diasRestantes);
-                model.addAttribute("susAvance", avance);
-                model.addAttribute("susVencida", diasRestantes < 0);
+                model.addAttribute("susDiasRestantes", null);
+                model.addAttribute("susAvance", null);
+                model.addAttribute("susVencida", false);
             } catch (Exception e) {
-                // En caso de error, dejar métricas nulas para no romper la vista
                 model.addAttribute("susDiasTotales", null);
                 model.addAttribute("susDiasRestantes", null);
                 model.addAttribute("susAvance", null);

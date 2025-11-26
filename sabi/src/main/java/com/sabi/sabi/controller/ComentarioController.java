@@ -14,6 +14,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
 import java.util.Objects;
@@ -67,6 +68,7 @@ public class ComentarioController {
     @GetMapping("/comentarios/nuevo")
     public String nuevoComentarioView(@AuthenticationPrincipal UserDetails userDetails,
                                       @RequestParam(value = "rutinaId", required = false) Long rutinaId,
+                                      @RequestParam(value = "redirectTo", required = false) String redirectTo,
                                       Model model) {
         if (userDetails == null) return "redirect:/auth/login";
         Usuario usuario = usuarioService.obtenerPorEmail(userDetails.getUsername());
@@ -82,6 +84,7 @@ public class ComentarioController {
         }
         model.addAttribute("comentario", dto);
         model.addAttribute("esEdicion", false);
+        model.addAttribute("redirectTo", redirectTo);
         return "comentarios/formulario";
     }
 
@@ -89,6 +92,7 @@ public class ComentarioController {
     @GetMapping("/comentarios/editar/{id}")
     public String editarComentarioView(@PathVariable Long id,
                                        @AuthenticationPrincipal UserDetails userDetails,
+                                       @RequestParam(value = "redirectTo", required = false) String redirectTo,
                                        Model model) {
         if (userDetails == null) return "redirect:/auth/login";
         Usuario usuario = usuarioService.obtenerPorEmail(userDetails.getUsername());
@@ -99,54 +103,78 @@ public class ComentarioController {
         }
         model.addAttribute("comentario", existente);
         model.addAttribute("esEdicion", true);
+        model.addAttribute("redirectTo", redirectTo);
         return "comentarios/formulario";
     }
 
     // GUARDAR (crear o actualizar). Se diferencia por idComentario presente.
     @PostMapping("/comentarios/guardar")
     public String guardarComentario(@AuthenticationPrincipal UserDetails userDetails,
-                                    @ModelAttribute("comentario") @Valid ComentarioDTO comentarioDTO) {
+                                    @ModelAttribute("comentario") @Valid ComentarioDTO comentarioDTO,
+                                    @RequestParam(value = "redirectTo", required = false) String redirectTo,
+                                    RedirectAttributes redirectAttributes) {
         if (userDetails == null) return "redirect:/auth/login";
         Usuario usuario = usuarioService.obtenerPorEmail(userDetails.getUsername());
         // Asegurar propiedad
-        if (comentarioDTO.getIdComentario() != null) { // update
-            ComentarioDTO existente = comentarioService.getComentarioById(comentarioDTO.getIdComentario());
-            if (existente == null) return "redirect:/comentarios?error=notfound";
-            if (!Objects.equals(existente.getIdCliente(), usuario.getId())) {
-                return "redirect:/comentarios?error=forbidden";
-            }
-            // Mantener cliente/entrenador/rutina originales
-            comentarioDTO.setIdCliente(existente.getIdCliente());
-            comentarioDTO.setIdEntrenador(existente.getIdEntrenador());
-            comentarioDTO.setIdRutina(existente.getIdRutina());
-            comentarioService.actualizarComentario(existente.getIdComentario(), comentarioDTO);
-        } else { // create
-            comentarioDTO.setIdCliente(usuario.getId());
-            // Validar rutina finalizada si se provee
-            if (comentarioDTO.getIdRutina() != null) {
-                RutinaDTO r = rutinaService.getRutinaById(comentarioDTO.getIdRutina());
-                if (r == null || r.getEstadoRutina() != EstadoRutina.FINALIZADA || !Objects.equals(r.getIdCliente(), usuario.getId())) {
-                    return "redirect:/comentarios?error=rutina_no_valida";
+        try {
+            if (comentarioDTO.getIdComentario() != null) { // update
+                ComentarioDTO existente = comentarioService.getComentarioById(comentarioDTO.getIdComentario());
+                if (existente == null) {
+                    redirectAttributes.addFlashAttribute("error", "Comentario no encontrado.");
+                    return "redirect:" + (redirectTo != null && !redirectTo.isEmpty() ? redirectTo : "/comentarios");
                 }
-                if (comentarioDTO.getIdEntrenador() == null && r.getIdEntrenador() != null) {
-                    comentarioDTO.setIdEntrenador(r.getIdEntrenador());
+                if (!Objects.equals(existente.getIdCliente(), usuario.getId())) {
+                    redirectAttributes.addFlashAttribute("error", "No tienes permisos para editar este comentario.");
+                    return "redirect:" + (redirectTo != null && !redirectTo.isEmpty() ? redirectTo : "/comentarios");
                 }
+                // Mantener cliente/entrenador/rutina originales
+                comentarioDTO.setIdCliente(existente.getIdCliente());
+                comentarioDTO.setIdEntrenador(existente.getIdEntrenador());
+                comentarioDTO.setIdRutina(existente.getIdRutina());
+                comentarioService.actualizarComentario(existente.getIdComentario(), comentarioDTO);
+                redirectAttributes.addFlashAttribute("success", "Comentario actualizado correctamente.");
+            } else { // create
+                comentarioDTO.setIdCliente(usuario.getId());
+                // Validar rutina finalizada si se provee
+                if (comentarioDTO.getIdRutina() != null) {
+                    RutinaDTO r = rutinaService.getRutinaById(comentarioDTO.getIdRutina());
+                    if (r == null || r.getEstadoRutina() != EstadoRutina.FINALIZADA || !Objects.equals(r.getIdCliente(), usuario.getId())) {
+                        redirectAttributes.addFlashAttribute("error", "Rutina no válida para comentar.");
+                        return "redirect:" + (redirectTo != null && !redirectTo.isEmpty() ? redirectTo : "/comentarios");
+                    }
+                    if (comentarioDTO.getIdEntrenador() == null && r.getIdEntrenador() != null) {
+                        comentarioDTO.setIdEntrenador(r.getIdEntrenador());
+                    }
+                }
+                comentarioService.crearComentario(comentarioDTO);
+                redirectAttributes.addFlashAttribute("success", "Comentario creado correctamente.");
             }
-            comentarioService.crearComentario(comentarioDTO);
+        } catch (RuntimeException ex) {
+            redirectAttributes.addFlashAttribute("error", ex.getMessage());
+            return "redirect:" + (redirectTo != null && !redirectTo.isEmpty() ? redirectTo : "/comentarios");
         }
-        return "redirect:/comentarios";
+        return "redirect:" + (redirectTo != null && !redirectTo.isEmpty() ? redirectTo : "/comentarios");
     }
 
     @PostMapping("/comentarios/eliminar/{id}")
     public String eliminarComentario(@PathVariable Long id,
-                                     @AuthenticationPrincipal UserDetails userDetails) {
+                                     @AuthenticationPrincipal UserDetails userDetails,
+                                     @RequestParam(value = "redirectTo", required = false) String redirectTo,
+                                     RedirectAttributes redirectAttributes) {
         if (userDetails == null) return "redirect:/auth/login";
         Usuario usuario = usuarioService.obtenerPorEmail(userDetails.getUsername());
         ComentarioDTO existente = comentarioService.getComentarioById(id);
-        if (existente == null) return "redirect:/comentarios?error=notfound";
-        if (!Objects.equals(existente.getIdCliente(), usuario.getId())) return "redirect:/comentarios?error=forbidden";
+        if (existente == null) {
+            redirectAttributes.addFlashAttribute("error", "Comentario no encontrado.");
+            return "redirect:" + (redirectTo != null && !redirectTo.isEmpty() ? redirectTo : "/comentarios");
+        }
+        if (!Objects.equals(existente.getIdCliente(), usuario.getId())) {
+            redirectAttributes.addFlashAttribute("error", "No tienes permiso para eliminar este comentario.");
+            return "redirect:" + (redirectTo != null && !redirectTo.isEmpty() ? redirectTo : "/comentarios");
+        }
         comentarioService.eliminarComentario(id);
-        return "redirect:/comentarios";
+        redirectAttributes.addFlashAttribute("success", "Comentario eliminado correctamente.");
+        return "redirect:" + (redirectTo != null && !redirectTo.isEmpty() ? redirectTo : "/comentarios");
     }
 
     // DETALLE SOLO LECTURA

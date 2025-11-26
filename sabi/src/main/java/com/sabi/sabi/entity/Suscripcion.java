@@ -3,7 +3,6 @@ package com.sabi.sabi.entity;
 import com.sabi.sabi.entity.enums.EstadoSuscripcion;
 import jakarta.persistence.*;
 import lombok.*;
-import java.time.LocalDate;
 
 @Entity
 @Table(name = "suscripciones")
@@ -20,8 +19,8 @@ public class Suscripcion {
     @Column(name = "precio", nullable = true)
     private Double precio;
 
-    private LocalDate fechaInicio;
-    private LocalDate fechaFin;
+    // Duración en semanas de la futura rutina que asignará el entrenador
+    private Integer duracionSemanas;
 
     @Enumerated(EnumType.STRING)
     private EstadoSuscripcion estadoSuscripcion;
@@ -40,7 +39,7 @@ public class Suscripcion {
     @Column(name = "estado", nullable = false)
     private Boolean estado = true;
 
-    // Nuevo campo: indica si el entrenador ya abrió la vista del diagnóstico del cliente para esta suscripción
+    // indica si el entrenador ya abrió la vista del diagnóstico del cliente para esta suscripción
     @Builder.Default
     @Column(name = "vista_diagnostico", nullable = false)
     private Boolean vistaDiagnostico = false;
