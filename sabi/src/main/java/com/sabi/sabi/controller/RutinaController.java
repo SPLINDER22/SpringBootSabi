@@ -32,6 +32,14 @@ public class RutinaController {
     private SuscripcionService suscripcionService; // nuevo
     @Autowired
     private com.sabi.sabi.service.ClienteService clienteService; // nuevo
+    @Autowired
+    private com.sabi.sabi.service.DiaService diaService;
+    @Autowired
+    private com.sabi.sabi.service.EjercicioAsignadoService ejercicioAsignadoService;
+    @Autowired
+    private com.sabi.sabi.service.SerieService serieService;
+    @Autowired
+    private com.sabi.sabi.repository.RegistroSerieRepository registroSerieRepository;
 
     @GetMapping("/rutina/cliente")
     public String verRutinaCliente(@AuthenticationPrincipal UserDetails userDetails, Model model) {
@@ -50,8 +58,8 @@ public class RutinaController {
         // Obtener única rutina activa
         RutinaDTO activa = rutinaService.getRutinaActivaCliente(usuario.getId());
         if (activa != null && activa.getIdRutina() != null) {
-            // Redirigir directamente a las semanas de su rutina activa
-            return "redirect:/semanas/detallar/" + activa.getIdRutina();
+            // Redirigir a la nueva vista unificada para clientes
+            return "redirect:/rutina/cliente/vista-unificada/" + activa.getIdRutina();
         }
         // No tiene rutina activa: mostrar globales
         model.addAttribute("rutinas", rutinaService.getRutinasGlobales());
@@ -324,5 +332,126 @@ public class RutinaController {
         rutinaService.desactivateRutina(id);
         redirectAttributes.addFlashAttribute("success", "Estado de la rutina actualizado.");
         return "redirect:/rutinas";
+    }
+
+    @GetMapping("/rutina/cliente/vista-unificada/{idRutina}")
+    public String vistaUnificadaCliente(@PathVariable Long idRutina,
+                                         @RequestParam(required = false) Long semanaId,
+                                         @RequestParam(required = false) Long diaId,
+                                         @RequestParam(required = false) Long ejercicioId,
+                                         @AuthenticationPrincipal UserDetails userDetails,
+                                         Model model,
+                                         RedirectAttributes redirectAttributes) {
+        if (userDetails == null) {
+            return "redirect:/auth/login";
+        }
+
+        Usuario usuario;
+        try {
+            usuario = usuarioService.obtenerPorEmail(userDetails.getUsername());
+        } catch (RuntimeException ex) {
+            return "redirect:/auth/login";
+        }
+
+        // Solo clientes pueden acceder a esta vista
+        if (usuario.getRol() == null || !usuario.getRol().name().equalsIgnoreCase("CLIENTE")) {
+            redirectAttributes.addFlashAttribute("error", "Esta vista es solo para clientes.");
+            return "redirect:/rutinas";
+        }
+
+        // Obtener la rutina
+        RutinaDTO rutina = rutinaService.getRutinaById(idRutina);
+        System.out.println("DEBUG - Rutina encontrada: " + (rutina != null ? rutina.getNombre() : "NULL"));
+        if (rutina == null) {
+            redirectAttributes.addFlashAttribute("error", "Rutina no encontrada.");
+            return "redirect:/rutina/cliente";
+        }
+
+        // Verificar que la rutina pertenece al cliente
+        if (rutina.getIdCliente() == null || !rutina.getIdCliente().equals(usuario.getId())) {
+            redirectAttributes.addFlashAttribute("error", "No tienes acceso a esta rutina.");
+            return "redirect:/rutina/cliente";
+        }
+
+        // Obtener toda la estructura: semanas -> días -> ejercicios -> series
+        var semanas = semanaService.getSemanasRutina(idRutina);
+        System.out.println("DEBUG - Número de semanas encontradas: " + (semanas != null ? semanas.size() : "NULL"));
+
+        // Para cada semana, obtener sus días
+        var semanasConDias = semanas.stream().map(semana -> {
+            Long idSemana = semana.getId();
+            System.out.println("DEBUG - Procesando semana ID: " + idSemana + ", Número: " + semana.getNumeroSemana());
+            var dias = diaService.getDiasSemana(idSemana);
+            System.out.println("DEBUG - Días encontrados para semana " + idSemana + ": " + (dias != null ? dias.size() : "NULL"));
+
+            // Para cada día, obtener sus ejercicios
+            var diasConEjercicios = dias.stream().map(dia -> {
+                Long idDia = dia.getId();
+                System.out.println("DEBUG - Procesando día ID: " + idDia + ", Número: " + dia.getNumeroDia());
+                var ejercicios = ejercicioAsignadoService.getEjesDia(idDia);
+                System.out.println("DEBUG - Ejercicios encontrados para día " + idDia + ": " + (ejercicios != null ? ejercicios.size() : "NULL"));
+
+                // Para cada ejercicio, obtener sus series
+                var ejerciciosConSeries = ejercicios.stream().map(eje -> {
+                    Long idEje = eje.getIdEjercicioAsignado();
+                    System.out.println("DEBUG - Procesando ejercicio ID: " + idEje);
+                    var series = serieService.getSerieEje(idEje);
+                    System.out.println("DEBUG - Series encontradas para ejercicio " + idEje + ": " + (series != null ? series.size() : "NULL"));
+
+                    // Cargar los registros existentes para cada serie
+                    var seriesConRegistros = series.stream().map(serie -> {
+                        java.util.Map<String, Object> serieMap = new java.util.HashMap<>();
+                        serieMap.put("serie", serie);
+
+                        // Buscar registro existente para esta serie
+                        var registroOpt = registroSerieRepository.findFirstBySerie_Id(serie.getId());
+                        if (registroOpt.isPresent()) {
+                            var registro = registroOpt.get();
+                            // Crear un mapa con los datos del registro
+                            java.util.Map<String, Object> registroMap = new java.util.HashMap<>();
+                            registroMap.put("repeticionesReales", registro.getRepeticionesReales());
+                            registroMap.put("pesoReal", registro.getPesoReal());
+                            registroMap.put("descansoReal", registro.getDescansoReal());
+                            registroMap.put("intensidadReal", registro.getIntensidadReal() != null ? registro.getIntensidadReal().name() : null);
+                            registroMap.put("comentariosCliente", registro.getComentariosCliente());
+                            serieMap.put("registro", registroMap);
+                            System.out.println("DEBUG - Registro encontrado para serie " + serie.getId() + ": " +
+                                             registro.getRepeticionesReales() + " reps, " + registro.getPesoReal() + " kg");
+                        } else {
+                            serieMap.put("registro", null);
+                            System.out.println("DEBUG - No hay registro para serie " + serie.getId());
+                        }
+
+                        return serieMap;
+                    }).toList();
+
+                    java.util.Map<String, Object> ejeMap = new java.util.HashMap<>();
+                    ejeMap.put("ejercicio", eje);
+                    ejeMap.put("series", seriesConRegistros);
+                    return ejeMap;
+                }).toList();
+
+                java.util.Map<String, Object> diaMap = new java.util.HashMap<>();
+                diaMap.put("dia", dia);
+                diaMap.put("ejercicios", ejerciciosConSeries);
+                return diaMap;
+            }).toList();
+
+            java.util.Map<String, Object> semanaMap = new java.util.HashMap<>();
+            semanaMap.put("semana", semana);
+            semanaMap.put("dias", diasConEjercicios);
+            return semanaMap;
+        }).toList();
+
+        System.out.println("DEBUG - Estructura completa construida. Total semanas con datos: " + semanasConDias.size());
+        model.addAttribute("rutina", rutina);
+        model.addAttribute("semanasCompletas", semanasConDias);
+
+        // Pasar parámetros de navegación automática al frontend
+        model.addAttribute("autoSemanaId", semanaId);
+        model.addAttribute("autoDiaId", diaId);
+        model.addAttribute("autoEjercicioId", ejercicioId);
+
+        return "rutinas/vista-unificada-cliente";
     }
 }

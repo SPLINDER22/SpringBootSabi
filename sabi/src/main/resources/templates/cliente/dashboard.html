@@ -282,7 +282,8 @@
                     </div>
                     <div class="reporte-suscripcion-actions">
                         <div th:if="${diaActual != null}">
-                            <a class="btn btn-primary" th:href="@{'/ejes/detallar/' + ${diaActual.idDia}}">
+                            <a class="btn btn-primary"
+                               th:href="@{/rutina/cliente/vista-unificada/{idRutina}(idRutina=${rutina.idRutina}, semanaId=${semanaActual}, diaId=${diaActual.idDia}, ejercicioId=${primerEjercicioDia})}">
                                 <i class="fas fa-play me-1"></i> Ejercicios del día
                             </a>
                         </div>

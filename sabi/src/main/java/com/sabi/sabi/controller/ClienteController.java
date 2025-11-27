@@ -50,6 +50,8 @@ public class ClienteController {
     private DiaService diaService;
     @Autowired
     private ComentarioService comentarioService; // nuevo
+    @Autowired
+    private EjercicioAsignadoService ejercicioAsignadoService;
 
     @GetMapping("/cliente/dashboard")
     public String clienteDashboard(Model model,
@@ -123,6 +125,17 @@ public class ClienteController {
             model.addAttribute("rutina", rutinaDTO);
             model.addAttribute("diaActual", diaDTO);
             model.addAttribute("porcentajeCompletado", porcentajeCompletado);
+
+            // Obtener semana del día actual y primer ejercicio para navegación automática
+            if (diaDTO != null && diaDTO.getIdSemana() != null) {
+                model.addAttribute("semanaActual", diaDTO.getIdSemana());
+
+                // Obtener el primer ejercicio del día para mostrarlo automáticamente
+                var ejercicios = ejercicioAsignadoService.getEjesDia(diaDTO.getIdDia());
+                if (ejercicios != null && !ejercicios.isEmpty()) {
+                    model.addAttribute("primerEjercicioDia", ejercicios.get(0).getIdEjercicioAsignado());
+                }
+            }
         } else {
             model.addAttribute("tieneRutinaActiva", false);
         }
