@@ -172,4 +172,49 @@ public class RegistroSerieController {
         String sufijo = esEntrenador ? "?readonly=true" : "";
         return "redirect:/registros-series/" + serie.getEjercicioAsignado().getIdEjercicioAsignado() + sufijo;
     }
+
+    /**
+     * Endpoint REST para guardar registro desde la vista unificada del cliente
+     * Devuelve JSON en lugar de redireccionar
+     */
+    @PostMapping("/api/registros-series/guardar")
+    @ResponseBody
+    public Map<String, Object> guardarRegistroAjax(@RequestBody RegistroSerieDTO registroSerieDTO,
+                                                    @AuthenticationPrincipal UserDetails userDetails) {
+        Map<String, Object> response = new HashMap<>();
+        try {
+            if (registroSerieDTO.getIdSerie() == null) {
+                response.put("success", false);
+                response.put("message", "Serie no especificada");
+                return response;
+            }
+
+            // Verificar que la serie existe
+            var serie = serieRepository.findById(registroSerieDTO.getIdSerie())
+                    .orElseThrow(() -> new RuntimeException("Serie no encontrada"));
+
+            // Establecer fecha de ejecución si no viene
+            if (registroSerieDTO.getFechaEjecucion() == null) {
+                registroSerieDTO.setFechaEjecucion(LocalDateTime.now());
+            }
+
+            // Guardar el registro
+            RegistroSerieDTO registroGuardado = registroSerieService.saveOrUpdateRegistroSerie(registroSerieDTO);
+
+            response.put("success", true);
+            response.put("message", "Registro guardado correctamente");
+            response.put("registro", registroGuardado);
+
+            log.info("Registro de serie guardado: ID={}, Serie={}, Usuario={}",
+                    registroGuardado.getIdRegistroSerie(),
+                    registroSerieDTO.getIdSerie(),
+                    userDetails.getUsername());
+
+        } catch (Exception ex) {
+            log.error("Error al guardar registro de serie", ex);
+            response.put("success", false);
+            response.put("message", "Error al guardar el registro: " + ex.getMessage());
+        }
+        return response;
+    }
 }

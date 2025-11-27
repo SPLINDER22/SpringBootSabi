@@ -72,7 +72,6 @@ public class SerieController {
         model.addAttribute("ejercicioAsignado", ejeDTO);
         if (ejeDTO != null) {
             model.addAttribute("idDia", ejeDTO.getIdDia());
-            // Preferir el nombre ya proporcionado por el DTO; fallback a servicio si es null
             if (ejeDTO.getNombreEjercicio() != null && !ejeDTO.getNombreEjercicio().isBlank()) {
                 model.addAttribute("nombreEjercicio", ejeDTO.getNombreEjercicio());
             } else if (ejeDTO.getIdEjercicio() != null) {

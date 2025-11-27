@@ -29,4 +29,8 @@ public interface RutinaRepository extends JpaRepository<Rutina,Long> {
 
     // (Deprecated) preexistente: se mantiene si otro código lo usa todavía
     List<Rutina> findByClienteIsNullAndEstadoTrue();
+
+    // Filtrar rutinas activas sin cliente asignado, por número de semanas y opcionalmente por entrenador
+    @Query("SELECT r FROM Rutina r WHERE r.cliente IS NULL AND r.estado = true AND r.numeroSemanas = :numeroSemanas AND (r.entrenador.id = :entrenadorId OR r.entrenador IS NULL)")
+    List<Rutina> findByNumeroSemanasAndEntrenadorOrGlobal(@Param("numeroSemanas") Long numeroSemanas, @Param("entrenadorId") Long entrenadorId);
 }

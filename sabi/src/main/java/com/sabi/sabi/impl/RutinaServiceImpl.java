@@ -293,4 +293,15 @@ public class RutinaServiceImpl implements RutinaService {
             rutinaRepository.save(rutina);
         }
     }
+
+    @Override
+    public List<RutinaDTO> getRutinasPorNumeroSemanasYEntrenador(Long numeroSemanas, Long entrenadorId) {
+        if (numeroSemanas == null || entrenadorId == null) {
+            return List.of();
+        }
+        return rutinaRepository.findByNumeroSemanasAndEntrenadorOrGlobal(numeroSemanas, entrenadorId)
+                .stream()
+                .map(this::mapToDTO)
+                .toList();
+    }
 }

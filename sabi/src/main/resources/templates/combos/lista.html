@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <title>Combos</title>
+    <style>
+        .combos-container {
+            padding: 20px;
+        }
+
+        .combos-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .combos-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .combo-card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            overflow: hidden;
+            cursor: pointer;
+        }
+
+        .combo-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 16px rgba(0,0,0,0.15);
+        }
+
+        .combo-card-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 25px;
+            text-align: center;
+            color: white;
+        }
+
+        .combo-icon {
+            font-size: 3rem;
+            margin-bottom: 10px;
+        }
+
+        .combo-name {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin: 0;
+            word-wrap: break-word;
+        }
+
+        .combo-card-body {
+            padding: 20px;
+        }
+
+        .combo-info {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 15px;
+        }
+
+        .combo-info-item {
+            display: flex;
+            align-items: center;
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .combo-info-item i {
+            margin-right: 10px;
+            color: #667eea;
+            width: 20px;
+            text-align: center;
+        }
+
+        .combo-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-clonar {
+            flex: 1;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 10px;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: opacity 0.3s ease;
+        }
+
+        .btn-clonar:hover {
+            opacity: 0.9;
+            color: white;
+        }
+
+        .btn-eliminar {
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 8px;
+            transition: background 0.3s ease;
+        }
+
+        .btn-eliminar:hover {
+            background: #c82333;
+        }
+
+        .no-combos {
+            text-align: center;
+            padding: 60px 20px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .no-combos i {
+            font-size: 4rem;
+            color: #ccc;
+            margin-bottom: 20px;
+        }
+
+        .no-combos h3 {
+            color: #666;
+            margin-bottom: 10px;
+        }
+
+        .no-combos p {
+            color: #999;
+        }
+    </style>
+</head>
+<body th:replace="layout/layout :: layout('Lista de Combos', ~{::section})">
+<section th:fragment="section">
+    <div class="combos-container">
+        <div class="combos-header">
+            <h1 class="h3 mb-0 text-gray-800">
+                <i class="fas fa-layer-group me-2"></i> Combos de Series Disponibles
+            </h1>
+            <a th:href="@{/series/detallar/{idEje}(idEje=${idEjercicioAsignado})}"
+               class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-left"></i> Volver a Series
+            </a>
+        </div>
+
+        <!-- Grid de combos -->
+        <div th:if="${combos != null and !#lists.isEmpty(combos)}" class="combos-grid">
+            <div th:each="combo : ${combos}" class="combo-card">
+                <div class="combo-card-header">
+                    <div class="combo-icon">
+                        <i class="fas fa-layer-group"></i>
+                    </div>
+                    <h3 class="combo-name" th:text="${combo.nombre}">Nombre del Combo</h3>
+                </div>
+                <div class="combo-card-body">
+                    <div class="combo-info">
+                        <div class="combo-info-item">
+                            <i class="fas fa-dumbbell"></i>
+                            <span>Ejercicio: <strong th:text="${combo.nombreEjercicio}">Nombre del Ejercicio</strong></span>
+                        </div>
+                        <div class="combo-info-item">
+                            <i class="fas fa-list-ol"></i>
+                            <span>Series: <strong th:text="${combo.cantidadSeries} + ' series'">0 series</strong></span>
+                        </div>
+                    </div>
+                    <div class="combo-actions">
+                        <button type="button"
+                                class="btn-clonar"
+                                th:attr="data-combo-id=${combo.id}, data-combo-nombre=${combo.nombre}"
+                                onclick="clonarCombo(this)">
+                            <i class="fas fa-clone me-1"></i> Clonar Series
+                        </button>
+                        <button type="button"
+                                class="btn-eliminar"
+                                th:attr="data-combo-id=${combo.id}, data-combo-nombre=${combo.nombre}"
+                                onclick="confirmarEliminar(this)">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mensaje cuando no hay combos -->
+        <div th:if="${combos == null or #lists.isEmpty(combos)}" class="no-combos">
+            <i class="fas fa-layer-group"></i>
+            <h3>No hay combos disponibles</h3>
+            <p>Aún no se han creado combos de series para este ejercicio.</p>
+            <a th:href="@{/series/detallar/{idEje}(idEje=${idEjercicioAsignado})}"
+               class="btn btn-primary mt-3">
+                <i class="fas fa-plus me-1"></i> Crear un Combo
+            </a>
+        </div>
+    </div>
+
+    <script th:inline="javascript">
+        const idEjercicioAsignado = /*[[${idEjercicioAsignado}]]*/ null;
+
+        function clonarCombo(button) {
+            const comboId = button.getAttribute('data-combo-id');
+            const comboNombre = button.getAttribute('data-combo-nombre');
+
+            if (!comboId || !idEjercicioAsignado) {
+                alert('Error: No se pudo obtener la información necesaria');
+                return;
+            }
+
+            if (confirm(`¿Deseas clonar las series del combo "${comboNombre}"?`)) {
+                // TODO: Implementar endpoint para clonar combo
+                window.location.href = `/combos/clonar/${comboId}/${idEjercicioAsignado}`;
+            }
+        }
+
+        function confirmarEliminar(button) {
+            const comboId = button.getAttribute('data-combo-id');
+            const comboNombre = button.getAttribute('data-combo-nombre');
+
+            if (!comboId) {
+                alert('Error: No se pudo obtener el ID del combo');
+                return;
+            }
+
+            if (confirm(`¿Estás seguro de eliminar el combo "${comboNombre}"?\n\nEsta acción no se puede deshacer.`)) {
+                // Crear y enviar formulario
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = `/combos/eliminar/${comboId}`;
+
+                // Agregar token CSRF
+                const csrfToken = /*[[${_csrf.token}]]*/ '';
+                const csrfInput = document.createElement('input');
+                csrfInput.type = 'hidden';
+                csrfInput.name = /*[[${_csrf.parameterName}]]*/ '_csrf';
+                csrfInput.value = csrfToken;
+                form.appendChild(csrfInput);
+
+                // Agregar idEjercicioAsignado para redirección
+                const idInput = document.createElement('input');
+                idInput.type = 'hidden';
+                idInput.name = 'idEjercicioAsignado';
+                idInput.value = idEjercicioAsignado;
+                form.appendChild(idInput);
+
+                document.body.appendChild(form);
+                form.submit();
+            }
+        }
+    </script>
+</section>
+</body>
+</html>

@@ -66,7 +66,6 @@
     <div class="ejes row mb-5">
         <button class="col-md-2" th:each="e : ${ejes}"
                 th:classappend="${(e != null and ejercicioAsignado != null and e.idEjercicioAsignado != null and ejercicioAsignado.idEjercicioAsignado != null and e.idEjercicioAsignado.equals(ejercicioAsignado.idEjercicioAsignado))} ? 'bg-info text-white' : ''">
-            <!-- Sólo renderizar el enlace si 'e' existe y tiene id -->
             <a th:if="${e != null and e.idEjercicioAsignado != null}"
                th:href="@{/series/detallar/{idEje}(idEje=${e.idEjercicioAsignado}, readonly=${readonly != null ? readonly : false})}"
                th:text="${e != null and e.nombreEjercicio != null ? e.nombreEjercicio : 'Sin nombre'}"
@@ -123,6 +122,86 @@
         </tr>
         </tbody>
     </table>
+
+    <div sec:authorize="hasAnyRole('ENTRENADOR')" th:if="${!readonly}">
+        <a th:if="${ejercicioAsignado != null and ejercicioAsignado.idEjercicioAsignado != null}"
+           th:href="@{/combos/listar/{idEje}(idEje=${ejercicioAsignado.idEjercicioAsignado})}"
+           class="btn btn-primary mb-2">
+            <i class="fas fa-clone"></i> Clonar combo de series
+        </a>
+
+        <button type="button" class="btn btn-primary mb-2" data-toggle="modal" data-target="#modalCrearCombo">
+            <i class="fas fa-layer-group"></i> Crear Combo de Series
+        </button>
+    </div>
+
+    <!-- Modal para crear combo -->
+    <div class="modal fade" id="modalCrearCombo" tabindex="-1" role="dialog" aria-labelledby="modalCrearComboLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalCrearComboLabel">Crear Combo de Series</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form id="formCrearCombo">
+                        <div class="form-group">
+                            <label for="nombreCombo">Nombre del Combo</label>
+                            <input type="text"
+                                   class="form-control"
+                                   id="nombreCombo"
+                                   name="nombreCombo"
+                                   placeholder="Ej: Combo Fuerza, Super Serie, etc."
+                                   required
+                                   maxlength="100">
+                            <small class="form-text text-muted">Ingrese un nombre descriptivo para identificar este combo de series.</small>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary" onclick="crearCombo()">
+                        <i class="fas fa-save"></i> Crear Combo
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script th:inline="javascript">
+        function crearCombo() {
+            const nombreCombo = document.getElementById('nombreCombo').value.trim();
+            const idEjercicioAsignado = /*[[${ejercicioAsignado?.idEjercicioAsignado}]]*/ null;
+
+            if (!nombreCombo) {
+                alert('Por favor, ingrese un nombre para el combo');
+                return;
+            }
+
+            if (!idEjercicioAsignado) {
+                alert('Error: No se pudo obtener el ID del ejercicio asignado');
+                return;
+            }
+
+            // Redirigir al controlador
+            window.location.href = `/combos/crear/${idEjercicioAsignado}/${encodeURIComponent(nombreCombo)}`;
+        }
+
+        // Limpiar el formulario cuando se cierra el modal
+        $('#modalCrearCombo').on('hidden.bs.modal', function () {
+            document.getElementById('formCrearCombo').reset();
+        });
+
+        // Permitir enviar con Enter
+        document.getElementById('nombreCombo').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                crearCombo();
+            }
+        });
+    </script>
 </section>
 </body>
 </html>

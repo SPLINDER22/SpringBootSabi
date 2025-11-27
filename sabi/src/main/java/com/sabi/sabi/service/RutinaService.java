@@ -31,4 +31,6 @@ public interface RutinaService {
     List<RutinaDTO> getRutinasGlobales();
 
     void adoptarRutina(long idRutina, long idCliente);
+
+    List<RutinaDTO> getRutinasPorNumeroSemanasYEntrenador(Long numeroSemanas, Long entrenadorId);
 }

@@ -42,9 +42,12 @@ public class Serie {
     @Size(max = 255, message = "El comentario no puede superar 255 caracteres")
     private String comentarios;
 
-    // Relación con EjercicioAsignado
     @ManyToOne
-    @JoinColumn(name = "ejercicio_asignado_id", nullable = false)
+    @JoinColumn(name = "combo_id", nullable = true)
+    private Combo combo;
+
+    @ManyToOne
+    @JoinColumn(name = "ejercicio_asignado_id", nullable = true)
     private EjercicioAsignado ejercicioAsignado;
 
     @Column(name = "estado", nullable = false)

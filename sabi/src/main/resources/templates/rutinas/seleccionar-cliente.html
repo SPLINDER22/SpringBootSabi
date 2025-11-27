@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Seleccionar Cliente</title>
+    <style>
+        .info-rutina {
+            background: #f8f9fc;
+            border-left: 4px solid #4e73df;
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+            border-radius: 0.35rem;
+        }
+        .info-rutina h5 {
+            margin-bottom: 0.5rem;
+            color: #4e73df;
+        }
+        .info-rutina p {
+            margin-bottom: 0.25rem;
+        }
+    </style>
+</head>
+<body th:replace="layout/layout :: layout('Seleccionar Cliente', ~{::section})">
+<section th:fragment="section">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3 mb-0 text-gray-800">Asignar Rutina a Cliente</h1>
+        <a th:href="@{/rutinas}" class="btn btn-secondary">
+            <i class="fas fa-arrow-left"></i> Volver a Rutinas
+        </a>
+    </div>
+
+    <!-- Información de la rutina seleccionada -->
+    <div class="info-rutina">
+        <h5><i class="fas fa-dumbbell"></i> Rutina Seleccionada</h5>
+        <p><strong>Nombre:</strong> <span th:text="${rutina.nombre}">Nombre de la rutina</span></p>
+        <p><strong>Objetivo:</strong> <span th:text="${rutina.objetivo}">Objetivo</span></p>
+        <p><strong>Número de Semanas:</strong> <span th:text="${rutina.numeroSemanas}">4</span></p>
+        <p th:if="${rutina.descripcion}" class="mb-0">
+            <strong>Descripción:</strong> <span th:text="${rutina.descripcion}">Descripción</span>
+        </p>
+    </div>
+
+    <!-- Alerta informativa -->
+    <div class="alert alert-info mb-4">
+        <i class="fas fa-info-circle"></i>
+        Se muestran únicamente clientes con suscripciones activas (ACEPTADAS) de
+        <strong th:text="${numeroSemanasFiltro}">4</strong> semanas,
+        que coinciden con la duración de esta rutina.
+    </div>
+
+    <!-- Lista de clientes disponibles -->
+    <div class="card shadow-sm">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">Clientes Disponibles</h6>
+        </div>
+        <div class="card-body">
+            <div th:if="${suscripciones == null || #lists.isEmpty(suscripciones)}" class="text-center py-4">
+                <i class="fas fa-users-slash fa-3x text-muted mb-3"></i>
+                <p class="text-muted">
+                    No hay clientes con suscripciones activas de
+                    <strong th:text="${numeroSemanasFiltro}">4</strong> semanas.
+                </p>
+                <p class="text-muted">
+                    Los clientes deben tener una suscripción ACEPTADA con la misma duración que esta rutina.
+                </p>
+            </div>
+
+            <div th:if="${suscripciones != null && !#lists.isEmpty(suscripciones)}" class="table-responsive">
+                <table class="table table-bordered mb-0">
+                    <thead>
+                        <tr>
+                            <th>Cliente</th>
+                            <th>Precio Suscripción</th>
+                            <th>Duración (Semanas)</th>
+                            <th style="width: 150px;" class="text-center">Acción</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="suscripcion : ${suscripciones}">
+                            <td>
+                                <i class="fas fa-user text-primary me-2"></i>
+                                <span th:text="${nombresClientes[suscripcion.idCliente] ?: 'N/A'}">
+                                    Nombre del Cliente
+                                </span>
+                            </td>
+                            <td>
+                                <span th:text="${suscripcion.precio != null ?
+                                    '$' + #numbers.formatDecimal(suscripcion.precio, 1, 'COMMA', 2, 'POINT') : 'N/A'}">
+                                    $0.00
+                                </span>
+                            </td>
+                            <td class="text-center">
+                                <span class="badge bg-primary" th:text="${suscripcion.duracionSemanas + ' semanas'}">
+                                    4 semanas
+                                </span>
+                            </td>
+                            <td class="text-center">
+                                <form th:action="@{'/rutinas/asignar/' + ${rutina.idRutina}}"
+                                      method="post"
+                                      class="d-inline"
+                                      onsubmit="return confirm('¿Confirmar asignación de esta rutina al cliente? Se clonará y activará para él.');">
+                                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                                    <input type="hidden" name="idCliente" th:value="${suscripcion.idCliente}"/>
+                                    <button type="submit" class="btn btn-sm btn-success">
+                                        <i class="fas fa-check-circle"></i> Asignar
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</section>
+</body>
+</html>

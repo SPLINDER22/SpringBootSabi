@@ -29,6 +29,9 @@ public class SerieDTO {
     // Comentarios del entrenador para la serie
     private String comentarios;
 
+    // Relación con Combo
+    private Long idCombo;
+
     // Relación con EjercicioAsignado
     private Long idEjercicioAsignado;
 
