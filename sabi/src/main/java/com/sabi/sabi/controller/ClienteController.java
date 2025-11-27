@@ -280,6 +280,22 @@ public class ClienteController {
         if (actual != null && actual.getIdEntrenador() != null) {
             var entrenador = entrenadorService.getEntrenadorById(actual.getIdEntrenador());
             model.addAttribute("nombreEntrenador", entrenador != null ? entrenador.getNombre() : null);
+            model.addAttribute("fotoEntrenador", entrenador != null && entrenador.getFotoPerfilUrl() != null ? entrenador.getFotoPerfilUrl() : "/img/fotoPerfil.png");
+            model.addAttribute("telefonoEntrenador", entrenador != null ? entrenador.getTelefono() : null);
+            model.addAttribute("emailEntrenador", entrenador != null ? entrenador.getEmail() : null);
+        }
+
+        // Añadir información de rutina activa y progreso si existe
+        RutinaDTO rutinaActiva = rutinaService.getRutinaActivaCliente(clienteId);
+        if (rutinaActiva != null) {
+            DiaDTO diaActual = diaService.getDiaActual(clienteId);
+            long porcentajeCompletado = diaService.calcularProgresoRutina(clienteId);
+            model.addAttribute("tieneRutinaActiva", true);
+            model.addAttribute("rutina", rutinaActiva);
+            model.addAttribute("diaActual", diaActual);
+            model.addAttribute("porcentajeCompletado", porcentajeCompletado);
+        } else {
+            model.addAttribute("tieneRutinaActiva", false);
         }
         return "cliente/suscripcion";
     }
