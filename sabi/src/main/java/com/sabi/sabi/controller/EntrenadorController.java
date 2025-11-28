@@ -137,51 +137,86 @@ public class EntrenadorController {
             return "redirect:/auth/login";
         }
         var usuario = usuarioService.obtenerPorEmail(userDetails.getUsername());
+        if (usuario == null) {
+            return "redirect:/auth/login";
+        }
         var todas = suscripcionService.getAllSuscripciones();
+        if (todas == null) {
+            todas = java.util.Collections.emptyList();
+        }
         var suscripciones = todas.stream()
+            .filter(s -> s != null)
             .filter(s -> s.getIdEntrenador() != null && s.getIdEntrenador().equals(usuario.getId()))
             .filter(s -> s.getEstadoSuscripcion() != com.sabi.sabi.entity.enums.EstadoSuscripcion.RECHAZADA)
-            .collect(Collectors.toList());
+            .collect(java.util.stream.Collectors.toList());
         model.addAttribute("suscripciones", suscripciones);
+        // Agrupar por estado para la vista en orden solicitado: PENDIENTE, COTIZADA, ACEPTADA
+        var suscripcionesPendientes = suscripciones.stream()
+            .filter(s -> s.getEstadoSuscripcion() == com.sabi.sabi.entity.enums.EstadoSuscripcion.PENDIENTE)
+            .collect(java.util.stream.Collectors.toList());
+        var suscripcionesCotizadas = suscripciones.stream()
+            .filter(s -> s.getEstadoSuscripcion() == com.sabi.sabi.entity.enums.EstadoSuscripcion.COTIZADA)
+            .collect(java.util.stream.Collectors.toList());
+        var suscripcionesAceptadas = suscripciones.stream()
+            .filter(s -> s.getEstadoSuscripcion() == com.sabi.sabi.entity.enums.EstadoSuscripcion.ACEPTADA)
+            .collect(java.util.stream.Collectors.toList());
+        model.addAttribute("suscripcionesPendientes", suscripcionesPendientes);
+        model.addAttribute("suscripcionesCotizadas", suscripcionesCotizadas);
+        model.addAttribute("suscripcionesAceptadas", suscripcionesAceptadas);
+
+        // Mapa de nombres de entrenadores with null checks
         Map<Long, String> nombresEntrenadores = suscripciones.stream()
-                .map(SuscripcionDTO::getIdEntrenador)
-                .filter(Objects::nonNull)
+                .map(com.sabi.sabi.dto.SuscripcionDTO::getIdEntrenador)
+                .filter(java.util.Objects::nonNull)
                 .distinct()
-                .collect(Collectors.toMap(id -> id, id -> entrenadorService.getEntrenadorById(id).getNombre()));
+                .map(id -> {
+                    var ent = entrenadorService.getEntrenadorById(id);
+                    return ent != null ? java.util.Map.entry(id, ent.getNombre() != null ? ent.getNombre() : "Entrenador") : null;
+                })
+                .filter(java.util.Objects::nonNull)
+                .collect(java.util.stream.Collectors.toMap(java.util.Map.Entry::getKey, java.util.Map.Entry::getValue));
         model.addAttribute("nombresEntrenadores", nombresEntrenadores);
+
+        // Mapa de nombres de clientes with null checks
         Map<Long, String> nombresClientes = suscripciones.stream()
-                .map(SuscripcionDTO::getIdCliente)
-                .filter(Objects::nonNull)
+                .map(com.sabi.sabi.dto.SuscripcionDTO::getIdCliente)
+                .filter(java.util.Objects::nonNull)
                 .distinct()
-                .collect(Collectors.toMap(id -> id, id -> clienteService.getClienteById(id).getNombre()));
+                .map(id -> {
+                    var cli = clienteService.getClienteById(id);
+                    return cli != null ? java.util.Map.entry(id, cli.getNombre() != null ? cli.getNombre() : "Cliente") : null;
+                })
+                .filter(java.util.Objects::nonNull)
+                .collect(java.util.stream.Collectors.toMap(java.util.Map.Entry::getKey, java.util.Map.Entry::getValue));
         model.addAttribute("nombresClientes", nombresClientes);
 
         // Mapa de rutinas activas por cliente (para mostrar "Ver progreso")
         Map<Long, Long> rutinasActivasClientes = suscripciones.stream()
-                .map(SuscripcionDTO::getIdCliente)
-                .filter(Objects::nonNull)
+                .map(com.sabi.sabi.dto.SuscripcionDTO::getIdCliente)
+                .filter(java.util.Objects::nonNull)
                 .distinct()
                 .map(idCliente -> {
                     var r = rutinaService.getRutinaActivaCliente(idCliente);
-                    return (r != null && r.getIdRutina() != null) ? Map.entry(idCliente, r.getIdRutina()) : null;
+                    return (r != null && r.getIdRutina() != null) ? java.util.Map.entry(idCliente, r.getIdRutina()) : null;
                 })
-                .filter(Objects::nonNull)
-                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+                .filter(java.util.Objects::nonNull)
+                .collect(java.util.stream.Collectors.toMap(java.util.Map.Entry::getKey, java.util.Map.Entry::getValue));
         model.addAttribute("rutinasActivasClientes", rutinasActivasClientes);
 
-    // Mapa de diagnóstico actual por cliente
-    Map<Long, com.sabi.sabi.dto.DiagnosticoDTO> diagnosticosActuales = suscripciones.stream()
-        .map(SuscripcionDTO::getIdCliente)
-        .filter(Objects::nonNull)
-        .distinct()
-        .collect(Collectors.toMap(
-            id -> id,
-            id -> clienteService.getDiagnosticoActualByClienteId(id)
-        ));
-    model.addAttribute("diagnosticosActuales", diagnosticosActuales);
+        // Mapa de diagnóstico actual por cliente (evitar valores null en toMap)
+        Map<Long, com.sabi.sabi.dto.DiagnosticoDTO> diagnosticosActuales = suscripciones.stream()
+            .map(com.sabi.sabi.dto.SuscripcionDTO::getIdCliente)
+            .filter(java.util.Objects::nonNull)
+            .distinct()
+            .map(id -> {
+                var diag = clienteService.getDiagnosticoActualByClienteId(id);
+                return diag != null ? java.util.Map.entry(id, diag) : null;
+            })
+            .filter(java.util.Objects::nonNull)
+            .collect(java.util.stream.Collectors.toMap(java.util.Map.Entry::getKey, java.util.Map.Entry::getValue));
+        model.addAttribute("diagnosticosActuales", diagnosticosActuales);
         // Log simple para depuración (se puede remover luego)
         System.out.println("[EntrenadorController] rutinasActivasClientes=" + rutinasActivasClientes);
-
         return "entrenador/suscripciones";
     }
 
@@ -205,23 +240,40 @@ public class EntrenadorController {
             return "redirect:/auth/login";
         }
         var usuario = usuarioService.obtenerPorEmail(userDetails.getUsername());
+        if (usuario == null) {
+            return "redirect:/auth/login";
+        }
         var todas = suscripcionService.getAllSuscripciones();
+        if (todas == null) {
+            todas = java.util.Collections.emptyList();
+        }
         var suscripciones = todas.stream()
+                .filter(s -> s != null)
                 .filter(s -> s.getIdEntrenador() != null && s.getIdEntrenador().equals(usuario.getId()))
                 .filter(s -> s.getEstadoSuscripcion() == com.sabi.sabi.entity.enums.EstadoSuscripcion.RECHAZADA)
-                .collect(Collectors.toList());
+                .collect(java.util.stream.Collectors.toList());
         model.addAttribute("suscripciones", suscripciones);
         Map<Long, String> nombresEntrenadores = suscripciones.stream()
-                .map(SuscripcionDTO::getIdEntrenador)
-                .filter(Objects::nonNull)
+                .map(com.sabi.sabi.dto.SuscripcionDTO::getIdEntrenador)
+                .filter(java.util.Objects::nonNull)
                 .distinct()
-                .collect(Collectors.toMap(id -> id, id -> entrenadorService.getEntrenadorById(id).getNombre()));
+                .map(id -> {
+                    var ent = entrenadorService.getEntrenadorById(id);
+                    return ent != null ? java.util.Map.entry(id, ent.getNombre() != null ? ent.getNombre() : "Entrenador") : null;
+                })
+                .filter(java.util.Objects::nonNull)
+                .collect(java.util.stream.Collectors.toMap(java.util.Map.Entry::getKey, java.util.Map.Entry::getValue));
         model.addAttribute("nombresEntrenadores", nombresEntrenadores);
         Map<Long, String> nombresClientes = suscripciones.stream()
-                .map(SuscripcionDTO::getIdCliente)
-                .filter(Objects::nonNull)
+                .map(com.sabi.sabi.dto.SuscripcionDTO::getIdCliente)
+                .filter(java.util.Objects::nonNull)
                 .distinct()
-                .collect(Collectors.toMap(id -> id, id -> clienteService.getClienteById(id).getNombre()));
+                .map(id -> {
+                    var cli = clienteService.getClienteById(id);
+                    return cli != null ? java.util.Map.entry(id, cli.getNombre() != null ? cli.getNombre() : "Cliente") : null;
+                })
+                .filter(java.util.Objects::nonNull)
+                .collect(java.util.stream.Collectors.toMap(java.util.Map.Entry::getKey, java.util.Map.Entry::getValue));
         model.addAttribute("nombresClientes", nombresClientes);
         return "entrenador/suscripciones-historial";
     }
@@ -258,9 +310,15 @@ public class EntrenadorController {
                                         @RequestParam String mensaje,
                                         @RequestParam List<Long> idsClientes,
                                         RedirectAttributes redirectAttributes) {
-        List<String> correos = idsClientes.stream()
-                .map(id -> clienteService.getClienteById(id).getEmail())
-                .collect(Collectors.toList());
+        List<String> correos = idsClientes == null ? java.util.Collections.emptyList() : idsClientes.stream()
+                .filter(java.util.Objects::nonNull)
+                .map(id -> {
+                    var c = clienteService.getClienteById(id);
+                    return c != null ? c.getEmail() : null;
+                })
+                .filter(java.util.Objects::nonNull)
+                .distinct()
+                .collect(java.util.stream.Collectors.toList());
         try {
             emailService.sendEmail(asunto, mensaje, correos);
             redirectAttributes.addFlashAttribute("success", "Correos enviados exitosamente.");
