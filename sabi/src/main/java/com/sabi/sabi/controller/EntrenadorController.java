@@ -495,4 +495,21 @@ public class EntrenadorController {
             return org.springframework.http.ResponseEntity.notFound().build();
         }
     }
+
+    @GetMapping("/api/entrenador/{id}/rango-precio")
+    @ResponseBody
+    public org.springframework.http.ResponseEntity<?> obtenerRangoPrecioEntrenador(@PathVariable Long id) {
+        try {
+            var entrenador = entrenadorService.getEntrenadorById(id);
+            if (entrenador == null) {
+                return org.springframework.http.ResponseEntity.notFound().build();
+            }
+            java.util.Map<String, Object> rango = new java.util.HashMap<>();
+            rango.put("min", entrenador.getPrecioMinimo());
+            rango.put("max", entrenador.getPrecioMaximo());
+            return org.springframework.http.ResponseEntity.ok(rango);
+        } catch (Exception e) {
+            return org.springframework.http.ResponseEntity.status(500).body(java.util.Collections.singletonMap("error", e.getMessage()));
+        }
+    }
 }
