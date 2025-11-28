@@ -49,7 +49,7 @@ public class    DataInitializer implements CommandLineRunner {
         @Override
         public void run(String... args) {
                 // Clientes con diagnósticos detallados
-                crearClienteConDiagnosticoDetallado("Carlos Colmenares", "cliente@sabi.com", "1234567",
+                crearClienteConDiagnosticoDetallado("Carlos Colmenares", "rojasmena1222@gmail.com", "1234567",
                         70.0, 170.0, NivelExperiencia.PRINCIPIANTE, "3 veces por semana, 45 min",
                         "casa", "ninguna", "ninguna", 8L,
                         "Dieta balanceada");
@@ -808,6 +808,7 @@ public class    DataInitializer implements CommandLineRunner {
                         double pesoProgresivo = pesoBase + (numSemana - 1) * 5.0 + (numSerie - 1) * 2.5;
 
                         String repeticiones = numSerie == 1L ? "10" : (numSerie == 2L ? "8" : "6");
+
                         Intensidad intensidad = numSerie == 1L ? Intensidad.MEDIA : Intensidad.ALTA;
 
                         Serie serie = Serie.builder()

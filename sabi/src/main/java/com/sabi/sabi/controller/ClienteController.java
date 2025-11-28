@@ -118,24 +118,15 @@ public class ClienteController {
          // Rutina activa
         RutinaDTO rutinaDTO = rutinaService.getRutinaActivaCliente(clienteId);
         if (rutinaDTO != null) {
-            // Nueva lógica: consideramos que hay "rutina activa" sólo si la rutina
-            // fue efectivamente asignada por un entrenador (idEntrenador != null).
-            boolean rutinaAsignada = rutinaDTO.getIdEntrenador() != null;
-            model.addAttribute("tieneRutinaActiva", rutinaAsignada);
-            // Siempre pasamos la rutina al modelo para posibles usos, pero el flag
-            // 'tieneRutinaActiva' controlará si la vista la muestra como activa.
+            // Si hay una rutina activa, siempre mostrarla (sea asignada por entrenador o adoptada)
+            model.addAttribute("tieneRutinaActiva", true);
             model.addAttribute("rutina", rutinaDTO);
 
-            if (rutinaAsignada) {
-                DiaDTO diaDTO = diaService.getDiaActual(clienteId);
-                long porcentajeCompletado = diaService.calcularProgresoRutina(clienteId);
-                model.addAttribute("diaActual", diaDTO);
-                model.addAttribute("porcentajeCompletado", porcentajeCompletado);
-            } else {
-                // No mostrar progreso/día cuando la rutina no fue asignada por un entrenador
-                model.addAttribute("diaActual", null);
-                model.addAttribute("porcentajeCompletado", 0L);
-            }
+            // Calcular progreso y día actual para todas las rutinas activas
+            DiaDTO diaDTO = diaService.getDiaActual(clienteId);
+            long porcentajeCompletado = diaService.calcularProgresoRutina(clienteId);
+            model.addAttribute("diaActual", diaDTO);
+            model.addAttribute("porcentajeCompletado", porcentajeCompletado);
          } else {
              model.addAttribute("tieneRutinaActiva", false);
          }
@@ -312,19 +303,15 @@ public class ClienteController {
         // Añadir información de rutina activa y progreso si existe
         RutinaDTO rutinaActiva = rutinaService.getRutinaActivaCliente(clienteId);
         if (rutinaActiva != null) {
-            // Basar el flag en si la rutina tiene un entrenador asignado
-            boolean rutinaAsignada = rutinaActiva.getIdEntrenador() != null;
-            model.addAttribute("tieneRutinaActiva", rutinaAsignada);
+            // Mostrar la rutina activa sin importar si tiene entrenador o fue adoptada
+            model.addAttribute("tieneRutinaActiva", true);
             model.addAttribute("rutina", rutinaActiva);
-            if (rutinaAsignada) {
-                DiaDTO diaActual = diaService.getDiaActual(clienteId);
-                long porcentajeCompletado = diaService.calcularProgresoRutina(clienteId);
-                model.addAttribute("diaActual", diaActual);
-                model.addAttribute("porcentajeCompletado", porcentajeCompletado);
-            } else {
-                model.addAttribute("diaActual", null);
-                model.addAttribute("porcentajeCompletado", 0L);
-            }
+
+            // Calcular progreso y día actual para todas las rutinas activas
+            DiaDTO diaActual = diaService.getDiaActual(clienteId);
+            long porcentajeCompletado = diaService.calcularProgresoRutina(clienteId);
+            model.addAttribute("diaActual", diaActual);
+            model.addAttribute("porcentajeCompletado", porcentajeCompletado);
          } else {
              model.addAttribute("tieneRutinaActiva", false);
          }

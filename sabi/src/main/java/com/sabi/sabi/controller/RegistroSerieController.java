@@ -201,6 +201,9 @@ public class RegistroSerieController {
             // Guardar el registro
             RegistroSerieDTO registroGuardado = registroSerieService.saveOrUpdateRegistroSerie(registroSerieDTO);
 
+            // Verificar si se completaron todas las series del día
+            verificarYCompletarDia(serie.getEjercicioAsignado());
+
             response.put("success", true);
             response.put("message", "Registro guardado correctamente");
             response.put("registro", registroGuardado);
@@ -216,5 +219,59 @@ public class RegistroSerieController {
             response.put("message", "Error al guardar el registro: " + ex.getMessage());
         }
         return response;
+    }
+
+    /**
+     * Verifica si todas las series de todos los ejercicios del día han sido completadas.
+     * Si es así, marca el día como completado automáticamente.
+     */
+    private void verificarYCompletarDia(EjercicioAsignado ejercicioAsignado) {
+        try {
+            if (ejercicioAsignado == null || ejercicioAsignado.getDia() == null) {
+                return;
+            }
+
+            var dia = ejercicioAsignado.getDia();
+
+            // Obtener todos los ejercicios asignados del día
+            var ejerciciosDelDia = ejercicioAsignadoRepository.findByDia(dia);
+            if (ejerciciosDelDia == null || ejerciciosDelDia.isEmpty()) {
+                return;
+            }
+
+            boolean todasLasSeriesCompletadas = true;
+
+            // Verificar cada ejercicio del día
+            for (EjercicioAsignado eja : ejerciciosDelDia) {
+                // Obtener todas las series del ejercicio
+                var seriesDelEjercicio = serieRepository.findByEjercicioAsignado(eja);
+                if (seriesDelEjercicio == null || seriesDelEjercicio.isEmpty()) {
+                    continue;
+                }
+
+                // Verificar si todas las series tienen registro
+                for (Serie s : seriesDelEjercicio) {
+                    var registros = registroSerieRepository.findBySerie_Id(s.getId());
+                    if (registros == null || registros.isEmpty()) {
+                        todasLasSeriesCompletadas = false;
+                        break;
+                    }
+                }
+
+                if (!todasLasSeriesCompletadas) {
+                    break;
+                }
+            }
+
+            // Si todas las series están completadas, marcar el día como completado
+            if (todasLasSeriesCompletadas && (dia.getEstado() == null || !dia.getEstado())) {
+                diaService.toggleChecked(dia.getId());
+                log.info("Día {} marcado automáticamente como completado", dia.getId());
+            }
+
+        } catch (Exception ex) {
+            log.error("Error al verificar completitud del día", ex);
+            // No lanzar excepción para no afectar el guardado del registro
+        }
     }
 }
