@@ -171,6 +171,7 @@ public class    DataInitializer implements CommandLineRunner {
                 );
                 crearEjerciciosSiNoExisten();
                 crearRutinaDeEjemplo();
+                crearRutinaDeErnesto4Semanas(); // Rutina de 4 semanas para Ernesto Espinel
                 crearRutinaGlobalLibre(); // Nueva rutina global sin cliente ni entrenador ni estadoRutina
                 crearRutinaCompuesta(); // Nueva rutina compuesta gratuita
 
@@ -711,6 +712,121 @@ public class    DataInitializer implements CommandLineRunner {
                 }
             }
         }
+    }
+
+    private void crearRutinaDeErnesto4Semanas() {
+        // Obtener entrenador Ernesto Espinel
+        Entrenador entrenador = (Entrenador) usuarioRepository.findByEmail("entrenador@sabi.com").orElse(null);
+        if (entrenador == null) return;
+
+        // Verificar si ya existe la rutina
+        final String nombreRutina = "Rutina Fuerza 4 Semanas";
+        if (rutinaRepository.findAll().stream().anyMatch(r -> nombreRutina.equals(r.getNombre()))) return;
+
+        // Obtener ejercicios globales necesarios
+        Ejercicio sentadilla = ejercicioRepository.findAll().stream()
+                .filter(e -> e.getTipo().name().equals("GLOBAL") && e.getNombre().equalsIgnoreCase("Sentadilla con barra"))
+                .findFirst().orElse(null);
+        Ejercicio pressBanca = ejercicioRepository.findAll().stream()
+                .filter(e -> e.getTipo().name().equals("GLOBAL") && e.getNombre().equalsIgnoreCase("Press de banca"))
+                .findFirst().orElse(null);
+        Ejercicio pesoMuerto = ejercicioRepository.findAll().stream()
+                .filter(e -> e.getTipo().name().equals("GLOBAL") && e.getNombre().equalsIgnoreCase("Peso muerto"))
+                .findFirst().orElse(null);
+
+        if (sentadilla == null || pressBanca == null) return; // No crear si faltan ejercicios base
+
+        // Usar sentadilla como alternativa si no existe peso muerto
+        if (pesoMuerto == null) pesoMuerto = sentadilla;
+
+        // Crear rutina con 4 semanas
+        Rutina rutina = Rutina.builder()
+                .nombre(nombreRutina)
+                .objetivo("Fuerza y Acondicionamiento")
+                .descripcion("Rutina de fuerza progresiva de 4 semanas enfocada en powerlifting y desarrollo muscular.")
+                .fechaCreacion(java.time.LocalDate.now())
+                .numeroSemanas(4L)
+                .entrenador(entrenador)
+                .estado(true)
+                .build();
+        rutinaRepository.save(rutina);
+
+        // Crear 4 semanas
+        for (long numSemana = 1L; numSemana <= 4L; numSemana++) {
+            Semana semana = Semana.builder()
+                    .numeroSemana(numSemana)
+                    .descripcion("Semana " + numSemana + " - Progresión de fuerza")
+                    .numeroDias(3L)
+                    .rutina(rutina)
+                    .estado(true)
+                    .build();
+            semanaRepository.save(semana);
+
+            // Crear 3 días por semana
+            for (long numDia = 1L; numDia <= 3L; numDia++) {
+                String descripcionDia;
+                Ejercicio[] ejerciciosDelDia;
+
+                // Variar ejercicios según el día
+                if (numDia == 1L) {
+                    descripcionDia = "Semana " + numSemana + " - Día 1: Piernas y espalda";
+                    ejerciciosDelDia = new Ejercicio[]{sentadilla, pesoMuerto};
+                } else if (numDia == 2L) {
+                    descripcionDia = "Semana " + numSemana + " - Día 2: Pecho y brazos";
+                    ejerciciosDelDia = new Ejercicio[]{pressBanca, pressBanca};
+                } else {
+                    descripcionDia = "Semana " + numSemana + " - Día 3: Full body";
+                    ejerciciosDelDia = new Ejercicio[]{sentadilla, pressBanca};
+                }
+
+                Dia dia = Dia.builder()
+                        .numeroDia(numDia)
+                        .descripcion(descripcionDia)
+                        .numeroEjercicios(2L)
+                        .semana(semana)
+                        .estado(true)
+                        .build();
+                diaRepository.save(dia);
+
+                long ordenEjercicio = 1L;
+                for (Ejercicio ejercicio : ejerciciosDelDia) {
+                    EjercicioAsignado ejercicioAsignado = EjercicioAsignado.builder()
+                            .orden(ordenEjercicio)
+                            .comentarios("Progresión semanal - Mantener técnica estricta")
+                            .numeroSeries(3L)
+                            .dia(dia)
+                            .ejercicio(ejercicio)
+                            .estado(true)
+                            .build();
+                    ejercicioAsignadoRepository.save(ejercicioAsignado);
+
+                    // Crear 3 series por ejercicio asignado con progresión semanal
+                    for (long numSerie = 1L; numSerie <= 3L; numSerie++) {
+                        // Calcular peso progresivo según la semana
+                        double pesoBase = ejercicio.getNombre().toLowerCase().contains("sentadilla") ? 70.0 :
+                                         (ejercicio.getNombre().toLowerCase().contains("muerto") ? 80.0 : 50.0);
+                        double pesoProgresivo = pesoBase + (numSemana - 1) * 5.0 + (numSerie - 1) * 2.5;
+
+                        String repeticiones = numSerie == 1L ? "10" : (numSerie == 2L ? "8" : "6");
+                        Intensidad intensidad = numSerie == 1L ? Intensidad.MEDIA : Intensidad.ALTA;
+
+                        Serie serie = Serie.builder()
+                                .orden(numSerie)
+                                .repeticiones(repeticiones)
+                                .peso(pesoProgresivo)
+                                .descanso(numSerie == 3L ? "120 segundos" : "90 segundos")
+                                .intensidad(intensidad)
+                                .comentarios("Serie " + numSerie + " - Semana " + numSemana)
+                                .ejercicioAsignado(ejercicioAsignado)
+                                .estado(true)
+                                .build();
+                        serieRepository.save(serie);
+                    }
+                    ordenEjercicio++;
+                }
+            }
+        }
+        System.out.println("✅ Rutina de 4 semanas creada para Ernesto Espinel: " + nombreRutina);
     }
 
     private void crearRutinaGlobalLibre() {
