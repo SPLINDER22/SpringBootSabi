@@ -62,8 +62,8 @@
                                   th:if="${suscripcion.estadoSuscripcion == T(com.sabi.sabi.entity.enums.EstadoSuscripcion).PENDIENTE}">PENDIENTE</span>
                         </div>
                         <div class="estado-descripcion" th:if="${suscripcion != null}">
-                            <p th:if="${suscripcion.estadoSuscripcion == T(com.sabi.sabi.entity.enums.EstadoSuscripcion).ACEPTADA and rutina != null and rutina.entrenador != null}">tu rutina esta pagada y ya tienes tu rutina asignada</p>
-                            <p th:if="${suscripcion.estadoSuscripcion == T(com.sabi.sabi.entity.enums.EstadoSuscripcion).ACEPTADA and (rutina == null or rutina.entrenador == null)}">ya pagaste la suscripcion y estas a la espera de que tu entrenador te asigne tu rutina</p>
+                            <p th:if="${suscripcion.estadoSuscripcion == T(com.sabi.sabi.entity.enums.EstadoSuscripcion).ACEPTADA and rutina != null and rutina.idEntrenador != null}">tu rutina esta pagada y ya tienes tu rutina asignada</p>
+                            <p th:if="${suscripcion.estadoSuscripcion == T(com.sabi.sabi.entity.enums.EstadoSuscripcion).ACEPTADA and (rutina == null or rutina.idEntrenador == null)}">ya pagaste la suscripcion y estas a la espera de que tu entrenador te asigne tu rutina</p>
                             <p th:if="${suscripcion.estadoSuscripcion == T(com.sabi.sabi.entity.enums.EstadoSuscripcion).COTIZADA}">Tu entrenador ya te envio la cotizacion y esta a la espera de tu pago para continuar con el proceso</p>
                             <p th:if="${suscripcion.estadoSuscripcion == T(com.sabi.sabi.entity.enums.EstadoSuscripcion).PENDIENTE}">Tu entrenador esta revisando tu diagnostico y esta ajustando tu cotizacion</p>
                         </div>
