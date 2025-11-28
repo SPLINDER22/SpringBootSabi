@@ -44,32 +44,46 @@ public class SuscripcionController {
         }
         var usuario = usuarioService.obtenerPorEmail(userDetails.getUsername());
         var suscripciones = suscripcionService.getAllSuscripciones();
+        if (suscripciones == null) {
+            suscripciones = java.util.Collections.emptyList();
+        }
         model.addAttribute("suscripciones", suscripciones);
-        Map<Long, String> nombresEntrenadores = suscripciones.stream()
-                .map(SuscripcionDTO::getIdEntrenador)
-                .filter(Objects::nonNull)
+        // Construir mapas de nombres con defensas contra null
+        java.util.Map<Long, String> nombresEntrenadores = suscripciones.stream()
+                .map(com.sabi.sabi.dto.SuscripcionDTO::getIdEntrenador)
+                .filter(java.util.Objects::nonNull)
                 .distinct()
-                .collect(Collectors.toMap(id -> id, id -> entrenadorService.getEntrenadorById(id).getNombre()));
+                .map(id -> {
+                    var ent = entrenadorService.getEntrenadorById(id);
+                    return ent != null ? java.util.Map.entry(id, ent.getNombre() != null ? ent.getNombre() : "Entrenador") : null;
+                })
+                .filter(java.util.Objects::nonNull)
+                .collect(java.util.stream.Collectors.toMap(java.util.Map.Entry::getKey, java.util.Map.Entry::getValue));
         model.addAttribute("nombresEntrenadores", nombresEntrenadores);
-        Map<Long, String> nombresClientes = suscripciones.stream()
-                .map(SuscripcionDTO::getIdCliente)
-                .filter(Objects::nonNull)
+        java.util.Map<Long, String> nombresClientes = suscripciones.stream()
+                .map(com.sabi.sabi.dto.SuscripcionDTO::getIdCliente)
+                .filter(java.util.Objects::nonNull)
                 .distinct()
-                .collect(Collectors.toMap(id -> id, id -> clienteService.getClienteById(id).getNombre()));
+                .map(id -> {
+                    var cli = clienteService.getClienteById(id);
+                    return cli != null ? java.util.Map.entry(id, cli.getNombre() != null ? cli.getNombre() : "Cliente") : null;
+                })
+                .filter(java.util.Objects::nonNull)
+                .collect(java.util.stream.Collectors.toMap(java.util.Map.Entry::getKey, java.util.Map.Entry::getValue));
         model.addAttribute("nombresClientes", nombresClientes);
         // Mapa de rutina activa por cliente (si existe)
-        Map<Long, Long> rutinasActivasClientes = suscripciones.stream()
-                .map(SuscripcionDTO::getIdCliente)
-                .filter(Objects::nonNull)
+        java.util.Map<Long, Long> rutinasActivasClientes = suscripciones.stream()
+                .map(com.sabi.sabi.dto.SuscripcionDTO::getIdCliente)
+                .filter(java.util.Objects::nonNull)
                 .distinct()
                 .map(idCliente -> {
                     var r = rutinaService.getRutinaActivaCliente(idCliente);
-                    return r != null && r.getIdRutina() != null ? Map.entry(idCliente, r.getIdRutina()) : null;
+                    return r != null && r.getIdRutina() != null ? java.util.Map.entry(idCliente, r.getIdRutina()) : null;
                 })
-                .filter(Objects::nonNull)
-                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+                .filter(java.util.Objects::nonNull)
+                .collect(java.util.stream.Collectors.toMap(java.util.Map.Entry::getKey, java.util.Map.Entry::getValue));
         model.addAttribute("rutinasActivasClientes", rutinasActivasClientes);
-        model.addAttribute("idUsuarioActual", usuario.getId());
+        model.addAttribute("idUsuarioActual", usuario != null ? usuario.getId() : null);
         return "suscripciones/lista";
     }
 
@@ -175,7 +189,7 @@ public class SuscripcionController {
             // Atrapar excepciones del servicio y evitar 500
             redirectAttributes.addFlashAttribute("error", "Error al procesar el pago: " + e.getMessage());
         }
-        return "redirect:" + (redirectTo != null && !redirectTo.isEmpty() ? redirectTo : "/suscripciones");
+        return "redirect:" + (redirectTo != null && !redirectTo.isEmpty() ? redirectTo : "/cliente/suscripcion");
     }
 
     @PostMapping("/suscripciones/rechazar/{id}")
@@ -192,7 +206,7 @@ public class SuscripcionController {
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("error", "No se pudo rechazar la suscripción: " + e.getMessage());
         }
-        return "redirect:" + (redirectTo != null && !redirectTo.isEmpty() ? redirectTo : "/suscripciones");
+        return "redirect:" + (redirectTo != null && !redirectTo.isEmpty() ? redirectTo : "/cliente/suscripcion");
     }
 
     @PostMapping("/suscripciones/eliminar/{id}")

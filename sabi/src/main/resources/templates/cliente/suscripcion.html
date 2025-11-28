@@ -88,6 +88,7 @@
                                   th:action="@{/suscripciones/pagar/{id}(id=${suscripcion.idSuscripcion})}"
                                   method="post">
                                 <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                                <input type="hidden" name="redirectTo" value="/cliente/suscripcion" />
                                 <button type="submit" class="btn-primary">Pagar</button>
                             </form>
                             <form id="formCancelarSuscripcion" th:if="${suscripcion != null and suscripcion.idSuscripcion != null and suscripcion.estadoSuscripcion != T(com.sabi.sabi.entity.enums.EstadoSuscripcion).RECHAZADA}"
