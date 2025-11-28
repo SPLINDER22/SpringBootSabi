@@ -190,7 +190,6 @@
                 <i class="fas fa-users stats-icon" style="color: #0ea5e9;"></i>
             </div>
         </div>
-
         <div class="col-lg-4 col-md-6 mb-3">
             <div class="stats-card success position-relative">
                 <div class="stats-label">
@@ -201,7 +200,6 @@
                 <i class="fas fa-dumbbell stats-icon" style="color: #0c4a6e;"></i>
             </div>
         </div>
-
         <div class="col-lg-4 col-md-6 mb-3">
             <div class="stats-card warning position-relative">
                 <div class="stats-label">
@@ -218,8 +216,11 @@
     <div class="row mb-4" th:if="${calificacionPromedio != null && calificacionPromedio > 0}">
         <div class="col-12">
             <div class="stats-card" style="border-left-color: #fbbf24;">
-                <h5 class="mb-3">
-                    <i class="fas fa-star text-warning me-2"></i>Tu Calificación
+                <h5 class="mb-3 d-flex align-items-center justify-content-between">
+                    <span><i class="fas fa-star text-warning me-2"></i>Tu Calificación</span>
+                    <button type="button" class="btn btn-outline-primary btn-sm" data-bs-toggle="modal" data-bs-target="#modalResenas">
+                        <i class="fas fa-comments me-1"></i> Ver reseñas
+                    </button>
                 </h5>
                 <div class="d-flex align-items-center gap-3 flex-wrap">
                     <div class="rating-stars">
@@ -233,6 +234,57 @@
                     <div class="ms-auto">
                         <small class="text-muted" style="font-size: 1rem;">Valoración promedio de tus clientes</small>
                     </div>
+                </div>
+                <!-- Vista sin reseñas debajo (además del modal) -->
+                <div class="mt-3" th:if="${resenas == null || #lists.isEmpty(resenas)}">
+                    <div class="empty-state" style="padding:1.25rem; background:#fff7ed; border:1px dashed #fbbf24;">
+                        <i class="fas fa-comment-slash" style="font-size:2rem;"></i>
+                        <h6 class="mt-2 mb-1" style="color:#b45309; font-weight:700;">Aún no tienes reseñas</h6>
+                        <p class="mb-0" style="color:#92400e;">Cuando tus clientes te califiquen, aparecerán aquí. Puedes invitarles a dejar una reseña desde suscripción.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Reseñas del Entrenador -->
+    <div class="modal fade" id="modalResenas" tabindex="-1" aria-labelledby="modalResenasLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header" style="background:#fef3c7; border-bottom:0;">
+                    <h5 class="modal-title" id="modalResenasLabel" style="color:#b45309;">
+                        <i class="fas fa-star text-warning me-2"></i>Reseñas de tus clientes
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" style="background:#fff7ed;">
+                    <div th:if="${resenas == null || #lists.isEmpty(resenas)}" class="empty-state">
+                        <i class="fas fa-comment-slash"></i>
+                        <h5 style="color:#0c4a6e;">Aún no tienes reseñas</h5>
+                        <p class="mb-0">¡Cuando tus clientes te califiquen, aparecerán aquí!</p>
+                    </div>
+
+                    <div th:each="r : ${resenas}" class="solicitud-card" style="border-left-color:#fbbf24;">
+                        <div class="d-flex align-items-start justify-content-between">
+                            <div>
+                                <div class="rating-stars mb-1" style="font-size:1.3rem;">
+                                    <i th:each="i : ${#numbers.sequence(1, 5)}"
+                                       th:class="${i <= r.estrellas ? 'fas fa-star' : 'far fa-star'}"></i>
+                                </div>
+                                <p class="mb-2" th:text="${r.comentario}" style="color:#1e293b; font-size:1rem;">Comentario del cliente</p>
+                                <small class="text-muted">
+                                    <i class="fas fa-user me-1"></i><span th:text="${r.clienteNombre}">Cliente</span>
+                                    <span class="ms-2"><i class="fas fa-calendar me-1"></i><span th:text="${#dates.format(r.fecha,'dd/MM/yyyy')}">01/01/2025</span></span>
+                                </small>
+                            </div>
+                            <div class="text-end">
+                                <span class="badge bg-warning text-dark"> <span th:text="${r.estrellas}">5</span> / 5</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer" style="background:#fff7ed; border-top:0;">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
                 </div>
             </div>
         </div>
