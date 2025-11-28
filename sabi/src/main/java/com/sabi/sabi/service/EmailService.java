@@ -729,7 +729,7 @@ public class EmailService {
                             </p>
 
                             <div class="price-box">
-                                <p style="margin: 0; color: #6b7280; font-size: 14px; text-transform: uppercase; letter-spacing: 1px;">Inversión Total</p>
+                                <p style="margin: 0; color: #6b7280; font-size: 14px; text-transform: uppercase; letter-spacing: 1px;">Precio Total De</p>
                                 <div class="price">${PRECIO}</div>
                                 <div class="duration">{SEMANAS} semanas de entrenamiento</div>
                             </div>
@@ -743,7 +743,7 @@ public class EmailService {
                             </p>
 
                             <div class="cta">
-                                <a href="http://localhost:8080/auth/login" class="button">Revisar y Confirmar</a>
+                                <a href="http://localhost:8080/auth/login" class="button" style="color: #ffffff !important; text-decoration: none;">Revisar y Confirmar</a>
                             </div>
 
                             <p style="margin-top: 30px; font-size: 14px; color: #6b7280;">
