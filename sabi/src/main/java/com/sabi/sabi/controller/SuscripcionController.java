@@ -21,6 +21,8 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
 @Controller
 public class SuscripcionController {
 
@@ -83,12 +85,20 @@ public class SuscripcionController {
     @GetMapping("/suscripciones/editar/{id}")
     public String editarSuscripcionView(@PathVariable Long id,
                                         @AuthenticationPrincipal UserDetails userDetails,
-                                        Model model) {
+                                        Model model,
+                                        RedirectAttributes redirectAttributes) {
         if (userDetails == null) {
             return "redirect:/auth/login";
         }
         var usuario = usuarioService.obtenerPorEmail(userDetails.getUsername());
-        var suscripcionDTO = suscripcionService.getSuscripcionById(id);
+        SuscripcionDTO suscripcionDTO = null;
+        try {
+            suscripcionDTO = suscripcionService.getSuscripcionById(id);
+        } catch (Exception e) {
+            // Evitar 500 por id inválido
+            redirectAttributes.addFlashAttribute("error", "Suscripción no encontrada.");
+            return "redirect:/suscripciones";
+        }
         if (suscripcionDTO == null) {
             return "redirect:/suscripciones?error=notfound";
         }
@@ -147,14 +157,23 @@ public class SuscripcionController {
     @PostMapping("/suscripciones/pagar/{id}")
     public String pagarSuscripcion(@PathVariable Long id,
                                    @AuthenticationPrincipal UserDetails userDetails,
-                                   @RequestParam(value = "redirectTo", required = false) String redirectTo) {
+                                   @RequestParam(value = "redirectTo", required = false) String redirectTo,
+                                   RedirectAttributes redirectAttributes) {
         if (userDetails == null) {
             return "redirect:/auth/login";
         }
-        var suscripcion = suscripcionService.getSuscripcionById(id);
-        if (suscripcion != null) {
-            suscripcion.setEstadoSuscripcion(com.sabi.sabi.entity.enums.EstadoSuscripcion.ACEPTADA);
-            suscripcionService.updateSuscripcion(id, suscripcion);
+        try {
+            var suscripcion = suscripcionService.getSuscripcionById(id);
+            if (suscripcion != null) {
+                suscripcion.setEstadoSuscripcion(com.sabi.sabi.entity.enums.EstadoSuscripcion.ACEPTADA);
+                suscripcionService.updateSuscripcion(id, suscripcion);
+                redirectAttributes.addFlashAttribute("success", "Pago procesado correctamente.");
+            } else {
+                redirectAttributes.addFlashAttribute("error", "Suscripción no encontrada.");
+            }
+        } catch (Exception e) {
+            // Atrapar excepciones del servicio y evitar 500
+            redirectAttributes.addFlashAttribute("error", "Error al procesar el pago: " + e.getMessage());
         }
         return "redirect:" + (redirectTo != null && !redirectTo.isEmpty() ? redirectTo : "/suscripciones");
     }
@@ -162,11 +181,17 @@ public class SuscripcionController {
     @PostMapping("/suscripciones/rechazar/{id}")
     public String rechazarSuscripcion(@PathVariable Long id,
                                       @AuthenticationPrincipal UserDetails userDetails,
-                                      @RequestParam(value = "redirectTo", required = false) String redirectTo) {
+                                      @RequestParam(value = "redirectTo", required = false) String redirectTo,
+                                      RedirectAttributes redirectAttributes) {
         if (userDetails == null) {
             return "redirect:/auth/login";
         }
-        suscripcionService.cancelarSuscripcion(id);
+        try {
+            suscripcionService.cancelarSuscripcion(id);
+            redirectAttributes.addFlashAttribute("success", "Suscripción rechazada/cancelada.");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "No se pudo rechazar la suscripción: " + e.getMessage());
+        }
         return "redirect:" + (redirectTo != null && !redirectTo.isEmpty() ? redirectTo : "/suscripciones");
     }
 

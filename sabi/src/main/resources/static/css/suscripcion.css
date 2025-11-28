@@ -1,0 +1,92 @@
+/* Estilos extraídos de cliente/suscripcion.html */
+:root{ --cobalt: #0047AB; --accent-green:#00B894; --muted:#64748B; }
+.container-suscripcion{ max-width:1100px; margin:20px auto; position:relative; }
+.subscription-card{ display:flex; gap:16px; align-items:stretch; }
+/* Centrado global */
+.subscription-card{ justify-content:center; }
+.right-col.centered { text-align:center; }
+.subscription-header{ flex-direction:column; align-items:center; text-align:center; }
+.subscription-summary .info-inline{ justify-content:center; }
+.rutina-card .header{ flex-direction:column; align-items:center; text-align:center; }
+.actions{ justify-content:center; }
+.progress-meta{ justify-content:center; }
+.content-box{ margin:0 auto; }
+
+.left-col{ background:linear-gradient(180deg,var(--cobalt), #003b88); color:#fff; padding:18px; border-radius:12px; min-width:180px; display:flex; flex-direction:column; align-items:center; }
+.left-col img{ width:100px; height:100px; object-fit:cover; border-radius:12px; border:none }
+.left-col .name{ font-weight:800; margin-top:10px; text-align:center }
+.left-col .title{ font-size:.85rem; color:rgba(255,255,255,0.85); margin-bottom:8px }
+.left-col .contact { font-size:.95rem; color:#fff; margin-bottom:8px }
+.left-col .btns { width:100%; display:flex; gap:8px; flex-direction:column }
+.btn-whatsapp{ background:#25D366; color:#fff; padding:10px 14px; border-radius:10px; text-align:center; display:inline-block; font-weight:700 }
+.btn-email{ background:#6B7280; color:#fff; padding:10px 14px; border-radius:10px; text-align:center; display:inline-block; font-weight:700 }
+
+.right-col{ flex:1; }
+.subscription-header{ display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:12px }
+.subscription-title{ font-size:1.15rem; font-weight:800; color:var(--cobalt) }
+.badges span{ margin-left:6px }
+
+.rutina-card{ background:#fff; border-radius:12px; padding:14px; box-shadow:0 6px 18px rgba(2,6,23,0.06); border:1px solid rgba(15,23,42,0.04) }
+.rutina-card .header{ display:flex; align-items:center; justify-content:space-between; gap:12px }
+.rutina-card .titulo { font-weight:800; font-size:1rem; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.rutina-card .descripcion { color:var(--muted); font-size:.95rem; margin-top:8px }
+
+/* Price + duration inline */
+.info-inline{ display:flex; gap:12px; align-items:center }
+.info-inline .item{ display:flex; gap:8px; align-items:center }
+.display-price{ font-weight:800; color:#072554 }
+.display-duration{ color:var(--muted); font-weight:700 }
+
+.progress-wrap{ margin-top:12px }
+.progress{ height:16px; background:#e6f2ff; border-radius:10px; overflow:hidden }
+.progress-bar{ height:100%; background:linear-gradient(90deg,var(--accent-green), #00d084); }
+.progress-meta{ display:flex; justify-content:space-between; align-items:center; margin-top:8px }
+
+.actions{ margin-top:12px; display:flex; gap:8px; flex-wrap:wrap }
+.btn-primary{ background:var(--accent-green); color:#fff; padding:8px 14px; border-radius:10px; text-decoration:none; border:none; display:inline-flex; align-items:center }
+.btn-outline{ background:transparent; border:1px solid rgba(15,23,42,0.08); padding:8px 12px; border-radius:10px; text-decoration:none; color:inherit }
+
+.historial{ margin-top:14px }
+/* Historial: ahora en el header de la página (no absolute) */
+.historial-global{ display:inline-flex; align-items:center; }
+.historial-global .btn-outline{ padding:8px 14px; }
+@media (max-width:600px){ .historial-global{ display:flex; justify-content:flex-end; width:100%; margin-bottom:12px } }
+
+/* Header de la página: título a la izquierda, acciones (historial) a la derecha */
+.page-header{ display:flex; justify-content:space-between; align-items:center; gap:12px; margin-bottom:14px }
+.page-title{ font-size:1.35rem; font-weight:900; color:var(--cobalt); margin:0 }
+
+/* Ajustes visuales generales */
+.content-box{ border:1px solid rgba(15,23,42,0.06); border-radius:12px; padding:18px; background:#ffffff; box-shadow: 0 4px 14px rgba(2,6,23,0.04); }
+.left-col{ padding:18px; }
+.rutina-card{ padding:16px }
+.display-price{ font-size:1.1rem }
+.display-duration{ font-size:1rem }
+
+/* Nueva tarjeta de resumen de suscripción (Precio + Descripción) */
+.subscription-summary { background:linear-gradient(180deg,#fbfdff,#ffffff); border-radius:12px; padding:14px; border:1px solid rgba(15,23,42,0.04); margin-bottom:12px }
+.subscription-summary .label { font-size:.85rem; color:var(--muted); font-weight:700 }
+.subscription-summary .value { font-size:1.4rem; font-weight:900; color:#072554; margin-top:6px }
+.subscription-summary .desc { margin-top:8px; color: #0f172a }
+
+/* Badges / Estado: más visible y con texto blanco */
+.badges .badge { color: #fff !important; font-weight:900; padding:10px 16px; border-radius:12px; font-size:1.08rem; box-shadow: 0 4px 10px rgba(2,6,23,0.08); }
+.badges .bg-success{ background:#198754 !important }
+.badges .bg-info{ background:#0dcaf0 !important }
+.badges .bg-warning{ background:#ffc107 !important }
+/* Variante grande de badge por si se quiere aplicar */
+.badges .badge-lg { padding:12px 18px; font-size:1.12rem; }
+
+/* Responsive tweaks */
+@media (max-width:900px){
+  .subscription-card{ flex-direction:column }
+  .left-col{ width:100%; min-width:unset; flex-direction:row; gap:12px; align-items:center }
+  .left-col img{ width:80px;height:80px }
+  .left-col .btns{ flex-direction:row }
+  .rutina-card .titulo{ max-width:60% }
+}
+
+@media (max-width:480px){
+  .btn-whatsapp, .btn-email { padding:8px 10px; font-size:.95rem }
+  .subscription-title { font-size:1rem }
+}

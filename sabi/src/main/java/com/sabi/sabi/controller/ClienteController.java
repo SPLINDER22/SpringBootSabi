@@ -118,27 +118,27 @@ public class ClienteController {
          // Rutina activa
         RutinaDTO rutinaDTO = rutinaService.getRutinaActivaCliente(clienteId);
         if (rutinaDTO != null) {
-            DiaDTO diaDTO = diaService.getDiaActual(clienteId);
-            long porcentajeCompletado = diaService.calcularProgresoRutina(clienteId);
-
-            model.addAttribute("tieneRutinaActiva", true);
+            // Nueva lógica: consideramos que hay "rutina activa" sólo si la rutina
+            // fue efectivamente asignada por un entrenador (idEntrenador != null).
+            boolean rutinaAsignada = rutinaDTO.getIdEntrenador() != null;
+            model.addAttribute("tieneRutinaActiva", rutinaAsignada);
+            // Siempre pasamos la rutina al modelo para posibles usos, pero el flag
+            // 'tieneRutinaActiva' controlará si la vista la muestra como activa.
             model.addAttribute("rutina", rutinaDTO);
-            model.addAttribute("diaActual", diaDTO);
-            model.addAttribute("porcentajeCompletado", porcentajeCompletado);
 
-            // Obtener semana del día actual y primer ejercicio para navegación automática
-            if (diaDTO != null && diaDTO.getIdSemana() != null) {
-                model.addAttribute("semanaActual", diaDTO.getIdSemana());
-
-                // Obtener el primer ejercicio del día para mostrarlo automáticamente
-                var ejercicios = ejercicioAsignadoService.getEjesDia(diaDTO.getIdDia());
-                if (ejercicios != null && !ejercicios.isEmpty()) {
-                    model.addAttribute("primerEjercicioDia", ejercicios.get(0).getIdEjercicioAsignado());
-                }
+            if (rutinaAsignada) {
+                DiaDTO diaDTO = diaService.getDiaActual(clienteId);
+                long porcentajeCompletado = diaService.calcularProgresoRutina(clienteId);
+                model.addAttribute("diaActual", diaDTO);
+                model.addAttribute("porcentajeCompletado", porcentajeCompletado);
+            } else {
+                // No mostrar progreso/día cuando la rutina no fue asignada por un entrenador
+                model.addAttribute("diaActual", null);
+                model.addAttribute("porcentajeCompletado", 0L);
             }
-        } else {
-            model.addAttribute("tieneRutinaActiva", false);
-        }
+         } else {
+             model.addAttribute("tieneRutinaActiva", false);
+         }
 
         // Suscripción actual
         SuscripcionDTO suscripcionActual = suscripcionService.getSuscripcionActualByClienteId(clienteId);
@@ -292,24 +292,42 @@ public class ClienteController {
         model.addAttribute("suscripcion", actual);
         if (actual != null && actual.getIdEntrenador() != null) {
             var entrenador = entrenadorService.getEntrenadorById(actual.getIdEntrenador());
-            model.addAttribute("nombreEntrenador", entrenador != null ? entrenador.getNombre() : null);
-            model.addAttribute("fotoEntrenador", entrenador != null && entrenador.getFotoPerfilUrl() != null ? entrenador.getFotoPerfilUrl() : "/img/fotoPerfil.png");
-            model.addAttribute("telefonoEntrenador", entrenador != null ? entrenador.getTelefono() : null);
-            model.addAttribute("emailEntrenador", entrenador != null ? entrenador.getEmail() : null);
+            if (entrenador != null) {
+                String nombreCompleto = entrenador.getNombre();
+                if (entrenador.getApellido() != null && !entrenador.getApellido().isBlank()) {
+                    nombreCompleto += " " + entrenador.getApellido();
+                }
+                model.addAttribute("nombreEntrenador", nombreCompleto);
+                model.addAttribute("fotoEntrenador", entrenador.getFotoPerfilUrl() != null ? entrenador.getFotoPerfilUrl() : "/img/fotoPerfil.png");
+                model.addAttribute("telefonoEntrenador", entrenador.getTelefono());
+                model.addAttribute("emailEntrenador", entrenador.getEmail());
+            } else {
+                model.addAttribute("nombreEntrenador", null);
+                model.addAttribute("fotoEntrenador", "/img/fotoPerfil.png");
+                model.addAttribute("telefonoEntrenador", null);
+                model.addAttribute("emailEntrenador", null);
+            }
         }
 
         // Añadir información de rutina activa y progreso si existe
         RutinaDTO rutinaActiva = rutinaService.getRutinaActivaCliente(clienteId);
         if (rutinaActiva != null) {
-            DiaDTO diaActual = diaService.getDiaActual(clienteId);
-            long porcentajeCompletado = diaService.calcularProgresoRutina(clienteId);
-            model.addAttribute("tieneRutinaActiva", true);
+            // Basar el flag en si la rutina tiene un entrenador asignado
+            boolean rutinaAsignada = rutinaActiva.getIdEntrenador() != null;
+            model.addAttribute("tieneRutinaActiva", rutinaAsignada);
             model.addAttribute("rutina", rutinaActiva);
-            model.addAttribute("diaActual", diaActual);
-            model.addAttribute("porcentajeCompletado", porcentajeCompletado);
-        } else {
-            model.addAttribute("tieneRutinaActiva", false);
-        }
+            if (rutinaAsignada) {
+                DiaDTO diaActual = diaService.getDiaActual(clienteId);
+                long porcentajeCompletado = diaService.calcularProgresoRutina(clienteId);
+                model.addAttribute("diaActual", diaActual);
+                model.addAttribute("porcentajeCompletado", porcentajeCompletado);
+            } else {
+                model.addAttribute("diaActual", null);
+                model.addAttribute("porcentajeCompletado", 0L);
+            }
+         } else {
+             model.addAttribute("tieneRutinaActiva", false);
+         }
         return "cliente/suscripcion";
     }
 
@@ -336,8 +354,13 @@ public class ClienteController {
     }
 
     @PostMapping("/cliente/suscripcion/cancelar/{id}")
-    public String cancelarSuscripcionCliente(@PathVariable("id") Long id) {
-        suscripcionService.cancelarSuscripcion(id);
+    public String cancelarSuscripcionCliente(@PathVariable("id") Long id, org.springframework.web.servlet.mvc.support.RedirectAttributes redirectAttributes) {
+        try {
+            suscripcionService.cancelarSuscripcion(id);
+            redirectAttributes.addFlashAttribute("success", "Suscripción cancelada correctamente.");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "No se pudo cancelar la suscripción: " + e.getMessage());
+        }
         return "redirect:/cliente/suscripcion";
     }
 
