@@ -478,5 +478,443 @@ public class EmailService {
             """;
         return template.replace("{NOMBRE_USUARIO}", usuario.getNombre());
     }
+
+    /**
+     * Envía notificación al entrenador cuando un cliente solicita una suscripción
+     */
+    @Async
+    public void enviarNotificacionSolicitudSuscripcion(String emailEntrenador, String nombreEntrenador, String nombreCliente) {
+        try {
+            MimeMessage message = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
+
+            helper.setFrom("sabi.gaes5@gmail.com");
+            helper.setTo(emailEntrenador);
+            helper.setSubject("🔔 Nueva solicitud de entrenamiento - " + nombreCliente);
+
+            String htmlContent = """
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <meta charset="UTF-8">
+                    <style>
+                        body {
+                            font-family: 'Segoe UI', Arial, sans-serif;
+                            line-height: 1.6;
+                            color: #333;
+                            background-color: #f4f7fa;
+                            margin: 0;
+                            padding: 0;
+                        }
+                        .container {
+                            max-width: 600px;
+                            margin: 40px auto;
+                            background: white;
+                            border-radius: 16px;
+                            box-shadow: 0 20px 60px rgba(0,0,0,0.1);
+                            overflow: hidden;
+                        }
+                        .header {
+                            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+                            color: white;
+                            padding: 40px 30px;
+                            text-align: center;
+                        }
+                        .header h1 {
+                            margin: 0;
+                            font-size: 28px;
+                            font-weight: 800;
+                        }
+                        .content {
+                            padding: 40px 30px;
+                        }
+                        .notification-box {
+                            background: linear-gradient(135deg, rgba(16,185,129,0.1), rgba(5,150,105,0.05));
+                            border-left: 4px solid #10b981;
+                            padding: 20px;
+                            border-radius: 8px;
+                            margin: 20px 0;
+                        }
+                        .client-name {
+                            font-size: 24px;
+                            font-weight: 700;
+                            color: #10b981;
+                            margin: 10px 0;
+                        }
+                        .cta {
+                            text-align: center;
+                            margin: 30px 0;
+                        }
+                        .button {
+                            display: inline-block;
+                            padding: 15px 40px;
+                            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+                            color: white;
+                            text-decoration: none;
+                            border-radius: 12px;
+                            font-weight: 700;
+                            font-size: 16px;
+                            box-shadow: 0 10px 30px rgba(16,185,129,0.3);
+                        }
+                        .footer {
+                            background: #f0fdf4;
+                            padding: 25px;
+                            text-align: center;
+                            font-size: 14px;
+                            color: #6b7280;
+                            border-top: 1px solid #d1fae5;
+                        }
+                    </style>
+                </head>
+                <body>
+                    <div class="container">
+                        <div class="header">
+                            <h1>🎯 Nueva Oportunidad</h1>
+                        </div>
+                        <div class="content">
+                            <p>Hola <strong>{NOMBRE_ENTRENADOR}</strong>,</p>
+                            
+                            <div class="notification-box">
+                                <p style="margin: 0; font-size: 16px;">¡Tienes una nueva solicitud de entrenamiento!</p>
+                                <div class="client-name">{NOMBRE_CLIENTE}</div>
+                                <p style="margin: 5px 0 0 0; color: #6b7280;">está interesado en tu servicio de entrenamiento</p>
+                            </div>
+
+                            <p style="font-size: 15px;">
+                                <strong>Próximos pasos:</strong>
+                            </p>
+                            <ol style="color: #4b5563;">
+                                <li>Revisa el diagnóstico del cliente</li>
+                                <li>Envía una cotización con el precio y duración</li>
+                                <li>Espera la confirmación del cliente</li>
+                            </ol>
+
+                            <div class="cta">
+                                <a href="http://localhost:8080/auth/login" class="button">Ver Solicitud Ahora</a>
+                            </div>
+
+                            <p style="margin-top: 30px; font-size: 14px; color: #6b7280;">
+                                💡 <em>Responde rápido para aumentar tus posibilidades de cerrar la suscripción.</em>
+                            </p>
+                        </div>
+                        <div class="footer">
+                            <p><strong>SABI</strong> - Gestión de entrenamiento personal</p>
+                        </div>
+                    </div>
+                </body>
+                </html>
+                """;
+
+            htmlContent = htmlContent.replace("{NOMBRE_ENTRENADOR}", nombreEntrenador)
+                                     .replace("{NOMBRE_CLIENTE}", nombreCliente);
+
+            helper.setText(htmlContent, true);
+            mailSender.send(message);
+            logger.info("Notificación de solicitud de suscripción enviada a: {}", emailEntrenador);
+
+        } catch (MessagingException e) {
+            logger.error("Error al enviar notificación de solicitud al entrenador {}: {}", emailEntrenador, e.getMessage());
+        }
+    }
+
+    /**
+     * Envía notificación al cliente cuando el entrenador envía una cotización
+     */
+    @Async
+    public void enviarNotificacionCotizacionRecibida(String emailCliente, String nombreCliente, String nombreEntrenador, Double precio, Integer semanas) {
+        try {
+            MimeMessage message = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
+
+            helper.setFrom("sabi.gaes5@gmail.com");
+            helper.setTo(emailCliente);
+            helper.setSubject("💰 Cotización recibida de " + nombreEntrenador);
+
+            String htmlContent = """
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <meta charset="UTF-8">
+                    <style>
+                        body {
+                            font-family: 'Segoe UI', Arial, sans-serif;
+                            line-height: 1.6;
+                            color: #333;
+                            background-color: #f4f7fa;
+                            margin: 0;
+                            padding: 0;
+                        }
+                        .container {
+                            max-width: 600px;
+                            margin: 40px auto;
+                            background: white;
+                            border-radius: 16px;
+                            box-shadow: 0 20px 60px rgba(0,0,0,0.1);
+                            overflow: hidden;
+                        }
+                        .header {
+                            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+                            color: white;
+                            padding: 40px 30px;
+                            text-align: center;
+                        }
+                        .header h1 {
+                            margin: 0;
+                            font-size: 28px;
+                            font-weight: 800;
+                        }
+                        .content {
+                            padding: 40px 30px;
+                        }
+                        .price-box {
+                            background: linear-gradient(135deg, rgba(59,130,246,0.1), rgba(29,78,216,0.05));
+                            border: 2px solid #3b82f6;
+                            padding: 30px;
+                            border-radius: 12px;
+                            text-align: center;
+                            margin: 25px 0;
+                        }
+                        .price {
+                            font-size: 48px;
+                            font-weight: 800;
+                            color: #3b82f6;
+                            margin: 10px 0;
+                        }
+                        .duration {
+                            font-size: 20px;
+                            color: #6b7280;
+                            margin-top: 5px;
+                        }
+                        .trainer-name {
+                            font-size: 22px;
+                            font-weight: 700;
+                            color: #1f2937;
+                            margin: 15px 0;
+                        }
+                        .cta {
+                            text-align: center;
+                            margin: 30px 0;
+                        }
+                        .button {
+                            display: inline-block;
+                            padding: 15px 40px;
+                            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+                            color: white;
+                            text-decoration: none;
+                            border-radius: 12px;
+                            font-weight: 700;
+                            font-size: 16px;
+                            box-shadow: 0 10px 30px rgba(59,130,246,0.3);
+                        }
+                        .footer {
+                            background: #eff6ff;
+                            padding: 25px;
+                            text-align: center;
+                            font-size: 14px;
+                            color: #6b7280;
+                            border-top: 1px solid #dbeafe;
+                        }
+                    </style>
+                </head>
+                <body>
+                    <div class="container">
+                        <div class="header">
+                            <h1>📋 Cotización Lista</h1>
+                        </div>
+                        <div class="content">
+                            <p>Hola <strong>{NOMBRE_CLIENTE}</strong>,</p>
+                            
+                            <p style="font-size: 16px;">
+                                <strong>{NOMBRE_ENTRENADOR}</strong> ha revisado tu diagnóstico y te ha enviado una cotización personalizada:
+                            </p>
+
+                            <div class="price-box">
+                                <p style="margin: 0; color: #6b7280; font-size: 14px; text-transform: uppercase; letter-spacing: 1px;">Inversión Total</p>
+                                <div class="price">${PRECIO}</div>
+                                <div class="duration">{SEMANAS} semanas de entrenamiento</div>
+                            </div>
+
+                            <p style="font-size: 15px; color: #4b5563;">
+                                <strong>¿Qué incluye?</strong><br>
+                                ✓ Plan de entrenamiento personalizado<br>
+                                ✓ Seguimiento continuo de tu progreso<br>
+                                ✓ Rutinas adaptadas a tus objetivos<br>
+                                ✓ Apoyo profesional durante todo el programa
+                            </p>
+
+                            <div class="cta">
+                                <a href="http://localhost:8080/auth/login" class="button">Revisar y Confirmar</a>
+                            </div>
+
+                            <p style="margin-top: 30px; font-size: 14px; color: #6b7280;">
+                                💡 <em>Puedes aceptar o rechazar esta cotización desde tu panel de cliente.</em>
+                            </p>
+                        </div>
+                        <div class="footer">
+                            <p><strong>SABI</strong> - Tu camino hacia el bienestar</p>
+                        </div>
+                    </div>
+                </body>
+                </html>
+                """;
+
+            htmlContent = htmlContent.replace("{NOMBRE_CLIENTE}", nombreCliente)
+                                     .replace("{NOMBRE_ENTRENADOR}", nombreEntrenador)
+                                     .replace("{PRECIO}", String.format("%.2f", precio))
+                                     .replace("{SEMANAS}", semanas.toString());
+
+            helper.setText(htmlContent, true);
+            mailSender.send(message);
+            logger.info("Notificación de cotización enviada a: {}", emailCliente);
+
+        } catch (MessagingException e) {
+            logger.error("Error al enviar notificación de cotización al cliente {}: {}", emailCliente, e.getMessage());
+        }
+    }
+
+    /**
+     * Envía notificación de fin de rutina
+     */
+    @Async
+    public void enviarNotificacionFinRutina(String emailCliente, String nombreCliente, String nombreEntrenador, String nombreRutina) {
+        try {
+            MimeMessage message = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
+
+            helper.setFrom("sabi.gaes5@gmail.com");
+            helper.setTo(emailCliente);
+            helper.setSubject("🎉 ¡Felicitaciones! Has completado tu rutina - " + nombreRutina);
+
+            String htmlContent = """
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <meta charset="UTF-8">
+                    <style>
+                        body {
+                            font-family: 'Segoe UI', Arial, sans-serif;
+                            line-height: 1.6;
+                            color: #333;
+                            background-color: #f4f7fa;
+                            margin: 0;
+                            padding: 0;
+                        }
+                        .container {
+                            max-width: 600px;
+                            margin: 40px auto;
+                            background: white;
+                            border-radius: 16px;
+                            box-shadow: 0 20px 60px rgba(0,0,0,0.1);
+                            overflow: hidden;
+                        }
+                        .header {
+                            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+                            color: white;
+                            padding: 40px 30px;
+                            text-align: center;
+                        }
+                        .header h1 {
+                            margin: 0;
+                            font-size: 32px;
+                            font-weight: 800;
+                        }
+                        .content {
+                            padding: 40px 30px;
+                        }
+                        .congratulations-box {
+                            background: linear-gradient(135deg, rgba(245,158,11,0.1), rgba(217,119,6,0.05));
+                            border-left: 4px solid #f59e0b;
+                            padding: 25px;
+                            border-radius: 8px;
+                            margin: 25px 0;
+                            text-align: center;
+                        }
+                        .routine-name {
+                            font-size: 24px;
+                            font-weight: 700;
+                            color: #f59e0b;
+                            margin: 10px 0;
+                        }
+                        .cta {
+                            text-align: center;
+                            margin: 30px 0;
+                        }
+                        .button {
+                            display: inline-block;
+                            padding: 15px 40px;
+                            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+                            color: white;
+                            text-decoration: none;
+                            border-radius: 12px;
+                            font-weight: 700;
+                            font-size: 16px;
+                            box-shadow: 0 10px 30px rgba(245,158,11,0.3);
+                        }
+                        .footer {
+                            background: #fffbeb;
+                            padding: 25px;
+                            text-align: center;
+                            font-size: 14px;
+                            color: #6b7280;
+                            border-top: 1px solid #fef3c7;
+                        }
+                    </style>
+                </head>
+                <body>
+                    <div class="container">
+                        <div class="header">
+                            <h1>🎉 ¡Felicitaciones!</h1>
+                        </div>
+                        <div class="content">
+                            <p>Hola <strong>{NOMBRE_CLIENTE}</strong>,</p>
+                            
+                            <div class="congratulations-box">
+                                <p style="font-size: 18px; margin: 0;">¡Has completado exitosamente tu rutina!</p>
+                                <div class="routine-name">{NOMBRE_RUTINA}</div>
+                                <p style="margin: 10px 0 0 0; color: #6b7280;">con <strong>{NOMBRE_ENTRENADOR}</strong></p>
+                            </div>
+
+                            <p style="font-size: 16px;">
+                                🏆 <strong>¡Increíble trabajo!</strong> Has demostrado compromiso y dedicación durante todo este periodo de entrenamiento.
+                            </p>
+
+                            <p style="font-size: 15px; color: #4b5563;">
+                                <strong>¿Qué sigue ahora?</strong>
+                            </p>
+                            <ul style="color: #4b5563;">
+                                <li>Revisa tu progreso y logros alcanzados</li>
+                                <li>Deja una reseña sobre tu experiencia</li>
+                                <li>Considera continuar con una nueva rutina</li>
+                                <li>Mantén los hábitos saludables que desarrollaste</li>
+                            </ul>
+
+                            <div class="cta">
+                                <a href="http://localhost:8080/auth/login" class="button">Ver Mi Progreso</a>
+                            </div>
+
+                            <p style="margin-top: 30px; font-size: 14px; color: #6b7280; text-align: center;">
+                                💪 <em>"El éxito es la suma de pequeños esfuerzos repetidos día tras día"</em>
+                            </p>
+                        </div>
+                        <div class="footer">
+                            <p><strong>SABI</strong> - Celebrando tus logros</p>
+                        </div>
+                    </div>
+                </body>
+                </html>
+                """;
+
+            htmlContent = htmlContent.replace("{NOMBRE_CLIENTE}", nombreCliente)
+                                     .replace("{NOMBRE_ENTRENADOR}", nombreEntrenador)
+                                     .replace("{NOMBRE_RUTINA}", nombreRutina);
+
+            helper.setText(htmlContent, true);
+            mailSender.send(message);
+            logger.info("Notificación de fin de rutina enviada a: {}", emailCliente);
+
+        } catch (MessagingException e) {
+            logger.error("Error al enviar notificación de fin de rutina al cliente {}: {}", emailCliente, e.getMessage());
+        }
+    }
 }
 

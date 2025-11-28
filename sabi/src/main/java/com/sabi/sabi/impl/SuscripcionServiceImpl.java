@@ -9,6 +9,7 @@ import com.sabi.sabi.repository.ClienteRepository;
 import com.sabi.sabi.repository.EntrenadorRepository;
 import com.sabi.sabi.repository.SuscripcionRepository;
 import com.sabi.sabi.service.SuscripcionService;
+import com.sabi.sabi.service.EmailService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -26,6 +27,8 @@ public class SuscripcionServiceImpl implements SuscripcionService {
     private ClienteRepository clienteRepository;
     @Autowired
     private EntrenadorRepository entrenadorRepository;
+    @Autowired
+    private EmailService emailService;
 
     @Override
     public List<SuscripcionDTO> getAllSuscripciones() {
@@ -80,6 +83,16 @@ public class SuscripcionServiceImpl implements SuscripcionService {
             suscripcion.setEntrenador(entrenador);
         }
         suscripcion = suscripcionRepository.save(suscripcion);
+        
+        // Enviar notificación al entrenador cuando se crea la solicitud
+        if (suscripcion.getEntrenador() != null && suscripcion.getCliente() != null) {
+            emailService.enviarNotificacionSolicitudSuscripcion(
+                suscripcion.getEntrenador().getEmail(),
+                suscripcion.getEntrenador().getNombre(),
+                suscripcion.getCliente().getNombre()
+            );
+        }
+        
         return modelMapper.map(suscripcion, SuscripcionDTO.class);
     }
 
@@ -99,10 +112,27 @@ public class SuscripcionServiceImpl implements SuscripcionService {
         }
         existingSuscripcion.setPrecio(suscripcionDTO.getPrecio());
         existingSuscripcion.setDuracionSemanas(suscripcionDTO.getDuracionSemanas());
+        
+        // Si el estado cambia a COTIZADA, enviar notificación al cliente
+        boolean cambioACotizada = suscripcionDTO.getEstadoSuscripcion() == EstadoSuscripcion.COTIZADA 
+                                  && existingSuscripcion.getEstadoSuscripcion() != EstadoSuscripcion.COTIZADA;
+        
         existingSuscripcion.setEstadoSuscripcion(suscripcionDTO.getEstadoSuscripcion());
         existingSuscripcion.setVistaDiagnostico(suscripcionDTO.getVistaDiagnostico() != null ? suscripcionDTO.getVistaDiagnostico() : existingSuscripcion.getVistaDiagnostico());
 
         existingSuscripcion = suscripcionRepository.save(existingSuscripcion);
+        
+        // Enviar email al cliente cuando se cotiza
+        if (cambioACotizada && existingSuscripcion.getPrecio() != null && existingSuscripcion.getDuracionSemanas() != null) {
+            emailService.enviarNotificacionCotizacionRecibida(
+                existingSuscripcion.getCliente().getEmail(),
+                existingSuscripcion.getCliente().getNombre(),
+                existingSuscripcion.getEntrenador().getNombre(),
+                existingSuscripcion.getPrecio(),
+                existingSuscripcion.getDuracionSemanas()
+            );
+        }
+        
         return modelMapper.map(existingSuscripcion, SuscripcionDTO.class);
     }
 

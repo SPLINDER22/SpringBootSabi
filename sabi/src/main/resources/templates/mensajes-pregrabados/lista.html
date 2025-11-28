@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mis Mensajes Pregrabados - SABI</title>
+    <link rel="stylesheet" th:href="@{/vendor/bootstrap/css/bootstrap.min.css}">
+    <link rel="stylesheet" th:href="@{/vendor/fontawesome-free/css/all.min.css}">
+    <link rel="stylesheet" th:href="@{/css/sb-admin-2.min.css}">
+    <style>
+        .mensaje-card {
+            transition: all 0.3s ease;
+            border-left: 4px solid #4e73df;
+        }
+        .mensaje-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+        .mensaje-content {
+            max-height: 100px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .badge-inactive {
+            background-color: #e74a3b;
+        }
+    </style>
+</head>
+<body id="page-top">
+    <div id="wrapper">
+        <!-- Sidebar -->
+        <div th:replace="~{fragments/header :: sidebar}"></div>
+
+        <!-- Content Wrapper -->
+        <div id="content-wrapper" class="d-flex flex-column">
+            <!-- Main Content -->
+            <div id="content">
+                <!-- Topbar -->
+                <div th:replace="~{fragments/header :: navbar}"></div>
+
+                <!-- Begin Page Content -->
+                <div class="container-fluid">
+                    <!-- Page Heading -->
+                    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+                        <h1 class="h3 mb-0 text-gray-800">
+                            <i class="fas fa-envelope-open-text"></i> Mensajes Pregrabados
+                        </h1>
+                        <a th:href="@{/mensajes-pregrabados/nuevo}" class="btn btn-primary btn-icon-split">
+                            <span class="icon text-white-50">
+                                <i class="fas fa-plus"></i>
+                            </span>
+                            <span class="text">Nuevo Mensaje</span>
+                        </a>
+                    </div>
+
+                    <!-- Alerts -->
+                    <div th:if="${success}" class="alert alert-success alert-dismissible fade show" role="alert">
+                        <i class="fas fa-check-circle"></i> <span th:text="${success}"></span>
+                        <button type="button" class="close" data-dismiss="alert">
+                            <span>&times;</span>
+                        </button>
+                    </div>
+
+                    <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+                        <i class="fas fa-exclamation-circle"></i> <span th:text="${error}"></span>
+                        <button type="button" class="close" data-dismiss="alert">
+                            <span>&times;</span>
+                        </button>
+                    </div>
+
+                    <!-- Info Card -->
+                    <div class="card shadow mb-4">
+                        <div class="card-header py-3 bg-info text-white">
+                            <h6 class="m-0 font-weight-bold">
+                                <i class="fas fa-info-circle"></i> ¿Qué son los mensajes pregrabados?
+                            </h6>
+                        </div>
+                        <div class="card-body">
+                            <p class="mb-2">
+                                Los mensajes pregrabados te permiten crear plantillas reutilizables para comunicarte con tus clientes de manera rápida y profesional.
+                            </p>
+                            <p class="mb-0">
+                                <strong><i class="fas fa-lightbulb text-warning"></i> Tip:</strong> 
+                                Solo los mensajes <span class="badge badge-success">ACTIVOS</span> aparecerán en "Enviar correo a clientes". 
+                                Los mensajes <span class="badge badge-secondary">INACTIVOS</span> están ocultos.
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Mensajes List -->
+                    <div class="row">
+                        <div class="col-12" th:if="${mensajes.isEmpty()}">
+                            <div class="card shadow mb-4">
+                                <div class="card-body text-center py-5">
+                                    <i class="fas fa-inbox fa-5x text-gray-300 mb-3"></i>
+                                    <h4 class="text-gray-600">No tienes mensajes pregrabados</h4>
+                                    <p class="text-gray-500 mb-4">Crea tu primer mensaje para comunicarte más rápido con tus clientes</p>
+                                    <a th:href="@{/mensajes-pregrabados/nuevo}" class="btn btn-primary">
+                                        <i class="fas fa-plus"></i> Crear Primer Mensaje
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-xl-6 col-lg-6 mb-4" th:each="mensaje : ${mensajes}">
+                            <div class="card mensaje-card shadow h-100" th:classappend="${!mensaje.activo} ? 'border-secondary' : ''">
+                                <div class="card-header py-3 d-flex justify-content-between align-items-center">
+                                    <h6 class="m-0 font-weight-bold" 
+                                        th:classappend="${mensaje.activo} ? 'text-primary' : 'text-secondary'"
+                                        th:text="${mensaje.titulo}"></h6>
+                                    <span th:if="${mensaje.activo}" class="badge badge-success badge-pill" style="font-size: 0.9rem; padding: 0.4rem 0.8rem;">
+                                        <i class="fas fa-check-circle"></i> Activo - Visible
+                                    </span>
+                                    <span th:unless="${mensaje.activo}" class="badge badge-secondary badge-pill" style="font-size: 0.9rem; padding: 0.4rem 0.8rem;">
+                                        <i class="fas fa-eye-slash"></i> Inactivo - Oculto
+                                    </span>
+                                </div>
+                                <div class="card-body" th:classappend="${!mensaje.activo} ? 'bg-light' : ''">
+                                    <div th:if="${!mensaje.activo}" class="alert alert-warning py-2 px-3 mb-3">
+                                        <small>
+                                            <i class="fas fa-exclamation-triangle"></i> 
+                                            <strong>Este mensaje NO se mostrará</strong> al enviar correos. Actívalo para usarlo.
+                                        </small>
+                                    </div>
+                                    <div class="mensaje-content mb-3">
+                                        <p class="text-gray-700" th:text="${mensaje.contenido}"></p>
+                                    </div>
+                                    <div class="text-muted small">
+                                        <i class="far fa-calendar"></i> 
+                                        Creado: <span th:text="${#temporals.format(mensaje.fechaCreacion, 'dd/MM/yyyy HH:mm')}"></span>
+                                    </div>
+                                    <div class="text-muted small" th:if="${mensaje.fechaActualizacion != null}">
+                                        <i class="fas fa-sync"></i> 
+                                        Actualizado: <span th:text="${#temporals.format(mensaje.fechaActualizacion, 'dd/MM/yyyy HH:mm')}"></span>
+                                    </div>
+                                </div>
+                                <div class="card-footer bg-white border-top-0">
+                                    <div class="btn-group w-100" role="group">
+                                        <a th:href="@{/mensajes-pregrabados/editar/{id}(id=${mensaje.id})}" 
+                                           class="btn btn-sm btn-primary">
+                                            <i class="fas fa-edit"></i> Editar
+                                        </a>
+                                        <button type="button" class="btn btn-sm btn-info" 
+                                                onclick="copiarMensaje(this)" 
+                                                th:attr="data-contenido=${mensaje.contenido}">
+                                            <i class="fas fa-copy"></i> Copiar
+                                        </button>
+                                        <form th:if="${mensaje.activo}" 
+                                              th:action="@{/mensajes-pregrabados/desactivar/{id}(id=${mensaje.id})}" 
+                                              method="post" class="d-inline">
+                                            <button type="submit" class="btn btn-sm btn-warning">
+                                                <i class="fas fa-ban"></i> Desactivar
+                                            </button>
+                                        </form>
+                                        <button type="button" class="btn btn-sm btn-danger" 
+                                                onclick="confirmarEliminar(this)" 
+                                                th:attr="data-id=${mensaje.id}">
+                                            <i class="fas fa-trash"></i> Eliminar
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+                <!-- /.container-fluid -->
+            </div>
+            <!-- End of Main Content -->
+
+            <!-- Footer -->
+            <div th:replace="~{fragments/footer :: footer}"></div>
+        </div>
+        <!-- End of Content Wrapper -->
+    </div>
+    <!-- End of Page Wrapper -->
+
+    <!-- Modal para confirmar eliminación -->
+    <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title">
+                        <i class="fas fa-exclamation-triangle"></i> Confirmar Eliminación
+                    </h5>
+                    <button type="button" class="close text-white" data-dismiss="modal">
+                        <span>&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    ¿Estás seguro de que deseas eliminar este mensaje pregrabado? Esta acción no se puede deshacer.
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                    <form id="deleteForm" method="post" class="d-inline">
+                        <button type="submit" class="btn btn-danger">
+                            <i class="fas fa-trash"></i> Sí, Eliminar
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script th:src="@{/vendor/jquery/jquery.min.js}"></script>
+    <script th:src="@{/vendor/bootstrap/js/bootstrap.bundle.min.js}"></script>
+    <script th:src="@{/vendor/jquery-easing/jquery.easing.min.js}"></script>
+    <script th:src="@{/js/sb-admin-2.min.js}"></script>
+
+    <script>
+        function confirmarEliminar(button) {
+            const id = button.getAttribute('data-id');
+            const form = document.getElementById('deleteForm');
+            form.action = '/mensajes-pregrabados/eliminar/' + id;
+            $('#deleteModal').modal('show');
+        }
+
+        function copiarMensaje(button) {
+            const contenido = button.getAttribute('data-contenido');
+            navigator.clipboard.writeText(contenido).then(() => {
+                // Cambiar el botón temporalmente para mostrar feedback
+                const originalHTML = button.innerHTML;
+                button.innerHTML = '<i class="fas fa-check"></i> Copiado';
+                button.classList.remove('btn-info');
+                button.classList.add('btn-success');
+                
+                setTimeout(() => {
+                    button.innerHTML = originalHTML;
+                    button.classList.remove('btn-success');
+                    button.classList.add('btn-info');
+                }, 2000);
+            });
+        }
+    </script>
+</body>
+</html>

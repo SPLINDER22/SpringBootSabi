@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${mensaje.id != null ? 'Editar Mensaje' : 'Nuevo Mensaje'}">Mensaje Pregrabado - SABI</title>
+    <link rel="stylesheet" th:href="@{/vendor/bootstrap/css/bootstrap.min.css}">
+    <link rel="stylesheet" th:href="@{/vendor/fontawesome-free/css/all.min.css}">
+    <link rel="stylesheet" th:href="@{/css/sb-admin-2.min.css}">
+    <style>
+        .variable-tag {
+            background: #4e73df;
+            color: white;
+            padding: 4px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: all 0.2s;
+        }
+        .variable-tag:hover {
+            background: #2e59d9;
+            transform: scale(1.05);
+        }
+        .preview-box {
+            background: #f8f9fc;
+            border: 2px dashed #4e73df;
+            border-radius: 8px;
+            padding: 20px;
+            min-height: 150px;
+        }
+        .char-counter {
+            font-size: 0.85rem;
+            color: #858796;
+        }
+        .char-counter.warning {
+            color: #f6c23e;
+        }
+        .char-counter.danger {
+            color: #e74a3b;
+        }
+    </style>
+</head>
+<body id="page-top">
+    <div id="wrapper">
+        <!-- Sidebar -->
+        <div th:replace="~{fragments/header :: sidebar}"></div>
+
+        <!-- Content Wrapper -->
+        <div id="content-wrapper" class="d-flex flex-column">
+            <!-- Main Content -->
+            <div id="content">
+                <!-- Topbar -->
+                <div th:replace="~{fragments/header :: navbar}"></div>
+
+                <!-- Begin Page Content -->
+                <div class="container-fluid">
+                    <!-- Page Heading -->
+                    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+                        <h1 class="h3 mb-0 text-gray-800">
+                            <i class="fas fa-envelope-open-text"></i>
+                            <span th:text="${mensaje.id != null ? 'Editar Mensaje Pregrabado' : 'Nuevo Mensaje Pregrabado'}"></span>
+                        </h1>
+                        <a th:href="@{/mensajes-pregrabados}" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left"></i> Volver
+                        </a>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-lg-8">
+                            <!-- Formulario -->
+                            <div class="card shadow mb-4">
+                                <div class="card-header py-3">
+                                    <h6 class="m-0 font-weight-bold text-primary">
+                                        <i class="fas fa-edit"></i> Información del Mensaje
+                                    </h6>
+                                </div>
+                                <div class="card-body">
+                                    <form th:action="@{/mensajes-pregrabados/guardar}" th:object="${mensaje}" method="post">
+                                        <input type="hidden" th:field="*{id}">
+                                        <input type="hidden" th:field="*{entrenadorId}">
+
+                                        <div class="form-group">
+                                            <label for="titulo" class="font-weight-bold">
+                                                <i class="fas fa-heading"></i> Título del Mensaje *
+                                            </label>
+                                            <input type="text" 
+                                                   class="form-control" 
+                                                   id="titulo" 
+                                                   th:field="*{titulo}" 
+                                                   placeholder="Ej: Descuento especial, Aviso de cancelación"
+                                                   maxlength="100"
+                                                   required>
+                                            <small class="form-text text-muted">
+                                                Un título descriptivo para identificar este mensaje
+                                            </small>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label for="contenido" class="font-weight-bold">
+                                                <i class="fas fa-align-left"></i> Contenido del Mensaje *
+                                            </label>
+                                            <textarea class="form-control" 
+                                                      id="contenido" 
+                                                      th:field="*{contenido}" 
+                                                      rows="8"
+                                                      placeholder="Escribe tu mensaje aquí. Puedes personalizarlo antes de enviarlo."
+                                                      required></textarea>
+                                            <div class="d-flex justify-content-between mt-2">
+                                                <small class="form-text text-muted">
+                                                    Este mensaje se cargará automáticamente al enviarlo, pero podrás editarlo antes
+                                                </small>
+                                                <span class="char-counter" id="charCounter">0 caracteres</span>
+                                            </div>
+                                        </div>
+
+                                        <!-- Estado del Mensaje -->
+                                        <div class="form-group">
+                                            <div class="alert alert-info border-info">
+                                                <div class="d-flex align-items-center justify-content-between">
+                                                    <div>
+                                                        <h6 class="mb-2">
+                                                            <i class="fas fa-info-circle"></i> Estado del Mensaje
+                                                        </h6>
+                                                        <p class="mb-0 small">
+                                                            <strong>⚠️ Importante:</strong> Solo los mensajes <strong>ACTIVOS</strong> 
+                                                            aparecerán en la lista de "Enviar correo a clientes"
+                                                        </p>
+                                                    </div>
+                                                    <div class="custom-control custom-switch" style="transform: scale(1.5); margin-left: 20px;">
+                                                        <input type="checkbox" 
+                                                               class="custom-control-input" 
+                                                               id="activo" 
+                                                               th:field="*{activo}"
+                                                               checked>
+                                                        <label class="custom-control-label" for="activo"></label>
+                                                    </div>
+                                                </div>
+                                                <div class="mt-2">
+                                                    <span class="badge badge-success" id="estadoBadge">
+                                                        <i class="fas fa-check-circle"></i> Activo - Se mostrará en la lista
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <hr>
+
+                                        <div class="form-group mb-0">
+                                            <button type="submit" class="btn btn-primary">
+                                                <i class="fas fa-save"></i>
+                                                <span th:text="${mensaje.id != null ? 'Actualizar Mensaje' : 'Crear Mensaje'}"></span>
+                                            </button>
+                                            <a th:href="@{/mensajes-pregrabados}" class="btn btn-secondary">
+                                                <i class="fas fa-times"></i> Cancelar
+                                            </a>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-lg-4">
+                            <!-- Vista Previa -->
+                            <div class="card shadow mb-4">
+                                <div class="card-header py-3 bg-info text-white">
+                                    <h6 class="m-0 font-weight-bold">
+                                        <i class="fas fa-eye"></i> Vista Previa
+                                    </h6>
+                                </div>
+                                <div class="card-body">
+                                    <div class="preview-box" id="preview">
+                                        <p class="text-muted text-center">
+                                            <i class="fas fa-info-circle"></i><br>
+                                            Escribe algo en el contenido para ver la vista previa
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Ejemplos -->
+                            <div class="card shadow mb-4">
+                                <div class="card-header py-3 bg-success text-white">
+                                    <h6 class="m-0 font-weight-bold">
+                                        <i class="fas fa-lightbulb"></i> Ejemplos de Mensajes
+                                    </h6>
+                                </div>
+                                <div class="card-body">
+                                    <div class="mb-3">
+                                        <strong>Promoción:</strong>
+                                        <p class="small text-muted mb-0">
+                                            "¡Hola! Tengo una promoción especial para ti. Si decides continuar con tu entrenamiento, tengo descuentos disponibles. ¿Hablamos?"
+                                        </p>
+                                    </div>
+                                    <hr>
+                                    <div class="mb-3">
+                                        <strong>Cancelación:</strong>
+                                        <p class="small text-muted mb-0">
+                                            "Hola, lamentablemente debo reprogramar nuestra próxima sesión. ¿Podemos reagendar para la próxima semana?"
+                                        </p>
+                                    </div>
+                                    <hr>
+                                    <div>
+                                        <strong>Seguimiento:</strong>
+                                        <p class="small text-muted mb-0">
+                                            "¡Hola! ¿Cómo vas con tu rutina? Me gustaría saber si tienes alguna duda o necesitas ajustes."
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+                <!-- /.container-fluid -->
+            </div>
+            <!-- End of Main Content -->
+
+            <!-- Footer -->
+            <div th:replace="~{fragments/footer :: footer}"></div>
+        </div>
+        <!-- End of Content Wrapper -->
+    </div>
+    <!-- End of Page Wrapper -->
+
+    <!-- Scripts -->
+    <script th:src="@{/vendor/jquery/jquery.min.js}"></script>
+    <script th:src="@{/vendor/bootstrap/js/bootstrap.bundle.min.js}"></script>
+    <script th:src="@{/vendor/jquery-easing/jquery.easing.min.js}"></script>
+    <script th:src="@{/js/sb-admin-2.min.js}"></script>
+
+    <script>
+        const contenidoTextarea = document.getElementById('contenido');
+        const previewDiv = document.getElementById('preview');
+        const charCounter = document.getElementById('charCounter');
+
+        // Actualizar vista previa y contador
+        function updatePreview() {
+            const text = contenidoTextarea.value;
+            const charCount = text.length;
+            
+            // Actualizar contador
+            charCounter.textContent = charCount + ' caracteres';
+            if (charCount > 800) {
+                charCounter.classList.add('danger');
+                charCounter.classList.remove('warning');
+            } else if (charCount > 500) {
+                charCounter.classList.add('warning');
+                charCounter.classList.remove('danger');
+            } else {
+                charCounter.classList.remove('warning', 'danger');
+            }
+
+            // Actualizar preview
+            if (text.trim() === '') {
+                previewDiv.innerHTML = `
+                    <p class="text-muted text-center">
+                        <i class="fas fa-info-circle"></i><br>
+                        Escribe algo en el contenido para ver la vista previa
+                    </p>
+                `;
+            } else {
+                // Mostrar texto tal como está, solo reemplazar saltos de línea
+                previewDiv.innerHTML = text.replace(/\n/g, '<br>');
+            }
+        }
+
+        // Control del switch de activo/inactivo
+        const activoSwitch = document.getElementById('activo');
+        const estadoBadge = document.getElementById('estadoBadge');
+        
+        function actualizarEstadoBadge() {
+            if (activoSwitch.checked) {
+                estadoBadge.className = 'badge badge-success';
+                estadoBadge.innerHTML = '<i class="fas fa-check-circle"></i> Activo - Se mostrará en la lista';
+            } else {
+                estadoBadge.className = 'badge badge-secondary';
+                estadoBadge.innerHTML = '<i class="fas fa-times-circle"></i> Inactivo - NO se mostrará en la lista';
+            }
+        }
+        
+        activoSwitch.addEventListener('change', actualizarEstadoBadge);
+
+        // Event listeners
+        contenidoTextarea.addEventListener('input', updatePreview);
+        contenidoTextarea.addEventListener('keyup', updatePreview);
+
+        // Inicializar
+        updatePreview();
+        actualizarEstadoBadge();
+    </script>
+</body>
+</html>

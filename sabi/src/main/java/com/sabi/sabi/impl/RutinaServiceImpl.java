@@ -5,6 +5,7 @@ import com.sabi.sabi.entity.*;
 import com.sabi.sabi.entity.enums.EstadoRutina;
 import com.sabi.sabi.repository.*;
 import com.sabi.sabi.service.RutinaService;
+import com.sabi.sabi.service.EmailService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -30,6 +31,8 @@ public class RutinaServiceImpl implements RutinaService {
     private EjercicioAsignadoRepository ejercicioAsignadoRepository;
     @Autowired
     private SerieRepository serieRepository;
+    @Autowired
+    private EmailService emailService;
 
     // Helper centralizado para mapear entidad -> DTO (id vs idRutina)
     private RutinaDTO mapToDTO(Rutina r) {
@@ -285,12 +288,30 @@ public class RutinaServiceImpl implements RutinaService {
             rutinaRepository.findActiveByClienteId(idCliente).ifPresent(r -> {
                 r.setEstadoRutina(EstadoRutina.FINALIZADA);
                 rutinaRepository.save(r);
+                // Enviar notificación de fin de rutina
+                enviarNotificacionFinRutina(r);
             });
             return;
         }
         if (rutina.getEstadoRutina() != EstadoRutina.FINALIZADA) {
             rutina.setEstadoRutina(EstadoRutina.FINALIZADA);
             rutinaRepository.save(rutina);
+            // Enviar notificación de fin de rutina
+            enviarNotificacionFinRutina(rutina);
+        }
+    }
+    
+    /**
+     * Método auxiliar para enviar notificación cuando finaliza una rutina
+     */
+    private void enviarNotificacionFinRutina(Rutina rutina) {
+        if (rutina.getCliente() != null && rutina.getEntrenador() != null) {
+            emailService.enviarNotificacionFinRutina(
+                rutina.getCliente().getEmail(),
+                rutina.getCliente().getNombre(),
+                rutina.getEntrenador().getNombre(),
+                rutina.getNombre() != null ? rutina.getNombre() : "Tu Rutina"
+            );
         }
     }
 

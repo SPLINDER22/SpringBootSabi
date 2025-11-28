@@ -22,6 +22,7 @@ import com.sabi.sabi.entity.enums.EstadoSuscripcion;
 import com.sabi.sabi.service.ClienteService;
 import com.sabi.sabi.service.EmailService;
 import com.sabi.sabi.service.EntrenadorService;
+import com.sabi.sabi.service.MensajePregrabadoService;
 import com.sabi.sabi.service.ReportePdfService;
 import com.sabi.sabi.service.RutinaService;
 import com.sabi.sabi.service.SuscripcionService;
@@ -49,6 +50,9 @@ public class EntrenadorController {
 
     @Autowired
     private EmailService emailService;
+    
+    @Autowired
+    private MensajePregrabadoService mensajePregrabadoService;
 
     @GetMapping("/entrenador/dashboard")
     public String entrenadorDashboard(@AuthenticationPrincipal UserDetails userDetails, Model model) {
@@ -237,6 +241,15 @@ public class EntrenadorController {
             .distinct()
             .toList();
         model.addAttribute("clientes", clientes);
+        
+        // Cargar mensajes pregrabados del entrenador
+        try {
+            var mensajesPregrabados = mensajePregrabadoService.obtenerMensajesActivosPorEntrenador(usuario.getId());
+            model.addAttribute("mensajesPregrabados", mensajesPregrabados);
+        } catch (Exception e) {
+            model.addAttribute("mensajesPregrabados", java.util.Collections.emptyList());
+        }
+        
         return "entrenador/enviar-correo-clientes";
     }
 
