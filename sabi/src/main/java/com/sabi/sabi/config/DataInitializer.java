@@ -59,10 +59,8 @@ public class    DataInitializer implements CommandLineRunner {
                         "gimnasio básico", "ninguna", "ninguna", 7L,
                         "Dieta baja en carbohidratos");
 
-                crearClienteConDiagnosticoDetallado("Miguel Ángel", "cliente3@sabi.com", "1234567",
-                        82.0, 177.0, NivelExperiencia.INTERMEDIO, "5 veces por semana, 55 min",
-                        "gimnasio completo", "Dolor de rodilla leve", "ninguna", 6L,
-                        "Dieta alta en proteínas");
+                // Cliente con HISTORIAL de 2 diagnósticos para comparativa
+                crearClienteConHistorialDiagnosticos("Miguel Ángel", "cliente3@sabi.com", "1234567");
 
                 crearClienteConDiagnosticoDetallado("Paula Ruiz", "cliente4@sabi.com", "1234567",
                         68.0, 168.0, NivelExperiencia.AVANZADO, "6 veces por semana, 75 min",
@@ -80,10 +78,8 @@ public class    DataInitializer implements CommandLineRunner {
                         "gimnasio completo", "Lesión antigua de rodilla", "ninguna", 7L,
                         "Dieta alta en proteínas");
 
-                crearClienteConDiagnosticoDetallado("Valentina Morales", "cliente7@sabi.com", "1234567",
-                        62.0, 165.0, NivelExperiencia.PRINCIPIANTE, "3 veces por semana, 40 min",
-                        "casa con mancuernas", "ninguna", "ninguna", 8L,
-                        "Vegetariana, comida balanceada");
+                // Cliente con HISTORIAL de 2 diagnósticos para comparativa
+                crearClienteConHistorialDiagnosticos("Valentina Morales", "cliente7@sabi.com", "1234567");
 
                 crearClienteConDiagnosticoDetallado("Fernando Silva", "cliente8@sabi.com", "1234567",
                         95.0, 175.0, NivelExperiencia.PRINCIPIANTE, "4 veces por semana, 45 min",
@@ -323,6 +319,127 @@ public class    DataInitializer implements CommandLineRunner {
             return "Perder grasa y tonificar el cuerpo";
         } else {
             return "Perder peso de forma saludable y mejorar salud cardiovascular";
+        }
+    }
+
+    // Método para crear cliente con historial de 2 diagnósticos para comparativa
+    private void crearClienteConHistorialDiagnosticos(String nombre, String email, String rawPassword) {
+        Cliente cliente;
+        if (usuarioRepository.findByEmail(email).isEmpty()) {
+            cliente = Cliente.builder()
+                    .nombre(nombre)
+                    .email(email)
+                    .contraseña(passwordEncoder.encode(rawPassword))
+                    .rol(Rol.CLIENTE)
+                    .estado(true)
+                    .build();
+            usuarioRepository.save(cliente);
+            System.out.println("Usuario creado con historial: " + nombre + " | " + email);
+        } else {
+            cliente = (Cliente) usuarioRepository.findByEmail(email).get();
+            System.out.println("Usuario ya existe: " + email);
+        }
+
+        // Verificar si ya tiene diagnósticos
+        if (!diagnosticoRepository.findByClienteIdAndEstadoTrue(cliente.getId()).isEmpty()) {
+            System.out.println("   ⏭️ Cliente ya tiene diagnósticos, saltando creación");
+            return;
+        }
+
+        // Datos del diagnóstico ANTIGUO (hace 3 meses) - estado inicial
+        if (email.equals("cliente3@sabi.com")) {
+            // Miguel Ángel - Progreso de pérdida de peso
+            // Diagnóstico 1: hace 3 meses - sobrepeso
+            Diagnostico diagnostico1 = Diagnostico.builder()
+                    .cliente(cliente)
+                    .fecha(java.time.LocalDate.now().minusMonths(3))
+                    .peso(90.0) // peso inicial más alto
+                    .estatura(177.0)
+                    .nivelExperiencia(NivelExperiencia.PRINCIPIANTE) // era principiante
+                    .disponibilidadTiempo("3 veces por semana, 40 min")
+                    .accesoRecursos("casa con mancuernas")
+                    .lesiones("Dolor de rodilla leve")
+                    .condicionesMedicas("ninguna")
+                    .horasSueno(6L) // dormía menos
+                    .habitosAlimenticios("Dieta irregular, comida rápida frecuente")
+                    .objetivo("Perder grasa y tonificar el cuerpo")
+                    .estado(false) // inactivo porque es antiguo
+                    .build();
+            diagnosticoRepository.save(diagnostico1);
+
+            // Diagnóstico 2: actual - mejoría visible
+            Diagnostico diagnostico2 = Diagnostico.builder()
+                    .cliente(cliente)
+                    .fecha(java.time.LocalDate.now())
+                    .peso(82.0) // perdió 8kg
+                    .estatura(177.0)
+                    .nivelExperiencia(NivelExperiencia.INTERMEDIO) // mejoró nivel
+                    .disponibilidadTiempo("5 veces por semana, 55 min") // más tiempo
+                    .accesoRecursos("gimnasio completo") // mejor acceso
+                    .lesiones("Recuperado, sin dolor") // mejoró
+                    .condicionesMedicas("ninguna")
+                    .horasSueno(7L) // duerme más
+                    .habitosAlimenticios("Dieta alta en proteínas, controlada")
+                    .objetivo("Mantener peso y mejorar composición corporal")
+                    .estado(true) // activo
+                    .build();
+            diagnosticoRepository.save(diagnostico2);
+
+            // Actualizar objetivo en perfil con el más reciente
+            cliente.setObjetivo("Mantener peso y mejorar composición corporal");
+            usuarioRepository.save(cliente);
+
+            System.out.println("✅ Historial creado para Miguel Ángel:");
+            System.out.println("   📊 Diagnóstico 1 (hace 3 meses): 90kg - Principiante");
+            System.out.println("   📊 Diagnóstico 2 (actual): 82kg - Intermedio");
+            System.out.println("   💪 Progreso: -8kg, mejoró nivel");
+
+        } else if (email.equals("cliente7@sabi.com")) {
+            // Valentina Morales - Progreso de ganancia muscular
+            // Diagnóstico 1: hace 3 meses - bajo peso
+            Diagnostico diagnostico1 = Diagnostico.builder()
+                    .cliente(cliente)
+                    .fecha(java.time.LocalDate.now().minusMonths(3))
+                    .peso(56.0) // peso inicial más bajo
+                    .estatura(165.0)
+                    .nivelExperiencia(NivelExperiencia.PRINCIPIANTE)
+                    .disponibilidadTiempo("2 veces por semana, 30 min")
+                    .accesoRecursos("casa sin equipamiento")
+                    .lesiones("ninguna")
+                    .condicionesMedicas("ninguna")
+                    .horasSueno(7L)
+                    .habitosAlimenticios("Vegetariana, comidas pequeñas")
+                    .objetivo("Ganar peso y masa muscular saludable")
+                    .estado(false) // inactivo
+                    .build();
+            diagnosticoRepository.save(diagnostico1);
+
+            // Diagnóstico 2: actual - ganó masa muscular
+            Diagnostico diagnostico2 = Diagnostico.builder()
+                    .cliente(cliente)
+                    .fecha(java.time.LocalDate.now())
+                    .peso(62.0) // ganó 6kg
+                    .estatura(165.0)
+                    .nivelExperiencia(NivelExperiencia.PRINCIPIANTE) // aún aprendiendo
+                    .disponibilidadTiempo("3 veces por semana, 40 min") // más tiempo
+                    .accesoRecursos("casa con mancuernas") // mejor equipo
+                    .lesiones("ninguna")
+                    .condicionesMedicas("ninguna")
+                    .horasSueno(8L) // mejor descanso
+                    .habitosAlimenticios("Vegetariana, comida balanceada, más proteína")
+                    .objetivo("Aumentar masa muscular y fuerza")
+                    .estado(true) // activo
+                    .build();
+            diagnosticoRepository.save(diagnostico2);
+
+            // Actualizar objetivo en perfil
+            cliente.setObjetivo("Aumentar masa muscular y fuerza");
+            usuarioRepository.save(cliente);
+
+            System.out.println("✅ Historial creado para Valentina Morales:");
+            System.out.println("   📊 Diagnóstico 1 (hace 3 meses): 56kg - Principiante");
+            System.out.println("   📊 Diagnóstico 2 (actual): 62kg - Principiante");
+            System.out.println("   💪 Progreso: +6kg masa muscular");
         }
     }
 
