@@ -88,6 +88,14 @@ public class MensajePregrabadoService {
         mensajePregrabadoRepository.save(mensaje);
     }
 
+    @Transactional
+    public void activarMensaje(Long id) {
+        MensajePregrabado mensaje = mensajePregrabadoRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Mensaje no encontrado"));
+        mensaje.setActivo(true);
+        mensajePregrabadoRepository.save(mensaje);
+    }
+
     /**
      * Procesa el contenido del mensaje reemplazando variables
      * @param contenido El contenido con variables como {NOMBRE}, {DESCUENTO}, etc.
