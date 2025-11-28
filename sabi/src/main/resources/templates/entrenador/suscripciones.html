@@ -75,6 +75,8 @@
             </div>
         </div>
     </div>
+
+    <!-- Contenedor principal -->
     <div class="container">
         <div th:if="${#lists.isEmpty(suscripciones)}" class="col-12 d-flex justify-content-center">
             <div class="alert alert-info text-center w-50 mt-5 empty-message" role="alert">
@@ -521,7 +523,7 @@
         </div>
     </div>
 
-    <!-- Modal Cotizar Diagnóstico -->
+    <!-- Modal Cotizar Suscripcion -->
     <div class="modal fade" id="modalEditarSuscripcion" tabindex="-1" aria-labelledby="modalEditarSuscripcionLabel"
          aria-hidden="true" role="dialog">
         <div class="modal-dialog">
@@ -547,8 +549,12 @@
                                 <label for="modal-precio" class="form-label">Precio</label>
                                 <input type="number" step="0.01" min="0" class="form-control" id="modal-precio"
                                        name="precio" required>
+                                <div class="form-text" id="precio-rango-text" style="display:none;">
+                                    Rango permitido: <span id="precio-min"></span> - <span id="precio-max"></span>
+                                </div>
                                 <div class="invalid-feedback">El precio es obligatorio.</div>
                                 <div class="valid-feedback">Precio válido.</div>
+                                <div id="modal-precio-msg" class="invalid-feedback" style="display:none;"></div>
                             </div>
                             <div class="col-md-6 mb-3">
                                 <label for="modal-duracion" class="form-label">Duración</label>
@@ -882,8 +888,84 @@
             btnLista?.addEventListener('click', ()=> setVista('lista'));
         })();
     </script>
+    <script>
+        // Obtener rango de precio del entrenador y validar input de precio
+        (function(){
+            let rangoPrecio = null;
+            function setPrecioConstraints(min, max){
+                const input = document.getElementById('modal-precio');
+                if(!input) return;
+                if(min != null){ input.min = String(min); }
+                if(max != null){ input.max = String(max); }
+                // Mostrar texto de rango
+                const rangoText = document.getElementById('precio-rango-text');
+                const minEl = document.getElementById('precio-min');
+                const maxEl = document.getElementById('precio-max');
+                if(rangoText && minEl && maxEl){
+                    if(min != null || max != null){
+                        rangoText.style.display = '';
+                        minEl.textContent = (min != null) ? min : '—';
+                        maxEl.textContent = (max != null) ? max : '—';
+                    } else {
+                        rangoText.style.display = 'none';
+                    }
+                }
+                input.placeholder = (min != null && max != null) ? (`Entre ${min} y ${max}`) : input.placeholder;
+            }
+            function validarPrecioRango(){
+                const input = document.getElementById('modal-precio');
+                if(!input) return true;
+                const val = parseFloat(input.value);
+                let ok = !isNaN(val) && val >= 0;
+                if(rangoPrecio){
+                    const {min, max} = rangoPrecio;
+                    if(min != null) ok = ok && val >= min;
+                    if(max != null) ok = ok && val <= max;
+                }
+                input.classList.remove('is-valid','is-invalid');
+                input.classList.add(ok ? 'is-valid' : 'is-invalid');
+                const msg = document.getElementById('modal-precio-msg');
+                if(msg){
+                    msg.style.display = ok ? 'none' : 'block';
+                    msg.textContent = rangoPrecio ? `El precio debe estar dentro del rango permitido (${rangoPrecio.min} - ${rangoPrecio.max}).` : 'Precio inválido';
+                }
+                return ok;
+            }
+            async function cargarRango(entrenadorId){
+                try{
+                    const resp = await fetch(`/api/entrenador/${entrenadorId}/rango-precio`);
+                    if(!resp.ok) return;
+                    const data = await resp.json();
+                    rangoPrecio = {min: data.min, max: data.max};
+                    setPrecioConstraints(data.min, data.max);
+                    validarPrecioRango();
+                }catch(e){ console.warn('No se pudo cargar rango de precio', e); }
+            }
+            document.addEventListener('click', function(e){
+                if(e.target && e.target.classList.contains('btn-cotizar-diagnostico')){
+                    const btn = e.target.closest('.btn-cotizar-diagnostico');
+                    const entrenadorId = btn?.getAttribute('data-entrenador');
+                    if(entrenadorId){ cargarRango(entrenadorId); }
+                }
+            });
+            document.addEventListener('input', function(e){
+                if(e.target && e.target.id === 'modal-precio'){
+                    validarPrecioRango();
+                }
+            });
+            const form = document.getElementById('form-editar-suscripcion');
+            if(form){
+                form.addEventListener('submit', function(e){
+                    const okBase = validarTodo(true);
+                    const okRango = validarPrecioRango();
+                    if(!(okBase && okRango)){
+                        e.preventDefault(); e.stopPropagation();
+                    }
+                });
+            }
+        })();
+    </script>
 </section>
 </body>
 
 </html>
-

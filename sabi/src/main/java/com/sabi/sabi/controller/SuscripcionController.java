@@ -141,10 +141,30 @@ public class SuscripcionController {
                 suscripcionDTO.setIdCliente(existente.getIdCliente());
                 suscripcionDTO.setIdEntrenador(existente.getIdEntrenador());
 
-                // VALIDACIÓN: Verificar que el entrenador haya visto el diagnóstico
-                // Ahora se valida por duración en semanas en lugar de fechas
+                // VALIDACIÓN: precio dentro del rango del entrenador
+                try {
+                    var entrenador = entrenadorService.getEntrenadorById(existente.getIdEntrenador());
+                    if (entrenador != null && suscripcionDTO.getPrecio() != null) {
+                        Double min = entrenador.getPrecioMinimo() != null ? entrenador.getPrecioMinimo() : null;
+                        Double max = entrenador.getPrecioMaximo() != null ? entrenador.getPrecioMaximo() : null;
+                        Double precio = suscripcionDTO.getPrecio();
+                        boolean fueraDeRango = (min != null && precio < min) || (max != null && precio > max);
+                        if (fueraDeRango) {
+                            redirectAttributes.addFlashAttribute("error",
+                                String.format("El precio debe estar entre %.2f y %.2f segun el rango del entrenador.",
+                                    min != null ? min : 0.0, max != null ? max : Double.MAX_VALUE));
+                            // No actualizar estado ni guardar cambios
+                            return "redirect:" + (redirectTo != null && !redirectTo.isEmpty() ? redirectTo : "/suscripciones");
+                        }
+                    }
+                } catch (Exception e) {
+                    // Si falla la obtención del entrenador, no bloquear, pero mostrar aviso
+                    redirectAttributes.addFlashAttribute("error", "No se pudo validar el rango de precio: " + e.getMessage());
+                    return "redirect:" + (redirectTo != null && !redirectTo.isEmpty() ? redirectTo : "/suscripciones");
+                }
+
+                // VALIDACIÓN: Verificar que el cliente tenga diagnóstico en función de la duración
                 if (suscripcionDTO.getDuracionSemanas() != null && suscripcionDTO.getDuracionSemanas() > 0) {
-                    // Verificar que el cliente tenga diagnóstico
                     var diagnostico = clienteService.getDiagnosticoActualByClienteId(existente.getIdCliente());
                     if (diagnostico == null) {
                         redirectAttributes.addFlashAttribute("error",
