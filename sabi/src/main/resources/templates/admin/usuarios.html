@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout/layout :: layout(~{::title}, ~{::body})}">
+
+<head>
+    <title>Gestión de Usuarios - SABI Admin</title>
+    <link href="/css/admin.css" rel="stylesheet">
+</head>
+
+<body>
+    <div class="container-fluid">
+        <!-- Page Heading -->
+        <div class="d-sm-flex align-items-center justify-content-between mb-4">
+            <div>
+                <h1 class="h3 mb-0 text-gray-800">
+                    <i class="fas fa-users text-primary"></i> Gestión de Usuarios
+                </h1>
+                <p class="text-muted mb-0">Administra, visualiza y controla todos los usuarios del sistema</p>
+            </div>
+            <a th:href="@{/admin/dashboard}" class="btn btn-sm btn-secondary shadow-sm">
+                <i class="fas fa-arrow-left"></i> Volver al Dashboard
+            </a>
+        </div>
+
+        <!-- Filtros y Búsqueda -->
+        <div class="card shadow mb-4">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-4 mb-3">
+                        <label class="font-weight-bold"><i class="fas fa-search"></i> Buscar Usuario:</label>
+                        <input type="text" id="searchInput" class="form-control" placeholder="Buscar por nombre o email...">
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label class="font-weight-bold"><i class="fas fa-filter"></i> Filtrar por Rol:</label>
+                        <select id="rolFilter" class="form-control">
+                            <option value="">Todos los roles</option>
+                            <option value="ADMIN">Administradores</option>
+                            <option value="ENTRENADOR">Entrenadores</option>
+                            <option value="CLIENTE">Clientes</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label class="font-weight-bold"><i class="fas fa-toggle-on"></i> Filtrar por Estado:</label>
+                        <select id="estadoFilter" class="form-control">
+                            <option value="">Todos los estados</option>
+                            <option value="activo">Activos</option>
+                            <option value="bloqueado">Bloqueados</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-12">
+                        <button onclick="resetFilters()" class="btn btn-sm btn-secondary">
+                            <i class="fas fa-redo"></i> Limpiar Filtros
+                        </button>
+                        <span id="resultCount" class="ml-3 text-muted"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tabla de Usuarios -->
+        <div class="card shadow mb-4">
+            <div class="card-header py-3 bg-gradient-primary text-white">
+                <h6 class="m-0 font-weight-bold">
+                    <i class="fas fa-table"></i> Todos los Usuarios del Sistema
+                    <span class="badge badge-light ml-2" th:text="${#lists.size(usuarios)}">0</span>
+                </h6>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-bordered table-hover" id="usuariosTable" width="100%" cellspacing="0">
+                        <thead class="thead-light">
+                            <tr>
+                                <th style="width: 50px;">ID</th>
+                                <th style="width: 80px;" class="text-center">Foto</th>
+                                <th>Nombre Completo</th>
+                                <th>Email</th>
+                                <th style="width: 120px;" class="text-center">Rol</th>
+                                <th style="width: 100px;" class="text-center">Estado</th>
+                                <th style="width: 150px;" class="text-center">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="usuario : ${usuarios}">
+                                <td th:text="${usuario.id}">1</td>
+                                <td class="text-center">
+                                    <img th:src="${usuario.fotoPerfilUrl != null ? usuario.fotoPerfilUrl : '/img/fotoPerfil.png'}"
+                                         alt="Foto de perfil"
+                                         class="rounded-circle"
+                                         style="width: 40px; height: 40px; object-fit: cover;">
+                                </td>
+                                <td>
+                                    <strong th:text="${usuario.nombre + ' ' + (usuario.apellido != null ? usuario.apellido : '')}">
+                                        Nombre Usuario
+                                    </strong>
+                                    <span th:if="${usuario.rol.name() == 'ENTRENADOR' && #lists.contains(entrenadoresVerificadosIds, usuario.id)}"
+                                          class="badge badge-success ml-1"
+                                          title="Entrenador Verificado por SABI">
+                                        <i class="fas fa-check-circle"></i> Verificado
+                                    </span>
+                                </td>
+                                <td th:text="${usuario.email}">email@example.com</td>
+                                <td>
+                                    <span class="badge" 
+                                          th:classappend="${usuario.rol.name() == 'ADMIN' ? 'badge-danger' : usuario.rol.name() == 'ENTRENADOR' ? 'badge-info' : 'badge-success'}"
+                                          th:text="${usuario.rol.name()}">
+                                        ROL
+                                    </span>
+                                </td>
+                                <td>
+                                    <span class="badge" 
+                                          th:classappend="${usuario.estado ? 'badge-success' : 'badge-danger'}"
+                                          th:text="${usuario.estado ? 'Activo' : 'Bloqueado'}">
+                                        Estado
+                                    </span>
+                                </td>
+                                <td>
+                                    <div class="btn-group" role="group">
+                                        <!-- Ver Perfil -->
+                                        <a th:href="@{/admin/usuarios/{id}/perfil(id=${usuario.id})}" 
+                                           class="btn btn-sm btn-info" 
+                                           title="Ver perfil completo">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+                                        
+                                        <!-- Bloquear/Desbloquear -->
+                                        <button th:if="${usuario.estado}" 
+                                                type="button" 
+                                                class="btn btn-sm btn-warning btn-bloquear"
+                                                th:data-id="${usuario.id}"
+                                                th:data-nombre="${usuario.nombre}"
+                                                th:data-email="${usuario.email}"
+                                                title="Bloquear usuario">
+                                            <i class="fas fa-ban"></i>
+                                        </button>
+                                        
+                                        <form th:if="${!usuario.estado}" 
+                                              th:action="@{/admin/usuarios/{id}/desbloquear(id=${usuario.id})}" 
+                                              method="post" 
+                                              style="display: inline;">
+                                            <button type="submit" 
+                                                    class="btn btn-sm btn-success" 
+                                                    title="Desbloquear usuario">
+                                                <i class="fas fa-check-circle"></i>
+                                            </button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para bloquear usuario -->
+    <div class="modal fade" id="bloquearModal" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header bg-warning text-white">
+                    <h5 class="modal-title">
+                        <i class="fas fa-exclamation-triangle"></i> Bloquear Usuario
+                    </h5>
+                    <button type="button" class="close text-white" data-dismiss="modal">
+                        <span>&times;</span>
+                    </button>
+                </div>
+                <form id="formBloquear" method="post">
+                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                    <input type="hidden" name="redirect" value="usuarios">
+                    <div class="modal-body">
+                        <p>¿Está seguro de bloquear al usuario <strong id="nombreUsuario"></strong>?</p>
+                        <p class="text-muted small">
+                            Se enviará un correo a <strong id="emailUsuario"></strong> con la explicación del bloqueo.
+                        </p>
+                        
+                        <div class="form-group">
+                            <label for="motivo">Motivo del bloqueo (se enviará por correo):</label>
+                            <textarea class="form-control" 
+                                      id="motivo" 
+                                      name="motivo" 
+                                      rows="4"
+                                      placeholder="Ingrese el motivo del bloqueo..."
+                                      required></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-warning">
+                            <i class="fas fa-ban"></i> Bloquear Usuario
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script th:inline="javascript">
+        // Event delegation para botón bloquear
+        document.addEventListener('DOMContentLoaded', function() {
+            document.addEventListener('click', function(e) {
+                if (e.target.closest('.btn-bloquear')) {
+                    const btn = e.target.closest('.btn-bloquear');
+                    const id = btn.dataset.id;
+                    const nombre = btn.dataset.nombre;
+                    const email = btn.dataset.email;
+                    bloquearUsuario(id, nombre, email);
+                }
+            });
+
+            // Inicializar contador
+            updateResultCount();
+
+            // Eventos de filtrado
+            document.getElementById('searchInput').addEventListener('keyup', filterTable);
+            document.getElementById('rolFilter').addEventListener('change', filterTable);
+            document.getElementById('estadoFilter').addEventListener('change', filterTable);
+        });
+
+        function bloquearUsuario(id, nombre, email) {
+            document.getElementById('nombreUsuario').textContent = nombre;
+            document.getElementById('emailUsuario').textContent = email;
+            document.getElementById('formBloquear').action = '/admin/usuarios/' + id + '/bloquear';
+            $('#bloquearModal').modal('show');
+        }
+
+        // Función de filtrado
+        function filterTable() {
+            const searchValue = document.getElementById('searchInput').value.toLowerCase();
+            const rolFilter = document.getElementById('rolFilter').value;
+            const estadoFilter = document.getElementById('estadoFilter').value;
+
+            const table = document.getElementById('usuariosTable');
+            const rows = table.getElementsByTagName('tbody')[0].getElementsByTagName('tr');
+
+            let visibleCount = 0;
+
+            for (let i = 0; i < rows.length; i++) {
+                const row = rows[i];
+                const nombre = row.cells[2].textContent.toLowerCase();
+                const email = row.cells[3].textContent.toLowerCase();
+                const rol = row.cells[4].textContent.trim();
+                const estado = row.cells[5].textContent.toLowerCase();
+
+                // Filtro de búsqueda
+                const matchSearch = nombre.includes(searchValue) || email.includes(searchValue);
+
+                // Filtro de rol
+                const matchRol = !rolFilter || rol === rolFilter;
+
+                // Filtro de estado
+                let matchEstado = true;
+                if (estadoFilter === 'activo') {
+                    matchEstado = estado.includes('activo');
+                } else if (estadoFilter === 'bloqueado') {
+                    matchEstado = estado.includes('bloqueado');
+                }
+
+                // Mostrar u ocultar fila
+                if (matchSearch && matchRol && matchEstado) {
+                    row.style.display = '';
+                    visibleCount++;
+                } else {
+                    row.style.display = 'none';
+                }
+            }
+
+            updateResultCount(visibleCount);
+        }
+
+        function resetFilters() {
+            document.getElementById('searchInput').value = '';
+            document.getElementById('rolFilter').value = '';
+            document.getElementById('estadoFilter').value = '';
+            filterTable();
+        }
+
+        function updateResultCount(count) {
+            const table = document.getElementById('usuariosTable');
+            const totalRows = table.getElementsByTagName('tbody')[0].getElementsByTagName('tr').length;
+
+            if (count === undefined) {
+                count = totalRows;
+            }
+
+            const resultElement = document.getElementById('resultCount');
+            resultElement.textContent = `Mostrando ${count} de ${totalRows} usuarios`;
+        }
+    </script>
+</body>
+</html>

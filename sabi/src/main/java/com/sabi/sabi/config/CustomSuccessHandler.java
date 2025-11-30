@@ -23,9 +23,11 @@ public class CustomSuccessHandler implements AuthenticationSuccessHandler {
     ) throws IOException, ServletException {
 
         Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
-        String redirectURL = "/dashboard"; // valor por defecto
+        String redirectURL = "/"; // valor por defecto
 
-        if (authorities.stream().anyMatch(a -> a.getAuthority().equals("ROLE_CLIENTE"))) {
+        if (authorities.stream().anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"))) {
+            redirectURL = "/admin/dashboard";
+        } else if (authorities.stream().anyMatch(a -> a.getAuthority().equals("ROLE_CLIENTE"))) {
             redirectURL = "/cliente/dashboard";
         } else if (authorities.stream().anyMatch(a -> a.getAuthority().equals("ROLE_ENTRENADOR"))) {
             redirectURL = "/entrenador/dashboard";

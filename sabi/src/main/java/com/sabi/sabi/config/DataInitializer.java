@@ -48,6 +48,9 @@ public class    DataInitializer implements CommandLineRunner {
 
         @Override
         public void run(String... args) {
+                // Crear usuario administrador
+                crearAdminSiNoExiste("Admin Sabi", "admin@sabi.com", "1234567");
+                
                 // Clientes con diagnósticos detallados
                 crearClienteConDiagnosticoDetallado("Carlos Colmenares", "rojasmena1222@gmail.com", "1234567",
                         70.0, 170.0, NivelExperiencia.PRINCIPIANTE, "3 veces por semana, 45 min",
@@ -192,6 +195,9 @@ public class    DataInitializer implements CommandLineRunner {
                 asignarFotoPerfilPorEmail("cliente8@sabi.com"); // Fernando Silva
                 asignarFotoPerfilPorEmail("cliente9@sabi.com"); // Carolina Vargas
                 asignarFotoPerfilPorEmail("cliente10@sabi.com"); // Sebastián Rojas
+                
+                // Asignar foto al administrador
+                asignarFotoPerfilPorEmail("admin@sabi.com");
 
                 crearEjerciciosSiNoExisten();
                 crearRutinaDeEjemplo();
@@ -269,6 +275,23 @@ public class    DataInitializer implements CommandLineRunner {
             diagnosticoRepository.save(diagnostico);
             System.out.println("Diagnóstico creado para cliente: " + email);
             System.out.println("  🎯 Con objetivo: " + objetivoDiagnostico);
+        }
+    }
+
+    private void crearAdminSiNoExiste(String nombre, String email, String rawPassword) {
+        if (usuarioRepository.findByEmail(email).isEmpty()) {
+            Usuario admin = Usuario.builder()
+                    .nombre(nombre)
+                    .email(email)
+                    .contraseña(passwordEncoder.encode(rawPassword))
+                    .rol(Rol.ADMIN)
+                    .estado(true)
+                    .fotoPerfilUrl("/img/perfildata/sabi admin.jpg")
+                    .build();
+            usuarioRepository.save(admin);
+            System.out.println("Usuario ADMIN creado: " + nombre + " | " + email + " | contraseña (raw): " + rawPassword);
+        } else {
+            System.out.println("Usuario ADMIN ya existe: " + email + " (no se muestra contraseña raw)");
         }
     }
 

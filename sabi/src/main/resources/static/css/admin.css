@@ -1,0 +1,136 @@
+/* Estilos para el panel de administrador */
+
+/* Dashboard de administrador */
+.admin-dashboard {
+    padding: 20px;
+}
+
+/* Tarjetas de estadísticas */
+.card.border-left-primary {
+    border-left: 4px solid #4e73df !important;
+}
+
+.card.border-left-success {
+    border-left: 4px solid #1cc88a !important;
+}
+
+.card.border-left-info {
+    border-left: 4px solid #36b9cc !important;
+}
+
+.card.border-left-warning {
+    border-left: 4px solid #f6c23e !important;
+}
+
+/* Tabla de usuarios */
+.table-hover tbody tr:hover {
+    background-color: #f8f9fc;
+}
+
+/* Badges personalizados */
+.badge-lg {
+    font-size: 0.95rem;
+    padding: 0.5rem 1rem;
+}
+
+/* Botones de acción */
+.btn-group .btn {
+    margin: 0 2px;
+}
+
+/* Modal headers personalizados */
+.modal-header.bg-success {
+    background: linear-gradient(135deg, #28a745 0%, #1e7e34 100%);
+}
+
+.modal-header.bg-warning {
+    background: linear-gradient(135deg, #ffc107 0%, #ff9800 100%);
+}
+
+.modal-header.bg-danger {
+    background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+}
+
+.modal-header.bg-info {
+    background: linear-gradient(135deg, #17a2b8 0%, #138496 100%);
+}
+
+/* Vista de perfil de usuario */
+.img-profile {
+    width: 40px;
+    height: 40px;
+    object-fit: cover;
+}
+
+/* Filtros de entrenadores */
+.btn-group-vertical .btn {
+    margin-bottom: 0;
+}
+
+/* Animaciones */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.card {
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+/* Responsividad */
+@media (max-width: 768px) {
+    .table-responsive {
+        font-size: 0.85rem;
+    }
+    
+    .btn-group {
+        flex-direction: column;
+    }
+    
+    .btn-group .btn {
+        margin-bottom: 5px;
+        width: 100%;
+    }
+}
+
+/* Badge de verificación en lista */
+.badge.badge-success {
+    background-color: #28a745;
+}
+
+/* Estilos para perfil completo */
+.card-header.bg-primary {
+    background: linear-gradient(135deg, #4e73df 0%, #224abe 100%) !important;
+}
+
+.card-header.bg-info {
+    background: linear-gradient(135deg, #36b9cc 0%, #258391 100%) !important;
+}
+
+.card-header.bg-success {
+    background: linear-gradient(135deg, #1cc88a 0%, #13855c 100%) !important;
+}
+
+.card-header.bg-warning {
+    background: linear-gradient(135deg, #f6c23e 0%, #dda20a 100%) !important;
+}
+
+.card-header.bg-secondary {
+    background: linear-gradient(135deg, #858796 0%, #60616f 100%) !important;
+}
+
+/* Estilos para certificaciones en perfil */
+.cert-item {
+    transition: all 0.3s ease;
+}
+
+.cert-item:hover {
+    background-color: #e9ecef !important;
+    transform: translateX(5px);
+}

@@ -4,15 +4,17 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="f5d52025-a0fc-48c5-8cc8-d55f70bed372" name="Changes" comment="Subida de imagenes segun roles Para la base de datos llena">
-      <change afterPath="$PROJECT_DIR$/sabi/src/main/java/com/sabi/sabi/controller/AdminController.java" afterDir="false" />
+    <list default="true" id="f5d52025-a0fc-48c5-8cc8-d55f70bed372" name="Changes" comment="Creacion ADMIN (Santiago llevaba 3 trimestres diciendo que era necesario)">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sabi/src/main/java/com/sabi/sabi/config/CustomSuccessHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/sabi/src/main/java/com/sabi/sabi/config/CustomSuccessHandler.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/sabi/src/main/java/com/sabi/sabi/config/DataInitializer.java" beforeDir="false" afterPath="$PROJECT_DIR$/sabi/src/main/java/com/sabi/sabi/config/DataInitializer.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/sabi/src/main/java/com/sabi/sabi/config/SecurityConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/sabi/src/main/java/com/sabi/sabi/config/SecurityConfig.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sabi/src/main/java/com/sabi/sabi/entity/Entrenador.java" beforeDir="false" afterPath="$PROJECT_DIR$/sabi/src/main/java/com/sabi/sabi/entity/Entrenador.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sabi/src/main/java/com/sabi/sabi/entity/enums/Rol.java" beforeDir="false" afterPath="$PROJECT_DIR$/sabi/src/main/java/com/sabi/sabi/entity/enums/Rol.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sabi/src/main/java/com/sabi/sabi/service/EmailService.java" beforeDir="false" afterPath="$PROJECT_DIR$/sabi/src/main/java/com/sabi/sabi/service/EmailService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sabi/src/main/resources/static/img/Captura de pantalla 2025-11-26 172331.png" beforeDir="false" afterPath="$PROJECT_DIR$/sabi/src/main/resources/static/img/Ejemplo vista creacion Rutinas.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sabi/src/main/java/com/sabi/sabi/controller/AdminController.java" beforeDir="false" afterPath="$PROJECT_DIR$/sabi/src/main/java/com/sabi/sabi/controller/AdminController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sabi/src/main/java/com/sabi/sabi/controller/ClienteController.java" beforeDir="false" afterPath="$PROJECT_DIR$/sabi/src/main/java/com/sabi/sabi/controller/ClienteController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sabi/src/main/java/com/sabi/sabi/dto/EntrenadorDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/sabi/src/main/java/com/sabi/sabi/dto/EntrenadorDTO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sabi/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/sabi/src/main/resources/application.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sabi/src/main/resources/templates/cliente/listaEntrenadores.html" beforeDir="false" afterPath="$PROJECT_DIR$/sabi/src/main/resources/templates/cliente/listaEntrenadores.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sabi/src/main/resources/templates/fragments/header.html" beforeDir="false" afterPath="$PROJECT_DIR$/sabi/src/main/resources/templates/fragments/header.html" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -82,7 +84,15 @@
       <option name="project" value="LOCAL" />
       <updated>1764533615354</updated>
     </task>
-    <option name="localTasksCounter" value="2" />
+    <task id="LOCAL-00002" summary="Creacion ADMIN (Santiago llevaba 3 trimestres diciendo que era necesario)">
+      <option name="closed" value="true" />
+      <created>1764535474343</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1764535474343</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -99,7 +109,8 @@
   <component name="VcsManagerConfiguration">
     <MESSAGE value="Correciones JIRA" />
     <MESSAGE value="Subida de imagenes segun roles Para la base de datos llena" />
-    <option name="LAST_COMMIT_MESSAGE" value="Subida de imagenes segun roles Para la base de datos llena" />
+    <MESSAGE value="Creacion ADMIN (Santiago llevaba 3 trimestres diciendo que era necesario)" />
+    <option name="LAST_COMMIT_MESSAGE" value="Creacion ADMIN (Santiago llevaba 3 trimestres diciendo que era necesario)" />
   </component>
   <component name="github-copilot-workspace">
     <instructionFileLocations>

@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout/layout :: layout(~{::title}, ~{::body})}">
+
+<head>
+    <title>Verificación de Entrenadores - SABI Admin</title>
+    <link href="/css/admin.css" rel="stylesheet">
+</head>
+
+<body>
+    <div class="container-fluid">
+        <!-- Page Heading -->
+        <div class="d-sm-flex align-items-center justify-content-between mb-4">
+            <h1 class="h3 mb-0 text-gray-800">
+                <i class="fas fa-user-check text-primary"></i> Verificación de Entrenadores
+            </h1>
+            <a th:href="@{/admin/dashboard}" class="btn btn-sm btn-secondary">
+                <i class="fas fa-arrow-left"></i> Volver al Dashboard
+            </a>
+        </div>
+
+        <!-- Información -->
+        <div class="alert alert-info" role="alert">
+            <i class="fas fa-info-circle"></i>
+            <strong>Verificación de Entrenadores:</strong> Revisa las certificaciones y documentos subidos por los entrenadores para otorgarles la verificación oficial de SABI. Los entrenadores verificados tendrán un badge especial visible para los clientes.
+        </div>
+
+        <!-- Filtros -->
+        <div class="card shadow mb-4">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-4">
+                        <button class="btn btn-outline-primary btn-block" onclick="filtrarEstado('todos')">
+                            <i class="fas fa-list"></i> Todos (<span th:text="${#lists.size(entrenadores)}">0</span>)
+                        </button>
+                    </div>
+                    <div class="col-md-4">
+                        <button class="btn btn-outline-success btn-block" onclick="filtrarEstado('verificados')">
+                            <i class="fas fa-check-circle"></i> Verificados
+                            (<span th:text="${#lists.size(entrenadores.?[verified == true])}">0</span>)
+                        </button>
+                    </div>
+                    <div class="col-md-4">
+                        <button class="btn btn-outline-warning btn-block" onclick="filtrarEstado('pendientes')">
+                            <i class="fas fa-clock"></i> Pendientes
+                            (<span th:text="${#lists.size(entrenadores.?[verified == false])}">0</span>)
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tabla de Entrenadores -->
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">Lista de Entrenadores</h6>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-bordered table-hover" id="tablaEntrenadores" width="100%" cellspacing="0">
+                        <thead class="thead-light">
+                            <tr>
+                                <th>ID</th>
+                                <th>Foto</th>
+                                <th>Nombre</th>
+                                <th>Email</th>
+                                <th>Especialidades</th>
+                                <th>Años Exp.</th>
+                                <th>Estado</th>
+                                <th>Verificación</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="entrenador : ${entrenadores}" 
+                                th:classappend="${entrenador.verified ? 'entrenador-verificado' : 'entrenador-pendiente'}">
+                                <td th:text="${entrenador.id}">1</td>
+                                <td class="text-center">
+                                    <img th:src="${entrenador.fotoPerfilUrl != null ? entrenador.fotoPerfilUrl : '/img/fotoPerfil.png'}"
+                                         alt="Foto de perfil"
+                                         class="rounded-circle"
+                                         style="width: 50px; height: 50px; object-fit: cover;">
+                                </td>
+                                <td>
+                                    <strong th:text="${entrenador.nombre + ' ' + (entrenador.apellido != null ? entrenador.apellido : '')}">
+                                        Nombre Entrenador
+                                    </strong>
+                                    <br>
+                                    <small class="text-muted" th:if="${entrenador.telefono}" th:text="${entrenador.telefono}"></small>
+                                </td>
+                                <td th:text="${entrenador.email}">email@example.com</td>
+                                <td>
+                                    <span th:text="${entrenador.especialidades != null ? entrenador.especialidades : 'No especificado'}">
+                                        Especialidades
+                                    </span>
+                                </td>
+                                <td class="text-center">
+                                    <span th:text="${entrenador.aniosExperiencia != null ? entrenador.aniosExperiencia + ' años' : 'N/A'}">
+                                        0 años
+                                    </span>
+                                </td>
+                                <td>
+                                    <span class="badge" 
+                                          th:classappend="${entrenador.estado ? 'badge-success' : 'badge-danger'}"
+                                          th:text="${entrenador.estado ? 'Activo' : 'Bloqueado'}">
+                                        Estado
+                                    </span>
+                                </td>
+                                <td class="text-center">
+                                    <span th:if="${entrenador.verified}" class="badge badge-success">
+                                        <i class="fas fa-check-circle"></i> Verificado
+                                    </span>
+                                    <span th:if="${!entrenador.verified}" class="badge badge-warning">
+                                        <i class="fas fa-clock"></i> Pendiente
+                                    </span>
+                                </td>
+                                <td>
+                                    <div class="btn-group-vertical btn-group-sm" role="group">
+                                        <!-- Ver perfil completo -->
+                                        <a th:href="@{/admin/usuarios/{id}/perfil(id=${entrenador.id})}" 
+                                           class="btn btn-info mb-1" 
+                                           title="Ver perfil y certificaciones">
+                                            <i class="fas fa-eye"></i> Ver Perfil
+                                        </a>
+                                        
+                                        <!-- Verificar -->
+                                        <button th:if="${!entrenador.verified}" 
+                                                type="button" 
+                                                class="btn btn-success mb-1 btn-verificar"
+                                                th:data-id="${entrenador.id}"
+                                                th:data-nombre="${entrenador.nombre}"
+                                                th:data-email="${entrenador.email}"
+                                                title="Verificar entrenador">
+                                            <i class="fas fa-check-circle"></i> Verificar
+                                        </button>
+                                        
+                                        <!-- Revocar verificación -->
+                                        <form th:if="${entrenador.verified}" 
+                                              th:action="@{/admin/entrenadores/{id}/revocar(id=${entrenador.id})}" 
+                                              method="post" 
+                                              style="display: inline;"
+                                              onsubmit="return confirm('¿Está seguro de revocar la verificación?')">
+                                            <button type="submit" 
+                                                    class="btn btn-warning mb-1 btn-block" 
+                                                    title="Revocar verificación">
+                                                <i class="fas fa-times-circle"></i> Revocar
+                                            </button>
+                                        </form>
+                                        
+                                        <!-- Bloquear -->
+                                        <button th:if="${entrenador.estado}" 
+                                                type="button" 
+                                                class="btn btn-danger btn-bloquear"
+                                                th:data-id="${entrenador.id}"
+                                                th:data-nombre="${entrenador.nombre}"
+                                                th:data-email="${entrenador.email}"
+                                                title="Bloquear entrenador">
+                                            <i class="fas fa-ban"></i> Bloquear
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para verificar entrenador -->
+    <div class="modal fade" id="verificarModal" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header bg-success text-white">
+                    <h5 class="modal-title">
+                        <i class="fas fa-check-circle"></i> Verificar Entrenador
+                    </h5>
+                    <button type="button" class="close text-white" data-dismiss="modal">
+                        <span>&times;</span>
+                    </button>
+                </div>
+                <form id="formVerificar" method="post">
+                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                    <div class="modal-body">
+                        <p>¿Está seguro de verificar al entrenador <strong id="nombreEntrenador"></strong>?</p>
+                        <p class="text-muted small">
+                            Se enviará un correo a <strong id="emailEntrenador"></strong> notificando que su cuenta ha sido verificada por SABI.
+                        </p>
+                        
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle"></i> 
+                            <strong>Al verificar:</strong>
+                            <ul class="mb-0 mt-2">
+                                <li>El entrenador tendrá un badge de verificación visible para los clientes</li>
+                                <li>Se enviará un correo de notificación automáticamente</li>
+                                <li>Los clientes podrán identificar que SABI valida la cuenta del entrenador</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-success">
+                            <i class="fas fa-check-circle"></i> Verificar Entrenador
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para bloquear entrenador -->
+    <div class="modal fade" id="bloquearModal" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title">
+                        <i class="fas fa-ban"></i> Bloquear Entrenador
+                    </h5>
+                    <button type="button" class="close text-white" data-dismiss="modal">
+                        <span>&times;</span>
+                    </button>
+                </div>
+                <form id="formBloquear" method="post">
+                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                    <input type="hidden" name="redirect" value="entrenadores">
+                    <div class="modal-body">
+                        <p>¿Está seguro de bloquear al entrenador <strong id="nombreUsuario"></strong>?</p>
+                        <p class="text-muted small">
+                            Se enviará un correo a <strong id="emailUsuario"></strong> con la explicación del bloqueo.
+                        </p>
+                        
+                        <div class="form-group">
+                            <label for="motivo">Motivo del bloqueo (se enviará por correo):</label>
+                            <textarea class="form-control" 
+                                      id="motivo" 
+                                      name="motivo" 
+                                      rows="4"
+                                      placeholder="Ingrese el motivo del bloqueo..."
+                                      required></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-danger">
+                            <i class="fas fa-ban"></i> Bloquear Entrenador
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script th:inline="javascript">
+        // Event delegation para botón verificar
+        document.addEventListener('DOMContentLoaded', function() {
+            document.addEventListener('click', function(e) {
+                if (e.target.closest('.btn-verificar')) {
+                    const btn = e.target.closest('.btn-verificar');
+                    const id = btn.dataset.id;
+                    const nombre = btn.dataset.nombre;
+                    const email = btn.dataset.email;
+                    verificarEntrenador(id, nombre, email);
+                }
+
+                if (e.target.closest('.btn-bloquear')) {
+                    const btn = e.target.closest('.btn-bloquear');
+                    const id = btn.dataset.id;
+                    const nombre = btn.dataset.nombre;
+                    const email = btn.dataset.email;
+                    bloquearUsuario(id, nombre, email);
+                }
+            });
+
+            // Inicializar contador
+            updateResultCountEntrenadores();
+
+            // Evento de búsqueda
+            document.getElementById('searchEntrenador').addEventListener('keyup', buscarEntrenador);
+        });
+
+        function verificarEntrenador(id, nombre, email) {
+            document.getElementById('nombreEntrenador').textContent = nombre;
+            document.getElementById('emailEntrenador').textContent = email;
+            document.getElementById('formVerificar').action = '/admin/entrenadores/' + id + '/verificar';
+            $('#verificarModal').modal('show');
+        }
+
+        function bloquearUsuario(id, nombre, email) {
+            document.getElementById('nombreUsuario').textContent = nombre;
+            document.getElementById('emailUsuario').textContent = email;
+            document.getElementById('formBloquear').action = '/admin/usuarios/' + id + '/bloquear';
+            $('#bloquearModal').modal('show');
+        }
+
+        function filtrarEstado(estado) {
+            const filas = document.querySelectorAll('#tablaEntrenadores tbody tr');
+            let visibleCount = 0;
+
+            filas.forEach(fila => {
+                if (estado === 'todos') {
+                    fila.style.display = '';
+                    visibleCount++;
+                } else if (estado === 'verificados') {
+                    if (fila.classList.contains('entrenador-verificado')) {
+                        fila.style.display = '';
+                        visibleCount++;
+                    } else {
+                        fila.style.display = 'none';
+                    }
+                } else if (estado === 'pendientes') {
+                    if (fila.classList.contains('entrenador-pendiente')) {
+                        fila.style.display = '';
+                        visibleCount++;
+                    } else {
+                        fila.style.display = 'none';
+                    }
+                }
+            });
+
+            // Limpiar búsqueda al filtrar
+            document.getElementById('searchEntrenador').value = '';
+            updateResultCountEntrenadores(visibleCount);
+        }
+
+        function buscarEntrenador() {
+            const searchValue = document.getElementById('searchEntrenador').value.toLowerCase();
+            const table = document.getElementById('tablaEntrenadores');
+            const rows = table.getElementsByTagName('tbody')[0].getElementsByTagName('tr');
+
+            let visibleCount = 0;
+
+            for (let i = 0; i < rows.length; i++) {
+                const row = rows[i];
+                const nombre = row.cells[2].textContent.toLowerCase();
+                const email = row.cells[3].textContent.toLowerCase();
+                const especialidades = row.cells[4].textContent.toLowerCase();
+
+                if (nombre.includes(searchValue) || email.includes(searchValue) || especialidades.includes(searchValue)) {
+                    row.style.display = '';
+                    visibleCount++;
+                } else {
+                    row.style.display = 'none';
+                }
+            }
+
+            updateResultCountEntrenadores(visibleCount);
+        }
+
+        function updateResultCountEntrenadores(count) {
+            const table = document.getElementById('tablaEntrenadores');
+            const totalRows = table.getElementsByTagName('tbody')[0].getElementsByTagName('tr').length;
+
+            if (count === undefined) {
+                count = totalRows;
+            }
+
+            const resultElement = document.getElementById('resultCountEntrenadores');
+            resultElement.textContent = `Mostrando ${count} de ${totalRows} entrenadores`;
+        }
+    </script>
+
+    <style>
+        .entrenador-verificado {
+            background-color: rgba(40, 167, 69, 0.05);
+        }
+        
+        .entrenador-pendiente {
+            background-color: rgba(255, 193, 7, 0.05);
+        }
+
+        .table-hover tbody tr:hover {
+            background-color: rgba(78, 115, 223, 0.1) !important;
+            cursor: pointer;
+        }
+    </style>
+</body>
+</html>

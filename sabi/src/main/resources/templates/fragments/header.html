@@ -145,6 +145,31 @@
             </li>
         </div>
 
+        <!-- Sidebar del ADMIN -->
+        <div sec:authorize="hasAnyRole('ADMIN')">
+            <li class="nav-item active">
+                <a class="nav-link" th:href="@{/admin/dashboard}">
+                    <i class="fas fa-fw fa-tachometer-alt text-primary"></i>
+                    <span class="text-primary">Dashboard</span>
+                </a>
+            </li>
+
+            <hr class="sidebar-divider">
+
+            <li class="nav-item">
+                <a class="nav-link" th:href="@{/admin/usuarios}">
+                    <i class="fas fa-fw fa-users text-primary"></i>
+                    <span class="text-primary">Gestión de Usuarios</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" th:href="@{/admin/entrenadores}">
+                    <i class="fas fa-fw fa-user-check text-primary"></i>
+                    <span class="text-primary">Verificación Entrenadores</span>
+                </a>
+            </li>
+        </div>
+
         <hr class="sidebar-divider d-none d-md-block">
 
         <!-- Botón toggle para ocultar -->

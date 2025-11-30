@@ -518,6 +518,7 @@ public class ClienteController {
             info.put("precioMinimo", entrenador.getPrecioMinimo());
             info.put("precioMaximo", entrenador.getPrecioMaximo());
             info.put("id", entrenador.getId());
+            info.put("verified", entrenador.getVerified() != null ? entrenador.getVerified() : false);
 
             return org.springframework.http.ResponseEntity.ok(info);
         } catch (Exception e) {

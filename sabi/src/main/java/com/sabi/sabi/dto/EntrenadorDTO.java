@@ -28,6 +28,8 @@ public class EntrenadorDTO extends UsuarioDTO{
 
     private String certificaciones;
 
+    private Boolean verified; // Indica si el entrenador está verificado por SABI
+
     // Relaciones
 
     private List<Long> idRutinas;
