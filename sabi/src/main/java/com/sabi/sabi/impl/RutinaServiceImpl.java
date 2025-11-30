@@ -201,8 +201,12 @@ public class RutinaServiceImpl implements RutinaService {
         if (rutina.getId() != null && rutinaRepository.findById(rutina.getId()).isPresent()) {
             return updateRutina(rutina.getId(), rutinaDTO);
         }
+
+        Cliente cliente = null;
+        Entrenador entrenador = null;
+
         if (rutinaDTO.getIdCliente() != null) {
-            Cliente cliente = clienteRepository.findById(rutinaDTO.getIdCliente())
+            cliente = clienteRepository.findById(rutinaDTO.getIdCliente())
                     .orElseThrow(() -> new RuntimeException("Cliente not found with id: " + rutinaDTO.getIdCliente()));
             rutina.setCliente(cliente);
             if (rutinaDTO.getEstadoRutina() == EstadoRutina.ACTIVA) {
@@ -213,7 +217,7 @@ public class RutinaServiceImpl implements RutinaService {
             }
         }
         if (rutinaDTO.getIdEntrenador() != null) {
-            Entrenador entrenador = entrenadorRepository.findById(rutinaDTO.getIdEntrenador())
+            entrenador = entrenadorRepository.findById(rutinaDTO.getIdEntrenador())
                     .orElseThrow(() -> new RuntimeException("Entrenador not found with id: " + rutinaDTO.getIdEntrenador()));
             rutina.setEntrenador(entrenador);
         }
@@ -221,6 +225,43 @@ public class RutinaServiceImpl implements RutinaService {
             rutina.setFechaCreacion(java.time.LocalDate.now());
         }
         rutina = rutinaRepository.save(rutina);
+
+        // ========================================
+        // 📧 ENVIAR CORREO AL CLIENTE
+        // ========================================
+        if (cliente != null && entrenador != null && rutinaDTO.getEstadoRutina() == EstadoRutina.ACTIVA) {
+            try {
+                String nombreCliente = cliente.getNombre() + (cliente.getApellido() != null ? " " + cliente.getApellido() : "");
+                String nombreEntrenador = entrenador.getNombre() + (entrenador.getApellido() != null ? " " + entrenador.getApellido() : "");
+                String emailCliente = cliente.getEmail();
+                String nombreRutina = rutina.getNombre();
+                Integer numeroSemanas = rutina.getNumeroSemanas() != null ? rutina.getNumeroSemanas().intValue() : 0;
+                String descripcion = rutina.getDescripcion();
+
+                System.out.println("╔════════════════════════════════════════════════════════╗");
+                System.out.println("║  🎯 RUTINA ASIGNADA A CLIENTE");
+                System.out.println("╠════════════════════════════════════════════════════════╣");
+                System.out.println("  👤 Cliente: " + nombreCliente);
+                System.out.println("  🏋️ Entrenador: " + nombreEntrenador);
+                System.out.println("  📋 Rutina: " + nombreRutina);
+                System.out.println("  📅 Semanas: " + numeroSemanas);
+                System.out.println("  📧 Enviando correo a: " + emailCliente);
+                System.out.println("╚════════════════════════════════════════════════════════╝");
+
+                emailService.enviarNotificacionRutinaAsignada(
+                    emailCliente,
+                    nombreCliente,
+                    nombreEntrenador,
+                    nombreRutina,
+                    numeroSemanas,
+                    descripcion
+                );
+            } catch (Exception e) {
+                System.err.println("❌ Error al enviar correo de rutina asignada: " + e.getMessage());
+                // No lanzamos excepción para que no falle la creación de la rutina
+            }
+        }
+
         return mapToDTO(rutina);
     }
 

@@ -984,4 +984,148 @@ public class EmailService {
             logger.error("Error al enviar aviso de verificación a {}: {}", emailDestino, e.getMessage());
         }
     }
+
+    /**
+     * Envía un correo al cliente notificando que su entrenador le ha asignado una nueva rutina
+     */
+    @Async
+    public void enviarNotificacionRutinaAsignada(
+            String emailCliente,
+            String nombreCliente,
+            String nombreEntrenador,
+            String nombreRutina,
+            Integer numeroSemanas,
+            String descripcionRutina
+    ) {
+        try {
+            MimeMessage message = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
+
+            helper.setFrom("noreply@sabi.com");
+            helper.setTo(emailCliente);
+            helper.setSubject("🎯 Nueva Rutina Asignada - " + nombreRutina);
+
+            String html = """
+                <!DOCTYPE html>
+                <html>
+                <head>
+                  <meta charset="UTF-8">
+                  <style>
+                    body { font-family: Arial, sans-serif; background-color: #f3f4f6; margin: 0; padding: 20px; }
+                    .container { max-width: 600px; margin: 0 auto; background-color: white; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+                    .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 40px 30px; text-align: center; }
+                    .header h1 { color: white; margin: 0; font-size: 28px; }
+                    .header .icon { font-size: 60px; margin-bottom: 15px; }
+                    .content { padding: 40px 30px; }
+                    .content h2 { color: #667eea; margin-top: 0; }
+                    .routine-card { background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%); border-left: 4px solid #667eea; padding: 20px; border-radius: 8px; margin: 20px 0; }
+                    .routine-card h3 { color: #1f2937; margin: 0 0 15px 0; font-size: 20px; }
+                    .routine-info { display: flex; flex-direction: column; gap: 10px; }
+                    .info-item { display: flex; align-items: center; color: #4b5563; }
+                    .info-item .icon { background: #667eea; color: white; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 12px; font-size: 14px; }
+                    .description-box { background: white; border: 2px solid #e5e7eb; padding: 15px; border-radius: 8px; margin-top: 15px; }
+                    .cta-button { display: inline-block; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 15px 40px; text-decoration: none; border-radius: 50px; font-weight: bold; margin: 20px 0; box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4); transition: transform 0.2s; }
+                    .cta-button:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5); }
+                    .trainer-info { background: #f9fafb; padding: 20px; border-radius: 8px; margin: 20px 0; border: 2px solid #e5e7eb; }
+                    .trainer-info strong { color: #667eea; }
+                    .footer { background: #f9fafb; padding: 20px 30px; text-align: center; color: #6b7280; font-size: 14px; border-top: 1px solid #e5e7eb; }
+                    .tips-box { background: #fef3c7; border-left: 4px solid #f59e0b; padding: 15px; border-radius: 8px; margin: 20px 0; }
+                    .tips-box strong { color: #92400e; }
+                  </style>
+                </head>
+                <body>
+                  <div class="container">
+                    <div class="header">
+                      <div class="icon">🎯</div>
+                      <h1>¡Nueva Rutina Asignada!</h1>
+                    </div>
+                    <div class="content">
+                      <h2>Hola %s,</h2>
+                      <p>Tu entrenador <strong>%s</strong> te ha asignado una nueva rutina de entrenamiento personalizada.</p>
+                      
+                      <div class="routine-card">
+                        <h3>📋 %s</h3>
+                        <div class="routine-info">
+                          <div class="info-item">
+                            <div class="icon">📅</div>
+                            <span><strong>Duración:</strong> %d semana%s</span>
+                          </div>
+                          <div class="info-item">
+                            <div class="icon">👤</div>
+                            <span><strong>Entrenador:</strong> %s</span>
+                          </div>
+                          <div class="info-item">
+                            <div class="icon">⚡</div>
+                            <span><strong>Estado:</strong> Lista para comenzar</span>
+                          </div>
+                        </div>
+                        %s
+                      </div>
+                      
+                      <div class="trainer-info">
+                        <p style="margin: 0; text-align: center;">
+                          <strong>💬 Mensaje de tu entrenador:</strong><br>
+                          "Esta rutina ha sido diseñada específicamente para ti, basándose en tus objetivos y nivel actual. ¡Vamos a lograrlo juntos!"
+                        </p>
+                      </div>
+                      
+                      <div style="text-align: center;">
+                        <a href="http://localhost:8080/cliente/dashboard" class="cta-button">
+                          ▶️ Ver Mi Rutina Completa
+                        </a>
+                      </div>
+                      
+                      <div class="tips-box">
+                        <strong>💡 Consejos para aprovechar al máximo tu rutina:</strong>
+                        <ul style="margin: 10px 0 0 0; padding-left: 20px; color: #92400e;">
+                          <li>Revisa la rutina completa antes de comenzar</li>
+                          <li>Consulta con tu entrenador si tienes dudas</li>
+                          <li>Sigue las indicaciones de series y repeticiones</li>
+                          <li>Registra tu progreso después de cada sesión</li>
+                          <li>Mantén comunicación constante con tu entrenador</li>
+                        </ul>
+                      </div>
+                      
+                      <p style="color: #6b7280; font-size: 14px; margin-top: 30px;">
+                        <strong>Nota:</strong> Puedes ver todos los detalles de tu rutina, incluyendo ejercicios, series, repeticiones y técnicas, desde tu dashboard de cliente.
+                      </p>
+                    </div>
+                    <div class="footer">
+                      <p style="margin: 5px 0;">Sistema de Asistencia para el Bienestar Integral</p>
+                      <p style="margin: 5px 0;">📧 Este es un correo automático, por favor no respondas directamente.</p>
+                      <p style="margin: 5px 0; color: #9ca3af;">© 2025 SABI - Todos los derechos reservados</p>
+                    </div>
+                  </div>
+                </body>
+                </html>
+            """.formatted(
+                    nombreCliente,
+                    nombreEntrenador,
+                    nombreRutina,
+                    numeroSemanas,
+                    numeroSemanas == 1 ? "" : "s",
+                    nombreEntrenador,
+                    descripcionRutina != null && !descripcionRutina.isEmpty()
+                            ? "<div class=\"description-box\"><strong>📝 Descripción:</strong><br>" + descripcionRutina + "</div>"
+                            : ""
+            );
+
+            helper.setText(html, true);
+            mailSender.send(message);
+
+            logger.info("✅ Correo de rutina asignada enviado a {} por el entrenador {}", emailCliente, nombreEntrenador);
+            System.out.println("╔════════════════════════════════════════════════════════╗");
+            System.out.println("║  📧 CORREO DE RUTINA ASIGNADA ENVIADO");
+            System.out.println("╠════════════════════════════════════════════════════════╣");
+            System.out.println("  👤 Cliente: " + nombreCliente + " (" + emailCliente + ")");
+            System.out.println("  🏋️ Entrenador: " + nombreEntrenador);
+            System.out.println("  📋 Rutina: " + nombreRutina);
+            System.out.println("  📅 Semanas: " + numeroSemanas);
+            System.out.println("╚════════════════════════════════════════════════════════╝");
+
+        } catch (MessagingException e) {
+            logger.error("❌ Error al enviar correo de rutina asignada a {}: {}", emailCliente, e.getMessage());
+            System.err.println("❌ ERROR enviando correo de rutina: " + e.getMessage());
+        }
+    }
 }

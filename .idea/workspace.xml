@@ -4,22 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="f5d52025-a0fc-48c5-8cc8-d55f70bed372" name="Changes" comment="Creacion Funcionalides ADMIN y vistas">
-      <change afterPath="$PROJECT_DIR$/.idea/copilotDiffState.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sabi/CORRECCIONES_v1.4.1.md" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sabi/DEBUGGING_v1.4.2.md" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sabi/GUIA_PRUEBAS_v1.4.0.md" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sabi/NUEVAS_FUNCIONALIDADES_v1.4.0.md" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sabi/RESUMEN_FINAL_v1.4.0.md" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sabi/src/main/java/com/sabi/sabi/config/DiagnosticoInterceptor.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sabi/src/main/java/com/sabi/sabi/config/WebMvcConfig.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sabi/src/main/java/com/sabi/sabi/controller/AuthController.java" beforeDir="false" afterPath="$PROJECT_DIR$/sabi/src/main/java/com/sabi/sabi/controller/AuthController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sabi/src/main/resources/templates/admin/entrenadores.html" beforeDir="false" afterPath="$PROJECT_DIR$/sabi/src/main/resources/templates/admin/entrenadores.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sabi/src/main/resources/templates/admin/perfil-usuario.html" beforeDir="false" afterPath="$PROJECT_DIR$/sabi/src/main/resources/templates/admin/perfil-usuario.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sabi/src/main/resources/templates/auth/completar-perfil-entrenador.html" beforeDir="false" afterPath="$PROJECT_DIR$/sabi/src/main/resources/templates/auth/completar-perfil-entrenador.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sabi/src/main/resources/templates/cliente/dashboard.html" beforeDir="false" afterPath="$PROJECT_DIR$/sabi/src/main/resources/templates/cliente/dashboard.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sabi/src/main/resources/templates/cliente/diagnostico-form.html" beforeDir="false" afterPath="$PROJECT_DIR$/sabi/src/main/resources/templates/cliente/diagnostico-form.html" afterDir="false" />
+    <list default="true" id="f5d52025-a0fc-48c5-8cc8-d55f70bed372" name="Changes" comment="Correciones prepresustencacion">
+      <change afterPath="$PROJECT_DIR$/sabi/CORREO_RUTINA_ASIGNADA_v1.5.0.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sabi/src/main/java/com/sabi/sabi/impl/RutinaServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/sabi/src/main/java/com/sabi/sabi/impl/RutinaServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sabi/src/main/java/com/sabi/sabi/service/EmailService.java" beforeDir="false" afterPath="$PROJECT_DIR$/sabi/src/main/java/com/sabi/sabi/service/EmailService.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -106,7 +94,15 @@
       <option name="project" value="LOCAL" />
       <updated>1764538955525</updated>
     </task>
-    <option name="localTasksCounter" value="4" />
+    <task id="LOCAL-00004" summary="Correciones prepresustencacion">
+      <option name="closed" value="true" />
+      <created>1764543107630</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1764543107630</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -125,7 +121,8 @@
     <MESSAGE value="Subida de imagenes segun roles Para la base de datos llena" />
     <MESSAGE value="Creacion ADMIN (Santiago llevaba 3 trimestres diciendo que era necesario)" />
     <MESSAGE value="Creacion Funcionalides ADMIN y vistas" />
-    <option name="LAST_COMMIT_MESSAGE" value="Creacion Funcionalides ADMIN y vistas" />
+    <MESSAGE value="Correciones prepresustencacion" />
+    <option name="LAST_COMMIT_MESSAGE" value="Correciones prepresustencacion" />
   </component>
   <component name="github-copilot-workspace">
     <instructionFileLocations>
