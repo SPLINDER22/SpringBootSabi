@@ -289,89 +289,253 @@
                     }
 
                     document.getElementById('detalleDiagnosticoContent').innerHTML = `
-                        <div class="row">
-                            <div class="col-md-6">
-                                <h5 class="mb-3"><i class="fas fa-weight"></i> Información Básica</h5>
-                                <ul class="list-group mb-3">
-                                    <li class="list-group-item"><strong>📅 Fecha:</strong> ${data.fecha}</li>
-                                    ${data.objetivo ? `
-                                        <li class="list-group-item" style="background: linear-gradient(135deg, #fef9e7 0%, #fffaec 100%); border-left: 4px solid #ffc107;">
-                                            <strong>🎯 Objetivo en ese momento:</strong><br>
-                                            <span style="font-size: 1.1rem; color: #856404; font-weight: 600; display: block; margin-top: 5px;">
-                                                "${data.objetivo}"
-                                            </span>
-                                        </li>
-                                    ` : ''}
-                                    <li class="list-group-item"><strong>⚖️ Peso:</strong> ${data.peso} kg</li>
-                                    <li class="list-group-item"><strong>📏 Estatura:</strong> ${data.estatura} cm</li>
-                                    <li class="list-group-item">
-                                        <strong>📊 IMC:</strong> ${imc || 'N/A'}
-                                        ${imc ? '<span class="badge bg-' + imcColor + ' ms-2">' + imcCategoria + '</span>' : ''}
-                                    </li>
-                                    <li class="list-group-item"><strong>🎯 Nivel de experiencia:</strong> ${data.nivelExperiencia}</li>
-                                    <li class="list-group-item"><strong>⏰ Disponibilidad de tiempo:</strong> ${data.disponibilidadTiempo || 'N/A'}</li>
-                                    <li class="list-group-item"><strong>🏋️ Acceso a recursos:</strong> ${data.accesoRecursos || 'N/A'}</li>
-                                </ul>
+                        <!-- ========================================
+                             📋 DISEÑO MEJORADO Y BALANCEADO
+                             ======================================== -->
 
-                                <h5 class="mb-3"><i class="fas fa-heartbeat"></i> Salud</h5>
-                                <ul class="list-group mb-3">
-                                    <li class="list-group-item"><strong>🤕 Lesiones:</strong> ${data.lesiones || 'Ninguna'}</li>
-                                    <li class="list-group-item"><strong>🏥 Condiciones médicas:</strong> ${data.condicionesMedicas || 'Ninguna'}</li>
-                                    <li class="list-group-item"><strong>❤️ Frecuencia cardíaca en reposo:</strong> ${data.frecuenciaCardiacaReposo || 'N/A'} bpm</li>
-                                    <li class="list-group-item"><strong>🩺 Presión arterial:</strong> ${data.presionArterial || 'N/A'}</li>
-                                </ul>
+                        <!-- Objetivo Destacado -->
+                        ${data.objetivo ? `
+                            <div class="alert mb-4" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                                                          border: none; color: white; border-radius: 15px;
+                                                          box-shadow: 0 5px 20px rgba(102, 126, 234, 0.3);">
+                                <div class="d-flex align-items-center">
+                                    <div style="font-size: 3rem; margin-right: 20px;">🎯</div>
+                                    <div style="flex: 1;">
+                                        <h5 style="margin: 0; font-weight: bold; color: white;">
+                                            Mi Objetivo en ese momento
+                                        </h5>
+                                        <p style="margin: 5px 0 0 0; font-size: 1.2rem; font-weight: 600;">
+                                            "${data.objetivo}"
+                                        </p>
+                                    </div>
+                                </div>
                             </div>
+                        ` : ''}
 
-                            <div class="col-md-6">
-                                <h5 class="mb-3"><i class="fas fa-ruler-combined"></i> Medidas Corporales</h5>
-                                <ul class="list-group mb-3">
-                                    <li class="list-group-item"><strong>💪 % Grasa Corporal:</strong> ${data.porcentajeGrasaCorporal || 'N/A'}</li>
-                                    <li class="list-group-item"><strong>📐 Circunferencia Cintura:</strong> ${data.circunferenciaCintura || 'N/A'} cm</li>
-                                    <li class="list-group-item"><strong>📐 Circunferencia Cadera:</strong> ${data.circunferenciaCadera || 'N/A'} cm</li>
-                                    <li class="list-group-item"><strong>💪 Circunferencia Brazo:</strong> ${data.circunferenciaBrazo || 'N/A'} cm</li>
-                                    <li class="list-group-item"><strong>🦵 Circunferencia Pierna:</strong> ${data.circunferenciaPierna || 'N/A'} cm</li>
-                                </ul>
-
-                                <h5 class="mb-3"><i class="fas fa-utensils"></i> Hábitos</h5>
-                                <ul class="list-group mb-3">
-                                    <li class="list-group-item"><strong>😴 Horas de Sueño:</strong> ${data.horasSueno || 'N/A'}</li>
-                                    <li class="list-group-item"><strong>🍎 Hábitos Alimenticios:</strong> ${data.habitosAlimenticios || 'N/A'}</li>
-                                </ul>
-
-                                <h5 class="mb-3"><i class="fas fa-images"></i> Fotos</h5>
-                                <div class="row g-2">
-                                    ${data.fotoFrontalUrl ? `
-                                        <div class="col-4">
-                                            <div class="card">
-                                                <img src="${data.fotoFrontalUrl}" class="card-img-top" alt="Frontal" style="height: 200px; object-fit: cover;">
-                                                <div class="card-footer text-center p-1"><small>📸 Frontal</small></div>
-                                            </div>
-                                        </div>
-                                    ` : ''}
-                                    ${data.fotoLateralUrl ? `
-                                        <div class="col-4">
-                                            <div class="card">
-                                                <img src="${data.fotoLateralUrl}" class="card-img-top" alt="Lateral" style="height: 200px; object-fit: cover;">
-                                                <div class="card-footer text-center p-1"><small>📸 Lateral</small></div>
-                                            </div>
-                                        </div>
-                                    ` : ''}
-                                    ${data.fotoTraseraUrl ? `
-                                        <div class="col-4">
-                                            <div class="card">
-                                                <img src="${data.fotoTraseraUrl}" class="card-img-top" alt="Trasera" style="height: 200px; object-fit: cover;">
-                                                <div class="card-footer text-center p-1"><small>📸 Trasera</small></div>
-                                            </div>
-                                        </div>
-                                    ` : ''}
-                                    ${!data.fotoFrontalUrl && !data.fotoLateralUrl && !data.fotoTraseraUrl ?
-                                        '<div class="col-12"><p class="text-muted">No hay fotos disponibles</p></div>' : ''}
+                        <!-- Métricas Principales en Cards Destacadas -->
+                        <div class="row g-3 mb-4">
+                            <div class="col-md-3 col-6">
+                                <div class="card text-center" style="border: 2px solid #3b82f6; border-radius: 15px; background: linear-gradient(135deg, #dbeafe 0%, #eff6ff 100%);">
+                                    <div class="card-body">
+                                        <div style="font-size: 2rem;">⚖️</div>
+                                        <h6 class="card-title mb-1" style="color: #1e40af; font-weight: bold;">Peso</h6>
+                                        <h3 class="mb-0" style="color: #2563eb; font-weight: 800;">${data.peso} <small>kg</small></h3>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3 col-6">
+                                <div class="card text-center" style="border: 2px solid #10b981; border-radius: 15px; background: linear-gradient(135deg, #d1fae5 0%, #ecfdf5 100%);">
+                                    <div class="card-body">
+                                        <div style="font-size: 2rem;">📏</div>
+                                        <h6 class="card-title mb-1" style="color: #065f46; font-weight: bold;">Estatura</h6>
+                                        <h3 class="mb-0" style="color: #059669; font-weight: 800;">${data.estatura} <small>cm</small></h3>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3 col-6">
+                                <div class="card text-center" style="border: 2px solid #8b5cf6; border-radius: 15px; background: linear-gradient(135deg, #ede9fe 0%, #f5f3ff 100%);">
+                                    <div class="card-body">
+                                        <div style="font-size: 2rem;">📊</div>
+                                        <h6 class="card-title mb-1" style="color: #5b21b6; font-weight: bold;">IMC</h6>
+                                        <h3 class="mb-0" style="color: #7c3aed; font-weight: 800;">${imc || 'N/A'}</h3>
+                                        ${imc ? '<span class="badge bg-' + imcColor + ' mt-1">' + imcCategoria + '</span>' : ''}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3 col-6">
+                                <div class="card text-center" style="border: 2px solid #f59e0b; border-radius: 15px; background: linear-gradient(135deg, #fef3c7 0%, #fffbeb 100%);">
+                                    <div class="card-body">
+                                        <div style="font-size: 2rem;">💪</div>
+                                        <h6 class="card-title mb-1" style="color: #92400e; font-weight: bold;">% Grasa</h6>
+                                        <h3 class="mb-0" style="color: #d97706; font-weight: 800;">${data.porcentajeGrasaCorporal || 'N/A'}${data.porcentajeGrasaCorporal ? '<small>%</small>' : ''}</h3>
+                                    </div>
                                 </div>
                             </div>
                         </div>
 
-                        <div class="alert alert-info mt-3">
-                            <i class="fas fa-info-circle"></i> Los datos mostrados son solo informativos y no pueden ser editados.
+                        <!-- Grid de Información Organizada -->
+                        <div class="row g-4">
+                            <!-- Columna 1: Información Básica y Disponibilidad -->
+                            <div class="col-md-4">
+                                <div class="card mb-3" style="border-radius: 12px; border-left: 4px solid #3b82f6;">
+                                    <div class="card-header" style="background: #eff6ff; border-bottom: 2px solid #dbeafe;">
+                                        <h6 class="mb-0" style="color: #1e40af; font-weight: bold;">
+                                            <i class="fas fa-info-circle"></i> Información Básica
+                                        </h6>
+                                    </div>
+                                    <div class="card-body p-3">
+                                        <div class="mb-2">
+                                            <small class="text-muted d-block">📅 Fecha del diagnóstico</small>
+                                            <strong>${data.fecha}</strong>
+                                        </div>
+                                        <hr class="my-2">
+                                        <div class="mb-2">
+                                            <small class="text-muted d-block">🎯 Nivel de experiencia</small>
+                                            <strong>${data.nivelExperiencia}</strong>
+                                        </div>
+                                        <hr class="my-2">
+                                        <div class="mb-2">
+                                            <small class="text-muted d-block">⏰ Disponibilidad de tiempo</small>
+                                            <strong>${data.disponibilidadTiempo || 'N/A'}</strong>
+                                        </div>
+                                        <hr class="my-2">
+                                        <div class="mb-0">
+                                            <small class="text-muted d-block">🏋️ Acceso a recursos</small>
+                                            <strong>${data.accesoRecursos || 'N/A'}</strong>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="card" style="border-radius: 12px; border-left: 4px solid #ef4444;">
+                                    <div class="card-header" style="background: #fef2f2; border-bottom: 2px solid #fecaca;">
+                                        <h6 class="mb-0" style="color: #991b1b; font-weight: bold;">
+                                            <i class="fas fa-heartbeat"></i> Salud
+                                        </h6>
+                                    </div>
+                                    <div class="card-body p-3">
+                                        <div class="mb-2">
+                                            <small class="text-muted d-block">❤️ Frecuencia cardíaca</small>
+                                            <strong>${data.frecuenciaCardiacaReposo || 'N/A'} ${data.frecuenciaCardiacaReposo ? 'bpm' : ''}</strong>
+                                        </div>
+                                        <hr class="my-2">
+                                        <div class="mb-2">
+                                            <small class="text-muted d-block">🩺 Presión arterial</small>
+                                            <strong>${data.presionArterial || 'N/A'}</strong>
+                                        </div>
+                                        <hr class="my-2">
+                                        <div class="mb-2">
+                                            <small class="text-muted d-block">🤕 Lesiones</small>
+                                            <strong>${data.lesiones || 'Ninguna'}</strong>
+                                        </div>
+                                        <hr class="my-2">
+                                        <div class="mb-0">
+                                            <small class="text-muted d-block">🏥 Condiciones médicas</small>
+                                            <strong>${data.condicionesMedicas || 'Ninguna'}</strong>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Columna 2: Medidas Corporales y Hábitos -->
+                            <div class="col-md-4">
+                                <div class="card mb-3" style="border-radius: 12px; border-left: 4px solid #8b5cf6;">
+                                    <div class="card-header" style="background: #f5f3ff; border-bottom: 2px solid #ede9fe;">
+                                        <h6 class="mb-0" style="color: #5b21b6; font-weight: bold;">
+                                            <i class="fas fa-ruler-combined"></i> Medidas Corporales
+                                        </h6>
+                                    </div>
+                                    <div class="card-body p-3">
+                                        <div class="mb-2">
+                                            <small class="text-muted d-block">📐 Circunferencia de cintura</small>
+                                            <strong>${data.circunferenciaCintura || 'N/A'} ${data.circunferenciaCintura ? 'cm' : ''}</strong>
+                                        </div>
+                                        <hr class="my-2">
+                                        <div class="mb-2">
+                                            <small class="text-muted d-block">📐 Circunferencia de cadera</small>
+                                            <strong>${data.circunferenciaCadera || 'N/A'} ${data.circunferenciaCadera ? 'cm' : ''}</strong>
+                                        </div>
+                                        <hr class="my-2">
+                                        <div class="mb-2">
+                                            <small class="text-muted d-block">💪 Circunferencia de brazo</small>
+                                            <strong>${data.circunferenciaBrazo || 'N/A'} ${data.circunferenciaBrazo ? 'cm' : ''}</strong>
+                                        </div>
+                                        <hr class="my-2">
+                                        <div class="mb-0">
+                                            <small class="text-muted d-block">🦵 Circunferencia de pierna</small>
+                                            <strong>${data.circunferenciaPierna || 'N/A'} ${data.circunferenciaPierna ? 'cm' : ''}</strong>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="card" style="border-radius: 12px; border-left: 4px solid #10b981;">
+                                    <div class="card-header" style="background: #ecfdf5; border-bottom: 2px solid #d1fae5;">
+                                        <h6 class="mb-0" style="color: #065f46; font-weight: bold;">
+                                            <i class="fas fa-utensils"></i> Hábitos de Vida
+                                        </h6>
+                                    </div>
+                                    <div class="card-body p-3">
+                                        <div class="mb-2">
+                                            <small class="text-muted d-block">😴 Horas de sueño</small>
+                                            <strong>${data.horasSueno || 'N/A'} ${data.horasSueno ? 'horas' : ''}</strong>
+                                        </div>
+                                        <hr class="my-2">
+                                        <div class="mb-0">
+                                            <small class="text-muted d-block">🍎 Hábitos alimenticios</small>
+                                            <strong>${data.habitosAlimenticios || 'N/A'}</strong>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Columna 3: Fotos del Diagnóstico -->
+                            <div class="col-md-4">
+                                <div class="card" style="border-radius: 12px; border-left: 4px solid #f59e0b;">
+                                    <div class="card-header" style="background: #fffbeb; border-bottom: 2px solid #fef3c7;">
+                                        <h6 class="mb-0" style="color: #92400e; font-weight: bold;">
+                                            <i class="fas fa-images"></i> Fotos del Diagnóstico
+                                        </h6>
+                                    </div>
+                                    <div class="card-body p-3">
+                                        ${data.fotoFrontalUrl || data.fotoLateralUrl || data.fotoTraseraUrl ? `
+                                            <div class="row g-2">
+                                                ${data.fotoFrontalUrl ? `
+                                                    <div class="col-12 mb-3">
+                                                        <div class="card border-0 shadow-sm">
+                                                            <img src="${data.fotoFrontalUrl}" class="card-img-top" alt="Frontal"
+                                                                 style="height: 180px; object-fit: cover; border-radius: 8px 8px 0 0;">
+                                                            <div class="card-footer text-center bg-light border-0" style="border-radius: 0 0 8px 8px;">
+                                                                <small style="font-weight: 600; color: #6b7280;">📸 Foto Frontal</small>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                ` : ''}
+                                                ${data.fotoLateralUrl ? `
+                                                    <div class="col-12 mb-3">
+                                                        <div class="card border-0 shadow-sm">
+                                                            <img src="${data.fotoLateralUrl}" class="card-img-top" alt="Lateral"
+                                                                 style="height: 180px; object-fit: cover; border-radius: 8px 8px 0 0;">
+                                                            <div class="card-footer text-center bg-light border-0" style="border-radius: 0 0 8px 8px;">
+                                                                <small style="font-weight: 600; color: #6b7280;">📸 Foto Lateral</small>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                ` : ''}
+                                                ${data.fotoTraseraUrl ? `
+                                                    <div class="col-12 mb-3">
+                                                        <div class="card border-0 shadow-sm">
+                                                            <img src="${data.fotoTraseraUrl}" class="card-img-top" alt="Trasera"
+                                                                 style="height: 180px; object-fit: cover; border-radius: 8px 8px 0 0;">
+                                                            <div class="card-footer text-center bg-light border-0" style="border-radius: 0 0 8px 8px;">
+                                                                <small style="font-weight: 600; color: #6b7280;">📸 Foto Trasera</small>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                ` : ''}
+                                            </div>
+                                        ` : `
+                                            <div class="text-center py-5" style="color: #9ca3af;">
+                                                <i class="fas fa-image fa-3x mb-3"></i>
+                                                <p class="mb-0">No hay fotos disponibles para este diagnóstico</p>
+                                            </div>
+                                        `}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Nota Informativa -->
+                        <div class="alert mt-4 mb-0" style="background: linear-gradient(135deg, #e0f2fe 0%, #f0f9ff 100%);
+                                                           border-left: 4px solid #0ea5e9; border-radius: 10px;">
+                            <div class="d-flex align-items-center">
+                                <i class="fas fa-info-circle fa-2x me-3" style="color: #0284c7;"></i>
+                                <div>
+                                    <strong style="color: #075985;">Nota:</strong>
+                                    <span style="color: #0c4a6e;">
+                                        Los datos mostrados son solo informativos y corresponden a este diagnóstico específico.
+                                        No pueden ser editados desde aquí.
+                                    </span>
+                                </div>
+                            </div>
                         </div>
                     `;
                 })
