@@ -12,6 +12,39 @@
         <!-- Panel de filtros ampliado -->
         <div class="filters-panel">
             <h1 class="h3 mb-3 text-dark text-center">Entrenadores Disponibles</h1>
+
+            <!-- ========================================
+                 🎯 RECOMENDACIÓN BASADA EN OBJETIVO
+                 ======================================== -->
+            <div th:if="${mostrarRecomendacion != null && mostrarRecomendacion && especialidadRecomendada != null}"
+                 class="alert alert-info alert-dismissible fade show"
+                 style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                        border: none;
+                        color: white;
+                        border-radius: 12px;
+                        padding: 20px;
+                        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+                        margin-bottom: 20px;">
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert" aria-label="Close"></button>
+                <div style="display: flex; align-items: center; gap: 15px;">
+                    <div style="font-size: 3rem;">🎯</div>
+                    <div>
+                        <h5 style="margin: 0 0 8px 0; font-weight: bold; color: white;">
+                            <i class="fas fa-lightbulb"></i> Recomendación Personalizada
+                        </h5>
+                        <p style="margin: 0; font-size: 0.95rem; line-height: 1.6;">
+                            Según tu objetivo <strong>"<span th:text="${objetivoCliente}"></span>"</strong>,
+                            te recomendamos entrenadores especializados en
+                            <strong><span th:text="${especialidadRecomendada}"></span></strong>.
+                            <br>
+                            <small style="opacity: 0.9;">
+                                💡 Puedes cambiar a <strong>"Todas"</strong> en el filtro de especialidad para ver todos los entrenadores.
+                            </small>
+                        </p>
+                    </div>
+                </div>
+            </div>
+
             <form th:action="@{/cliente/listaEntrenadores}" method="get">
                 <div class="filters-grid">
                     <!-- Nombre -->
@@ -155,11 +188,17 @@
                         <div class="trainer-footer">
                             <div class="trainer-meta">
                                 <div class="trainer-meta-item">
-                                    <h6>Especialidades</h6>
+                                    <h6>Especialidad Principal</h6>
+                                    <!-- 🎯 Mostrar solo la PRIMERA especialidad -->
                                     <span th:if="${entrenador.especialidades != null and !entrenador.especialidades.isEmpty()}"
-                                          th:text="${entrenador.especialidades}">Especialidades</span>
+                                          th:with="primeraEsp=${#strings.arraySplit(entrenador.especialidades, ',')[0]}"
+                                          th:text="${primeraEsp}">
+                                        Especialidad
+                                    </span>
                                     <span th:if="${entrenador.especialidades == null or entrenador.especialidades.isEmpty()}"
-                                          th:text="${entrenador.especialidad} ?: 'No especificado'">No especificado</span>
+                                          th:text="${entrenador.especialidad} ?: 'No especificado'">
+                                        No especificado
+                                    </span>
                                 </div>
                                 <div class="trainer-meta-item">
                                     <h6>Experiencia</h6>
@@ -239,6 +278,10 @@
                             <div class="mb-3">
                                 <h6 class="text-success"><i class="fas fa-envelope me-2"></i> Email</h6>
                                 <p id="modalEntrenadorEmail" class="text-muted"></p>
+                            </div>
+                            <div class="mb-3" id="modalEntrenadorGeneroContainer" style="display: none;">
+                                <h6 class="text-success"><i class="fas fa-venus-mars me-2"></i> Género</h6>
+                                <p id="modalEntrenadorGenero" class="text-muted"></p>
                             </div>
                             <div class="mb-3">
                                 <h6 class="text-success"><i class="fas fa-dumbbell me-2"></i> Especialidades</h6>
@@ -420,7 +463,7 @@
                     else el.textContent = '';
                 }
             });
-            ['modalEntrenadorTelefonoContainer', 'modalEntrenadorPrecioContainer', 'modalEntrenadorCertificacionesContainer', 'modalEntrenadorDescripcionContainer', 'modalSinDescripcion'].forEach(id => {
+            ['modalEntrenadorTelefonoContainer', 'modalEntrenadorPrecioContainer', 'modalEntrenadorCertificacionesContainer', 'modalEntrenadorDescripcionContainer', 'modalSinDescripcion', 'modalEntrenadorGeneroContainer'].forEach(id => {
                 const el = document.getElementById(id);
                 if (el) el.style.display = 'none';
             });
@@ -473,6 +516,25 @@
                     }
                     
                     document.getElementById('modalEntrenadorEmail').textContent = info.email || '';
+
+                    // 👥 Mostrar género del entrenador
+                    const genero = info.sexo || '';
+                    if (genero) {
+                        let generoTexto = genero;
+                        let generoIcono = '👤';
+
+                        if (genero.toLowerCase() === 'masculino' || genero.toLowerCase() === 'm') {
+                            generoTexto = '👨 Masculino';
+                        } else if (genero.toLowerCase() === 'femenino' || genero.toLowerCase() === 'f') {
+                            generoTexto = '👩 Femenino';
+                        } else if (genero.toLowerCase() === 'otro') {
+                            generoTexto = '⚧️ Otro';
+                        }
+
+                        document.getElementById('modalEntrenadorGenero').textContent = generoTexto;
+                        document.getElementById('modalEntrenadorGeneroContainer').style.display = 'block';
+                    }
+
                     document.getElementById('modalEntrenadorEspecialidades').textContent = info.especialidades || 'No especificado';
                     document.getElementById('modalEntrenadorExperiencia').textContent = (info.experiencia || 0) + ' años';
                     const cal = typeof info.calificacionPromedio === 'number' ? info.calificacionPromedio : 0;

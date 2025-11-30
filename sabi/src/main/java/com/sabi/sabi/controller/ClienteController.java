@@ -228,6 +228,312 @@ public class ClienteController {
         }
         boolean tieneDiagnostico = diagnosticoActual != null;
 
+        // ========================================
+        // 🎯 RECOMENDACIÓN BASADA EN OBJETIVO
+        // ========================================
+        String objetivoCliente = diagnosticoActual.getObjetivo();
+        String especialidadRecomendada = null;
+        boolean mostrarRecomendacion = false;
+
+        if (objetivoCliente != null && !objetivoCliente.isEmpty()) {
+            String objetivoLower = objetivoCliente.toLowerCase();
+
+            // 🔥 MAPEO INTELIGENTE DE OBJETIVOS → ESPECIALIDADES
+            // Sistema de detección con múltiples palabras clave y sinónimos
+
+            // ═══════════════════════════════════════════════════════════════
+            // 🎯 PÉRDIDA DE PESO / ADELGAZAR
+            // ═══════════════════════════════════════════════════════════════
+            if (objetivoLower.contains("bajar") || objetivoLower.contains("perder") ||
+                objetivoLower.contains("adelgazar") || objetivoLower.contains("reducir") ||
+                objetivoLower.contains("quemar") || objetivoLower.contains("eliminar") ||
+                objetivoLower.contains("peso") && (objetivoLower.contains("menos") || objetivoLower.contains("bajo")) ||
+                objetivoLower.contains("grasa") && (objetivoLower.contains("perder") || objetivoLower.contains("quemar") || objetivoLower.contains("bajar")) ||
+                objetivoLower.contains("kilos") || objetivoLower.contains("libras") ||
+                objetivoLower.contains("definir") || objetivoLower.contains("definición") ||
+                objetivoLower.contains("tonificar") || objetivoLower.contains("marcar") ||
+                objetivoLower.contains("abdomen") && (objetivoLower.contains("plano") || objetivoLower.contains("marcado")) ||
+                objetivoLower.contains("barriga") || objetivoLower.contains("panza") ||
+                objetivoLower.contains("cintura") && objetivoLower.contains("reducir") ||
+                objetivoLower.contains("talla") && (objetivoLower.contains("menos") || objetivoLower.contains("bajar")) ||
+                objetivoLower.contains("obesidad") || objetivoLower.contains("sobrepeso") ||
+                objetivoLower.contains("dieta") && objetivoLower.contains("ejercicio") ||
+                objetivoLower.contains("calorías") && objetivoLower.contains("quemar") ||
+                objetivoLower.contains("delgad") || objetivoLower.contains("flac") ||
+                objetivoLower.contains("rebajar") || objetivoLower.contains("deshinchar") ||
+                objetivoLower.contains("celulitis") || objetivoLower.contains("michelin")) {
+                especialidadRecomendada = "Pérdida de Peso";
+
+            // ═══════════════════════════════════════════════════════════════
+            // 💪 GANANCIA MUSCULAR / HIPERTROFIA
+            // ═══════════════════════════════════════════════════════════════
+            } else if (objetivoLower.contains("masa") && (objetivoLower.contains("muscular") || objetivoLower.contains("ganar")) ||
+                       objetivoLower.contains("muscular") || objetivoLower.contains("músculos") ||
+                       objetivoLower.contains("ganar") && (objetivoLower.contains("peso") || objetivoLower.contains("volumen") || objetivoLower.contains("músculo")) ||
+                       objetivoLower.contains("hipertrofia") || objetivoLower.contains("volumen") ||
+                       objetivoLower.contains("aumentar") && (objetivoLower.contains("masa") || objetivoLower.contains("músculo") || objetivoLower.contains("tamaño")) ||
+                       objetivoLower.contains("crecer") || objetivoLower.contains("grande") ||
+                       objetivoLower.contains("bíceps") || objetivoLower.contains("pectorales") ||
+                       objetivoLower.contains("espalda") && objetivoLower.contains("ancha") ||
+                       objetivoLower.contains("piernas") && objetivoLower.contains("grandes") ||
+                       objetivoLower.contains("brazos") && (objetivoLower.contains("grandes") || objetivoLower.contains("gruesos")) ||
+                       objetivoLower.contains("gym") && (objetivoLower.contains("cuerpo") || objetivoLower.contains("físico")) ||
+                       objetivoLower.contains("culturismo") || objetivoLower.contains("bodybuilding") ||
+                       objetivoLower.contains("fitness") && objetivoLower.contains("ganar") ||
+                       objetivoLower.contains("proteína") || objetivoLower.contains("suplementos") ||
+                       objetivoLower.contains("bulk") || objetivoLower.contains("bulking") ||
+                       objetivoLower.contains("corpulento") || objetivoLower.contains("fornido") ||
+                       objetivoLower.contains("musculoso") || objetivoLower.contains("atlético") ||
+                       objetivoLower.contains("fibra") && objetivoLower.contains("muscular")) {
+                especialidadRecomendada = "Ganancia Muscular";
+
+            // ═══════════════════════════════════════════════════════════════
+            // 🏋️ FUERZA Y ACONDICIONAMIENTO / POWERLIFTING
+            // ═══════════════════════════════════════════════════════════════
+            } else if (objetivoLower.contains("fuerza") || objetivoLower.contains("potencia") ||
+                       objetivoLower.contains("levantar") && (objetivoLower.contains("peso") || objetivoLower.contains("más")) ||
+                       objetivoLower.contains("fuerte") || objetivoLower.contains("poder") ||
+                       objetivoLower.contains("sentadilla") || objetivoLower.contains("squat") ||
+                       objetivoLower.contains("press") && (objetivoLower.contains("banca") || objetivoLower.contains("bench")) ||
+                       objetivoLower.contains("peso muerto") || objetivoLower.contains("deadlift") ||
+                       objetivoLower.contains("powerlifting") || objetivoLower.contains("halterofilia") ||
+                       objetivoLower.contains("levantamiento") && objetivoLower.contains("olímpico") ||
+                       objetivoLower.contains("explosividad") || objetivoLower.contains("explosivo") ||
+                       objetivoLower.contains("velocidad") && objetivoLower.contains("fuerza") ||
+                       objetivoLower.contains("récord") || objetivoLower.contains("rm") ||
+                       objetivoLower.contains("1rm") || objetivoLower.contains("máximo") ||
+                       objetivoLower.contains("strongman") || objetivoLower.contains("crosslifting") ||
+                       objetivoLower.contains("barra") || objetivoLower.contains("pesas") ||
+                       objetivoLower.contains("olimpiadas") || objetivoLower.contains("competencia") && objetivoLower.contains("fuerza")) {
+                especialidadRecomendada = "Fuerza y Acondicionamiento";
+
+            // ═══════════════════════════════════════════════════════════════
+            // 🏃 CARDIO Y RESISTENCIA
+            // ═══════════════════════════════════════════════════════════════
+            } else if (objetivoLower.contains("resistencia") || objetivoLower.contains("cardio") ||
+                       objetivoLower.contains("aeróbico") || objetivoLower.contains("aerobico") ||
+                       objetivoLower.contains("correr") || objetivoLower.contains("running") ||
+                       objetivoLower.contains("maratón") || objetivoLower.contains("carrera") ||
+                       objetivoLower.contains("5k") || objetivoLower.contains("10k") ||
+                       objetivoLower.contains("media maratón") || objetivoLower.contains("trail") ||
+                       objetivoLower.contains("trote") || objetivoLower.contains("trotar") ||
+                       objetivoLower.contains("ciclismo") || objetivoLower.contains("bicicleta") ||
+                       objetivoLower.contains("natación") || objetivoLower.contains("nadar") ||
+                       objetivoLower.contains("spinning") || objetivoLower.contains("indoor cycling") ||
+                       objetivoLower.contains("aguante") || objetivoLower.contains("stamina") ||
+                       objetivoLower.contains("pulmón") || objetivoLower.contains("respiración") ||
+                       objetivoLower.contains("vo2") || objetivoLower.contains("capacidad aeróbica") ||
+                       objetivoLower.contains("triatlón") || objetivoLower.contains("duatlón") ||
+                       objetivoLower.contains("endurance") || objetivoLower.contains("ultra") ||
+                       objetivoLower.contains("caminata") && objetivoLower.contains("larga") ||
+                       objetivoLower.contains("senderismo") || objetivoLower.contains("hiking") ||
+                       objetivoLower.contains("corazón") && objetivoLower.contains("saludable")) {
+                especialidadRecomendada = "Cardio y Resistencia";
+
+            // ═══════════════════════════════════════════════════════════════
+            // 🧘 YOGA / FLEXIBILIDAD / MOVILIDAD
+            // ═══════════════════════════════════════════════════════════════
+            } else if (objetivoLower.contains("yoga") || objetivoLower.contains("yogi") ||
+                       objetivoLower.contains("flexibilidad") || objetivoLower.contains("flexible") ||
+                       objetivoLower.contains("estiramiento") || objetivoLower.contains("estirar") ||
+                       objetivoLower.contains("elongación") || objetivoLower.contains("elongar") ||
+                       objetivoLower.contains("movilidad") || objetivoLower.contains("móvil") ||
+                       objetivoLower.contains("pilates") || objetivoLower.contains("mat") ||
+                       objetivoLower.contains("meditación") || objetivoLower.contains("meditar") ||
+                       objetivoLower.contains("mindfulness") || objetivoLower.contains("zen") ||
+                       objetivoLower.contains("relajación") || objetivoLower.contains("relajar") ||
+                       objetivoLower.contains("estrés") && objetivoLower.contains("reducir") ||
+                       objetivoLower.contains("ansiedad") || objetivoLower.contains("calma") ||
+                       objetivoLower.contains("postura") || objetivoLower.contains("alineación") ||
+                       objetivoLower.contains("equilibrio") || objetivoLower.contains("balance") ||
+                       objetivoLower.contains("core") && objetivoLower.contains("estabilidad") ||
+                       objetivoLower.contains("respiración") && objetivoLower.contains("consciente") ||
+                       objetivoLower.contains("vinyasa") || objetivoLower.contains("hatha") ||
+                       objetivoLower.contains("ashtanga") || objetivoLower.contains("yin") ||
+                       objetivoLower.contains("kundalini") || objetivoLower.contains("bikram") ||
+                       objetivoLower.contains("mente") && objetivoLower.contains("cuerpo") ||
+                       objetivoLower.contains("holístico") || objetivoLower.contains("bienestar")) {
+                especialidadRecomendada = "Yoga";
+
+            // ═══════════════════════════════════════════════════════════════
+            // 🤸 ENTRENAMIENTO FUNCIONAL
+            // ═══════════════════════════════════════════════════════════════
+            } else if (objetivoLower.contains("funcional") || objetivoLower.contains("functional") ||
+                       objetivoLower.contains("movimiento") && (objetivoLower.contains("natural") || objetivoLower.contains("diario")) ||
+                       objetivoLower.contains("agilidad") || objetivoLower.contains("ágil") ||
+                       objetivoLower.contains("coordinación") || objetivoLower.contains("coordinar") ||
+                       objetivoLower.contains("vida diaria") || objetivoLower.contains("cotidiano") ||
+                       objetivoLower.contains("completo") || objetivoLower.contains("integral") ||
+                       objetivoLower.contains("cuerpo completo") || objetivoLower.contains("full body") ||
+                       objetivoLower.contains("trx") || objetivoLower.contains("suspension") ||
+                       objetivoLower.contains("kettlebell") || objetivoLower.contains("pesas rusas") ||
+                       objetivoLower.contains("battle rope") || objetivoLower.contains("cuerdas") ||
+                       objetivoLower.contains("sandbag") || objetivoLower.contains("saco") ||
+                       objetivoLower.contains("bosu") || objetivoLower.contains("fitball") ||
+                       objetivoLower.contains("multiarticular") || objetivoLower.contains("compuesto") ||
+                       objetivoLower.contains("animal flow") || objetivoLower.contains("primal") ||
+                       objetivoLower.contains("calistenia") || objetivoLower.contains("peso corporal") ||
+                       objetivoLower.contains("hiit") && objetivoLower.contains("funcional")) {
+                especialidadRecomendada = "Entrenamiento Funcional";
+
+            // ═══════════════════════════════════════════════════════════════
+            // 🔥 CROSSFIT
+            // ═══════════════════════════════════════════════════════════════
+            } else if (objetivoLower.contains("crossfit") || objetivoLower.contains("cross fit") ||
+                       objetivoLower.contains("wod") || objetivoLower.contains("workout of the day") ||
+                       objetivoLower.contains("amrap") || objetivoLower.contains("emom") ||
+                       objetivoLower.contains("tabata") || objetivoLower.contains("intervalo") ||
+                       objetivoLower.contains("hiit") || objetivoLower.contains("alta intensidad") ||
+                       objetivoLower.contains("box") && objetivoLower.contains("jump") ||
+                       objetivoLower.contains("burpees") || objetivoLower.contains("muscle up") ||
+                       objetivoLower.contains("wallball") || objetivoLower.contains("clean") ||
+                       objetivoLower.contains("snatch") || objetivoLower.contains("thruster") ||
+                       objetivoLower.contains("rx") || objetivoLower.contains("scaled") ||
+                       objetivoLower.contains("metcon") || objetivoLower.contains("gymnastic") ||
+                       objetivoLower.contains("kipping") || objetivoLower.contains("butterfly") ||
+                       objetivoLower.contains("completo") && objetivoLower.contains("intenso") ||
+                       objetivoLower.contains("comunidad") && objetivoLower.contains("fitness") ||
+                       objetivoLower.contains("competitivo") || objetivoLower.contains("desafiante")) {
+                especialidadRecomendada = "CrossFit";
+
+            // ═══════════════════════════════════════════════════════════════
+            // 🥊 BOXEO / ARTES MARCIALES
+            // ═══════════════════════════════════════════════════════════════
+            } else if (objetivoLower.contains("boxeo") || objetivoLower.contains("box") ||
+                       objetivoLower.contains("artes marciales") || objetivoLower.contains("marcial") ||
+                       objetivoLower.contains("mma") || objetivoLower.contains("mixtas") ||
+                       objetivoLower.contains("kickboxing") || objetivoLower.contains("muay thai") ||
+                       objetivoLower.contains("karate") || objetivoLower.contains("taekwondo") ||
+                       objetivoLower.contains("jiu jitsu") || objetivoLower.contains("judo") ||
+                       objetivoLower.contains("lucha") || objetivoLower.contains("combate") ||
+                       objetivoLower.contains("defensa") && objetivoLower.contains("personal") ||
+                       objetivoLower.contains("striking") || objetivoLower.contains("grappling") ||
+                       objetivoLower.contains("saco") && objetivoLower.contains("golpear") ||
+                       objetivoLower.contains("sparring") || objetivoLower.contains("ring") ||
+                       objetivoLower.contains("pelea") || objetivoLower.contains("fighter") ||
+                       objetivoLower.contains("reflexes") || objetivoLower.contains("reflejos")) {
+                especialidadRecomendada = "Artes Marciales";
+
+            // ═══════════════════════════════════════════════════════════════
+            // 🏊 NATACIÓN
+            // ═══════════════════════════════════════════════════════════════
+            } else if (objetivoLower.contains("natación") || objetivoLower.contains("nadar") ||
+                       objetivoLower.contains("swimming") || objetivoLower.contains("piscina") ||
+                       objetivoLower.contains("crol") || objetivoLower.contains("mariposa") ||
+                       objetivoLower.contains("espalda") && objetivoLower.contains("estilo") ||
+                       objetivoLower.contains("pecho") && objetivoLower.contains("estilo") ||
+                       objetivoLower.contains("acuático") || objetivoLower.contains("agua") ||
+                       objetivoLower.contains("hidrogimnasia") || objetivoLower.contains("aquagym") ||
+                       objetivoLower.contains("sincronizada") || objetivoLower.contains("waterpolo")) {
+                especialidadRecomendada = "Natación";
+
+            // ═══════════════════════════════════════════════════════════════
+            // 🏃 RUNNING ESPECÍFICO
+            // ═══════════════════════════════════════════════════════════════
+            } else if (objetivoLower.contains("running") || objetivoLower.contains("runner") ||
+                       objetivoLower.contains("correr") && (objetivoLower.contains("mejor") || objetivoLower.contains("tiempo")) ||
+                       objetivoLower.contains("maratón") || objetivoLower.contains("medio maratón") ||
+                       objetivoLower.contains("10k") || objetivoLower.contains("21k") ||
+                       objetivoLower.contains("42k") || objetivoLower.contains("ultra") ||
+                       objetivoLower.contains("trail running") || objetivoLower.contains("montaña") ||
+                       objetivoLower.contains("velocidad") || objetivoLower.contains("sprint") ||
+                       objetivoLower.contains("intervalos") && objetivoLower.contains("carrera") ||
+                       objetivoLower.contains("pace") || objetivoLower.contains("ritmo") ||
+                       objetivoLower.contains("fondo") || objetivoLower.contains("distancia") ||
+                       objetivoLower.contains("trote") || objetivoLower.contains("jogging")) {
+                especialidadRecomendada = "Running";
+
+            // ═══════════════════════════════════════════════════════════════
+            // 🚴 CICLISMO
+            // ═══════════════════════════════════════════════════════════════
+            } else if (objetivoLower.contains("ciclismo") || objetivoLower.contains("cycling") ||
+                       objetivoLower.contains("bicicleta") || objetivoLower.contains("bici") ||
+                       objetivoLower.contains("mtb") || objetivoLower.contains("mountain bike") ||
+                       objetivoLower.contains("ruta") && objetivoLower.contains("ciclismo") ||
+                       objetivoLower.contains("spinning") || objetivoLower.contains("indoor") ||
+                       objetivoLower.contains("rodillo") || objetivoLower.contains("pedalear") ||
+                       objetivoLower.contains("watts") || objetivoLower.contains("ftp") ||
+                       objetivoLower.contains("cadencia") || objetivoLower.contains("rpm")) {
+                especialidadRecomendada = "Ciclismo";
+
+            // ═══════════════════════════════════════════════════════════════
+            // 🏋️ POWERLIFTING ESPECÍFICO
+            // ═══════════════════════════════════════════════════════════════
+            } else if (objetivoLower.contains("powerlifting") || objetivoLower.contains("power lifting") ||
+                       objetivoLower.contains("sentadilla") && objetivoLower.contains("máximo") ||
+                       objetivoLower.contains("press banca") || objetivoLower.contains("bench press") ||
+                       objetivoLower.contains("peso muerto") || objetivoLower.contains("deadlift") ||
+                       objetivoLower.contains("squat") && objetivoLower.contains("heavy") ||
+                       objetivoLower.contains("competencia") && objetivoLower.contains("fuerza") ||
+                       objetivoLower.contains("ipf") || objetivoLower.contains("usapl") ||
+                       objetivoLower.contains("wilks") || objetivoLower.contains("dots")) {
+                especialidadRecomendada = "Powerlifting";
+
+            // ═══════════════════════════════════════════════════════════════
+            // 🏃‍♂️ CALISTENIA
+            // ═══════════════════════════════════════════════════════════════
+            } else if (objetivoLower.contains("calistenia") || objetivoLower.contains("calisthenics") ||
+                       objetivoLower.contains("peso corporal") || objetivoLower.contains("bodyweight") ||
+                       objetivoLower.contains("street workout") || objetivoLower.contains("barras") ||
+                       objetivoLower.contains("paralelas") || objetivoLower.contains("dominadas") ||
+                       objetivoLower.contains("pull up") || objetivoLower.contains("push up") ||
+                       objetivoLower.contains("muscle up") || objetivoLower.contains("front lever") ||
+                       objetivoLower.contains("back lever") || objetivoLower.contains("planche") ||
+                       objetivoLower.contains("handstand") || objetivoLower.contains("pino") ||
+                       objetivoLower.contains("freestyle") || objetivoLower.contains("dinámico")) {
+                especialidadRecomendada = "Calistenia";
+
+            // ═══════════════════════════════════════════════════════════════
+            // 🏥 REHABILITACIÓN / TERAPÉUTICO
+            // ═══════════════════════════════════════════════════════════════
+            } else if (objetivoLower.contains("rehabilitación") || objetivoLower.contains("rehabilitar") ||
+                       objetivoLower.contains("lesión") || objetivoLower.contains("lesionado") ||
+                       objetivoLower.contains("recuperación") || objetivoLower.contains("recuperar") ||
+                       objetivoLower.contains("terapia") || objetivoLower.contains("terapéutico") ||
+                       objetivoLower.contains("fisioterapia") || objetivoLower.contains("kinesiología") ||
+                       objetivoLower.contains("dolor") && (objetivoLower.contains("espalda") || objetivoLower.contains("rodilla")) ||
+                       objetivoLower.contains("cirugía") || objetivoLower.contains("operación") ||
+                       objetivoLower.contains("artritis") || objetivoLower.contains("artrosis") ||
+                       objetivoLower.contains("hernía") || objetivoLower.contains("escoliosis") ||
+                       objetivoLower.contains("cervical") || objetivoLower.contains("lumbar") ||
+                       objetivoLower.contains("tendinitis") || objetivoLower.contains("bursitis") ||
+                       objetivoLower.contains("adulto mayor") || objetivoLower.contains("tercera edad") ||
+                       objetivoLower.contains("adaptado") || objetivoLower.contains("bajo impacto")) {
+                especialidadRecomendada = "Rehabilitación";
+            }
+
+            // NUEVA LÓGICA: Solo recomendar si es la primera visita (sin query params en la URL)
+            // Si el usuario hace búsqueda con "Todas", NO aplicar recomendación
+            boolean primeraVisita = (nombre == null && especialidad == null && minPuntuacion == null &&
+                                     maxPuntuacion == null && minExperiencia == null && minPrecio == null &&
+                                     maxPrecio == null && certificaciones == null);
+
+            if (primeraVisita && especialidadRecomendada != null) {
+                // Primera visita → aplicar recomendación automática
+                especialidad = especialidadRecomendada;
+                mostrarRecomendacion = true;
+                System.out.println("╔════════════════════════════════════════════════════════╗");
+                System.out.println("║  🎯 RECOMENDACIÓN AUTOMÁTICA APLICADA");
+                System.out.println("╠════════════════════════════════════════════════════════╣");
+                System.out.println("  👤 Cliente ID: " + clienteId);
+                System.out.println("  📋 Objetivo: " + objetivoCliente);
+                System.out.println("  ✅ Especialidad recomendada: " + especialidadRecomendada);
+                System.out.println("  💡 Cliente puede cambiar a 'Todas' si desea");
+                System.out.println("╚════════════════════════════════════════════════════════╝");
+            } else if (especialidadRecomendada != null) {
+                // Visita con parámetros → solo mostrar info de recomendación, NO forzar
+                mostrarRecomendacion = true;
+                System.out.println("╔════════════════════════════════════════════════════════╗");
+                System.out.println("║  💡 RECOMENDACIÓN DISPONIBLE (NO APLICADA)");
+                System.out.println("╠════════════════════════════════════════════════════════╣");
+                System.out.println("  👤 Cliente ID: " + clienteId);
+                System.out.println("  📋 Objetivo: " + objetivoCliente);
+                System.out.println("  💡 Recomendación: " + especialidadRecomendada);
+                System.out.println("  ✅ Cliente tiene control total de filtros");
+                System.out.println("╚════════════════════════════════════════════════════════╝");
+            }
+        }
+
     String criterio = (nombre != null) ? nombre.trim() : null;
     String esp = (especialidad != null) ? especialidad.trim() : null;
     String cert = (certificaciones != null) ? certificaciones.trim() : null;
@@ -258,6 +564,9 @@ public class ClienteController {
 
         model.addAttribute("entrenadores", entrenadores);
         model.addAttribute("tieneDiagnostico", tieneDiagnostico);
+        model.addAttribute("objetivoCliente", objetivoCliente);
+        model.addAttribute("especialidadRecomendada", especialidadRecomendada);
+        model.addAttribute("mostrarRecomendacion", mostrarRecomendacion);
         model.addAttribute("nombre", nombre);
         model.addAttribute("especialidad", especialidad);
         model.addAttribute("minPuntuacion", minPuntuacion);
@@ -519,6 +828,7 @@ public class ClienteController {
             info.put("precioMaximo", entrenador.getPrecioMaximo());
             info.put("id", entrenador.getId());
             info.put("verified", entrenador.getVerified() != null ? entrenador.getVerified() : false);
+            info.put("sexo", entrenador.getSexo()); // 👥 Agregar género del entrenador
 
             return org.springframework.http.ResponseEntity.ok(info);
         } catch (Exception e) {

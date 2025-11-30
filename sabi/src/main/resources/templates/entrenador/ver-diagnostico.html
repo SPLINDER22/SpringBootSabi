@@ -116,6 +116,13 @@
                     <h2><i class="fas fa-user-circle"></i> <span th:text="${cliente.nombre + ' ' + (cliente.apellido != null ? cliente.apellido : '')}"></span></h2>
                     <p class="mb-1"><i class="fas fa-envelope"></i> <span th:text="${cliente.email}"></span></p>
                     <p class="mb-1" th:if="${cliente.telefono != null}"><i class="fas fa-phone"></i> <span th:text="${cliente.telefono}"></span></p>
+                    <p class="mb-1" th:if="${cliente.sexo != null}">
+                        <i class="fas fa-venus-mars"></i>
+                        <strong>Género:</strong>
+                        <span th:if="${cliente.sexo.toLowerCase() == 'masculino' || cliente.sexo.toLowerCase() == 'm'}">👨 Masculino</span>
+                        <span th:if="${cliente.sexo.toLowerCase() == 'femenino' || cliente.sexo.toLowerCase() == 'f'}">👩 Femenino</span>
+                        <span th:if="${cliente.sexo.toLowerCase() != 'masculino' && cliente.sexo.toLowerCase() != 'm' && cliente.sexo.toLowerCase() != 'femenino' && cliente.sexo.toLowerCase() != 'f'}" th:text="${cliente.sexo}"></span>
+                    </p>
                     <p class="mb-0"><i class="fas fa-calendar"></i> Diagnostico del: <span th:text="${#temporals.format(diagnostico.fecha, 'dd/MM/yyyy')}"></span></p>
                 </div>
             </div>
