@@ -916,5 +916,72 @@ public class EmailService {
             logger.error("Error al enviar notificación de fin de rutina al cliente {}: {}", emailCliente, e.getMessage());
         }
     }
-}
 
+    @Async
+    public void enviarAvisoBloqueo(String emailDestino, String motivo) {
+        try {
+            MimeMessage message = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
+
+            helper.setFrom("sabi.gaes5@gmail.com");
+            helper.setTo(emailDestino);
+            helper.setSubject("⚠️ Aviso de bloqueo de cuenta en SABI");
+
+            String detalleMotivo = (motivo != null && !motivo.isBlank()) ? motivo : "Incumplimiento de las políticas de uso o actividad inusual.";
+            String html = """
+                <!DOCTYPE html>
+                <html>
+                <head><meta charset=\"UTF-8\"></head>
+                <body style=\"font-family: Segoe UI, Arial, sans-serif; color:#333;\">
+                  <div style=\"max-width:600px;margin:20px auto;padding:20px;border:1px solid #eee;border-radius:10px\">
+                    <h2 style=\"color:#b91c1c\">Aviso de bloqueo de cuenta</h2>
+                    <p>Te informamos que tu cuenta en <strong>SABI</strong> ha sido marcada para bloqueo.</p>
+                    <p><strong>Motivo:</strong> %s</p>
+                    <p>Si consideras que se trata de un error, contáctanos respondiendo a este correo.</p>
+                    <p style=\"margin-top:20px;color:#6b7280\">Este es un mensaje automático. Por favor, no respondas directamente.</p>
+                  </div>
+                </body>
+                </html>
+            """.formatted(detalleMotivo);
+
+            helper.setText(html, true);
+            mailSender.send(message);
+            logger.info("Aviso de bloqueo enviado a {}", emailDestino);
+        } catch (MessagingException e) {
+            logger.error("Error al enviar aviso de bloqueo a {}: {}", emailDestino, e.getMessage());
+        }
+    }
+
+    @Async
+    public void enviarAvisoVerificacion(String emailDestino) {
+        try {
+            MimeMessage message = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
+
+            helper.setFrom("sabi.gaes5@gmail.com");
+            helper.setTo(emailDestino);
+            helper.setSubject("✅ Tu cuenta de Entrenador ha sido verificada en SABI");
+
+            String html = """
+                <!DOCTYPE html>
+                <html>
+                <head><meta charset=\"UTF-8\"></head>
+                <body style=\"font-family: Segoe UI, Arial, sans-serif; color:#333;\">
+                  <div style=\"max-width:600px;margin:20px auto;padding:20px;border:1px solid #eee;border-radius:10px\">
+                    <h2 style=\"color:#15803d\">Cuenta verificada</h2>
+                    <p>¡Felicidades! Tu cuenta de <strong>Entrenador</strong> ha sido <strong>verificada</strong> por el equipo de SABI.</p>
+                    <p>Desde ahora, los clientes verán una insignia de verificación junto a tu nombre.</p>
+                    <p style=\"margin-top:20px;color:#6b7280\">Este es un mensaje automático. Por favor, no respondas directamente.</p>
+                  </div>
+                </body>
+                </html>
+            """;
+
+            helper.setText(html, true);
+            mailSender.send(message);
+            logger.info("Aviso de verificación enviado a {}", emailDestino);
+        } catch (MessagingException e) {
+            logger.error("Error al enviar aviso de verificación a {}: {}", emailDestino, e.getMessage());
+        }
+    }
+}

@@ -169,6 +169,30 @@ public class    DataInitializer implements CommandLineRunner {
                         "Progresiones de calistenia, dominadas, fondos y trabajo de fuerza con peso corporal.",
                         38000.0, 62000.0
                 );
+
+                // Asignar fotos de perfil a todos los entrenadores (tras crearlos)
+                asignarFotoPerfilPorEmail("entrenador@sabi.com");
+                asignarFotoPerfilPorEmail("entrenador1@sabi.com");
+                asignarFotoPerfilPorEmail("entrenador2@sabi.com");
+                asignarFotoPerfilPorEmail("entrenador3@sabi.com");
+                asignarFotoPerfilPorEmail("entrenador4@sabi.com");
+                asignarFotoPerfilPorEmail("entrenador5@sabi.com");
+                asignarFotoPerfilPorEmail("entrenador6@sabi.com");
+                asignarFotoPerfilPorEmail("entrenador7@sabi.com");
+                asignarFotoPerfilPorEmail("entrenador8@sabi.com");
+
+                // Asignar fotos de perfil a clientes creados por email
+                asignarFotoPerfilPorEmail("rojasmena1222@gmail.com"); // Carlos Colmenares
+                asignarFotoPerfilPorEmail("cliente2@sabi.com"); // Laura Torres
+                asignarFotoPerfilPorEmail("cliente3@sabi.com"); // Miguel Ángel
+                asignarFotoPerfilPorEmail("cliente4@sabi.com"); // Paula Ruiz
+                asignarFotoPerfilPorEmail("cliente5@sabi.com"); // Andrés Castro
+                asignarFotoPerfilPorEmail("cliente6@sabi.com"); // Roberto Gómez
+                asignarFotoPerfilPorEmail("cliente7@sabi.com"); // Valentina Morales
+                asignarFotoPerfilPorEmail("cliente8@sabi.com"); // Fernando Silva
+                asignarFotoPerfilPorEmail("cliente9@sabi.com"); // Carolina Vargas
+                asignarFotoPerfilPorEmail("cliente10@sabi.com"); // Sebastián Rojas
+
                 crearEjerciciosSiNoExisten();
                 crearRutinaDeEjemplo();
                 crearRutinaDeErnesto4Semanas(); // Rutina de 4 semanas para Ernesto Espinel
@@ -201,6 +225,7 @@ public class    DataInitializer implements CommandLineRunner {
                 System.out.println("Entrenador - entrenador6@sabi.com - Contraseña (raw): 1234567");
                 System.out.println("Entrenador - entrenador7@sabi.com - Contraseña (raw): 1234567");
                 System.out.println("Entrenador - entrenador8@sabi.com - Contraseña (raw): 1234567");
+                System.out.println("Admin - admin@sabi.com - Contraseña (raw): 1234567");
                 System.out.println("");
         }
 
@@ -983,4 +1008,67 @@ public class    DataInitializer implements CommandLineRunner {
             }
         }
     }
+
+        // Helper: asigna fotoPerfilUrl segun email conocido
+        private void asignarFotoPerfilPorEmail(String email) {
+            usuarioRepository.findByEmail(email).ifPresent(usuario -> {
+                String ruta = resolverRutaFotoPorEmail(email, usuario.getRol());
+                if (ruta != null) {
+                    usuario.setFotoPerfilUrl(ruta);
+                    usuarioRepository.save(usuario);
+                    System.out.println("🖼️ Foto de perfil asignada a " + email + ": " + ruta);
+                }
+            });
+        }
+
+        // Mapeo de emails a archivos en static/img/perfildata
+        private String resolverRutaFotoPorEmail(String email, Rol rol) {
+            switch (email) {
+                // Clientes
+                case "rojasmena1222@gmail.com":
+                    return "/img/perfildata/Carlos Colmenares Cliente.jpg";
+                case "cliente2@sabi.com":
+                    return "/img/perfildata/Laura Torres Cliente.png";
+                case "cliente3@sabi.com":
+                    return "/img/perfildata/Miguel Angel Cliente.png";
+                case "cliente4@sabi.com":
+                    return "/img/perfildata/Paula Ruiz Cliente.png";
+                case "cliente5@sabi.com":
+                    return "/img/perfildata/Andres Castro Cliente.jpg";
+                case "cliente6@sabi.com":
+                    return "/img/perfildata/Roberto Gomez Cliente.jpg";
+                case "cliente7@sabi.com":
+                    return "/img/perfildata/Valentina Morales Cliente.jpg";
+                case "cliente8@sabi.com":
+                    return "/img/perfildata/Fernando Silva Cliente.jpg";
+                case "cliente9@sabi.com":
+                    return "/img/perfildata/Carolina Vargas Clienta.jpg";
+                case "cliente10@sabi.com":
+                    return "/img/perfildata/Sebastian Rojas Cliente.jpg";
+
+                // Entrenadores
+                case "entrenador@sabi.com":
+                    return "/img/perfildata/Ernesto EspinelEntrenador.webp"; // archivo existente en carpeta
+                case "entrenador1@sabi.com":
+                    return "/img/perfildata/Ana Garcia Entrenadora.webp";
+                case "entrenador2@sabi.com":
+                    return "/img/perfildata/Luis Martínez Entrenador.jpg";
+                case "entrenador3@sabi.com":
+                    return "/img/perfildata/Maria Lopez Entrenadora.webp";
+                case "entrenador4@sabi.com":
+                    return "/img/perfildata/Carlos Pérez Entrenador.jpg";
+                case "entrenador5@sabi.com":
+                    return "/img/perfildata/Lucia Fernandez Entrenadora.jpg"; // carpeta tiene Lucia Fernandez Entrenadora.jpg
+                case "entrenador6@sabi.com":
+                    return "/img/perfildata/Jorge Hernández Entrenador.png";
+                case "entrenador7@sabi.com":
+                    return "/img/perfildata/Lucia Fernandez Entrenadora.jpg";
+                case "entrenador8@sabi.com":
+                    return "/img/perfildata/Diego Gómez Entrenador.webp";
+                case "admin@sabi.com":
+                    return "/img/perfildata/Admin Sabi Admin.png"; // usa la foto creada para el admin
+                default:
+                    return rol == Rol.ENTRENADOR ? "/img/entrenador.jpg" : (rol == Rol.ADMIN ? "/img/fotoPerfil.png" : "/img/cliente.jpg");
+            }
+        }
 }

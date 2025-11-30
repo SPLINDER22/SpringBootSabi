@@ -36,6 +36,9 @@ public class Entrenador extends Usuario {
     @Column(length = 1000)
     private String certificaciones; // Rutas de archivos PDF separadas por coma
 
+    @Column(name = "verified", nullable = false)
+    private boolean verified; // Campo agregado para marcar entrenadores verificados por el admin
+
     // Relaciones
 
     @OneToMany(mappedBy = "entrenador", cascade = CascadeType.ALL, orphanRemoval = true)
