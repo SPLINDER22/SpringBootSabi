@@ -66,6 +66,7 @@
                                 <th>Email</th>
                                 <th>Especialidades</th>
                                 <th>Años Exp.</th>
+                                <th>Certificaciones</th>
                                 <th>Estado</th>
                                 <th>Verificación</th>
                                 <th>Acciones</th>
@@ -97,6 +98,21 @@
                                 <td class="text-center">
                                     <span th:text="${entrenador.aniosExperiencia != null ? entrenador.aniosExperiencia + ' años' : 'N/A'}">
                                         0 años
+                                    </span>
+                                </td>
+                                <td class="text-center">
+                                    <!-- SI tiene certificaciones -->
+                                    <span th:if="${entrenador.certificaciones != null && !#strings.isEmpty(entrenador.certificaciones)}"
+                                          class="badge badge-success"
+                                          th:title="'Tiene ' + ${#strings.length(#strings.arraySplit(entrenador.certificaciones, ','))} + ' certificación(es)'">
+                                        <i class="fas fa-file-pdf"></i>
+                                        <span th:text="${#strings.length(#strings.arraySplit(entrenador.certificaciones, ','))}">0</span>
+                                    </span>
+                                    <!-- SI NO tiene certificaciones -->
+                                    <span th:if="${entrenador.certificaciones == null || #strings.isEmpty(entrenador.certificaciones)}"
+                                          class="badge badge-danger"
+                                          title="Sin certificaciones">
+                                        <i class="fas fa-exclamation-triangle"></i> 0
                                     </span>
                                 </td>
                                 <td>

@@ -4,17 +4,22 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="f5d52025-a0fc-48c5-8cc8-d55f70bed372" name="Changes" comment="Creacion ADMIN (Santiago llevaba 3 trimestres diciendo que era necesario)">
+    <list default="true" id="f5d52025-a0fc-48c5-8cc8-d55f70bed372" name="Changes" comment="Creacion Funcionalides ADMIN y vistas">
+      <change afterPath="$PROJECT_DIR$/.idea/copilotDiffState.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/sabi/CORRECCIONES_v1.4.1.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/sabi/DEBUGGING_v1.4.2.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/sabi/GUIA_PRUEBAS_v1.4.0.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/sabi/NUEVAS_FUNCIONALIDADES_v1.4.0.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/sabi/RESUMEN_FINAL_v1.4.0.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/sabi/src/main/java/com/sabi/sabi/config/DiagnosticoInterceptor.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/sabi/src/main/java/com/sabi/sabi/config/WebMvcConfig.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sabi/src/main/java/com/sabi/sabi/config/CustomSuccessHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/sabi/src/main/java/com/sabi/sabi/config/CustomSuccessHandler.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sabi/src/main/java/com/sabi/sabi/config/DataInitializer.java" beforeDir="false" afterPath="$PROJECT_DIR$/sabi/src/main/java/com/sabi/sabi/config/DataInitializer.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sabi/src/main/java/com/sabi/sabi/config/SecurityConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/sabi/src/main/java/com/sabi/sabi/config/SecurityConfig.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sabi/src/main/java/com/sabi/sabi/controller/AdminController.java" beforeDir="false" afterPath="$PROJECT_DIR$/sabi/src/main/java/com/sabi/sabi/controller/AdminController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sabi/src/main/java/com/sabi/sabi/controller/ClienteController.java" beforeDir="false" afterPath="$PROJECT_DIR$/sabi/src/main/java/com/sabi/sabi/controller/ClienteController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sabi/src/main/java/com/sabi/sabi/dto/EntrenadorDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/sabi/src/main/java/com/sabi/sabi/dto/EntrenadorDTO.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sabi/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/sabi/src/main/resources/application.properties" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sabi/src/main/resources/templates/cliente/listaEntrenadores.html" beforeDir="false" afterPath="$PROJECT_DIR$/sabi/src/main/resources/templates/cliente/listaEntrenadores.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sabi/src/main/resources/templates/fragments/header.html" beforeDir="false" afterPath="$PROJECT_DIR$/sabi/src/main/resources/templates/fragments/header.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sabi/src/main/java/com/sabi/sabi/controller/AuthController.java" beforeDir="false" afterPath="$PROJECT_DIR$/sabi/src/main/java/com/sabi/sabi/controller/AuthController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sabi/src/main/resources/templates/admin/entrenadores.html" beforeDir="false" afterPath="$PROJECT_DIR$/sabi/src/main/resources/templates/admin/entrenadores.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sabi/src/main/resources/templates/admin/perfil-usuario.html" beforeDir="false" afterPath="$PROJECT_DIR$/sabi/src/main/resources/templates/admin/perfil-usuario.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sabi/src/main/resources/templates/auth/completar-perfil-entrenador.html" beforeDir="false" afterPath="$PROJECT_DIR$/sabi/src/main/resources/templates/auth/completar-perfil-entrenador.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sabi/src/main/resources/templates/cliente/dashboard.html" beforeDir="false" afterPath="$PROJECT_DIR$/sabi/src/main/resources/templates/cliente/dashboard.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sabi/src/main/resources/templates/cliente/diagnostico-form.html" beforeDir="false" afterPath="$PROJECT_DIR$/sabi/src/main/resources/templates/cliente/diagnostico-form.html" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -47,20 +52,21 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;Application.SabiApplication.executor&quot;: &quot;Run&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultModelSelectionForGA.v1&quot;: &quot;true&quot;,
-    &quot;dart.analysis.tool.window.visible&quot;: &quot;false&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
-    &quot;junie.onboarding.icon.badge.shown&quot;: &quot;true&quot;,
-    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
-    &quot;to.speed.mode.migration.done&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Application.SabiApplication.executor": "Run",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultModelSelectionForGA.v1": "true",
+    "dart.analysis.tool.window.visible": "false",
+    "git-widget-placeholder": "main",
+    "junie.onboarding.icon.badge.shown": "true",
+    "kotlin-language-version-configured": "true",
+    "to.speed.mode.migration.done": "true"
   }
-}</component>
+}]]></component>
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
@@ -92,7 +98,15 @@
       <option name="project" value="LOCAL" />
       <updated>1764535474343</updated>
     </task>
-    <option name="localTasksCounter" value="3" />
+    <task id="LOCAL-00003" summary="Creacion Funcionalides ADMIN y vistas">
+      <option name="closed" value="true" />
+      <created>1764538955525</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1764538955525</updated>
+    </task>
+    <option name="localTasksCounter" value="4" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -110,7 +124,8 @@
     <MESSAGE value="Correciones JIRA" />
     <MESSAGE value="Subida de imagenes segun roles Para la base de datos llena" />
     <MESSAGE value="Creacion ADMIN (Santiago llevaba 3 trimestres diciendo que era necesario)" />
-    <option name="LAST_COMMIT_MESSAGE" value="Creacion ADMIN (Santiago llevaba 3 trimestres diciendo que era necesario)" />
+    <MESSAGE value="Creacion Funcionalides ADMIN y vistas" />
+    <option name="LAST_COMMIT_MESSAGE" value="Creacion Funcionalides ADMIN y vistas" />
   </component>
   <component name="github-copilot-workspace">
     <instructionFileLocations>

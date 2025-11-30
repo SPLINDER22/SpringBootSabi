@@ -263,6 +263,10 @@ public class AuthController {
             @AuthenticationPrincipal UserDetails userDetails,
             Model model
     ) {
+        System.out.println("╔════════════════════════════════════════════════════════╗");
+        System.out.println("║  📝 COMPLETANDO PERFIL ENTRENADOR");
+        System.out.println("╚════════════════════════════════════════════════════════╝");
+
         try {
             // Obtener el usuario desde el contexto de seguridad o desde userDetails
             String username;
@@ -275,19 +279,28 @@ public class AuthController {
                 } else if (auth != null && auth.getName() != null) {
                     username = auth.getName();
                 } else {
+                    System.out.println("❌ No se pudo obtener usuario autenticado");
                     return "redirect:/auth/login";
                 }
             }
 
+            System.out.println("  👤 Usuario: " + username);
             Usuario usuario = usuarioService.obtenerPorEmail(username);
+            System.out.println("  🎭 Rol: " + usuario.getRol());
 
             // Verificar que el usuario sea entrenador
             if (usuario.getRol() != Rol.ENTRENADOR) {
+                System.out.println("❌ Usuario NO es entrenador");
                 return "redirect:/";
             }
 
             // Actualizar los datos del entrenador
             if (usuario instanceof com.sabi.sabi.entity.Entrenador entrenador) {
+                System.out.println("  ✅ Usuario es instancia de Entrenador");
+                System.out.println("  📋 Especialidades: " + especialidades);
+                System.out.println("  💰 Precios: " + precioMinimo + " - " + precioMaximo);
+                System.out.println("  📅 Año inicio: " + anioInicioExperiencia);
+
                 entrenador.setEspecialidades(especialidades);
                 // Mantener compatibilidad con especialidad singular (usar la primera)
                 if (especialidades != null && !especialidades.isEmpty()) {
@@ -301,9 +314,11 @@ public class AuthController {
                 int anioActual = java.time.Year.now().getValue();
                 int aniosExperiencia = anioActual - anioInicioExperiencia;
                 entrenador.setAniosExperiencia(aniosExperiencia);
+                System.out.println("  🎯 Años experiencia: " + aniosExperiencia);
 
                 // Procesar archivos PDF de certificaciones
                 if (certificaciones != null && certificaciones.length > 0) {
+                    System.out.println("  📄 Procesando " + certificaciones.length + " certificación(es)");
                     java.util.List<String> rutasArchivos = new java.util.ArrayList<>();
 
                     // Crear directorio si no existe
@@ -327,20 +342,29 @@ public class AuthController {
 
                             // Agregar ruta a la lista
                             rutasArchivos.add(uploadDir + nombreArchivo);
+                            System.out.println("  ✅ Guardado: " + nombreArchivo);
                         }
                     }
 
                     // Guardar rutas separadas por coma
                     if (!rutasArchivos.isEmpty()) {
                         entrenador.setCertificaciones(String.join(",", rutasArchivos));
+                        System.out.println("  ✅ Total certificaciones guardadas: " + rutasArchivos.size());
                     }
+                } else {
+                    System.out.println("  ⚠️ Sin certificaciones subidas");
                 }
 
                 usuarioService.actualizarUsuario(entrenador);
+                System.out.println("  ✅ Perfil actualizado correctamente");
             }
 
+            System.out.println("  🚀 Redirigiendo a: /entrenador/dashboard");
             return "redirect:/entrenador/dashboard";
+
         } catch (Exception e) {
+            System.out.println("❌ ERROR: " + e.getMessage());
+            e.printStackTrace();
             model.addAttribute("error", "Error al completar perfil: " + e.getMessage());
             return "auth/completar-perfil-entrenador";
         }

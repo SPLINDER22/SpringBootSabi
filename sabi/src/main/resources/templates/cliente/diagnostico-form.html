@@ -57,18 +57,26 @@
                     <div class="invalid-feedback">Este campo es obligatorio.</div>
                 </div>
                 <div class="col-md-4">
-                    <label for="peso" class="form-label">Peso (kg)</label>
+                    <label for="peso" class="form-label">Peso (kg) <span class="text-danger">*</span></label>
                     <input type="number" step="0.1" min="30" max="300" class="form-control" id="peso" th:field="*{peso}" required placeholder="Ej: 70.5">
-                    <small class="text-muted">Ingrese su peso actual en kilogramos.</small>
-                    <div class="invalid-feedback">Este campo es obligatorio.</div>
+                    <small class="text-muted">
+                        <i class="fas fa-info-circle"></i> Rango válido: 30 kg - 300 kg
+                    </small>
+                    <div class="invalid-feedback">
+                        Por favor ingrese un peso válido entre 30 kg y 300 kg.
+                    </div>
                     <!-- Comparativa con diagnóstico anterior -->
                     <div class="comparativa-badge" id="pesoComparativa" style="display: none;"></div>
                 </div>
                 <div class="col-md-4">
-                    <label for="estatura" class="form-label">Estatura (cm)</label>
-                    <input type="number" step="0.1" min="100" max="250" class="form-control" id="estatura" th:field="*{estatura}" required placeholder="Ej: 175">
-                    <small class="text-muted">Ingrese su estatura en centímetros.</small>
-                    <div class="invalid-feedback">Este campo es obligatorio.</div>
+                    <label for="estatura" class="form-label">Estatura (cm) <span class="text-danger">*</span></label>
+                    <input type="number" step="0.1" min="100" max="300" class="form-control" id="estatura" th:field="*{estatura}" required placeholder="Ej: 175">
+                    <small class="text-muted">
+                        <i class="fas fa-info-circle"></i> Rango válido: 100 cm (1.0 m) - 300 cm (3.0 m)
+                    </small>
+                    <div class="invalid-feedback">
+                        Por favor ingrese una estatura válida entre 100 cm y 300 cm.
+                    </div>
                     <!-- Comparativa con diagnóstico anterior -->
                     <div class="comparativa-badge" id="estaturaComparativa" style="display: none;"></div>
                 </div>
@@ -365,6 +373,113 @@
         
         // ✅ Las fotos ahora son opcionales - no se valida que estén presentes
         // El usuario puede crear diagnóstico con o sin fotos
+
+        // ========================================
+        // 🚨 VALIDACIÓN DE PESO Y ESTATURA
+        // ========================================
+        const peso = parseFloat(document.getElementById('peso').value);
+        const estatura = parseFloat(document.getElementById('estatura').value);
+
+        // Validar peso
+        if (peso < 30 || peso > 300) {
+            e.preventDefault();
+            Swal.fire({
+                icon: 'error',
+                title: '❌ Peso Inválido',
+                html: `
+                    <p>El peso ingresado (<strong>${peso} kg</strong>) está fuera del rango permitido.</p>
+                    <div class="alert alert-warning mt-3">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <strong>Rango válido:</strong> 30 kg - 300 kg
+                    </div>
+                    <p class="text-muted">Por favor, ingrese un peso realista.</p>
+                `,
+                confirmButtonText: 'Entendido',
+                confirmButtonColor: '#dc3545'
+            });
+            return false;
+        }
+
+        // Validar estatura
+        if (estatura < 100 || estatura > 300) {
+            e.preventDefault();
+            Swal.fire({
+                icon: 'error',
+                title: '❌ Estatura Inválida',
+                html: `
+                    <p>La estatura ingresada (<strong>${estatura} cm / ${(estatura/100).toFixed(2)} m</strong>) está fuera del rango permitido.</p>
+                    <div class="alert alert-warning mt-3">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <strong>Rango válido:</strong> 100 cm (1.0 m) - 300 cm (3.0 m)
+                    </div>
+                    <p class="text-muted">Por favor, ingrese una estatura realista.</p>
+                `,
+                confirmButtonText: 'Entendido',
+                confirmButtonColor: '#dc3545'
+            });
+            return false;
+        }
+
+        // Validar IMC extremo (alerta adicional)
+        const imc = peso / ((estatura/100) ** 2);
+        if (imc < 10 || imc > 60) {
+            e.preventDefault();
+            Swal.fire({
+                icon: 'warning',
+                title: '⚠️ IMC Extremo',
+                html: `
+                    <p>El IMC calculado es <strong>${imc.toFixed(2)}</strong>, lo cual parece poco realista.</p>
+                    <div class="alert alert-info mt-3">
+                        <strong>Datos ingresados:</strong><br>
+                        Peso: ${peso} kg<br>
+                        Estatura: ${estatura} cm (${(estatura/100).toFixed(2)} m)<br>
+                        IMC: ${imc.toFixed(2)}
+                    </div>
+                    <p class="text-muted">Por favor, verifica que los datos sean correctos.</p>
+                `,
+                confirmButtonText: 'Revisar Datos',
+                confirmButtonColor: '#ffc107'
+            });
+            return false;
+        }
+    });
+
+    // Validación en tiempo real para peso
+    document.getElementById('peso').addEventListener('blur', function() {
+        const peso = parseFloat(this.value);
+        if (peso && (peso < 30 || peso > 300)) {
+            this.classList.add('is-invalid');
+            Swal.fire({
+                toast: true,
+                position: 'top-end',
+                icon: 'warning',
+                title: 'Peso fuera de rango (30-300 kg)',
+                showConfirmButton: false,
+                timer: 3000,
+                timerProgressBar: true
+            });
+        } else {
+            this.classList.remove('is-invalid');
+        }
+    });
+
+    // Validación en tiempo real para estatura
+    document.getElementById('estatura').addEventListener('blur', function() {
+        const estatura = parseFloat(this.value);
+        if (estatura && (estatura < 100 || estatura > 300)) {
+            this.classList.add('is-invalid');
+            Swal.fire({
+                toast: true,
+                position: 'top-end',
+                icon: 'warning',
+                title: 'Estatura fuera de rango (100-300 cm)',
+                showConfirmButton: false,
+                timer: 3000,
+                timerProgressBar: true
+            });
+        } else {
+            this.classList.remove('is-invalid');
+        }
     });
 </script>
 </section>

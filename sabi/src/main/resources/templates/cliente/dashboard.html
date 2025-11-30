@@ -505,6 +505,108 @@
             }, 1000);
         }
     });
+
+    // ========================================
+    // 🚨 MODAL OBLIGATORIO DE DIAGNÓSTICO
+    // ========================================
+    const tieneDiagnostico = /*[[${tieneDiagnostico}]]*/ true;
+
+    console.log('╔════════════════════════════════════════════════════════╗');
+    console.log('║  🔍 VERIFICANDO DIAGNÓSTICO');
+    console.log('╚════════════════════════════════════════════════════════╝');
+    console.log('  ¿Tiene diagnóstico?:', tieneDiagnostico);
+    console.log('  typeof tieneDiagnostico:', typeof tieneDiagnostico);
+    console.log('  SweetAlert2 disponible?:', typeof Swal !== 'undefined');
+
+    // Si NO tiene diagnóstico, mostrar modal que NO se puede cerrar
+    if (!tieneDiagnostico) {
+        console.log('  ⚠️ Cliente SIN diagnóstico - Mostrando modal');
+
+        Swal.fire({
+            title: '¡Diagnóstico Obligatorio! 📋',
+            html: `
+                <div style="text-align: left; padding: 20px; line-height: 1.8;">
+                    <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                                padding: 20px; border-radius: 15px; color: white; margin-bottom: 25px;
+                                box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);">
+                        <i class="fas fa-exclamation-triangle" style="font-size: 3rem; margin-bottom: 15px;"></i>
+                        <h3 style="margin: 0; font-weight: bold;">¡Atención!</h3>
+                    </div>
+
+                    <div style="background: #f8f9fa; padding: 20px; border-radius: 10px; margin-bottom: 20px;">
+                        <h5 style="color: #333; margin-bottom: 15px;">
+                            <i class="fas fa-info-circle text-primary"></i>
+                            Para acceder a todas las funcionalidades de SABI, debes:
+                        </h5>
+                        <ul style="color: #555; font-size: 1rem; text-align: left;">
+                            <li><i class="fas fa-check text-success"></i> <strong>Registrar tu diagnóstico inicial</strong></li>
+                            <li><i class="fas fa-check text-success"></i> Proporcionar tu información física actual</li>
+                            <li><i class="fas fa-check text-success"></i> Definir tus objetivos de entrenamiento</li>
+                            <li><i class="fas fa-check text-success"></i> Permitir que los entrenadores te asistan mejor</li>
+                        </ul>
+                    </div>
+
+                    <div style="background: #fff3cd; border-left: 4px solid #ffc107; padding: 15px; border-radius: 5px; margin-bottom: 20px;">
+                        <p style="margin: 0; color: #856404;">
+                            <i class="fas fa-lock"></i>
+                            <strong>Sin diagnóstico no podrás:</strong>
+                        </p>
+                        <ul style="color: #856404; margin-top: 10px; margin-bottom: 0;">
+                            <li>Buscar entrenadores</li>
+                            <li>Crear rutinas personalizadas</li>
+                            <li>Ver tu historial de progreso</li>
+                            <li>Acceder al resto de funcionalidades</li>
+                        </ul>
+                    </div>
+
+                    <p style="color: #333; margin-bottom: 0; font-size: 1.1rem; text-align: center;">
+                        <strong>¡Completa tu diagnóstico ahora para comenzar! 🚀</strong>
+                    </p>
+                </div>
+            `,
+            icon: null,
+            confirmButtonText: '<i class="fas fa-clipboard-list"></i> Registrar Mi Diagnóstico',
+            confirmButtonColor: '#667eea',
+            allowOutsideClick: false,
+            allowEscapeKey: false,
+            allowEnterKey: false,
+            showCloseButton: false,
+            customClass: {
+                popup: 'swal-diagnostico-obligatorio animated pulse',
+                title: 'swal-title-custom',
+                htmlContainer: 'swal-html-custom',
+                confirmButton: 'swal-confirm-custom'
+            },
+            didOpen: () => {
+                // Animación del botón
+                const confirmButton = Swal.getConfirmButton();
+                confirmButton.style.fontSize = '1.1rem';
+                confirmButton.style.padding = '15px 40px';
+                confirmButton.style.borderRadius = '50px';
+                confirmButton.style.fontWeight = 'bold';
+                confirmButton.style.boxShadow = '0 10px 25px rgba(102, 126, 234, 0.4)';
+                confirmButton.style.transition = 'all 0.3s ease';
+
+                confirmButton.addEventListener('mouseenter', function() {
+                    this.style.transform = 'translateY(-2px)';
+                    this.style.boxShadow = '0 15px 35px rgba(102, 126, 234, 0.5)';
+                });
+
+                confirmButton.addEventListener('mouseleave', function() {
+                    this.style.transform = 'translateY(0)';
+                    this.style.boxShadow = '0 10px 25px rgba(102, 126, 234, 0.4)';
+                });
+            }
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // Redirigir a la página de diagnóstico
+                console.log('  🚀 Redirigiendo a /cliente/diagnostico/nuevo');
+                window.location.href = '/cliente/diagnostico/nuevo';
+            }
+        });
+    } else {
+        console.log('  ✅ Cliente CON diagnóstico - Modal NO necesario');
+    }
 </script>
 <style>
     .colored-toast .swal2-icon {
