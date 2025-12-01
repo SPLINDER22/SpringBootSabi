@@ -24,8 +24,8 @@
             <i class="fas fa-info-circle"></i>
             <strong>Verificación de Entrenadores:</strong>
             <span>
-                Revisa las certificaciones y documentos subidos por los entrenadores para otorgarles la verificación oficial de SABI.
-                Solo los entrenadores con certificaciones podrán ser verificados.
+                Revisa los perfiles de los entrenadores para otorgarles la verificación oficial de SABI.
+                Puedes verificar a cualquier entrenador, tenga o no certificaciones cargadas.
             </span>
         </div>
 
@@ -221,8 +221,8 @@
                                             <i class="fas fa-eye"></i> Ver Perfil
                                         </a>
 
-                                        <!-- Verificar: solo si NO está verificado y TIENE certificaciones -->
-                                        <button th:if="${!entrenador.verified and entrenador.certificaciones != null and !#strings.isEmpty(entrenador.certificaciones)}"
+                                        <!-- Verificar: solo si NO está verificado (sin importar certificaciones) -->
+                                        <button th:if="${!entrenador.verified}"
                                                 type="button"
                                                 class="btn btn-success mb-1 btn-verificar"
                                                 th:data-id="${entrenador.id}"
@@ -292,6 +292,7 @@
                                 <li>El entrenador tendrá un badge de verificación visible para los clientes</li>
                                 <li>Se enviará un correo de notificación automáticamente</li>
                                 <li>Los clientes podrán identificar que SABI valida la cuenta del entrenador</li>
+                                <li>La verificación puede otorgarse independientemente de las certificaciones cargadas</li>
                             </ul>
                         </div>
                     </div>

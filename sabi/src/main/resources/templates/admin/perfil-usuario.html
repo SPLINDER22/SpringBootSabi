@@ -8,9 +8,8 @@
 </head>
 
 <body>
-    <div class="container-fluid">
-        <!-- Page Heading -->
-        <div class="d-sm-flex align-items-center justify-content-between mb-4">
+    <!-- Page Heading -->
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
             <h1 class="h3 mb-0 text-gray-800">
                 <i class="fas fa-user text-primary"></i> Perfil de Usuario
             </h1>
@@ -27,7 +26,7 @@
         <!-- Información del Usuario -->
         <div class="row">
             <!-- Columna Izquierda - Foto y datos básicos -->
-            <div class="col-xl-4 col-lg-5 mb-4">
+            <div class="col-md-4 col-12 mb-4">
                 <div class="card shadow mb-4">
                     <div class="card-header py-3 bg-primary text-white">
                         <h6 class="m-0 font-weight-bold">Información Personal</h6>
@@ -90,15 +89,14 @@
 
                             <!-- Acciones para entrenadores -->
                             <div th:if="${esEntrenador}">
-                                <button th:if="${!entrenador.isVerified()}"
-                                        type="button"
-                                        class="btn btn-success mb-2 btn-verificar"
-                                        th:data-id="${entrenador.id}"
-                                        th:data-nombre="${entrenador.nombre}"
-                                        th:data-email="${entrenador.email}">
-                                    <i class="fas fa-check-circle"></i> Verificar Entrenador
-                                </button>
-                                
+                                <!-- Form POST directo para verificar: más fiable y compatible -->
+                                <form th:if="${!entrenador.isVerified()}" th:action="@{/admin/entrenadores/{id}/verificar(id=${entrenador.id})}" method="post" onsubmit="return confirm('¿Deseas verificar al entrenador ' + [[${entrenador.nombre}]] + '?');">
+                                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                                    <button type="submit" class="btn btn-success mb-2 btn-verificar" th:attr="data-id=${entrenador.id} data-nombre=${entrenador.nombre} data-email=${entrenador.email}">
+                                        <i class="fas fa-check-circle"></i> Verificar Entrenador
+                                    </button>
+                                </form>
+
                                 <form th:if="${entrenador.isVerified()}"
                                       th:action="@{/admin/entrenadores/{id}/revocar(id=${entrenador.id})}"
                                       method="post"
@@ -114,7 +112,7 @@
             </div>
 
             <!-- Columna Derecha - Detalles completos -->
-            <div class="col-xl-8 col-lg-7">
+            <div class="col-md-8 col-12">
                 <!-- Datos de Contacto -->
                 <div class="card shadow mb-4">
                     <div class="card-header py-3 bg-info text-white">
@@ -314,7 +312,6 @@
                 </div>
             </div>
         </div>
-    </div>
 
     <!-- Modal para verificar entrenador -->
     <div class="modal fade" id="verificarModal" tabindex="-1" role="dialog">
@@ -399,7 +396,7 @@
                     const id = btn.dataset.id;
                     const nombre = btn.dataset.nombre;
                     const email = btn.dataset.email;
-                    verificarEntrenador(id, nombre, email);
+                    verificarEntrenadorInline(btn);
                 }
 
                 // Event listener para botón bloquear
@@ -411,20 +408,127 @@
                     bloquearUsuario(id, nombre, email);
                 }
             });
+
+            // Binding directo adicional - más robusto en algunos navegadores/entornos
+            document.querySelectorAll('.btn-verificar').forEach(function(btn) {
+                try {
+                    btn.addEventListener('click', function(ev) {
+                        // No prevenir el comportamiento por defecto: queremos que el formulario se envíe
+                        console.log('Direct listener (no preventDefault): btn-verificar clicked', {id: btn.dataset.id, nombre: btn.dataset.nombre});
+                        // No llamar a verificarEntrenadorInline para no interferir con el submit
+                    });
+                } catch (e) {
+                    console.error('Error binding direct listener to btn-verificar', e);
+                }
+            });
         });
 
         function verificarEntrenador(id, nombre, email) {
+            console.log('verificarEntrenador called', {id: id, nombre: nombre, email: email});
             document.getElementById('nombreEntrenador').textContent = nombre;
             document.getElementById('emailEntrenador').textContent = email;
-            document.getElementById('formVerificar').action = '/admin/entrenadores/' + id + '/verificar';
-            $('#verificarModal').modal('show');
+            var form = document.getElementById('formVerificar');
+            form.action = '/admin/entrenadores/' + id + '/verificar';
+            // Mostrar modal de forma robusta (Bootstrap 5 o 4 o fallback). Si no se puede, enviar el formulario directamente.
+            var modalEl = document.getElementById('verificarModal');
+            var shown = false;
+            try {
+                if (window.bootstrap && typeof window.bootstrap.Modal === 'function') {
+                    var bsModal = window.bootstrap.Modal.getOrCreateInstance(modalEl);
+                    bsModal.show();
+                    shown = true;
+                } else if (window.jQuery && typeof jQuery.fn.modal === 'function') {
+                    // Bootstrap 4/jQuery
+                    $('#verificarModal').modal('show');
+                    shown = true;
+                } else {
+                    // Simple visual fallback (no modal library) - show inline and set shown true
+                    modalEl.style.display = 'block';
+                    modalEl.classList.add('show');
+                    shown = true;
+                }
+            } catch (e) {
+                console.error('No se pudo abrir modal verification:', e);
+                shown = false;
+            }
+            // Si no se pudo mostrar el modal (por error o entorno extraño), enviar el formulario como fallback
+            if (!shown) {
+                console.log('Modal no disponible - enviando formulario de verificación directamente');
+                try { form.submit(); } catch (e) { console.error('No se pudo enviar formulario de verificación:', e); }
+            }
         }
 
+        // Handler robusto que lee los data-attributes del botón y delega a verificarEntrenador
+        function verificarEntrenadorInline(btn) {
+            var id = btn.getAttribute('data-id');
+            var nombre = btn.getAttribute('data-nombre');
+            var email = btn.getAttribute('data-email');
+            console.log('verificarEntrenadorInline', {id: id, nombre: nombre, email: email});
+            verificarEntrenador(id, nombre, email);
+        }
++
++        // Fallback robusto: hace POST directo al endpoint de verificación usando fetch y CSRF
++        async function verificarEntrenadorDirect(btn) {
++            var id = btn.getAttribute('data-id');
++            var nombre = btn.getAttribute('data-nombre');
++            var email = btn.getAttribute('data-email');
++            console.log('verificarEntrenadorDirect', {id: id, nombre: nombre, email: email});
++            // Confirmación simple
++            if (!confirm('¿Deseas verificar al entrenador ' + nombre + '?')) return;
++
++            // Obtener token CSRF desde el input del formulario (Thymeleaf renderiza name con _csrf.parameterName)
++            var csrfInput = document.querySelector('#formVerificar input[type="hidden"][name*="_csrf"]') || document.querySelector('#formVerificar input[type="hidden"][name]');
++            var csrfHeader = 'X-CSRF-TOKEN';
++            var csrfToken = csrfInput ? csrfInput.value : null;
++
++            var url = '/admin/entrenadores/' + id + '/verificar';
++            try {
++                var opts = { method: 'POST', headers: {}, credentials: 'same-origin' };
++                if (csrfToken) opts.headers[csrfHeader] = csrfToken;
++                // Some setups require Accept header
++                opts.headers['Accept'] = 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8';
+                 // Send request
++                const resp = await fetch(url, opts);
++                console.log('verificarEntrenadorDirect resp', resp.status);
++                if (resp.redirected) {
++                    window.location = resp.url;
++                    return;
++                }
++                if (resp.ok) {
++                    // recargar la página para reflejar el cambio
++                    window.location.reload();
++                } else {
++                    // Leer texto para depurar (por ejemplo 403 con mensaje)
++                    let txt = await resp.text();
++                    console.error('verificarEntrenadorDirect error body:', txt);
++                    alert('No se pudo verificar el entrenador. Código: ' + resp.status + '\n' + (txt ? txt.substring(0, 400) : ''));
++                }
+             } catch (e) {
+                 console.error('Error al verificar via fetch', e);
+                 alert('Error al verificar entrenador: ' + e.message);
+             }
+         }
+
         function bloquearUsuario(id, nombre, email) {
+            console.log('bloquearUsuario called', {id: id, nombre: nombre, email: email});
             document.getElementById('nombreUsuario').textContent = nombre;
             document.getElementById('emailUsuario').textContent = email;
             document.getElementById('formBloquear').action = '/admin/usuarios/' + id + '/bloquear';
-            $('#bloquearModal').modal('show');
+            // Mostrar modal de forma robusta
+            var modalEl = document.getElementById('bloquearModal');
+            try {
+                if (window.bootstrap && typeof window.bootstrap.Modal === 'function') {
+                    var bsModal = window.bootstrap.Modal.getOrCreateInstance(modalEl);
+                    bsModal.show();
+                } else if (window.jQuery && typeof jQuery.fn.modal === 'function') {
+                    $('#bloquearModal').modal('show');
+                } else {
+                    modalEl.style.display = 'block';
+                    modalEl.classList.add('show');
+                }
+            } catch (e) {
+                console.error('No se pudo abrir modal bloquear:', e);
+            }
         }
     </script>
 </body>

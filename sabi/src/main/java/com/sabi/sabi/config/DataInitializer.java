@@ -1089,7 +1089,7 @@ public class    DataInitializer implements CommandLineRunner {
                 case "entrenador8@sabi.com":
                     return "/img/perfildata/Diego Gómez Entrenador.webp";
                 case "admin@sabi.com":
-                    return "/img/perfildata/Admin Sabi Admin.png"; // usa la foto creada para el admin
+                           return "/img/perfildata/sabi admin.jpg"; // archivo existente en carpeta
                 default:
                     return rol == Rol.ENTRENADOR ? "/img/entrenador.jpg" : (rol == Rol.ADMIN ? "/img/fotoPerfil.png" : "/img/cliente.jpg");
             }

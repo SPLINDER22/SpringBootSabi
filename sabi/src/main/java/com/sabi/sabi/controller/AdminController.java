@@ -12,6 +12,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
 
@@ -209,7 +210,7 @@ public class AdminController {
     }
 
     @PostMapping("/entrenadores/{id}/verificar")
-    public String verificar(@PathVariable Long id) {
+    public String verificar(@PathVariable Long id, RedirectAttributes redirectAttributes) {
         System.out.println("╔════════════════════════════════════════════════════════╗");
         System.out.println("║  ✅ ADMIN - Verificando Entrenador ID: " + id);
         System.out.println("╚════════════════════════════════════════════════════════╝");
@@ -226,11 +227,12 @@ public class AdminController {
             }
             System.out.println("  ✅ Entrenador verificado exitosamente");
         });
+        redirectAttributes.addFlashAttribute("success", "Entrenador verificado correctamente.");
         return "redirect:/admin/entrenadores";
     }
 
     @PostMapping("/entrenadores/{id}/revocar")
-    public String revocar(@PathVariable Long id) {
+    public String revocar(@PathVariable Long id, RedirectAttributes redirectAttributes) {
         System.out.println("╔════════════════════════════════════════════════════════╗");
         System.out.println("║  ⚠️ ADMIN - Revocando Verificación de Entrenador ID: " + id);
         System.out.println("╚════════════════════════════════════════════════════════╝");
@@ -241,6 +243,7 @@ public class AdminController {
             entrenadorRepository.save(entrenador);
             System.out.println("  ✅ Verificación revocada exitosamente");
         });
+        redirectAttributes.addFlashAttribute("success", "Verificación revocada correctamente.");
         return "redirect:/admin/entrenadores";
     }
 }

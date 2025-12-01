@@ -21,7 +21,7 @@ public class EntrenadorServiceImpl implements EntrenadorService {
     public List<EntrenadorDTO> getEntrenadores() {
         List<Entrenador> entrenadores = entrenadorRepository.findAll();
         return entrenadores.stream()
-                .map(entrenador -> modelMapper.map(entrenador, EntrenadorDTO.class))
+                .map(this::mapToDTO)
                 .toList();
     }
 
@@ -29,7 +29,7 @@ public class EntrenadorServiceImpl implements EntrenadorService {
     public List<EntrenadorDTO> getAllActiveEntrenadores() {
         List<Entrenador> entrenadores = entrenadorRepository.findByEstadoTrue();
         return entrenadores.stream()
-                .map(entrenador -> modelMapper.map(entrenador, EntrenadorDTO.class))
+                .map(this::mapToDTO)
                 .toList();
     }
 
@@ -39,7 +39,15 @@ public class EntrenadorServiceImpl implements EntrenadorService {
                 .stream()
                 .findFirst()
                 .orElseThrow(() -> new RuntimeException("Entrenador not found with id: " + id));
-        return modelMapper.map(entrenador, EntrenadorDTO.class);
+        return mapToDTO(entrenador);
+    }
+
+    // Método helper para mapear Entrenador a EntrenadorDTO asegurando que verified se mapee correctamente
+    private EntrenadorDTO mapToDTO(Entrenador entrenador) {
+        EntrenadorDTO dto = modelMapper.map(entrenador, EntrenadorDTO.class);
+        // Asegurar que el campo verified se mapee correctamente
+        dto.setVerified(entrenador.isVerified());
+        return dto;
     }
 
     @Override
@@ -49,7 +57,7 @@ public class EntrenadorServiceImpl implements EntrenadorService {
             updateEntrenador(entrenador.getId(), entrenadorDTO);
         }
         entrenador = entrenadorRepository.save(entrenador);
-        return modelMapper.map(entrenador, EntrenadorDTO.class);
+        return mapToDTO(entrenador);
     }
 
     @Override
@@ -122,7 +130,7 @@ public class EntrenadorServiceImpl implements EntrenadorService {
         }
 
         existingEntrenador = entrenadorRepository.save(existingEntrenador);
-        return modelMapper.map(existingEntrenador, EntrenadorDTO.class);
+        return mapToDTO(existingEntrenador);
     }
 
     @Override
@@ -137,7 +145,7 @@ public class EntrenadorServiceImpl implements EntrenadorService {
         List<Entrenador> list = entrenadorRepository
                 .findByNombreContainingIgnoreCaseAndEstadoTrue(nombre);
         return list.stream()
-                .map(e -> modelMapper.map(e, EntrenadorDTO.class))
+                .map(this::mapToDTO)
                 .toList();
     }
 
@@ -163,6 +171,6 @@ public class EntrenadorServiceImpl implements EntrenadorService {
             max = tmp;
         }
         List<Entrenador> list = entrenadorRepository.searchActive(n, esp, min, max, minExp, cert);
-        return list.stream().map(e -> modelMapper.map(e, EntrenadorDTO.class)).toList();
+        return list.stream().map(this::mapToDTO).toList();
     }
 }
