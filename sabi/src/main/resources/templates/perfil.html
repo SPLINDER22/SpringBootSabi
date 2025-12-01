@@ -382,22 +382,119 @@
                     </div>
 
                     <!-- Certificaciones -->
-                    <div class="entrenador-item" style="grid-column: 1 / -1;" th:if="${certificaciones != null && !certificaciones.isEmpty()}">
+                    <div class="entrenador-item" style="grid-column: 1 / -1;">
                         <div class="info-label" style="color: #0c4a6e;">
                             <i class="fas fa-certificate"></i> CERTIFICACIONES
                         </div>
-                        <div class="certificaciones-list">
+
+                        <!-- SI tiene certificaciones -->
+                        <div th:if="${certificaciones != null && !certificaciones.isEmpty()}" class="certificaciones-list">
+                            <div class="alert" style="background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%); border-left: 4px solid #10b981; padding: 1rem; border-radius: 8px; margin-bottom: 1rem;">
+                                <i class="fas fa-check-circle" style="color: #059669;"></i>
+                                <strong style="color: #065f46;">Tienes certificaciones cargadas.</strong>
+                                <span style="color: #047857;">Puedes añadir más certificados usando el formulario al final de esta página.</span>
+                            </div>
                             <div class="certificacion-item" th:each="cert : ${certificaciones}">
-                                <i class="fas fa-file-pdf"></i>
-                                <a th:href="${cert}" target="_blank" th:download="${#strings.substringAfterLast(cert, '/')}" 
+                                <i class="fas fa-file-pdf" style="color: #dc2626;"></i>
+                                <a th:href="${cert}" target="_blank" th:download="${#strings.substringAfterLast(cert, '/')}"
                                    style="color: #2563eb; font-weight: 600; text-decoration: none;">
                                     <span th:text="${#strings.substringAfterLast(cert, '/')}">Certificación</span>
                                 </a>
                             </div>
                         </div>
+
+                        <!-- SI NO tiene certificaciones -->
+                        <div th:if="${certificaciones == null || certificaciones.isEmpty()}"
+                             style="background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+                                    border-left: 4px solid #f59e0b;
+                                    padding: 1.5rem;
+                                    border-radius: 12px;
+                                    margin-top: 0.75rem;">
+                            <div style="display: flex; align-items: start; gap: 1rem;">
+                                <i class="fas fa-exclamation-triangle fa-2x" style="color: #d97706;"></i>
+                                <div>
+                                    <h5 style="margin: 0 0 0.5rem 0; color: #92400e; font-size: 1.1rem;">
+                                        ⚠️ No has subido certificaciones
+                                    </h5>
+                                    <p style="margin: 0 0 0.75rem 0; color: #78350f; line-height: 1.6;">
+                                        Para que SABI pueda <strong>verificar tu cuenta</strong> y aparezcas como entrenador oficial,
+                                        debes subir al menos una certificación profesional.
+                                    </p>
+                                    <ul style="margin: 0.5rem 0; padding-left: 1.5rem; color: #78350f;">
+                                        <li>Sin certificaciones, no serás candidato a verificación</li>
+                                        <li>Los clientes confían más en entrenadores verificados</li>
+                                        <li>Sube tus certificados PDF al final de esta página</li>
+                                    </ul>
+                                    <a href="#certificaciones-form"
+                                       style="display: inline-block;
+                                              margin-top: 1rem;
+                                              background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+                                              color: white;
+                                              padding: 0.75rem 1.5rem;
+                                              border-radius: 8px;
+                                              text-decoration: none;
+                                              font-weight: 700;
+                                              box-shadow: 0 2px 8px rgba(245, 158, 11, 0.3);
+                                              transition: all 0.3s;">
+                                        <i class="fas fa-arrow-down"></i> Subir Certificaciones Ahora
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
+        </div>
+
+        <!-- Formulario para Subir/Añadir Certificaciones (solo para entrenadores) -->
+        <div class="perfil-card" id="certificaciones-form" th:if="${usuario.rol == T(com.sabi.sabi.entity.enums.Rol).ENTRENADOR}">
+            <h4 class="section-title">
+                <i class="fas fa-certificate"></i> Gestionar Certificaciones
+            </h4>
+            <p style="color: #64748b; margin-bottom: 1.5rem; font-size: 0.95rem;">
+                <i class="fas fa-info-circle"></i>
+                Sube tus certificaciones profesionales en formato PDF para que SABI pueda verificar tu cuenta.
+            </p>
+
+            <div th:if="${certificaciones != null && !certificaciones.isEmpty()}"
+                 style="background: linear-gradient(135deg, #e0f2fe 0%, #bae6fd 100%);
+                        padding: 1.25rem;
+                        border-radius: 12px;
+                        margin-bottom: 1.5rem;
+                        border-left: 4px solid #0ea5e9;">
+                <p style="margin: 0; color: #0c4a6e; font-weight: 600;">
+                    <i class="fas fa-plus-circle"></i>
+                    <strong>Añadir más certificaciones:</strong> Los nuevos certificados que subas se añadirán a los que ya tienes.
+                    No se eliminarán las certificaciones anteriores.
+                </p>
+            </div>
+
+            <form th:action="@{/perfil/certificaciones/subir}" method="post" enctype="multipart/form-data"
+                  onsubmit="return validarCertificaciones()">
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+
+                <div class="form-group">
+                    <label for="certificacionesInput">
+                        <i class="fas fa-file-pdf"></i> Seleccionar Certificaciones (PDF)
+                    </label>
+                    <small style="color: #64748b; display: block; margin-bottom: 0.75rem; font-size: 0.9rem;">
+                        📄 Puedes seleccionar múltiples archivos PDF. Cada archivo debe ser menor a 5MB.
+                    </small>
+                    <input type="file"
+                           id="certificacionesInput"
+                           name="certificaciones"
+                           class="form-control"
+                           accept="application/pdf"
+                           multiple
+                           required
+                           onchange="mostrarArchivosSelecionados(this)">
+                    <div id="archivos-seleccionados" style="margin-top: 1rem;"></div>
+                </div>
+
+                <button type="submit" class="btn-primary">
+                    <i class="fas fa-upload"></i> Subir Certificaciones
+                </button>
+            </form>
         </div>
 
         <!-- Formulario de Edición -->
@@ -658,6 +755,133 @@
             };
             reader.readAsDataURL(file);
         }
+
+        // ========================================
+        // FUNCIONES PARA GESTIÓN DE CERTIFICACIONES
+        // ========================================
+
+        function mostrarArchivosSelecionados(input) {
+            const container = document.getElementById('archivos-seleccionados');
+            if (!container) return;
+
+            const files = input.files;
+            if (files.length === 0) {
+                container.innerHTML = '';
+                return;
+            }
+
+            let html = '<div style="background: #f8f9fa; padding: 1rem; border-radius: 8px; margin-top: 0.5rem;">';
+            html += '<h5 style="margin: 0 0 0.75rem 0; color: #1e293b; font-size: 0.95rem;"><i class="fas fa-list"></i> Archivos seleccionados:</h5>';
+            html += '<ul style="margin: 0; padding-left: 1.5rem;">';
+
+            let totalSize = 0;
+            let hasError = false;
+
+            for (let i = 0; i < files.length; i++) {
+                const file = files[i];
+                const sizeInMB = (file.size / 1024 / 1024).toFixed(2);
+                totalSize += file.size;
+
+                const isTooBig = file.size > 5 * 1024 * 1024; // 5MB
+                const isInvalidType = file.type !== 'application/pdf';
+
+                if (isTooBig || isInvalidType) {
+                    hasError = true;
+                }
+
+                const iconColor = isTooBig || isInvalidType ? '#dc2626' : '#059669';
+                const textColor = isTooBig || isInvalidType ? '#dc2626' : '#475569';
+
+                html += `<li style="margin-bottom: 0.5rem; color: ${textColor};">`;
+                html += `<i class="fas fa-file-pdf" style="color: ${iconColor};"></i> `;
+                html += `<strong>${file.name}</strong> `;
+                html += `<span style="color: #64748b;">(${sizeInMB} MB)</span>`;
+
+                if (isTooBig) {
+                    html += `<br><span style="color: #dc2626; font-size: 0.85rem; margin-left: 1.5rem;">⚠️ Archivo demasiado grande (máximo 5MB)</span>`;
+                }
+                if (isInvalidType) {
+                    html += `<br><span style="color: #dc2626; font-size: 0.85rem; margin-left: 1.5rem;">⚠️ Solo se permiten archivos PDF</span>`;
+                }
+
+                html += '</li>';
+            }
+
+            html += '</ul>';
+            html += `<p style="margin: 0.75rem 0 0 0; color: #64748b; font-size: 0.9rem;">`;
+            html += `<i class="fas fa-info-circle"></i> Total: ${files.length} archivo(s) - ${(totalSize / 1024 / 1024).toFixed(2)} MB`;
+            html += `</p>`;
+
+            if (hasError) {
+                html += `<div style="background: #fee2e2; padding: 0.75rem; border-radius: 6px; margin-top: 0.75rem; border-left: 3px solid #dc2626;">`;
+                html += `<p style="margin: 0; color: #991b1b; font-weight: 600; font-size: 0.9rem;">`;
+                html += `<i class="fas fa-exclamation-triangle"></i> Hay archivos con problemas. Por favor, corrígelos antes de continuar.`;
+                html += `</p></div>`;
+            }
+
+            html += '</div>';
+            container.innerHTML = html;
+        }
+
+        function validarCertificaciones() {
+            const input = document.getElementById('certificacionesInput');
+            if (!input || !input.files || input.files.length === 0) {
+                alert('Por favor, selecciona al menos un archivo PDF.');
+                return false;
+            }
+
+            const files = input.files;
+            const maxSize = 5 * 1024 * 1024; // 5MB
+
+            for (let i = 0; i < files.length; i++) {
+                const file = files[i];
+
+                // Validar tipo
+                if (file.type !== 'application/pdf') {
+                    alert(`El archivo "${file.name}" no es un PDF válido.\n\nSolo se permiten archivos PDF.`);
+                    return false;
+                }
+
+                // Validar tamaño
+                if (file.size > maxSize) {
+                    alert(`El archivo "${file.name}" es demasiado grande.\n\nTamaño: ${(file.size / 1024 / 1024).toFixed(2)} MB\nMáximo permitido: 5 MB`);
+                    return false;
+                }
+            }
+
+            // Confirmar subida
+            const count = files.length;
+            const mensaje = count === 1
+                ? '¿Confirmas que deseas subir 1 certificación?'
+                : `¿Confirmas que deseas subir ${count} certificaciones?`;
+
+            return confirm(mensaje);
+        }
+
+        // Smooth scroll para el enlace de certificaciones
+        document.addEventListener('DOMContentLoaded', function() {
+            const links = document.querySelectorAll('a[href^="#"]');
+            links.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    const href = this.getAttribute('href');
+                    if (href === '#') return;
+
+                    e.preventDefault();
+                    const target = document.querySelector(href);
+                    if (target) {
+                        target.scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'start'
+                        });
+                        // Resaltar temporalmente
+                        target.style.boxShadow = '0 0 0 3px rgba(245, 158, 11, 0.5)';
+                        setTimeout(() => {
+                            target.style.boxShadow = '';
+                        }, 2000);
+                    }
+                });
+            });
+        });
     </script>
 </section>
 </body>

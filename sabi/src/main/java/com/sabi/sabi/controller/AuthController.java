@@ -294,69 +294,114 @@ public class AuthController {
                 return "redirect:/";
             }
 
-            // Actualizar los datos del entrenador
+            // Actualizar los datos básicos del entrenador
             if (usuario instanceof com.sabi.sabi.entity.Entrenador entrenador) {
                 System.out.println("  ✅ Usuario es instancia de Entrenador");
-                System.out.println("  📋 Especialidades: " + especialidades);
+                System.out.println("  📎 Especialidades: " + especialidades);
                 System.out.println("  💰 Precios: " + precioMinimo + " - " + precioMaximo);
                 System.out.println("  📅 Año inicio: " + anioInicioExperiencia);
 
                 entrenador.setEspecialidades(especialidades);
-                // Mantener compatibilidad con especialidad singular (usar la primera)
                 if (especialidades != null && !especialidades.isEmpty()) {
                     String primeraEspecialidad = especialidades.split(",")[0].trim();
                     entrenador.setEspecialidad(primeraEspecialidad);
                 }
                 entrenador.setPrecioMinimo(precioMinimo);
                 entrenador.setPrecioMaximo(precioMaximo);
-                
-                // Calcular años de experiencia a partir del año de inicio
+
                 int anioActual = java.time.Year.now().getValue();
                 int aniosExperiencia = anioActual - anioInicioExperiencia;
                 entrenador.setAniosExperiencia(aniosExperiencia);
                 System.out.println("  🎯 Años experiencia: " + aniosExperiencia);
 
-                // Procesar archivos PDF de certificaciones
+                // ===============================
+                // Manejo ROBUSTO de certificaciones
+                // ===============================
+                java.util.List<String> rutasArchivos = new java.util.ArrayList<>();
+                boolean huboErrorArchivos = false;
+
                 if (certificaciones != null && certificaciones.length > 0) {
-                    System.out.println("  📄 Procesando " + certificaciones.length + " certificación(es)");
-                    java.util.List<String> rutasArchivos = new java.util.ArrayList<>();
-
-                    // Crear directorio si no existe
-                    String uploadDir = "uploads/certificaciones/";
-                    java.nio.file.Path uploadPath = java.nio.file.Paths.get(uploadDir);
-                    if (!java.nio.file.Files.exists(uploadPath)) {
-                        java.nio.file.Files.createDirectories(uploadPath);
-                    }
-
-                    for (org.springframework.web.multipart.MultipartFile file : certificaciones) {
-                        if (!file.isEmpty() && file.getOriginalFilename() != null) {
-                            // Generar nombre único para el archivo
-                            String nombreOriginal = file.getOriginalFilename();
-                            String nombreArchivo = "cert_" + usuario.getId() + "_" +
-                                                  System.currentTimeMillis() + "_" +
-                                                  nombreOriginal.replaceAll("[^a-zA-Z0-9.]", "_");
-
-                            // Guardar archivo
-                            java.nio.file.Path rutaArchivo = uploadPath.resolve(nombreArchivo);
-                            file.transferTo(rutaArchivo.toFile());
-
-                            // Agregar ruta a la lista
-                            rutasArchivos.add(uploadDir + nombreArchivo);
-                            System.out.println("  ✅ Guardado: " + nombreArchivo);
+                    System.out.println("  📄 Procesando " + certificaciones.length + " archivo(s) de certificación");
+                    try {
+                        // Directorio base estable fuera de /work de Tomcat
+                        String baseDir = System.getProperty("user.dir");
+                        if (baseDir == null || baseDir.isBlank()) {
+                            baseDir = new java.io.File("").getAbsolutePath();
                         }
+                        String relativeDir = java.nio.file.Paths.get("uploads", "certificaciones").toString();
+                        java.nio.file.Path uploadPath = java.nio.file.Paths.get(baseDir, relativeDir);
+
+                        System.out.println("  📁 Directorio base: " + baseDir);
+                        System.out.println("  📁 Directorio de certificaciones: " + uploadPath.toAbsolutePath());
+
+                        if (!java.nio.file.Files.exists(uploadPath)) {
+                            java.nio.file.Files.createDirectories(uploadPath);
+                            System.out.println("  ✅ Directorio creado");
+                        }
+
+                        for (org.springframework.web.multipart.MultipartFile file : certificaciones) {
+                            if (file == null || file.isEmpty() || file.getOriginalFilename() == null) {
+                                continue;
+                            }
+
+                            String nombreOriginal = file.getOriginalFilename();
+                            if (!nombreOriginal.toLowerCase().endsWith(".pdf")) {
+                                System.out.println("  ⛔ Archivo no PDF ignorado: " + nombreOriginal);
+                                continue;
+                            }
+
+                            String nombreSanitizado = nombreOriginal.replaceAll("[^a-zA-Z0-9.]", "_");
+                            String nombreArchivo = "cert_" + usuario.getId() + "_" +
+                                    System.currentTimeMillis() + "_" + nombreSanitizado;
+
+                            java.nio.file.Path rutaArchivo = uploadPath.resolve(nombreArchivo);
+                            try {
+                                file.transferTo(rutaArchivo.toFile());
+                                // Guardamos la ruta relativa desde la raíz del proyecto
+                                String rutaRelativa = java.nio.file.Paths.get("uploads", "certificaciones", nombreArchivo).toString();
+                                rutasArchivos.add(rutaRelativa.replace('\\', '/'));
+                                System.out.println("  ✅ Guardado: " + rutaArchivo.toAbsolutePath());
+                            } catch (Exception ioEx) {
+                                huboErrorArchivos = true;
+                                System.out.println("  ❌ Error guardando archivo " + nombreArchivo + ": " + ioEx.getMessage());
+                            }
+                        }
+                    } catch (Exception exUpload) {
+                        huboErrorArchivos = true;
+                        System.out.println("  ❌ Error general creando/leyendo directorio de certificaciones: " + exUpload.getMessage());
                     }
 
-                    // Guardar rutas separadas por coma
                     if (!rutasArchivos.isEmpty()) {
-                        entrenador.setCertificaciones(String.join(",", rutasArchivos));
-                        System.out.println("  ✅ Total certificaciones guardadas: " + rutasArchivos.size());
+                        // Anexar certificaciones nuevas a las existentes (si había)
+                        String existentes = entrenador.getCertificaciones();
+                        if (existentes != null && !existentes.isBlank()) {
+                            java.util.List<String> todas = new java.util.ArrayList<>();
+                            for (String r : existentes.split(",")) {
+                                if (r != null && !r.isBlank()) {
+                                    todas.add(r.trim());
+                                }
+                            }
+                            todas.addAll(rutasArchivos);
+                            entrenador.setCertificaciones(String.join(",", todas));
+                        } else {
+                            entrenador.setCertificaciones(String.join(",", rutasArchivos));
+                        }
+                        System.out.println("  ✅ Total certificaciones registradas ahora: " + entrenador.getCertificaciones());
+                    } else if (huboErrorArchivos) {
+                        // Hubo error y no se pudo guardar ninguna, pero NO bloqueamos el perfil
+                        model.addAttribute("errorArchivos",
+                                "Tu perfil se guardó, pero hubo un problema al guardar las certificaciones. Inténtalo de nuevo más tarde.");
                     }
-                } else {
-                    System.out.println("  ⚠️ Sin certificaciones subidas");
                 }
 
                 usuarioService.actualizarUsuario(entrenador);
                 System.out.println("  ✅ Perfil actualizado correctamente");
+
+                // Mensaje informativo si NO tiene certificaciones (nuevo o existentes)
+                if (entrenador.getCertificaciones() == null || entrenador.getCertificaciones().isBlank()) {
+                    model.addAttribute("warningCertificaciones",
+                            "Tu perfil se completó, pero aún no has subido certificaciones. Sin ellas no podrás ser verificado por el administrador.");
+                }
             }
 
             System.out.println("  🚀 Redirigiendo a: /entrenador/dashboard");

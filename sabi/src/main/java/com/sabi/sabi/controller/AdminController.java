@@ -94,7 +94,8 @@ public class AdminController {
         System.out.println("║  🔐 ADMIN - Verificación de Entrenadores");
         System.out.println("╚════════════════════════════════════════════════════════╝");
 
-        List<Entrenador> entrenadores = entrenadorRepository.findAll();
+        // Todos los entrenadores
+        java.util.List<Entrenador> entrenadores = entrenadorRepository.findAll();
         System.out.println("  📋 Total de entrenadores encontrados: " + entrenadores.size());
 
         long verificados = entrenadores.stream().filter(Entrenador::isVerified).count();
@@ -102,7 +103,17 @@ public class AdminController {
         System.out.println("  ✅ Verificados: " + verificados);
         System.out.println("  ⏳ Pendientes: " + pendientes);
 
+        // Solo entrenadores que tienen alguna certificación cargada
+        java.util.List<Entrenador> entrenadoresConCert = entrenadorRepository.findConCertificaciones();
+        System.out.println("  📄 Con certificaciones: " + entrenadoresConCert.size());
+
+        // Pendientes de verificación PERO con certificaciones (candidatos a revisar/verificar)
+        java.util.List<Entrenador> candidatosVerificacion = entrenadorRepository.findPendientesConCertificaciones();
+        System.out.println("  🎯 Pendientes con certificaciones (candidatos): " + candidatosVerificacion.size());
+
         model.addAttribute("entrenadores", entrenadores);
+        model.addAttribute("entrenadoresConCert", entrenadoresConCert);
+        model.addAttribute("candidatosVerificacion", candidatosVerificacion);
         return "admin/entrenadores";
     }
 
@@ -233,4 +244,3 @@ public class AdminController {
         return "redirect:/admin/entrenadores";
     }
 }
-

@@ -30,4 +30,12 @@ public interface EntrenadorRepository extends JpaRepository<Entrenador,Long> {
             @Param("minExperiencia") Integer minExperiencia,
             @Param("certificaciones") String certificaciones
     );
+
+    // Entrenadores que tienen al menos una certificación registrada (cadena no nula ni vacía)
+    @Query("SELECT e FROM Entrenador e WHERE e.certificaciones IS NOT NULL AND TRIM(e.certificaciones) <> ''")
+    List<Entrenador> findConCertificaciones();
+
+    // Entrenadores NO verificados pero con certificaciones cargadas (candidatos a verificar)
+    @Query("SELECT e FROM Entrenador e WHERE e.verified = false AND e.certificaciones IS NOT NULL AND TRIM(e.certificaciones) <> ''")
+    List<Entrenador> findPendientesConCertificaciones();
 }

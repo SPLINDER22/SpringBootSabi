@@ -220,5 +220,130 @@ public class PerfilController {
         // Retornar la URL relativa
         return "/uploads/perfiles/" + fileName;
     }
-}
 
+    @PostMapping("/certificaciones/subir")
+    public String subirCertificaciones(
+            @AuthenticationPrincipal UserDetails userDetails,
+            @RequestParam("certificaciones") MultipartFile[] certificaciones,
+            Model model) {
+
+        System.out.println("╔════════════════════════════════════════════════════════╗");
+        System.out.println("║  📄 Subiendo Certificaciones desde Perfil");
+        System.out.println("╚════════════════════════════════════════════════════════╝");
+
+        try {
+            Usuario usuario = usuarioService.obtenerPorEmail(userDetails.getUsername());
+
+            // Verificar que sea entrenador
+            if (!(usuario instanceof Entrenador)) {
+                model.addAttribute("error", "Solo los entrenadores pueden subir certificaciones");
+                return "redirect:/perfil";
+            }
+
+            Entrenador entrenador = (Entrenador) usuario;
+            System.out.println("  👤 Entrenador: " + entrenador.getEmail());
+            System.out.println("  📁 Archivos recibidos: " + certificaciones.length);
+
+            // Validaciones
+            if (certificaciones == null || certificaciones.length == 0) {
+                model.addAttribute("error", "Debes seleccionar al menos un archivo PDF");
+                return "redirect:/perfil";
+            }
+
+            // Crear directorio para certificaciones si no existe
+            Path certDir = Paths.get("uploads/certificaciones");
+            if (!Files.exists(certDir)) {
+                Files.createDirectories(certDir);
+                System.out.println("  📁 Directorio de certificaciones creado");
+            }
+
+            // Lista para almacenar las rutas de las certificaciones nuevas
+            java.util.List<String> nuevasCertificaciones = new java.util.ArrayList<>();
+
+            // Procesar cada archivo
+            for (MultipartFile cert : certificaciones) {
+                if (!cert.isEmpty()) {
+                    // Validar que sea PDF
+                    String contentType = cert.getContentType();
+                    if (contentType == null || !contentType.equals("application/pdf")) {
+                        System.out.println("  ⚠️ Archivo " + cert.getOriginalFilename() + " no es PDF. Saltando...");
+                        continue;
+                    }
+
+                    // Validar tamaño (5MB máximo)
+                    long maxSize = 5 * 1024 * 1024;
+                    if (cert.getSize() > maxSize) {
+                        System.out.println("  ⚠️ Archivo " + cert.getOriginalFilename() + " demasiado grande. Saltando...");
+                        continue;
+                    }
+
+                    try {
+                        // Generar nombre único
+                        String originalFilename = cert.getOriginalFilename();
+                        String safeFilename = originalFilename != null ? originalFilename.replaceAll("[^a-zA-Z0-9._-]", "_") : "certificacion.pdf";
+                        String fileName = "cert_" + entrenador.getId() + "_" + System.currentTimeMillis() + "_" + safeFilename;
+                        Path filePath = certDir.resolve(fileName);
+
+                        // Guardar archivo
+                        Files.copy(cert.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
+
+                        // Añadir ruta relativa a la lista
+                        String rutaRelativa = "uploads/certificaciones/" + fileName;
+                        nuevasCertificaciones.add(rutaRelativa);
+
+                        System.out.println("  ✅ Certificación guardada: " + fileName);
+                    } catch (IOException e) {
+                        System.err.println("  ❌ Error al guardar " + cert.getOriginalFilename() + ": " + e.getMessage());
+                    }
+                }
+            }
+
+            if (nuevasCertificaciones.isEmpty()) {
+                model.addAttribute("error", "No se pudo guardar ninguna certificación. Verifica que sean archivos PDF válidos menores a 5MB");
+                return "redirect:/perfil";
+            }
+
+            // Obtener certificaciones existentes
+            String certificacionesExistentes = entrenador.getCertificaciones();
+            java.util.List<String> todasLasCertificaciones = new java.util.ArrayList<>();
+
+            // Añadir las existentes
+            if (certificacionesExistentes != null && !certificacionesExistentes.trim().isEmpty()) {
+                String[] existentes = certificacionesExistentes.split(",");
+                for (String cert : existentes) {
+                    String certTrimmed = cert.trim();
+                    if (!certTrimmed.isEmpty()) {
+                        todasLasCertificaciones.add(certTrimmed);
+                    }
+                }
+                System.out.println("  📋 Certificaciones existentes: " + todasLasCertificaciones.size());
+            }
+
+            // Añadir las nuevas
+            todasLasCertificaciones.addAll(nuevasCertificaciones);
+            System.out.println("  📋 Total de certificaciones ahora: " + todasLasCertificaciones.size());
+
+            // Unir todas las certificaciones con comas
+            String todasCertificacionesStr = String.join(",", todasLasCertificaciones);
+
+            // Actualizar entrenador
+            entrenador.setCertificaciones(todasCertificacionesStr);
+            usuarioService.actualizarUsuario(entrenador);
+
+            System.out.println("  ✅ Certificaciones actualizadas en BD");
+            System.out.println("  🎯 El entrenador ahora es CANDIDATO a verificación");
+
+            model.addAttribute("success",
+                nuevasCertificaciones.size() == 1
+                    ? "Se subió 1 certificación exitosamente. Ahora eres candidato a verificación por SABI."
+                    : "Se subieron " + nuevasCertificaciones.size() + " certificaciones exitosamente. Ahora eres candidato a verificación por SABI.");
+
+        } catch (Exception e) {
+            System.err.println("  ❌ Error general: " + e.getMessage());
+            e.printStackTrace();
+            model.addAttribute("error", "Error al subir certificaciones: " + e.getMessage());
+        }
+
+        return "redirect:/perfil";
+    }
+}

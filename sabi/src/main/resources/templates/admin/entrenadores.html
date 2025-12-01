@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
-      th:replace="~{layout/layout :: layout(~{::title}, ~{::body})}">
+      th:replace="~{layout/layout :: layout('Verificación de Entrenadores - SABI Admin', ~{::body})}">
 
 <head>
     <title>Verificación de Entrenadores - SABI Admin</title>
@@ -22,29 +22,97 @@
         <!-- Información -->
         <div class="alert alert-info" role="alert">
             <i class="fas fa-info-circle"></i>
-            <strong>Verificación de Entrenadores:</strong> Revisa las certificaciones y documentos subidos por los entrenadores para otorgarles la verificación oficial de SABI. Los entrenadores verificados tendrán un badge especial visible para los clientes.
+            <strong>Verificación de Entrenadores:</strong>
+            <span>
+                Revisa las certificaciones y documentos subidos por los entrenadores para otorgarles la verificación oficial de SABI.
+                Solo los entrenadores con certificaciones podrán ser verificados.
+            </span>
+        </div>
+
+        <!-- Resumen rápido -->
+        <div class="row mb-3">
+            <div class="col-md-4 mb-2">
+                <div class="card border-left-primary shadow h-100 py-2">
+                    <div class="card-body">
+                        <div class="row no-gutters align-items-center">
+                            <div class="col mr-2">
+                                <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Total Entrenadores</div>
+                                <div class="h5 mb-0 font-weight-bold text-gray-800" th:text="${#lists.size(entrenadores)}">0</div>
+                            </div>
+                            <div class="col-auto">
+                                <i class="fas fa-users fa-2x text-gray-300"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-2">
+                <div class="card border-left-success shadow h-100 py-2">
+                    <div class="card-body">
+                        <div class="row no-gutters align-items-center">
+                            <div class="col mr-2">
+                                <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Con Certificaciones</div>
+                                <div class="h5 mb-0 font-weight-bold text-gray-800" th:text="${#lists.size(entrenadoresConCert)}">0</div>
+                            </div>
+                            <div class="col-auto">
+                                <i class="fas fa-file-pdf fa-2x text-gray-300"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-2">
+                <div class="card border-left-warning shadow h-100 py-2">
+                    <div class="card-body">
+                        <div class="row no-gutters align-items-center">
+                            <div class="col mr-2">
+                                <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">Pendientes con Certificaciones</div>
+                                <div class="h5 mb-0 font-weight-bold text-gray-800" th:text="${#lists.size(candidatosVerificacion)}">0</div>
+                            </div>
+                            <div class="col-auto">
+                                <i class="fas fa-user-clock fa-2x text-gray-300"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <!-- Filtros -->
         <div class="card shadow mb-4">
             <div class="card-body">
-                <div class="row">
-                    <div class="col-md-4">
+                <div class="row align-items-center">
+                    <div class="col-md-3 mb-2">
                         <button class="btn btn-outline-primary btn-block" onclick="filtrarEstado('todos')">
                             <i class="fas fa-list"></i> Todos (<span th:text="${#lists.size(entrenadores)}">0</span>)
                         </button>
                     </div>
-                    <div class="col-md-4">
-                        <button class="btn btn-outline-success btn-block" onclick="filtrarEstado('verificados')">
-                            <i class="fas fa-check-circle"></i> Verificados
-                            (<span th:text="${#lists.size(entrenadores.?[verified == true])}">0</span>)
+                    <div class="col-md-3 mb-2">
+                        <button class="btn btn-outline-success btn-block" onclick="filtrarEstado('conCert')">
+                            <i class="fas fa-file-pdf"></i> Solo con certificaciones
+                            (<span th:text="${#lists.size(entrenadoresConCert)}">0</span>)
                         </button>
                     </div>
-                    <div class="col-md-4">
-                        <button class="btn btn-outline-warning btn-block" onclick="filtrarEstado('pendientes')">
-                            <i class="fas fa-clock"></i> Pendientes
+                    <div class="col-md-3 mb-2">
+                        <button class="btn btn-outline-warning btn-block" onclick="filtrarEstado('candidatos')">
+                            <i class="fas fa-user-check"></i> Candidatos a verificar
+                            (<span th:text="${#lists.size(candidatosVerificacion)}">0</span>)
+                        </button>
+                    </div>
+                    <div class="col-md-3 mb-2">
+                        <button class="btn btn-outline-info btn-block" onclick="filtrarEstado('pendientes')">
+                            <i class="fas fa-clock"></i> Pendientes (todos)
                             (<span th:text="${#lists.size(entrenadores.?[verified == false])}">0</span>)
                         </button>
+                    </div>
+                </div>
+                <hr>
+                <div class="row align-items-center">
+                    <div class="col-md-6 mb-2">
+                        <input id="searchEntrenador" type="text" class="form-control" placeholder="Buscar por nombre, email o especialidad...">
+                    </div>
+                    <div class="col-md-6 mb-2 text-right">
+                        <span id="resultCountEntrenadores" class="text-muted small">Mostrando 0 entrenadores</span>
                     </div>
                 </div>
             </div>
@@ -56,7 +124,15 @@
                 <h6 class="m-0 font-weight-bold text-primary">Lista de Entrenadores</h6>
             </div>
             <div class="card-body">
-                <div class="table-responsive">
+                <!-- Mensaje si no hay entrenadores -->
+                <div th:if="${#lists.isEmpty(entrenadores)}" class="alert alert-warning text-center" role="alert">
+                    <i class="fas fa-exclamation-triangle fa-3x mb-3"></i>
+                    <h4>No hay entrenadores registrados</h4>
+                    <p class="mb-0">Actualmente no existen entrenadores en el sistema. Cuando se registren entrenadores aparecerán aquí.</p>
+                </div>
+
+                <!-- Tabla solo si hay entrenadores -->
+                <div th:if="${!#lists.isEmpty(entrenadores)}" class="table-responsive">
                     <table class="table table-bordered table-hover" id="tablaEntrenadores" width="100%" cellspacing="0">
                         <thead class="thead-light">
                             <tr>
@@ -73,8 +149,10 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr th:each="entrenador : ${entrenadores}" 
-                                th:classappend="${entrenador.verified ? 'entrenador-verificado' : 'entrenador-pendiente'}">
+                            <tr th:each="entrenador : ${entrenadores}"
+                                th:classappend="${entrenador.verified ? 'entrenador-verificado' : 'entrenador-pendiente'}
+                                                ${entrenador.certificaciones != null && !#strings.isEmpty(entrenador.certificaciones) ? ' entrenador-con-cert' : ''}
+                                                ${!entrenador.verified and (entrenador.certificaciones != null && !#strings.isEmpty(entrenador.certificaciones)) ? ' entrenador-candidato' : ''}">
                                 <td th:text="${entrenador.id}">1</td>
                                 <td class="text-center">
                                     <img th:src="${entrenador.fotoPerfilUrl != null ? entrenador.fotoPerfilUrl : '/img/fotoPerfil.png'}"
@@ -104,9 +182,13 @@
                                     <!-- SI tiene certificaciones -->
                                     <span th:if="${entrenador.certificaciones != null && !#strings.isEmpty(entrenador.certificaciones)}"
                                           class="badge badge-success"
-                                          th:title="'Tiene ' + ${#strings.length(#strings.arraySplit(entrenador.certificaciones, ','))} + ' certificación(es)'">
+                                          style="cursor: pointer;"
+                                          th:attr="data-certs=${entrenador.certificaciones}"
+                                          th:onclick="'verCertificaciones(' + ${entrenador.id} + ', \'' + ${entrenador.nombre} + '\', \'' + ${entrenador.certificaciones} + '\')'"
+                                          th:title="'Tiene ' + ${#strings.length(#strings.arraySplit(entrenador.certificaciones, ','))} + ' certificación(es). Click para ver'">
                                         <i class="fas fa-file-pdf"></i>
                                         <span th:text="${#strings.length(#strings.arraySplit(entrenador.certificaciones, ','))}">0</span>
+                                        <i class="fas fa-eye ms-1" style="font-size: 0.7rem;"></i>
                                     </span>
                                     <!-- SI NO tiene certificaciones -->
                                     <span th:if="${entrenador.certificaciones == null || #strings.isEmpty(entrenador.certificaciones)}"
@@ -116,7 +198,7 @@
                                     </span>
                                 </td>
                                 <td>
-                                    <span class="badge" 
+                                    <span class="badge"
                                           th:classappend="${entrenador.estado ? 'badge-success' : 'badge-danger'}"
                                           th:text="${entrenador.estado ? 'Activo' : 'Bloqueado'}">
                                         Estado
@@ -133,15 +215,15 @@
                                 <td>
                                     <div class="btn-group-vertical btn-group-sm" role="group">
                                         <!-- Ver perfil completo -->
-                                        <a th:href="@{/admin/usuarios/{id}/perfil(id=${entrenador.id})}" 
-                                           class="btn btn-info mb-1" 
+                                        <a th:href="@{/admin/usuarios/{id}/perfil(id=${entrenador.id})}"
+                                           class="btn btn-info mb-1"
                                            title="Ver perfil y certificaciones">
                                             <i class="fas fa-eye"></i> Ver Perfil
                                         </a>
-                                        
-                                        <!-- Verificar -->
-                                        <button th:if="${!entrenador.verified}" 
-                                                type="button" 
+
+                                        <!-- Verificar: solo si NO está verificado y TIENE certificaciones -->
+                                        <button th:if="${!entrenador.verified and entrenador.certificaciones != null and !#strings.isEmpty(entrenador.certificaciones)}"
+                                                type="button"
                                                 class="btn btn-success mb-1 btn-verificar"
                                                 th:data-id="${entrenador.id}"
                                                 th:data-nombre="${entrenador.nombre}"
@@ -149,23 +231,23 @@
                                                 title="Verificar entrenador">
                                             <i class="fas fa-check-circle"></i> Verificar
                                         </button>
-                                        
+
                                         <!-- Revocar verificación -->
-                                        <form th:if="${entrenador.verified}" 
-                                              th:action="@{/admin/entrenadores/{id}/revocar(id=${entrenador.id})}" 
-                                              method="post" 
+                                        <form th:if="${entrenador.verified}"
+                                              th:action="@{/admin/entrenadores/{id}/revocar(id=${entrenador.id})}"
+                                              method="post"
                                               style="display: inline;"
                                               onsubmit="return confirm('¿Está seguro de revocar la verificación?')">
-                                            <button type="submit" 
-                                                    class="btn btn-warning mb-1 btn-block" 
+                                            <button type="submit"
+                                                    class="btn btn-warning mb-1 btn-block"
                                                     title="Revocar verificación">
                                                 <i class="fas fa-times-circle"></i> Revocar
                                             </button>
                                         </form>
-                                        
+
                                         <!-- Bloquear -->
-                                        <button th:if="${entrenador.estado}" 
-                                                type="button" 
+                                        <button th:if="${entrenador.estado}"
+                                                type="button"
                                                 class="btn btn-danger btn-bloquear"
                                                 th:data-id="${entrenador.id}"
                                                 th:data-nombre="${entrenador.nombre}"
@@ -224,16 +306,48 @@
         </div>
     </div>
 
+    <!-- Modal para ver certificaciones -->
+    <div class="modal fade" id="certificacionesModal" tabindex="-1" role="dialog" aria-labelledby="certificacionesModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header bg-info text-white">
+                    <h5 class="modal-title" id="certificacionesModalLabel">
+                        <i class="fas fa-certificate"></i> Certificaciones de <span id="nombreEntrenadorCert"></span>
+                    </h5>
+                    <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle"></i>
+                        <strong>Revisa cada certificación</strong> para verificar la autenticidad y validez antes de aprobar al entrenador.
+                    </div>
+
+                    <div id="listaCertificaciones" class="list-group">
+                        <!-- Se llenará dinámicamente con JavaScript -->
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                    <button type="button" class="btn btn-success" id="btnVerificarDesdeCert" onclick="verificarDesdeModal()">
+                        <i class="fas fa-check-circle"></i> Verificar Entrenador
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Modal para bloquear entrenador -->
-    <div class="modal fade" id="bloquearModal" tabindex="-1" role="dialog">
+    <div class="modal fade" id="bloquearModal" tabindex="-1" role="dialog" aria-labelledby="bloquearModalLabel" aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header bg-danger text-white">
-                    <h5 class="modal-title">
+                    <h5 class="modal-title" id="bloquearModalLabel">
                         <i class="fas fa-ban"></i> Bloquear Entrenador
                     </h5>
-                    <button type="button" class="close text-white" data-dismiss="modal">
-                        <span>&times;</span>
+                    <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
                 <form id="formBloquear" method="post">
@@ -267,14 +381,29 @@
     </div>
 
     <script th:inline="javascript">
-        // Event delegation para botón verificar
+        // Log de depuración inicial
+        console.log('╔════════════════════════════════════════════════════════╗');
+        console.log('║  🔐 ADMIN - Vista de Entrenadores Cargada');
+        console.log('╚════════════════════════════════════════════════════════╝');
+
         document.addEventListener('DOMContentLoaded', function() {
+            // Verificar datos cargados
+            const tabla = document.getElementById('tablaEntrenadores');
+            if (tabla) {
+                const filas = tabla.getElementsByTagName('tbody')[0].getElementsByTagName('tr');
+                console.log('  📊 Total filas en tabla:', filas.length);
+            } else {
+                console.log('  ⚠️ Tabla no encontrada');
+            }
+
+            // Event delegation para botones
             document.addEventListener('click', function(e) {
                 if (e.target.closest('.btn-verificar')) {
                     const btn = e.target.closest('.btn-verificar');
                     const id = btn.dataset.id;
                     const nombre = btn.dataset.nombre;
                     const email = btn.dataset.email;
+                    console.log('  🔘 Click en botón verificar:', {id, nombre, email});
                     verificarEntrenador(id, nombre, email);
                 }
 
@@ -283,6 +412,7 @@
                     const id = btn.dataset.id;
                     const nombre = btn.dataset.nombre;
                     const email = btn.dataset.email;
+                    console.log('  🔘 Click en botón bloquear:', {id, nombre, email});
                     bloquearUsuario(id, nombre, email);
                 }
             });
@@ -291,21 +421,146 @@
             updateResultCountEntrenadores();
 
             // Evento de búsqueda
-            document.getElementById('searchEntrenador').addEventListener('keyup', buscarEntrenador);
+            const searchInput = document.getElementById('searchEntrenador');
+            if (searchInput) {
+                searchInput.addEventListener('keyup', buscarEntrenador);
+            }
+
+            console.log('  ✅ Event listeners configurados');
         });
 
         function verificarEntrenador(id, nombre, email) {
-            document.getElementById('nombreEntrenador').textContent = nombre;
-            document.getElementById('emailEntrenador').textContent = email;
-            document.getElementById('formVerificar').action = '/admin/entrenadores/' + id + '/verificar';
-            $('#verificarModal').modal('show');
+            console.log('═══════════════════════════════════════════════════════');
+            console.log('🔔 Función verificarEntrenador llamada');
+            console.log('  ID:', id);
+            console.log('  Nombre:', nombre);
+            console.log('  Email:', email);
+            console.log('═══════════════════════════════════════════════════════');
+
+            try {
+                document.getElementById('nombreEntrenador').textContent = nombre;
+                document.getElementById('emailEntrenador').textContent = email;
+                document.getElementById('formVerificar').action = '/admin/entrenadores/' + id + '/verificar';
+
+                console.log('  ✅ Contenido del modal actualizado');
+                console.log('  📝 Action del form:', document.getElementById('formVerificar').action);
+                console.log('  🔍 jQuery disponible?', typeof $ !== 'undefined');
+
+                // Mostrar modal con jQuery
+                console.log('  🎭 Intentando abrir modal con jQuery...');
+                $('#verificarModal').modal('show');
+                console.log('  ✅ Modal abierto exitosamente');
+            } catch (error) {
+                console.error('  ❌ Error al abrir modal:', error);
+                console.error('  Stack:', error.stack);
+            }
+        }
+
+        // Variables globales para el modal de certificaciones
+        let entrenadorActualId = null;
+        let entrenadorActualNombre = null;
+        let entrenadorActualEmail = null;
+
+        function verCertificaciones(id, nombre, email, certificaciones) {
+            console.log('═══════════════════════════════════════════════════════');
+            console.log('📄 Ver Certificaciones');
+            console.log('  ID:', id);
+            console.log('  Nombre:', nombre);
+            console.log('  Email:', email);
+            console.log('  Certificaciones:', certificaciones);
+            console.log('═══════════════════════════════════════════════════════');
+
+            try {
+                // Guardar datos del entrenador actual
+                entrenadorActualId = id;
+                entrenadorActualNombre = nombre;
+                entrenadorActualEmail = email;
+
+                // Actualizar título del modal
+                document.getElementById('nombreEntrenadorCert').textContent = nombre;
+
+                // Limpiar lista anterior
+                const listaCertificaciones = document.getElementById('listaCertificaciones');
+                listaCertificaciones.innerHTML = '';
+
+                // Dividir certificaciones por coma
+                const certs = certificaciones.split(',');
+
+                // Crear elementos para cada certificación
+                certs.forEach((cert, index) => {
+                    const certTrimmed = cert.trim();
+                    if (certTrimmed) {
+                        const item = document.createElement('div');
+                        item.className = 'list-group-item d-flex justify-content-between align-items-center';
+                        item.innerHTML = `
+                            <div>
+                                <i class="fas fa-file-pdf text-danger fa-2x mr-3"></i>
+                                <strong>Certificación ${index + 1}</strong>
+                                <br>
+                                <small class="text-muted">${certTrimmed.substring(certTrimmed.lastIndexOf('/') + 1)}</small>
+                            </div>
+                            <div>
+                                <a href="/${certTrimmed}" target="_blank" class="btn btn-primary btn-sm">
+                                    <i class="fas fa-eye"></i> Ver PDF
+                                </a>
+                            </div>
+                        `;
+                        listaCertificaciones.appendChild(item);
+                    }
+                });
+
+                console.log('  ✅ Lista de certificaciones generada');
+
+                // Mostrar modal
+                $('#certificacionesModal').modal('show');
+                console.log('  ✅ Modal de certificaciones abierto');
+            } catch (error) {
+                console.error('  ❌ Error al mostrar certificaciones:', error);
+                console.error('  Stack:', error.stack);
+            }
+        }
+
+        function verificarDesdeModal() {
+            console.log('═══════════════════════════════════════════════════════');
+            console.log('✅ Verificar desde modal de certificaciones');
+            console.log('  ID:', entrenadorActualId);
+            console.log('  Nombre:', entrenadorActualNombre);
+            console.log('═══════════════════════════════════════════════════════');
+
+            // Cerrar modal de certificaciones
+            $('#certificacionesModal').modal('hide');
+
+            // Abrir modal de verificación
+            setTimeout(() => {
+                verificarEntrenador(entrenadorActualId, entrenadorActualNombre, entrenadorActualEmail);
+            }, 500);
         }
 
         function bloquearUsuario(id, nombre, email) {
-            document.getElementById('nombreUsuario').textContent = nombre;
-            document.getElementById('emailUsuario').textContent = email;
-            document.getElementById('formBloquear').action = '/admin/usuarios/' + id + '/bloquear';
-            $('#bloquearModal').modal('show');
+            console.log('═══════════════════════════════════════════════════════');
+            console.log('🔔 Función bloquearUsuario llamada');
+            console.log('  ID:', id);
+            console.log('  Nombre:', nombre);
+            console.log('  Email:', email);
+            console.log('═══════════════════════════════════════════════════════');
+
+            try {
+                document.getElementById('nombreUsuario').textContent = nombre;
+                document.getElementById('emailUsuario').textContent = email;
+                document.getElementById('formBloquear').action = '/admin/usuarios/' + id + '/bloquear';
+
+                console.log('  ✅ Contenido del modal actualizado');
+                console.log('  📝 Action del form:', document.getElementById('formBloquear').action);
+                console.log('  🔍 jQuery disponible?', typeof $ !== 'undefined');
+
+                // Mostrar modal con jQuery
+                console.log('  🎭 Intentando abrir modal con jQuery...');
+                $('#bloquearModal').modal('show');
+                console.log('  ✅ Modal abierto exitosamente');
+            } catch (error) {
+                console.error('  ❌ Error al abrir modal:', error);
+                console.error('  Stack:', error.stack);
+            }
         }
 
         function filtrarEstado(estado) {
@@ -313,28 +568,24 @@
             let visibleCount = 0;
 
             filas.forEach(fila => {
+                let mostrar = false;
                 if (estado === 'todos') {
-                    fila.style.display = '';
-                    visibleCount++;
-                } else if (estado === 'verificados') {
-                    if (fila.classList.contains('entrenador-verificado')) {
-                        fila.style.display = '';
-                        visibleCount++;
-                    } else {
-                        fila.style.display = 'none';
-                    }
+                    mostrar = true;
                 } else if (estado === 'pendientes') {
-                    if (fila.classList.contains('entrenador-pendiente')) {
-                        fila.style.display = '';
-                        visibleCount++;
-                    } else {
-                        fila.style.display = 'none';
-                    }
+                    mostrar = fila.classList.contains('entrenador-pendiente');
+                } else if (estado === 'conCert') {
+                    mostrar = fila.classList.contains('entrenador-con-cert');
+                } else if (estado === 'candidatos') {
+                    mostrar = fila.classList.contains('entrenador-candidato');
                 }
+
+                fila.style.display = mostrar ? '' : 'none';
+                if (mostrar) visibleCount++;
             });
 
             // Limpiar búsqueda al filtrar
-            document.getElementById('searchEntrenador').value = '';
+            const searchInput = document.getElementById('searchEntrenador');
+            if (searchInput) searchInput.value = '';
             updateResultCountEntrenadores(visibleCount);
         }
 
@@ -371,7 +622,9 @@
             }
 
             const resultElement = document.getElementById('resultCountEntrenadores');
-            resultElement.textContent = `Mostrando ${count} de ${totalRows} entrenadores`;
+            if (resultElement) {
+                resultElement.textContent = `Mostrando ${count} de ${totalRows} entrenadores`;
+            }
         }
     </script>
 
@@ -379,9 +632,17 @@
         .entrenador-verificado {
             background-color: rgba(40, 167, 69, 0.05);
         }
-        
+
         .entrenador-pendiente {
             background-color: rgba(255, 193, 7, 0.05);
+        }
+
+        .entrenador-con-cert {
+            border-left: 4px solid #28a745;
+        }
+
+        .entrenador-candidato {
+            border-left: 4px solid #ffc107;
         }
 
         .table-hover tbody tr:hover {
