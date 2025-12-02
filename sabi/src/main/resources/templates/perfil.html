@@ -276,6 +276,27 @@
                 </div>
                 <div>
                     <h3 th:text="${usuario.nombre + ' ' + (usuario.apellido != null ? usuario.apellido : '')}">Nombre Usuario</h3>
+
+                    <!-- Badge de Verificación SABI para Entrenadores -->
+                    <div th:if="${usuario.rol == T(com.sabi.sabi.entity.enums.Rol).ENTRENADOR && esVerificado}" class="mb-2">
+                        <span class="badge" style="background: linear-gradient(135deg, #2861E3 0%, #1e4ba8 100%);
+                              color: white; padding: 0.4rem 0.8rem; font-size: 0.85rem; border-radius: 15px;
+                              box-shadow: 0 2px 8px rgba(40, 97, 227, 0.3); border: 1px solid rgba(255,255,255,0.2);">
+                            <i class="fas fa-check-circle me-1"></i>
+                            <strong>VERIFICADO POR SABI</strong>
+                        </span>
+                    </div>
+
+                    <!-- Estado de verificación pendiente para Entrenadores -->
+                    <div th:if="${usuario.rol == T(com.sabi.sabi.entity.enums.Rol).ENTRENADOR && !esVerificado}" class="mb-2">
+                        <span class="badge" style="background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+                              color: white; padding: 0.4rem 0.8rem; font-size: 0.85rem; border-radius: 15px;
+                              box-shadow: 0 2px 8px rgba(251, 191, 36, 0.3); border: 1px solid rgba(255,255,255,0.2);">
+                            <i class="fas fa-clock me-1"></i>
+                            Verificación Pendiente
+                        </span>
+                    </div>
+
                     <p style="color: #666; margin: 0.5rem 0;">
                         <i class="fas fa-envelope"></i> <span th:text="${usuario.email}">correo@ejemplo.com</span>
                     </p>
