@@ -27,11 +27,15 @@ import com.sabi.sabi.service.ReportePdfService;
 import com.sabi.sabi.service.RutinaService;
 import com.sabi.sabi.service.SuscripcionService;
 import com.sabi.sabi.service.UsuarioService;
+import com.sabi.sabi.repository.EntrenadorRepository;
 
 @Controller
 public class EntrenadorController {
     @Autowired
     private EntrenadorService entrenadorService;
+
+    @Autowired
+    private EntrenadorRepository entrenadorRepository;
 
     @Autowired
     private SuscripcionService suscripcionService;
@@ -99,6 +103,10 @@ public class EntrenadorController {
         Double calificacionPromedio = entrenadorDTO != null ? entrenadorDTO.getCalificacionPromedio() : null;
         Integer aniosExperiencia = entrenadorDTO != null ? entrenadorDTO.getAniosExperiencia() : null;
         
+        // Obtener el entrenador completo para verificar su estado de verificación
+        var entrenadorCompleto = entrenadorRepository.findById(entrenadorId).orElse(null);
+        boolean esVerificado = entrenadorCompleto != null && entrenadorCompleto.isVerified();
+
         // Información de solicitudes pendientes con datos del cliente
         var solicitudesInfo = solicitudesPendientes.stream()
             .map(s -> {
@@ -121,7 +129,9 @@ public class EntrenadorController {
         model.addAttribute("aniosExperiencia", aniosExperiencia != null ? aniosExperiencia : 0);
         model.addAttribute("solicitudesInfo", solicitudesInfo);
         model.addAttribute("usuario", usuario);
-        
+        model.addAttribute("entrenador", entrenadorCompleto);
+        model.addAttribute("esVerificado", esVerificado);
+
         return "entrenador/dashboard";
     }
 

@@ -8,6 +8,7 @@ import com.sabi.sabi.repository.ClienteRepository;
 import com.sabi.sabi.repository.UsuarioRepository;
 import com.sabi.sabi.repository.EntrenadorRepository;
 import com.sabi.sabi.service.EmailService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -16,9 +17,14 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
 
+/**
+ * Controlador del panel de administración
+ * Gestiona usuarios, entrenadores y verificaciones del sistema SABI
+ */
 @Controller
 @RequestMapping("/admin")
 @PreAuthorize("hasRole('ADMIN')")
+@RequiredArgsConstructor
 public class AdminController {
 
     private final UsuarioRepository usuarioRepository;
@@ -26,95 +32,126 @@ public class AdminController {
     private final ClienteRepository clienteRepository;
     private final EmailService emailService;
 
-    public AdminController(UsuarioRepository usuarioRepository,
-                          EntrenadorRepository entrenadorRepository,
-                          ClienteRepository clienteRepository,
-                          EmailService emailService) {
-        this.usuarioRepository = usuarioRepository;
-        this.entrenadorRepository = entrenadorRepository;
-        this.clienteRepository = clienteRepository;
-        this.emailService = emailService;
-    }
 
+    /**
+     * Dashboard principal del administrador
+     * Muestra estadísticas generales del sistema
+     */
     @GetMapping("/dashboard")
     public String dashboard(Model model) {
-        System.out.println("╔════════════════════════════════════════════════════════╗");
-        System.out.println("║  🔐 ADMIN - Accediendo al Dashboard");
-        System.out.println("╚════════════════════════════════════════════════════════╝");
+        System.out.println("\n╔══════════════════════════════════════════════════════════════╗");
+        System.out.println("║  🔐 ADMIN DASHBOARD - Cargando Estadísticas                  ║");
+        System.out.println("╚══════════════════════════════════════════════════════════════╝");
 
+        // Obtener todos los usuarios
         List<Usuario> todosUsuarios = usuarioRepository.findAll();
         List<Entrenador> todosEntrenadores = entrenadorRepository.findAll();
 
+        // Calcular estadísticas
         long totalUsuarios = todosUsuarios.size();
+        long totalClientes = todosUsuarios.stream()
+                .filter(u -> u.getRol() == Rol.CLIENTE)
+                .count();
         long totalEntrenadores = todosEntrenadores.size();
-        long totalClientes = todosUsuarios.stream().filter(u -> u.getRol() == Rol.CLIENTE).count();
-        long entrenadoresVerificados = todosEntrenadores.stream().filter(Entrenador::isVerified).count();
-        long entrenadorespendientes = totalEntrenadores - entrenadoresVerificados;
-
-        // Estadísticas adicionales
-        long usuariosActivos = todosUsuarios.stream().filter(Usuario::getEstado).count();
+        long entrenadoresVerificados = todosEntrenadores.stream()
+                .filter(Entrenador::isVerified)
+                .count();
+        long entrenadoresPendientes = totalEntrenadores - entrenadoresVerificados;
+        long usuariosActivos = todosUsuarios.stream()
+                .filter(Usuario::getEstado)
+                .count();
         long usuariosBloqueados = totalUsuarios - usuariosActivos;
 
-        System.out.println("  📊 Total Usuarios: " + totalUsuarios);
-        System.out.println("  👥 Total Clientes: " + totalClientes);
-        System.out.println("  🏋️ Total Entrenadores: " + totalEntrenadores);
-        System.out.println("  ✅ Entrenadores Verificados: " + entrenadoresVerificados);
-        System.out.println("  ⏳ Entrenadores Pendientes: " + entrenadorespendientes);
-        System.out.println("  🟢 Usuarios Activos: " + usuariosActivos);
-        System.out.println("  🔴 Usuarios Bloqueados: " + usuariosBloqueados);
+        // Log de estadísticas
+        System.out.println("\n📊 ESTADÍSTICAS DEL SISTEMA:");
+        System.out.println("  ├─ Total Usuarios: " + totalUsuarios);
+        System.out.println("  ├─ Total Clientes: " + totalClientes);
+        System.out.println("  ├─ Total Entrenadores: " + totalEntrenadores);
+        System.out.println("  │   ├─ ✅ Verificados: " + entrenadoresVerificados);
+        System.out.println("  │   └─ ⏳ Pendientes: " + entrenadoresPendientes);
+        System.out.println("  ├─ 🟢 Usuarios Activos: " + usuariosActivos);
+        System.out.println("  └─ 🔴 Usuarios Bloqueados: " + usuariosBloqueados);
+        System.out.println();
 
+        // Agregar al modelo
         model.addAttribute("totalUsuarios", totalUsuarios);
         model.addAttribute("totalClientes", totalClientes);
         model.addAttribute("totalEntrenadores", totalEntrenadores);
         model.addAttribute("entrenadoresVerificados", entrenadoresVerificados);
-        model.addAttribute("entrenadorespendientes", entrenadorespendientes);
+        model.addAttribute("entrenadorespendientes", entrenadoresPendientes);
         model.addAttribute("usuariosActivos", usuariosActivos);
         model.addAttribute("usuariosBloqueados", usuariosBloqueados);
 
         return "admin/dashboard";
     }
 
+    /**
+     * Lista de todos los usuarios del sistema
+     * Incluye clientes, entrenadores y administradores
+     */
     @GetMapping("/usuarios")
     public String usuarios(Model model) {
-        List<Usuario> usuarios = usuarioRepository.findAll();
-        model.addAttribute("usuarios", usuarios);
+        System.out.println("\n╔══════════════════════════════════════════════════════════════╗");
+        System.out.println("║  👥 ADMIN - Listado de Usuarios                              ║");
+        System.out.println("╚══════════════════════════════════════════════════════════════╝");
 
-        // Crear mapa de IDs de entrenadores verificados para acceso fácil en la vista
+        List<Usuario> usuarios = usuarioRepository.findAll();
+        System.out.println("📋 Total de usuarios en el sistema: " + usuarios.size());
+
+        // Obtener IDs de entrenadores verificados para mostrar en vista
         List<Long> entrenadoresVerificadosIds = entrenadorRepository.findAll().stream()
-            .filter(Entrenador::isVerified)
-            .map(Entrenador::getId)
-            .toList();
+                .filter(Entrenador::isVerified)
+                .map(Entrenador::getId)
+                .toList();
+
+        System.out.println("✅ Entrenadores verificados: " + entrenadoresVerificadosIds.size());
+
+        model.addAttribute("usuarios", usuarios);
         model.addAttribute("entrenadoresVerificadosIds", entrenadoresVerificadosIds);
 
         return "admin/usuarios";
     }
 
+    /**
+     * Panel de verificación de entrenadores
+     * Lista todos los entrenadores y permite verificarlos o revocar verificación
+     */
     @GetMapping("/entrenadores")
     public String entrenadores(Model model) {
-        System.out.println("╔════════════════════════════════════════════════════════╗");
-        System.out.println("║  🔐 ADMIN - Verificación de Entrenadores");
-        System.out.println("╚════════════════════════════════════════════════════════╝");
+        System.out.println("\n╔══════════════════════════════════════════════════════════════╗");
+        System.out.println("║  🏋️ ADMIN - Panel de Verificación de Entrenadores          ║");
+        System.out.println("╚══════════════════════════════════════════════════════════════╝");
 
-        // Todos los entrenadores
-        java.util.List<Entrenador> entrenadores = entrenadorRepository.findAll();
-        System.out.println("  📋 Total de entrenadores encontrados: " + entrenadores.size());
+        // Obtener todos los entrenadores
+        List<Entrenador> entrenadores = entrenadorRepository.findAll();
 
-        long verificados = entrenadores.stream().filter(Entrenador::isVerified).count();
-        long pendientes = entrenadores.size() - verificados;
-        System.out.println("  ✅ Verificados: " + verificados);
-        System.out.println("  ⏳ Pendientes: " + pendientes);
+        // Clasificar entrenadores
+        long totalEntrenadores = entrenadores.size();
+        long verificados = entrenadores.stream()
+                .filter(Entrenador::isVerified)
+                .count();
+        long pendientes = totalEntrenadores - verificados;
 
-        // Solo entrenadores que tienen alguna certificación cargada
-        java.util.List<Entrenador> entrenadoresConCert = entrenadorRepository.findConCertificaciones();
-        System.out.println("  📄 Con certificaciones: " + entrenadoresConCert.size());
+        // Entrenadores con certificaciones
+        List<Entrenador> entrenadoresConCert = entrenadorRepository.findConCertificaciones();
 
-        // Pendientes de verificación PERO con certificaciones (candidatos a revisar/verificar)
-        java.util.List<Entrenador> candidatosVerificacion = entrenadorRepository.findPendientesConCertificaciones();
-        System.out.println("  🎯 Pendientes con certificaciones (candidatos): " + candidatosVerificacion.size());
+        // Candidatos a verificación (no verificados pero con certificaciones)
+        List<Entrenador> candidatosVerificacion = entrenadorRepository.findPendientesConCertificaciones();
 
+        // Log de estadísticas
+        System.out.println("\n📊 ESTADÍSTICAS DE ENTRENADORES:");
+        System.out.println("  ├─ Total: " + totalEntrenadores);
+        System.out.println("  ├─ ✅ Verificados: " + verificados);
+        System.out.println("  ├─ ⏳ Pendientes: " + pendientes);
+        System.out.println("  ├─ 📄 Con certificaciones: " + entrenadoresConCert.size());
+        System.out.println("  └─ 🎯 Candidatos a verificar: " + candidatosVerificacion.size());
+        System.out.println();
+
+        // Agregar al modelo
         model.addAttribute("entrenadores", entrenadores);
         model.addAttribute("entrenadoresConCert", entrenadoresConCert);
         model.addAttribute("candidatosVerificacion", candidatosVerificacion);
+
         return "admin/entrenadores";
     }
 
@@ -209,41 +246,99 @@ public class AdminController {
         return "redirect:/admin/" + redirect;
     }
 
+    /**
+     * Verificar un entrenador (otorgar verificación oficial de SABI)
+     */
     @PostMapping("/entrenadores/{id}/verificar")
     public String verificar(@PathVariable Long id, RedirectAttributes redirectAttributes) {
-        System.out.println("╔════════════════════════════════════════════════════════╗");
-        System.out.println("║  ✅ ADMIN - Verificando Entrenador ID: " + id);
-        System.out.println("╚════════════════════════════════════════════════════════╝");
+        System.out.println("\n╔══════════════════════════════════════════════════════════════╗");
+        System.out.println("║  ✅ VERIFICANDO ENTRENADOR                                   ║");
+        System.out.println("╚══════════════════════════════════════════════════════════════╝");
 
-        entrenadorRepository.findById(id).ifPresent(entrenador -> {
-            System.out.println("  👤 Verificando a: " + entrenador.getEmail());
+        try {
+            Entrenador entrenador = entrenadorRepository.findById(id)
+                    .orElseThrow(() -> new RuntimeException("Entrenador no encontrado con ID: " + id));
+
+            System.out.println("📋 Datos del entrenador:");
+            System.out.println("  ├─ ID: " + entrenador.getId());
+            System.out.println("  ├─ Nombre: " + entrenador.getNombre() + " " +
+                    (entrenador.getApellido() != null ? entrenador.getApellido() : ""));
+            System.out.println("  ├─ Email: " + entrenador.getEmail());
+            System.out.println("  └─ Estado anterior: " + (entrenador.isVerified() ? "✅ YA VERIFICADO" : "⏳ PENDIENTE"));
+
+            if (entrenador.isVerified()) {
+                System.out.println("\n⚠️ ADVERTENCIA: El entrenador ya estaba verificado");
+                redirectAttributes.addFlashAttribute("warning",
+                        "El entrenador ya estaba verificado previamente.");
+                return "redirect:/admin/entrenadores";
+            }
+
+            // Otorgar verificación
             entrenador.setVerified(true);
             entrenadorRepository.save(entrenador);
+            System.out.println("\n✅ VERIFICACIÓN OTORGADA exitosamente");
+
+            // Enviar correo de notificación
             try {
                 emailService.enviarAvisoVerificacion(entrenador.getEmail());
-                System.out.println("  ✉️ Correo de verificación enviado");
+                System.out.println("📧 Correo de verificación enviado a: " + entrenador.getEmail());
             } catch (Exception e) {
-                System.out.println("  ⚠️ No se pudo enviar el correo: " + e.getMessage());
+                System.out.println("⚠️ No se pudo enviar el correo: " + e.getMessage());
             }
-            System.out.println("  ✅ Entrenador verificado exitosamente");
-        });
-        redirectAttributes.addFlashAttribute("success", "Entrenador verificado correctamente.");
+
+            redirectAttributes.addFlashAttribute("success",
+                    "✅ Entrenador verificado correctamente. Se ha enviado un correo de notificación.");
+
+        } catch (Exception e) {
+            System.out.println("❌ ERROR al verificar entrenador: " + e.getMessage());
+            redirectAttributes.addFlashAttribute("error",
+                    "Error al verificar el entrenador: " + e.getMessage());
+        }
+
         return "redirect:/admin/entrenadores";
     }
 
+    /**
+     * Revocar la verificación de un entrenador
+     */
     @PostMapping("/entrenadores/{id}/revocar")
     public String revocar(@PathVariable Long id, RedirectAttributes redirectAttributes) {
-        System.out.println("╔════════════════════════════════════════════════════════╗");
-        System.out.println("║  ⚠️ ADMIN - Revocando Verificación de Entrenador ID: " + id);
-        System.out.println("╚════════════════════════════════════════════════════════╝");
+        System.out.println("\n╔══════════════════════════════════════════════════════════════╗");
+        System.out.println("║  ⚠️ REVOCANDO VERIFICACIÓN DE ENTRENADOR                   ║");
+        System.out.println("╚══════════════════════════════════════════════════════════════╝");
 
-        entrenadorRepository.findById(id).ifPresent(entrenador -> {
-            System.out.println("  👤 Revocando verificación a: " + entrenador.getEmail());
+        try {
+            Entrenador entrenador = entrenadorRepository.findById(id)
+                    .orElseThrow(() -> new RuntimeException("Entrenador no encontrado con ID: " + id));
+
+            System.out.println("📋 Datos del entrenador:");
+            System.out.println("  ├─ ID: " + entrenador.getId());
+            System.out.println("  ├─ Nombre: " + entrenador.getNombre() + " " +
+                    (entrenador.getApellido() != null ? entrenador.getApellido() : ""));
+            System.out.println("  ├─ Email: " + entrenador.getEmail());
+            System.out.println("  └─ Estado anterior: " + (entrenador.isVerified() ? "✅ VERIFICADO" : "⏳ PENDIENTE"));
+
+            if (!entrenador.isVerified()) {
+                System.out.println("\n⚠️ ADVERTENCIA: El entrenador ya estaba sin verificar");
+                redirectAttributes.addFlashAttribute("warning",
+                        "El entrenador no estaba verificado.");
+                return "redirect:/admin/entrenadores";
+            }
+
+            // Revocar verificación
             entrenador.setVerified(false);
             entrenadorRepository.save(entrenador);
-            System.out.println("  ✅ Verificación revocada exitosamente");
-        });
-        redirectAttributes.addFlashAttribute("success", "Verificación revocada correctamente.");
+            System.out.println("\n⚠️ VERIFICACIÓN REVOCADA exitosamente");
+
+            redirectAttributes.addFlashAttribute("success",
+                    "⚠️ Verificación revocada correctamente.");
+
+        } catch (Exception e) {
+            System.out.println("❌ ERROR al revocar verificación: " + e.getMessage());
+            redirectAttributes.addFlashAttribute("error",
+                    "Error al revocar la verificación: " + e.getMessage());
+        }
+
         return "redirect:/admin/entrenadores";
     }
 }

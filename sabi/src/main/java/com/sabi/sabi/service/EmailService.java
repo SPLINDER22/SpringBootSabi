@@ -968,10 +968,18 @@ public class EmailService {
                 <head><meta charset=\"UTF-8\"></head>
                 <body style=\"font-family: Segoe UI, Arial, sans-serif; color:#333;\">
                   <div style=\"max-width:600px;margin:20px auto;padding:20px;border:1px solid #eee;border-radius:10px\">
-                    <h2 style=\"color:#15803d\">Cuenta verificada</h2>
+                    <h2 style=\"color:#2861E3\">✅ Cuenta verificada</h2>
                     <p>¡Felicidades! Tu cuenta de <strong>Entrenador</strong> ha sido <strong>verificada</strong> por el equipo de SABI.</p>
                     <p>Desde ahora, los clientes verán una insignia de verificación junto a tu nombre.</p>
-                    <p style=\"margin-top:20px;color:#6b7280\">Este es un mensaje automático. Por favor, no respondas directamente.</p>
+                    <div style=\"background:#f0f7ff;border-left:4px solid #2861E3;padding:15px;margin:20px 0;border-radius:5px\">
+                      <p style=\"margin:0;color:#1e4ba8\"><strong>Beneficios de la verificación:</strong></p>
+                      <ul style=\"margin:10px 0;color:#374151\">
+                        <li>Mayor confianza de los clientes</li>
+                        <li>Insignia oficial de SABI visible</li>
+                        <li>Destaque en resultados de búsqueda</li>
+                      </ul>
+                    </div>
+                    <p style=\"margin-top:20px;color:#6b7280;font-size:0.9em\">Este es un mensaje automático. Por favor, no respondas directamente.</p>
                   </div>
                 </body>
                 </html>

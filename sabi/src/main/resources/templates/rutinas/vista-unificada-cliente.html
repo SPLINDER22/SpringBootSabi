@@ -102,11 +102,11 @@
 
         /* Ejercicios */
         .ejercicio-btn {
-            background: linear-gradient(135deg, #a855f7 0%, #9333ea 100%);
-            color: white;
+            background: transparent;
+            color: #3b82f6;
             padding: 10px 16px;
             border-radius: 20px;
-            border: none;
+            border: 4px solid #3b82f6;
             cursor: pointer;
             margin-bottom: 6px;
             font-weight: 500;
@@ -115,17 +115,20 @@
             width: 100%;
             text-align: left;
             transition: all 0.3s;
-            box-shadow: 0 2px 4px rgba(168, 85, 247, 0.3);
+            box-shadow: none;
         }
 
         .ejercicio-btn:hover {
             transform: translateX(5px);
-            box-shadow: 0 3px 8px rgba(168, 85, 247, 0.4);
+            background: rgba(59, 130, 246, 0.1);
+            border-color: #2563eb;
         }
 
         .ejercicio-btn.selected {
-            background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%);
-            box-shadow: 0 4px 12px rgba(124, 58, 237, 0.6);
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            color: white;
+            border: none;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.6);
             font-weight: 700;
             transform: translateX(8px) scale(1.02);
         }
@@ -238,7 +241,7 @@
 
         .btn-finalizar {
             background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
-            color: white;
+            color: white !important;
             border: none;
             padding: 12px 24px;
             border-radius: 10px;
@@ -250,7 +253,7 @@
         .btn-finalizar:hover {
             transform: translateY(-2px);
             box-shadow: 0 4px 12px rgba(220, 38, 38, 0.4);
-            color: white;
+            color: white !important;
         }
 
         .comentarios-section {
@@ -324,7 +327,7 @@
                           semanaNum=${semana != null ? semana.numeroSemana : 0}">
 
                 <!-- Header de Semana -->
-                <div class="semana-header"
+                <div class="semana-header collapsed"
                      th:id="'semana-header-' + ${semanaId}"
                      th:attr="data-bs-toggle='collapse', data-bs-target='#semana-content-' + ${semanaId}">
                     <span>
@@ -350,12 +353,16 @@
                                   diaNum=${dia != null ? dia.numeroDia : 0}">
 
                         <!-- Header de Día -->
-                        <div class="dia-header"
+                        <div class="dia-header collapsed"
                              th:id="'dia-header-' + ${diaId}"
                              th:attr="data-bs-toggle='collapse', data-bs-target='#dia-content-' + ${diaId}">
                             <span>
                                 <i class="fas fa-calendar-day me-2"></i>
                                 Día <span th:text="${diaNum}">1</span>
+                                <!-- Icono de completado si todas las series del día están registradas -->
+                                <span th:if="${diaData.todasSeriesCompletadas}" class="badge bg-success ms-2" style="font-size: 0.7rem;">
+                                    <i class="fas fa-check-circle"></i>
+                                </span>
                             </span>
                             <i class="fas fa-chevron-down"></i>
                         </div>
@@ -378,10 +385,13 @@
                                 <!-- Botón de Ejercicio -->
                                 <button class="ejercicio-btn"
                                         th:id="'ejercicio-btn-' + ${ejeId}"
-                                        th:attr="data-ejercicio-id=${ejeId}"
+                                        th:attr="data-ejercicio-id=${ejeId},
+                                                 data-completado=${ejeData.todasSeriesCompletadas ? 'true' : 'false'}"
                                         onclick="seleccionarEjercicio(this)">
                                     <i class="fas fa-running me-2"></i>
                                     <span th:text="${nombreEjercicio}">Ejercicio</span>
+                                    <!-- Icono de completado si todas las series están registradas -->
+                                    <i th:if="${ejeData.todasSeriesCompletadas}" class="fas fa-check-circle ms-2 text-success" style="font-size: 1.1rem;"></i>
                                 </button>
 
                                 <!-- Container de Series (oculto, se muestra en panel derecho) -->
@@ -484,15 +494,27 @@
 
                 // Abrir semana
                 const semanaCollapse = document.getElementById('semana-content-' + autoSemanaId);
-                if (semanaCollapse) {
-                    const bsCollapse = new bootstrap.Collapse(semanaCollapse, { toggle: true });
+                const semanaHeader = document.getElementById('semana-header-' + autoSemanaId);
+                if (semanaCollapse && semanaHeader) {
+                    // Remover clase collapsed del header
+                    semanaHeader.classList.remove('collapsed');
+
+                    // Abrir el collapse
+                    const bsCollapse = new bootstrap.Collapse(semanaCollapse, { toggle: false });
+                    bsCollapse.show();
 
                     // Después de abrir la semana, abrir el día
                     setTimeout(() => {
                         if (autoDiaId) {
                             const diaCollapse = document.getElementById('dia-content-' + autoDiaId);
-                            if (diaCollapse) {
-                                const bsDiaCollapse = new bootstrap.Collapse(diaCollapse, { toggle: true });
+                            const diaHeader = document.getElementById('dia-header-' + autoDiaId);
+                            if (diaCollapse && diaHeader) {
+                                // Remover clase collapsed del header
+                                diaHeader.classList.remove('collapsed');
+
+                                // Abrir el collapse
+                                const bsDiaCollapse = new bootstrap.Collapse(diaCollapse, { toggle: false });
+                                bsDiaCollapse.show();
 
                                 // Después de abrir el día, seleccionar el ejercicio
                                 setTimeout(() => {
@@ -505,12 +527,18 @@
                                             setTimeout(() => {
                                                 ejercicioBtn.click();
                                             }, 500);
+                                        } else {
+                                            console.error('No se encontró el botón del ejercicio con ID:', autoEjercicioId);
                                         }
                                     }
-                                }, 300);
+                                }, 400);
+                            } else {
+                                console.error('No se encontró el día con ID:', autoDiaId);
                             }
                         }
-                    }, 300);
+                    }, 400);
+                } else {
+                    console.error('No se encontró la semana con ID:', autoSemanaId);
                 }
             }
         }
@@ -737,6 +765,34 @@
                         serieDataItem.setAttribute('data-registro-intensidad', registroData.intensidadReal || '');
                         serieDataItem.setAttribute('data-registro-notas', registroData.comentariosCliente || '');
                         console.log('Atributos data actualizados para serie ' + serieId);
+
+                        // Verificar si todas las series del ejercicio están completadas
+                        const ejercicioActualId = document.querySelector('.ejercicio-btn.selected')?.getAttribute('data-ejercicio-id');
+                        if (ejercicioActualId) {
+                            const seriesData = document.getElementById('series-data-' + ejercicioActualId);
+                            const todasSeriesItems = seriesData.querySelectorAll('.serie-data-item');
+                            let todasCompletas = true;
+
+                            todasSeriesItems.forEach(item => {
+                                const reps = item.getAttribute('data-registro-reps');
+                                if (!reps || reps === '' || reps === 'null') {
+                                    todasCompletas = false;
+                                }
+                            });
+
+                            // Actualizar el botón del ejercicio si está completo
+                            const ejercicioBtn = document.getElementById('ejercicio-btn-' + ejercicioActualId);
+                            if (ejercicioBtn && todasCompletas) {
+                                ejercicioBtn.setAttribute('data-completado', 'true');
+                                // Agregar icono de completado si no existe
+                                if (!ejercicioBtn.querySelector('.fa-check-circle')) {
+                                    const checkIcon = document.createElement('i');
+                                    checkIcon.className = 'fas fa-check-circle ms-2 text-success';
+                                    checkIcon.style.fontSize = '1.1rem';
+                                    ejercicioBtn.appendChild(checkIcon);
+                                }
+                            }
+                        }
                     }
                     // ================================================================
 

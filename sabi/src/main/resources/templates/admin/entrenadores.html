@@ -205,7 +205,7 @@
                                     </span>
                                 </td>
                                 <td class="text-center">
-                                    <span th:if="${entrenador.verified}" class="badge badge-success">
+                                    <span th:if="${entrenador.verified}" class="badge badge-verificado">
                                         <i class="fas fa-check-circle"></i> Verificado
                                     </span>
                                     <span th:if="${!entrenador.verified}" class="badge badge-warning">
@@ -224,7 +224,7 @@
                                         <!-- Verificar: solo si NO está verificado (sin importar certificaciones) -->
                                         <button th:if="${!entrenador.verified}"
                                                 type="button"
-                                                class="btn btn-success mb-1 btn-verificar"
+                                                class="btn mb-1 btn-verificar btn-block"
                                                 th:data-id="${entrenador.id}"
                                                 th:data-nombre="${entrenador.nombre}"
                                                 th:data-email="${entrenador.email}"
@@ -393,6 +393,40 @@
             if (tabla) {
                 const filas = tabla.getElementsByTagName('tbody')[0].getElementsByTagName('tr');
                 console.log('  📊 Total filas en tabla:', filas.length);
+
+                // 🔍 DEPURACIÓN DETALLADA - Analizar cada fila
+                console.log('\n  🔍 ANÁLISIS DE FILAS:');
+                for (let i = 0; i < filas.length; i++) {
+                    const fila = filas[i];
+                    const nombre = fila.cells[2]?.textContent.trim() || 'N/A';
+                    const email = fila.cells[3]?.textContent.trim() || 'N/A';
+                    const verificacion = fila.cells[8]?.textContent.trim() || 'N/A';
+                    const display = window.getComputedStyle(fila).display;
+                    const classes = fila.className;
+
+                    console.log(`  ${i + 1}. ${nombre}`);
+                    console.log(`     📧 Email: ${email}`);
+                    console.log(`     ✅ Verificación: ${verificacion}`);
+                    console.log(`     👁️ Display: ${display}`);
+                    console.log(`     🏷️ Classes: ${classes}`);
+                    console.log(`     ---`);
+                }
+
+                // Verificar cuántas están ocultas
+                let ocultas = 0;
+                let visibles = 0;
+                for (let i = 0; i < filas.length; i++) {
+                    const display = window.getComputedStyle(filas[i]).display;
+                    if (display === 'none') {
+                        ocultas++;
+                    } else {
+                        visibles++;
+                    }
+                }
+                console.log(`\n  📊 RESUMEN:`);
+                console.log(`     ✅ Visibles: ${visibles}`);
+                console.log(`     ❌ Ocultas: ${ocultas}`);
+
             } else {
                 console.log('  ⚠️ Tabla no encontrada');
             }
@@ -631,7 +665,7 @@
 
     <style>
         .entrenador-verificado {
-            background-color: rgba(40, 167, 69, 0.05);
+            background-color: rgba(40, 97, 227, 0.05); /* Azul #2861E3 */
         }
 
         .entrenador-pendiente {
@@ -639,7 +673,7 @@
         }
 
         .entrenador-con-cert {
-            border-left: 4px solid #28a745;
+            border-left: 4px solid #2861E3; /* Azul principal */
         }
 
         .entrenador-candidato {
@@ -647,8 +681,69 @@
         }
 
         .table-hover tbody tr:hover {
-            background-color: rgba(78, 115, 223, 0.1) !important;
+            background-color: rgba(40, 97, 227, 0.1) !important; /* Azul #2861E3 */
             cursor: pointer;
+        }
+
+        /* Badge de verificación personalizado en azul */
+        .badge-verificado {
+            background-color: #2861E3 !important;
+            color: white !important;
+        }
+
+        /* Sobrescribir badge-success para verificación */
+        td .badge.badge-success {
+            background-color: #2861E3 !important;
+        }
+
+        /* Botón verificar personalizado */
+        .btn-verificar {
+            background-color: #2861E3 !important;
+            border-color: #2861E3 !important;
+            color: white !important;
+        }
+
+        .btn-verificar:hover {
+            background-color: #1e4ba8 !important;
+            border-color: #1e4ba8 !important;
+        }
+
+        /* Botones de filtro primary personalizados */
+        .btn-outline-primary {
+            color: #2861E3 !important;
+            border-color: #2861E3 !important;
+        }
+
+        .btn-outline-primary:hover {
+            background-color: #2861E3 !important;
+            border-color: #2861E3 !important;
+            color: white !important;
+        }
+
+        /* Card border primary */
+        .card.border-left-primary {
+            border-left: 4px solid #2861E3 !important;
+        }
+
+        /* Text primary */
+        .text-primary {
+            color: #2861E3 !important;
+        }
+
+        /* Modal header success para verificación */
+        .modal-header.bg-success {
+            background: linear-gradient(135deg, #2861E3 0%, #1e4ba8 100%) !important;
+        }
+
+        /* Botón success en modal de verificación */
+        .modal-footer .btn-success {
+            background-color: #2861E3 !important;
+            border-color: #2861E3 !important;
+        }
+
+        .modal-footer .btn-success:hover {
+            background-color: #1e4ba8 !important;
+            border-color: #1e4ba8 !important;
         }
     </style>
 </body>
