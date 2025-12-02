@@ -6,6 +6,8 @@
 
 <head>
     <meta charset="UTF-8">
+    <meta name="_csrf" th:content="${_csrf.token}"/>
+    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
     <title th:text="${pageTitle}">SABI</title>
     <link href="/vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
     <link href="/vendor/bootstrap-icons-1.13.1/bootstrap-icons.min.css" rel="stylesheet">
@@ -158,18 +160,12 @@
         // Info alerts (dejar normales a menos que tengan clase sweet)
     });
 
-    // Fix para modales (Bootstrap 5 / 4)
-    document.querySelectorAll('[data-bs-toggle="modal"]').forEach(function(btn) {
-        btn.addEventListener('click', function() {
-            var target = btn.getAttribute('data-bs-target');
-            if (window.bootstrap && target) {
-                var modal = document.querySelector(target);
-                if (modal) {
-                    var bsModal = window.bootstrap.Modal.getOrCreateInstance(modal);
-                    bsModal.show();
-                }
-            }
-        });
+    // Fix para modales (Bootstrap 4 con jQuery)
+    $(document).on('click', '[data-bs-toggle="modal"]', function() {
+        var target = $(this).attr('data-bs-target');
+        if (target) {
+            $(target).modal('show');
+        }
     });
 </script>
 
