@@ -99,30 +99,42 @@ public class    DataInitializer implements CommandLineRunner {
                         "gimnasio básico", "Dolor lumbar ocasional", "ninguna", 7L,
                         "Dieta mediterránea");
 
-                // Entrenadores con especialidades múltiples y precios
+                // ==========================================
+                // ✅ ENTRENADORES VERIFICADOS POR SABI (2)
+                // ==========================================
+                System.out.println("\n╔════════════════════════════════════════════════════════╗");
+                System.out.println("║  ✅ CREANDO ENTRENADORES VERIFICADOS POR SABI         ║");
+                System.out.println("╚════════════════════════════════════════════════════════╝");
+
                 crearEntrenadorDetalladoSiNoExiste(
                         "Ernesto", "Espinel", "entrenador@sabi.com", "1234567",
                         Sexo.MASCULINO, LocalDate.of(1987, 5, 14), Departamento.CUNDINAMARCA, "Bogotá",
                         TipoDocumento.CC, "1012456789", "3101234567",
                         "Fuerza y Acondicionamiento, Ganancia Muscular, Powerlifting", 4.6, 8,
                         "Entrenador con enfoque en fuerza e hipertrofia, planificación y técnica correcta.",
-                        50000.0, 80000.0
+                        50000.0, 80000.0, true // ✅ VERIFICADO
                 );
+
                 crearEntrenadorDetalladoSiNoExiste(
                         "Ana", "García", "entrenador1@sabi.com", "1234567",
                         Sexo.FEMENINO, LocalDate.of(1990, 9, 22), Departamento.ANTIOQUIA, "Medellín",
                         TipoDocumento.CC, "1033345698", "3129876543",
                         "CrossFit, Cardio y Resistencia, Entrenamiento Funcional", 4.3, 6,
                         "Especialista en entrenamiento metabólico y acondicionamiento de alta intensidad.",
-                        45000.0, 75000.0
+                        45000.0, 75000.0, true // ✅ VERIFICADO
                 );
+
+                System.out.println("\n╔════════════════════════════════════════════════════════╗");
+                System.out.println("║  ⏳ ENTRENADORES PENDIENTES DE VERIFICACIÓN (7)       ║");
+                System.out.println("╚════════════════════════════════════════════════════════╝");
+
                 crearEntrenadorDetalladoSiNoExiste(
                         "Luis", "Martínez", "entrenador2@sabi.com", "1234567",
                         Sexo.MASCULINO, LocalDate.of(1985, 3, 8), Departamento.VALLE_DEL_CAUCA, "Cali",
                         TipoDocumento.CC, "1009876523", "3004567890",
                         "Pérdida de Peso, Entrenamiento Funcional, Nutrición Deportiva", 4.1, 10,
                         "Acompañamiento integral para reducción de grasa y hábitos saludables.",
-                        40000.0, 70000.0
+                        40000.0, 70000.0, false
                 );
                 crearEntrenadorDetalladoSiNoExiste(
                         "María", "López", "entrenador3@sabi.com", "1234567",
@@ -130,7 +142,7 @@ public class    DataInitializer implements CommandLineRunner {
                         TipoDocumento.CC, "1015678923", "3011237894",
                         "Entrenamiento Funcional, Movilidad y Flexibilidad, Rehabilitación", 4.4, 4,
                         "Trabajo de movilidad articular, estabilidad y funcionalidad para la vida diaria.",
-                        35000.0, 60000.0
+                        35000.0, 60000.0, false
                 );
                 crearEntrenadorDetalladoSiNoExiste(
                         "Carlos", "Pérez", "entrenador4@sabi.com", "1234567",
@@ -138,7 +150,7 @@ public class    DataInitializer implements CommandLineRunner {
                         TipoDocumento.CC, "1098765432", "3159988776",
                         "Running, Cardio y Resistencia, Deportes Específicos", 4.2, 7,
                         "Planificación de carreras 5K-21K, técnica de carrera y fortalecimiento específico.",
-                        30000.0, 55000.0
+                        30000.0, 55000.0, false
                 );
                 crearEntrenadorDetalladoSiNoExiste(
                         "Sofía", "Rodríguez", "entrenador5@sabi.com", "1234567",
@@ -146,7 +158,7 @@ public class    DataInitializer implements CommandLineRunner {
                         TipoDocumento.CC, "1012349987", "3176655443",
                         "Pilates, Yoga, Movilidad y Flexibilidad", 4.5, 5,
                         "Fortalecimiento de core, postura y prevención de dolor lumbar con métodos de pilates.",
-                        40000.0, 65000.0
+                        40000.0, 65000.0, false
                 );
                 crearEntrenadorDetalladoSiNoExiste(
                         "Jorge", "Hernández", "entrenador6@sabi.com", "1234567",
@@ -154,7 +166,7 @@ public class    DataInitializer implements CommandLineRunner {
                         TipoDocumento.CC, "1004567812", "3114455667",
                         "Powerlifting, Fuerza y Acondicionamiento, Ganancia Muscular", 4.7, 12,
                         "Entrenamientos de levantamiento olímpico, técnica de arranque y envión.",
-                        60000.0, 100000.0
+                        60000.0, 100000.0, false
                 );
                 crearEntrenadorDetalladoSiNoExiste(
                         "Lucía", "Fernández", "entrenador7@sabi.com", "1234567",
@@ -162,7 +174,7 @@ public class    DataInitializer implements CommandLineRunner {
                         TipoDocumento.CC, "1023456780", "3193344556",
                         "Yoga, Pilates, Movilidad y Flexibilidad", 4.0, 3,
                         "Sesiones de yoga enfocadas en flexibilidad, respiración y control postural.",
-                        35000.0, 55000.0
+                        35000.0, 55000.0, false
                 );
                 crearEntrenadorDetalladoSiNoExiste(
                         "Diego", "Gómez", "entrenador8@sabi.com", "1234567",
@@ -170,7 +182,7 @@ public class    DataInitializer implements CommandLineRunner {
                         TipoDocumento.CC, "1001234599", "3135566778",
                         "Calistenia, Entrenamiento Funcional, Fuerza y Acondicionamiento", 4.3, 6,
                         "Progresiones de calistenia, dominadas, fondos y trabajo de fuerza con peso corporal.",
-                        38000.0, 62000.0
+                        38000.0, 62000.0, false
                 );
 
                 // Asignar fotos de perfil a todos los entrenadores (tras crearlos)
@@ -516,7 +528,7 @@ public class    DataInitializer implements CommandLineRunner {
                         Sexo sexo, LocalDate fechaNacimiento, Departamento departamento, String ciudad,
                         TipoDocumento tipoDocumento, String numeroDocumento, String telefono,
                         String especialidades, Double calificacionPromedio, Integer aniosExperiencia,
-                        String descripcion, Double precioMinimo, Double precioMaximo) {
+                        String descripcion, Double precioMinimo, Double precioMaximo, boolean verified) {
 
                 if (usuarioRepository.findByEmail(email).isPresent()) {
                         System.out.println("Usuario ya existe: " + email + " (no se muestra contraseña raw)");
@@ -549,9 +561,13 @@ public class    DataInitializer implements CommandLineRunner {
                                 .precioMaximo(precioMaximo)
                                 .calificacionPromedio(calificacionPromedio)
                                 .aniosExperiencia(aniosExperiencia)
+                                .verified(verified) // Campo de verificación
                                 .build();
                 usuarioRepository.save(entrenador);
-                System.out.println("Usuario creado: " + nombre + " " + apellido + " | " + email + " | Especialidades: " + especialidades + " | Precio: $" + precioMinimo + " - $" + precioMaximo);
+
+                String verificacionStatus = verified ? "✅ VERIFICADO POR SABI" : "⏳ Pendiente de verificación";
+                System.out.println("Usuario creado: " + nombre + " " + apellido + " | " + email + " | " + verificacionStatus);
+                System.out.println("  └─ Especialidades: " + especialidades + " | Precio: $" + precioMinimo + " - $" + precioMaximo);
         }
 
     // Helpers para obtener clientes/entrenadores por email

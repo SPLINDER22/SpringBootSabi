@@ -450,6 +450,11 @@
         <h1 class="registro-title">Crear Cuenta</h1>
         <p class="registro-subtitle">Completa el formulario para unirte a nuestra comunidad</p>
 
+        <!-- Botón para regresar al inicio -->
+        <a th:href="@{/}" style="display: inline-block; margin-bottom: 20px; padding: 10px 20px; background-color: #2861E3; color: white; text-decoration: none; border-radius: 8px; font-size: 0.9rem; transition: all 0.3s ease;">
+            <i class="fas fa-arrow-left"></i> Regresar al Inicio
+        </a>
+
         <!-- Mensajes de error/éxito -->
         <div th:if="${error}" class="alert alert-danger">
             <i class="fas fa-exclamation-circle me-2"></i>
