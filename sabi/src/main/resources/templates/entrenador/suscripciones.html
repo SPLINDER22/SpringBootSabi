@@ -7,6 +7,131 @@
     <!-- SweetAlert2 -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link rel="stylesheet" th:href="@{/css/suscripciones.css}"/>
+    <style>
+        /* Estilos para botones de filtro */
+        .btn-filter {
+            transition: all 0.3s ease;
+            border-radius: 0;
+            padding: 0.5rem 1rem;
+            font-weight: 500;
+        }
+
+        .btn-filter:first-child {
+            border-top-left-radius: 0.25rem;
+            border-bottom-left-radius: 0.25rem;
+        }
+
+        .btn-filter:last-child {
+            border-top-right-radius: 0.25rem;
+            border-bottom-right-radius: 0.25rem;
+        }
+
+        .btn-filter.active {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .btn-filter:hover:not(.active) {
+            transform: translateY(-1px);
+        }
+
+        .btn-filter .badge {
+            font-size: 0.75rem;
+            padding: 0.25em 0.5em;
+        }
+
+        /* Animación suave para mostrar/ocultar bloques */
+        [data-bloque] {
+            transition: opacity 0.3s ease, transform 0.3s ease;
+        }
+
+        [data-bloque][style*="display: none"] {
+            opacity: 0;
+            transform: scale(0.95);
+        }
+
+        /* Colores específicos para cada botón cuando está activo */
+        .btn-filter.active.btn-outline-secondary {
+            background-color: #6c757d;
+            color: white;
+            border-color: #6c757d;
+        }
+
+        .btn-filter.active.btn-outline-warning {
+            background-color: #ffc107;
+            color: #000;
+            border-color: #ffc107;
+        }
+
+        .btn-filter.active.btn-outline-info {
+            background-color: #17a2b8;
+            color: white;
+            border-color: #17a2b8;
+        }
+
+        .btn-filter.active.btn-outline-primary {
+            background-color: #007bff;
+            color: white;
+            border-color: #007bff;
+        }
+
+        .btn-filter.active.btn-outline-success {
+            background-color: #28a745;
+            color: white;
+            border-color: #28a745;
+        }
+
+        /* Estilos para títulos de categorías */
+        h2.text-warning {
+            font-weight: 700;
+            text-shadow: 1px 1px 2px rgba(255, 193, 7, 0.2);
+            padding: 0.5rem 1rem;
+            background: linear-gradient(90deg, rgba(255, 193, 7, 0.1) 0%, rgba(255, 193, 7, 0) 100%);
+            border-left: 4px solid #ffc107;
+            border-radius: 0.25rem;
+        }
+
+        h2.text-info {
+            font-weight: 700;
+            text-shadow: 1px 1px 2px rgba(23, 162, 184, 0.2);
+            padding: 0.5rem 1rem;
+            background: linear-gradient(90deg, rgba(23, 162, 184, 0.1) 0%, rgba(23, 162, 184, 0) 100%);
+            border-left: 4px solid #17a2b8;
+            border-radius: 0.25rem;
+        }
+
+        h2.text-primary {
+            font-weight: 700;
+            text-shadow: 1px 1px 2px rgba(0, 123, 255, 0.2);
+            padding: 0.5rem 1rem;
+            background: linear-gradient(90deg, rgba(0, 123, 255, 0.1) 0%, rgba(0, 123, 255, 0) 100%);
+            border-left: 4px solid #007bff;
+            border-radius: 0.25rem;
+        }
+
+        h2.text-success {
+            font-weight: 700;
+            text-shadow: 1px 1px 2px rgba(40, 167, 69, 0.2);
+            padding: 0.5rem 1rem;
+            background: linear-gradient(90deg, rgba(40, 167, 69, 0.1) 0%, rgba(40, 167, 69, 0) 100%);
+            border-left: 4px solid #28a745;
+            border-radius: 0.25rem;
+        }
+
+        /* Animación para los iconos de los títulos */
+        h2 i {
+            animation: pulse-icon 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse-icon {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.1);
+            }
+        }
+    </style>
 </head>
 
 <body th:replace="layout/layout :: layout('Lista de suscripciones', ~{::section})">
@@ -15,12 +140,12 @@
     <div th:if="${success}" class="alert alert-success alert-dismissible fade show" role="alert">
         <i class="fas fa-check-circle me-2"></i>
         <strong>¡Éxito!</strong> <span th:text="${success}"></span>
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        <button type="button" class="btn-close" data-dismiss="alert" aria-label="Close"></button>
     </div>
     <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
         <i class="fas fa-exclamation-triangle me-2"></i>
         <strong>¡Error!</strong> <span th:text="${error}"></span>
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        <button type="button" class="btn-close" data-dismiss="alert" aria-label="Close"></button>
     </div>
 
     <div class="d-flex justify-content-between align-items-center mb-4">
@@ -51,7 +176,9 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="modalDiagnosticoLabel">Último Diagnóstico</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
                 </div>
                 <div class="modal-body">
                     <p><strong>Fecha:</strong> <span id="diagnosticoFecha"></span></p>
@@ -70,7 +197,7 @@
                     <p><strong>Hábitos Alimenticios:</strong> <span id="diagnosticoHabitos"></span></p>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
                 </div>
             </div>
         </div>
@@ -85,13 +212,47 @@
             </div>
         </div>
 
+        <!-- Navegación por pestañas para filtrar bloques -->
+        <div th:if="${!#lists.isEmpty(suscripciones)}" class="mb-4">
+            <div class="d-flex justify-content-center">
+                <div class="btn-group shadow-sm" role="group" aria-label="Filtrar suscripciones">
+                    <button type="button" class="btn btn-outline-secondary btn-filter active" data-filter="todos">
+                        <i class="fas fa-border-all me-1"></i> Todas
+                        <span class="badge bg-secondary ms-1" th:text="${#lists.size(suscripciones)}">0</span>
+                    </button>
+                    <button type="button" class="btn btn-outline-warning btn-filter" data-filter="pendientes"
+                            th:if="${!#lists.isEmpty(suscripcionesPendientes)}">
+                        <i class="fas fa-clock me-1"></i> Pendientes
+                        <span class="badge bg-warning text-dark ms-1" th:text="${#lists.size(suscripcionesPendientes)}">0</span>
+                    </button>
+                    <button type="button" class="btn btn-outline-info btn-filter" data-filter="cotizadas"
+                            th:if="${!#lists.isEmpty(suscripcionesCotizadas)}">
+                        <i class="fas fa-hand-holding-usd me-1"></i> Cotizadas
+                        <span class="badge bg-info ms-1" th:text="${#lists.size(suscripcionesCotizadas)}">0</span>
+                    </button>
+                    <button type="button" class="btn btn-outline-primary btn-filter" data-filter="aceptadas"
+                            th:if="${!#lists.isEmpty(suscripcionesAceptadas)}">
+                        <i class="fas fa-check-circle me-1"></i> Aceptadas
+                        <span class="badge bg-primary ms-1" th:text="${#lists.size(suscripcionesAceptadas)}">0</span>
+                    </button>
+                    <button type="button" class="btn btn-outline-success btn-filter" data-filter="activas"
+                            th:if="${rutinasActivasClientes != null and !rutinasActivasClientes.isEmpty()}">
+                        <i class="fas fa-dumbbell me-1"></i> Activas
+                        <span class="badge bg-success ms-1" th:text="${#maps.size(rutinasActivasClientes)}">0</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
         <!-- Vista cuadrícula -->
         <div id="vistaGrid" class="row g-5 suscripciones-grid" th:if="${!#lists.isEmpty(suscripciones)}">
             <!-- Bloque PENDIENTES -->
-            <div class="col-12" th:if="${!#lists.isEmpty(suscripcionesPendientes)}">
-                <h2 class="h5 mb-3 text-uppercase text-muted">Pendientes</h2>
+            <div class="col-12 bloque-pendientes" data-bloque="pendientes" th:if="${!#lists.isEmpty(suscripcionesPendientes)}">
+                <h2 class="h5 mb-3 text-uppercase text-warning">
+                    <i class="fas fa-clock me-2"></i>Pendientes
+                </h2>
             </div>
-            <div th:each="suscripcion : ${suscripcionesPendientes}" class="col-12 col-md-6">
+            <div th:each="suscripcion : ${suscripcionesPendientes}" class="col-12 col-md-6 tarjeta-suscripcion" data-bloque="pendientes">
                 <div class="card card-suscripcion w-100 text-center"
                      th:with="estado=${suscripcion.estadoSuscripcion != null ? #strings.toString(suscripcion.estadoSuscripcion) : ''}">
                     <div class="card-header">
@@ -140,9 +301,6 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-12 col-md-4" style="display:none;">
-                                <!-- antiguo campo de fin eliminado, se mantiene solo para estructura si es necesario -->
-                            </div>
                         </div>
                     </div>
                     <div class="card-footer pb-4">
@@ -156,6 +314,13 @@
                                     class="btn btn-secondary btn-action flex-fill" disabled
                                     title="Debes ver el diagnóstico antes de cotizar">
                                 <i class="fas fa-lock me-1"></i> Cotizar (bloqueado)
+                            </button>
+                            <!-- Botón Ver Detalles del Cliente -->
+                            <button th:if="${suscripcion.idCliente != null}"
+                                    type="button"
+                                    class="btn btn-outline-secondary btn-action flex-fill btn-ver-info-cliente"
+                                    th:attr="data-cliente-id=${suscripcion.idCliente}">
+                                <i class="fas fa-user me-1"></i> Detalles
                             </button>
                             <a th:if="${suscripcion.idCliente != null}"
                                th:href="@{/entrenador/diagnostico/vista/{clienteId}(clienteId=${suscripcion.idCliente})}"
@@ -189,10 +354,12 @@
             </div>
 
             <!-- Bloque COTIZADAS -->
-            <div class="col-12 mt-4" th:if="${!#lists.isEmpty(suscripcionesCotizadas)}">
-                <h2 class="h5 mb-3 text-uppercase text-muted">Cotizadas</h2>
+            <div class="col-12 mt-4 bloque-cotizadas" data-bloque="cotizadas" th:if="${!#lists.isEmpty(suscripcionesCotizadas)}">
+                <h2 class="h5 mb-3 text-uppercase text-info">
+                    <i class="fas fa-hand-holding-usd me-2"></i>Cotizadas
+                </h2>
             </div>
-            <div th:each="suscripcion : ${suscripcionesCotizadas}" class="col-12 col-md-6">
+            <div th:each="suscripcion : ${suscripcionesCotizadas}" class="col-12 col-md-6 tarjeta-suscripcion" data-bloque="cotizadas">
                 <div class="card card-suscripcion w-100 text-center"
                      th:with="estado=${suscripcion.estadoSuscripcion != null ? #strings.toString(suscripcion.estadoSuscripcion) : ''}">
                     <div class="card-header">
@@ -257,6 +424,13 @@
                                     class="btn btn-secondary btn-action flex-fill" disabled
                                     title="Debes ver el diagnóstico antes de cotizar">
                                 <i class="fas fa-lock me-1"></i> Cotizar (bloqueado)
+                            </button>
+                            <!-- Botón Ver Detalles del Cliente -->
+                            <button th:if="${suscripcion.idCliente != null}"
+                                    type="button"
+                                    class="btn btn-outline-secondary btn-action flex-fill btn-ver-info-cliente"
+                                    th:attr="data-cliente-id=${suscripcion.idCliente}">
+                                <i class="fas fa-user me-1"></i> Detalles
                             </button>
                             <a th:if="${suscripcion.idCliente != null}"
                                th:href="@{/entrenador/diagnostico/vista/{clienteId}(clienteId=${suscripcion.idCliente})}"
@@ -290,10 +464,12 @@
             </div>
 
             <!-- Bloque ACEPTADAS -->
-            <div class="col-12 mt-4" th:if="${!#lists.isEmpty(suscripcionesAceptadas)}">
-                <h2 class="h5 mb-3 text-uppercase text-muted">Aceptadas</h2>
+            <div class="col-12 mt-4 bloque-aceptadas" data-bloque="aceptadas" th:if="${!#lists.isEmpty(suscripcionesAceptadas)}">
+                <h2 class="h5 mb-3 text-uppercase text-primary">
+                    <i class="fas fa-check-circle me-2"></i>Aceptadas
+                </h2>
             </div>
-            <div th:each="suscripcion : ${suscripcionesAceptadas}" class="col-12 col-md-6">
+            <div th:each="suscripcion : ${suscripcionesAceptadas}" class="col-12 col-md-6 tarjeta-suscripcion" data-bloque="aceptadas">
                 <div class="card card-suscripcion w-100 text-center"
                      th:with="estado=${suscripcion.estadoSuscripcion != null ? #strings.toString(suscripcion.estadoSuscripcion) : ''}">
                     <div class="card-header">
@@ -342,9 +518,6 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-12 col-md-4" style="display:none;">
-                                <!-- antiguo campo de fin eliminado, se mantiene solo para estructura si es necesario -->
-                            </div>
                         </div>
                     </div>
                     <div class="card-footer pb-4">
@@ -358,6 +531,13 @@
                                     class="btn btn-secondary btn-action flex-fill" disabled
                                     title="Debes ver el diagnóstico antes de cotizar">
                                 <i class="fas fa-lock me-1"></i> Cotizar (bloqueado)
+                            </button>
+                            <!-- Botón Ver Detalles del Cliente -->
+                            <button th:if="${suscripcion.idCliente != null}"
+                                    type="button"
+                                    class="btn btn-outline-secondary btn-action flex-fill btn-ver-info-cliente"
+                                    th:attr="data-cliente-id=${suscripcion.idCliente}">
+                                <i class="fas fa-user me-1"></i> Detalles
                             </button>
                             <a th:if="${suscripcion.idCliente != null}"
                                th:href="@{/entrenador/diagnostico/vista/{clienteId}(clienteId=${suscripcion.idCliente})}"
@@ -385,6 +565,100 @@
                                     <i class="fas fa-dumbbell me-1"></i> Asignar Rutina
                                 </a>
                             </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bloque ACEPTADAS CON RUTINA ASIGNADA -->
+            <div class="col-12 mt-5 bloque-activas" data-bloque="activas" th:if="${rutinasActivasClientes != null and !rutinasActivasClientes.isEmpty()}">
+                <h2 class="h5 mb-3 text-uppercase text-success">
+                    <i class="fas fa-check-circle me-2"></i>Activas con Rutina Asignada
+                </h2>
+            </div>
+            <div th:each="suscripcion : ${suscripcionesAceptadas}" class="col-12 col-md-6 tarjeta-suscripcion" data-bloque="activas"
+                 th:if="${rutinasActivasClientes != null and rutinasActivasClientes.containsKey(suscripcion.idCliente)}">
+                <div class="card card-suscripcion w-100 text-center border-success">
+                    <div class="card-header bg-success text-white">
+                        <h5 class="fw-semibold mb-0">
+                            <i class="fas fa-dumbbell me-2"></i>Entrenamiento Activo
+                        </h5>
+                    </div>
+                    <div class="card-body py-4">
+                        <div class="d-flex flex-column align-items-center mb-3">
+                            <h4 class="card-title fw-semibold mb-1">
+                                <i class="fas fa-user-circle text-success me-2"></i>
+                                <strong th:text="${nombresClientes[suscripcion.idCliente]} ?: 'Cliente'">Cliente</strong>
+                            </h4>
+                            <span class="badge rounded-pill px-3 py-2 bg-success">
+                                <i class="fas fa-heartbeat me-1"></i>En Progreso
+                            </span>
+                            <p class="small text-success mt-2">
+                                <i class="fas fa-info-circle me-1"></i>Este cliente tiene una rutina activa y está entrenando
+                            </p>
+                        </div>
+
+                        <div class="row g-3 justify-content-center">
+                            <div class="col-12 col-md-4">
+                                <div class="p-2">
+                                    <div class="text-muted small mb-1">
+                                        <i class="fas fa-dollar-sign text-success me-1"></i>Precio
+                                    </div>
+                                    <div class="fw-semibold"
+                                         th:text="${suscripcion.precio != null ? #numbers.formatDecimal(suscripcion.precio, 1, 'COMMA', 2, 'POINT') : 'N/A'}">
+                                        N/A
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-12 col-md-4">
+                                <div class="p-2">
+                                    <div class="text-muted small mb-1">
+                                        <i class="fas fa-calendar-alt text-success me-1"></i>Duración
+                                    </div>
+                                    <div class="fw-semibold"
+                                         th:text="${suscripcion.duracionSemanas != null ? suscripcion.duracionSemanas + ' semana(s)' : 'N/A'}">
+                                        N/A
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-12 col-md-4">
+                                <div class="p-2">
+                                    <div class="text-muted small mb-1">
+                                        <i class="fas fa-fire text-success me-1"></i>Estado
+                                    </div>
+                                    <div class="fw-semibold text-success">
+                                        Activo
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-footer pb-4 bg-light">
+                        <div class="d-flex flex-wrap gap-2 w-100 justify-content-center">
+                            <!-- Botón para ver progreso (destaca más) -->
+                            <a th:href="@{'/semanas/detallar/' + ${rutinasActivasClientes[suscripcion.idCliente]} + '?readonly=true'}"
+                               class="btn btn-success btn-action flex-fill">
+                                <i class="fas fa-chart-line me-1"></i> Ver Progreso
+                            </a>
+                            <!-- Botón Ver Detalles del Cliente -->
+                            <button th:if="${suscripcion.idCliente != null}"
+                                    type="button"
+                                    class="btn btn-outline-success btn-action flex-fill btn-ver-info-cliente"
+                                    th:attr="data-cliente-id=${suscripcion.idCliente}">
+                                <i class="fas fa-user me-1"></i> Detalles
+                            </button>
+                            <!-- Botón para ver diagnóstico -->
+                            <a th:if="${suscripcion.idCliente != null}"
+                               th:href="@{/entrenador/diagnostico/vista/{clienteId}(clienteId=${suscripcion.idCliente})}"
+                               class="btn btn-info btn-action text-white flex-fill">
+                                <i class="fas fa-notes-medical me-1"></i> Diagnóstico
+                            </a>
+                        </div>
+                        <div class="mt-3 pt-3 border-top">
+                            <small class="text-muted">
+                                <i class="fas fa-clock me-1"></i>
+                                Rutina ID: <span th:text="${rutinasActivasClientes[suscripcion.idCliente]}">-</span>
+                            </small>
                         </div>
                     </div>
                 </div>
@@ -442,6 +716,13 @@
                                                     class="btn btn-secondary btn-action" disabled title="Ver el diagnóstico para habilitar">
                                                 <i class="fas fa-lock"></i>
                                             </button>
+                                            <!-- Botón Ver Detalles del Cliente (vista lista) -->
+                                            <button th:if="${suscripcion.idCliente != null}"
+                                                    type="button"
+                                                    class="btn btn-outline-secondary btn-action btn-ver-info-cliente"
+                                                    th:attr="title='Ver detalles',data-cliente-id=${suscripcion.idCliente}">
+                                                <i class="fas fa-user"></i>
+                                            </button>
                                             <a th:if="${suscripcion.idCliente != null}"
                                                th:href="@{/entrenador/diagnostico/vista/{clienteId}(clienteId=${suscripcion.idCliente})}"
                                                class="btn btn-info btn-action text-white" title="Diagnóstico"><i
@@ -486,8 +767,6 @@
                     <h5 class="modal-title" id="modalDescripcionClienteLabel">
                         <i class="fas fa-user-circle me-2"></i>Información del Cliente
                     </h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
-                            aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
                     <div class="text-center mb-3">
@@ -514,7 +793,7 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
                     <a id="modalVerDiagnosticoCompleto" href="#" class="btn btn-primary">
                         <i class="fas fa-file-medical me-1"></i>Ver Diagnóstico Completo
                     </a>
@@ -809,63 +1088,95 @@
         });
     </script>
     <script>
-        // Script para cargar info del cliente en modal compacto
-        /* Botón 'Ver info' deshabilitado por ahora
-        document.querySelectorAll('.btn-ver-info-cliente').forEach(btn => {
-            btn.addEventListener('click', async function() {
-                const clienteId = this.getAttribute('data-cliente-id');
-                if (!clienteId) return;
+        // Script para cargar info del cliente en modal compacto (event delegation)
+        document.addEventListener('click', async function(e) {
+            const btn = e.target.closest('.btn-ver-info-cliente');
+            if (!btn) return;
+            const clienteId = btn.getAttribute('data-cliente-id');
+            if (!clienteId) {
+                console.error('No se encontró el ID del cliente en el botón');
+                alert('Error: No se pudo obtener el ID del cliente');
+                return;
+            }
+            console.log('Cargando información del cliente ID:', clienteId);
+            try {
+                // Obtener el token CSRF
+                const csrfToken = document.querySelector('meta[name="_csrf"]')?.getAttribute('content');
+                const csrfHeader = document.querySelector('meta[name="_csrf_header"]')?.getAttribute('content');
 
-                try {
-                    const response = await fetch(`/api/entrenador/cliente/${clienteId}/info`);
-                    if (!response.ok) throw new Error('Error al cargar información');
+                const headers = {
+                    'Content-Type': 'application/json'
+                };
 
-                    const info = await response.json();
-
-                    // Actualizar modal
-                    const fallback = '' + '/img/fotoPerfil.png';
-                    document.getElementById('modalClienteFoto').src = info.fotoPerfilUrl || fallback;
-                    document.getElementById('modalClienteNombre').textContent = info.nombre || 'Cliente';
-                    document.getElementById('modalClienteEmail').textContent = info.email || '';
-
-                    // Mostrar u ocultar secciones según disponibilidad
-                    const objetivoContainer = document.getElementById('modalClienteObjetivoContainer');
-                    const descripcionContainer = document.getElementById('modalClienteDescripcionContainer');
-                    const sinInfo = document.getElementById('modalSinInfoAdicional');
-
-                    let tieneInfo = false;
-
-                    if (info.objetivo && info.objetivo.trim() !== '') {
-                        document.getElementById('modalClienteObjetivo').textContent = info.objetivo;
-                        objetivoContainer.style.display = 'block';
-                        tieneInfo = true;
-                    } else {
-                        objetivoContainer.style.display = 'none';
-                    }
-
-                    if (info.descripcion && info.descripcion.trim() !== '') {
-                        document.getElementById('modalClienteDescripcion').textContent = info.descripcion;
-                        descripcionContainer.style.display = 'block';
-                        tieneInfo = true;
-                    } else {
-                        descripcionContainer.style.display = 'none';
-                    }
-
-                    sinInfo.style.display = tieneInfo ? 'none' : 'block';
-
-                    // Actualizar link a diagnóstico completo
-                    document.getElementById('modalVerDiagnosticoCompleto').href = `/entrenador/diagnostico/vista/${info.id}`;
-
-                    // Mostrar modal
-                    const modal = new bootstrap.Modal(document.getElementById('modalDescripcionCliente'));
-                    modal.show();
-                } catch (error) {
-                    console.error('Error:', error);
-                    alert('Error al cargar la información del cliente');
+                // Agregar token CSRF si existe
+                if (csrfToken && csrfHeader) {
+                    headers[csrfHeader] = csrfToken;
                 }
-            });
+
+                const response = await fetch(`/api/entrenador/cliente/${clienteId}/info`, {
+                    method: 'GET',
+                    headers: headers,
+                    credentials: 'same-origin'
+                });
+                console.log('Response status:', response.status);
+
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    console.error('Error response:', errorText);
+                    throw new Error(`Error ${response.status}: ${errorText}`);
+                }
+
+                const info = await response.json();
+                console.log('Info recibida:', info);
+
+                const fallback = '/img/fotoPerfil.png';
+                const fotoEl = document.getElementById('modalClienteFoto');
+                const nombreEl = document.getElementById('modalClienteNombre');
+                const emailEl = document.getElementById('modalClienteEmail');
+                const objetivoContainer = document.getElementById('modalClienteObjetivoContainer');
+                const descripcionContainer = document.getElementById('modalClienteDescripcionContainer');
+                const sinInfo = document.getElementById('modalSinInfoAdicional');
+
+                if (fotoEl) fotoEl.src = info.fotoPerfilUrl || fallback;
+                if (nombreEl) nombreEl.textContent = info.nombre || 'Cliente';
+                if (emailEl) emailEl.textContent = info.email || '';
+
+                let tieneInfo = false;
+                if (info.objetivo && String(info.objetivo).trim() !== '') {
+                    document.getElementById('modalClienteObjetivo').textContent = info.objetivo;
+                    objetivoContainer.style.display = 'block';
+                    tieneInfo = true;
+                } else {
+                    objetivoContainer.style.display = 'none';
+                }
+                if (info.descripcion && String(info.descripcion).trim() !== '') {
+                    document.getElementById('modalClienteDescripcion').textContent = info.descripcion;
+                    descripcionContainer.style.display = 'block';
+                    tieneInfo = true;
+                } else {
+                    descripcionContainer.style.display = 'none';
+                }
+                sinInfo.style.display = tieneInfo ? 'none' : 'block';
+
+                // Actualizar link a diagnóstico completo
+                const linkDiag = document.getElementById('modalVerDiagnosticoCompleto');
+                if (linkDiag) linkDiag.href = `/entrenador/diagnostico/vista/${info.id}`;
+
+                // Mostrar modal usando jQuery (Bootstrap 4)
+                $('#modalDescripcionCliente').modal('show');
+            } catch (error) {
+                console.error('Error completo:', error);
+                alert('Error al cargar la información del cliente: ' + error.message);
+            }
         });
-        */
+
+        // Asegurar que el modal se cierre correctamente (Bootstrap 4)
+        $('#modalDescripcionCliente').on('hidden.bs.modal', function () {
+            // Limpiar cualquier backdrop que pueda quedar
+            $('.modal-backdrop').remove();
+            $('body').removeClass('modal-open');
+            $('body').css({'overflow': '', 'padding-right': ''});
+        });
     </script>
     <script>
         (function(){
@@ -963,6 +1274,47 @@
                     }
                 });
             }
+        })();
+
+        // ========== FILTRADO DE BLOQUES ==========
+        (function(){
+            const filterButtons = document.querySelectorAll('.btn-filter');
+
+            if (filterButtons.length === 0) return;
+
+            filterButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const filter = this.getAttribute('data-filter');
+
+                    // Actualizar botones activos
+                    filterButtons.forEach(btn => btn.classList.remove('active'));
+                    this.classList.add('active');
+
+                    // Filtrar elementos
+                    if (filter === 'todos') {
+                        // Mostrar todos
+                        document.querySelectorAll('[data-bloque]').forEach(el => {
+                            el.style.display = '';
+                        });
+                    } else {
+                        // Ocultar todos primero
+                        document.querySelectorAll('[data-bloque]').forEach(el => {
+                            el.style.display = 'none';
+                        });
+
+                        // Mostrar solo los del filtro seleccionado
+                        document.querySelectorAll(`[data-bloque="${filter}"]`).forEach(el => {
+                            el.style.display = '';
+                        });
+                    }
+
+                    // Scroll suave hacia arriba después de filtrar
+                    window.scrollTo({
+                        top: 0,
+                        behavior: 'smooth'
+                    });
+                });
+            });
         })();
     </script>
 </section>
