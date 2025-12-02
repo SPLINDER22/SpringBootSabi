@@ -127,6 +127,19 @@ public class ClienteController {
             long porcentajeCompletado = diaService.calcularProgresoRutina(clienteId);
             model.addAttribute("diaActual", diaDTO);
             model.addAttribute("porcentajeCompletado", porcentajeCompletado);
+
+            // Obtener semana actual y primer ejercicio del día para navegación automática
+            if (diaDTO != null) {
+                Long semanaActual = diaDTO.getIdSemana();
+                model.addAttribute("semanaActual", semanaActual);
+
+                // Obtener el primer ejercicio del día
+                var ejercicios = ejercicioAsignadoService.getEjesDia(diaDTO.getIdDia());
+                if (!ejercicios.isEmpty()) {
+                    Long primerEjercicioId = ejercicios.get(0).getIdEjercicioAsignado();
+                    model.addAttribute("primerEjercicioDia", primerEjercicioId);
+                }
+            }
          } else {
              model.addAttribute("tieneRutinaActiva", false);
          }
