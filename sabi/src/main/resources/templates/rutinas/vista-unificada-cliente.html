@@ -359,6 +359,10 @@
                             <span>
                                 <i class="fas fa-calendar-day me-2"></i>
                                 Día <span th:text="${diaNum}">1</span>
+                                <!-- Icono de completado si todas las series del día están registradas -->
+                                <span th:if="${diaData.todasSeriesCompletadas}" class="badge bg-success ms-2" style="font-size: 0.7rem;">
+                                    <i class="fas fa-check-circle"></i>
+                                </span>
                             </span>
                             <i class="fas fa-chevron-down"></i>
                         </div>
@@ -381,10 +385,13 @@
                                 <!-- Botón de Ejercicio -->
                                 <button class="ejercicio-btn"
                                         th:id="'ejercicio-btn-' + ${ejeId}"
-                                        th:attr="data-ejercicio-id=${ejeId}"
+                                        th:attr="data-ejercicio-id=${ejeId},
+                                                 data-completado=${ejeData.todasSeriesCompletadas ? 'true' : 'false'}"
                                         onclick="seleccionarEjercicio(this)">
                                     <i class="fas fa-running me-2"></i>
                                     <span th:text="${nombreEjercicio}">Ejercicio</span>
+                                    <!-- Icono de completado si todas las series están registradas -->
+                                    <i th:if="${ejeData.todasSeriesCompletadas}" class="fas fa-check-circle ms-2 text-success" style="font-size: 1.1rem;"></i>
                                 </button>
 
                                 <!-- Container de Series (oculto, se muestra en panel derecho) -->
@@ -758,6 +765,34 @@
                         serieDataItem.setAttribute('data-registro-intensidad', registroData.intensidadReal || '');
                         serieDataItem.setAttribute('data-registro-notas', registroData.comentariosCliente || '');
                         console.log('Atributos data actualizados para serie ' + serieId);
+
+                        // Verificar si todas las series del ejercicio están completadas
+                        const ejercicioActualId = document.querySelector('.ejercicio-btn.selected')?.getAttribute('data-ejercicio-id');
+                        if (ejercicioActualId) {
+                            const seriesData = document.getElementById('series-data-' + ejercicioActualId);
+                            const todasSeriesItems = seriesData.querySelectorAll('.serie-data-item');
+                            let todasCompletas = true;
+
+                            todasSeriesItems.forEach(item => {
+                                const reps = item.getAttribute('data-registro-reps');
+                                if (!reps || reps === '' || reps === 'null') {
+                                    todasCompletas = false;
+                                }
+                            });
+
+                            // Actualizar el botón del ejercicio si está completo
+                            const ejercicioBtn = document.getElementById('ejercicio-btn-' + ejercicioActualId);
+                            if (ejercicioBtn && todasCompletas) {
+                                ejercicioBtn.setAttribute('data-completado', 'true');
+                                // Agregar icono de completado si no existe
+                                if (!ejercicioBtn.querySelector('.fa-check-circle')) {
+                                    const checkIcon = document.createElement('i');
+                                    checkIcon.className = 'fas fa-check-circle ms-2 text-success';
+                                    checkIcon.style.fontSize = '1.1rem';
+                                    ejercicioBtn.appendChild(checkIcon);
+                                }
+                            }
+                        }
                     }
                     // ================================================================
 

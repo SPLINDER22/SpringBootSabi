@@ -425,15 +425,28 @@ public class RutinaController {
                         return serieMap;
                     }).toList();
 
+                    // Verificar si todas las series del ejercicio tienen registro
+                    boolean todasSeriesCompletadas = seriesConRegistros.stream()
+                        .allMatch(sm -> sm.get("registro") != null);
+
                     java.util.Map<String, Object> ejeMap = new java.util.HashMap<>();
                     ejeMap.put("ejercicio", eje);
                     ejeMap.put("series", seriesConRegistros);
+                    ejeMap.put("todasSeriesCompletadas", todasSeriesCompletadas);
                     return ejeMap;
                 }).toList();
+
+                // Verificar si todos los ejercicios del día están completados
+                boolean todasSeriesCompletadasDia = ejerciciosConSeries.stream()
+                    .allMatch(em -> {
+                        Boolean completado = (Boolean) em.get("todasSeriesCompletadas");
+                        return completado != null && completado;
+                    });
 
                 java.util.Map<String, Object> diaMap = new java.util.HashMap<>();
                 diaMap.put("dia", dia);
                 diaMap.put("ejercicios", ejerciciosConSeries);
+                diaMap.put("todasSeriesCompletadas", todasSeriesCompletadasDia);
                 return diaMap;
             }).toList();
 
