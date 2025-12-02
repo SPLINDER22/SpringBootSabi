@@ -4,18 +4,8 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="0b88328c-1fbb-4843-a1f3-0a61ddac63ac" name="Changes" comment="Correcion final pre sustentacion Santiago">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sabi/src/main/java/com/sabi/sabi/config/DataInitializer.java" beforeDir="false" afterPath="$PROJECT_DIR$/sabi/src/main/java/com/sabi/sabi/config/DataInitializer.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sabi/src/main/java/com/sabi/sabi/controller/AdminController.java" beforeDir="false" afterPath="$PROJECT_DIR$/sabi/src/main/java/com/sabi/sabi/controller/AdminController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sabi/src/main/java/com/sabi/sabi/entity/enums/TipoDocumento.java" beforeDir="false" afterPath="$PROJECT_DIR$/sabi/src/main/java/com/sabi/sabi/entity/enums/TipoDocumento.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sabi/src/main/resources/static/css/admin.css" beforeDir="false" afterPath="$PROJECT_DIR$/sabi/src/main/resources/static/css/admin.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sabi/src/main/resources/static/css/index.css" beforeDir="false" afterPath="$PROJECT_DIR$/sabi/src/main/resources/static/css/index.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sabi/src/main/resources/templates/admin/dashboard.html" beforeDir="false" afterPath="$PROJECT_DIR$/sabi/src/main/resources/templates/admin/dashboard.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sabi/src/main/resources/templates/admin/entrenadores.html" beforeDir="false" afterPath="$PROJECT_DIR$/sabi/src/main/resources/templates/admin/entrenadores.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sabi/src/main/resources/templates/auth/login.html" beforeDir="false" afterPath="$PROJECT_DIR$/sabi/src/main/resources/templates/auth/login.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sabi/src/main/resources/templates/auth/registro.html" beforeDir="false" afterPath="$PROJECT_DIR$/sabi/src/main/resources/templates/auth/registro.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sabi/src/main/resources/templates/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/sabi/src/main/resources/templates/index.html" afterDir="false" />
+    <list default="true" id="0b88328c-1fbb-4843-a1f3-0a61ddac63ac" name="Changes" comment="vistas entrenadores y sus verificaciones">
+      <change beforePath="$PROJECT_DIR$/sabi/src/main/java/com/sabi/sabi/controller/EntrenadorController.java" beforeDir="false" afterPath="$PROJECT_DIR$/sabi/src/main/java/com/sabi/sabi/controller/EntrenadorController.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -23,6 +13,7 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="Git.Settings">
+    <option name="PUSH_AUTO_UPDATE" value="true" />
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="GitHubPullRequestSearchHistory">{
@@ -31,12 +22,12 @@
     &quot;assignee&quot;: &quot;Zantiago2320&quot;
   }
 }</component>
-  <component name="GithubPullRequestsUISettings"><![CDATA[{
-  "selectedUrlAndAccountId": {
-    "url": "https://github.com/SPLINDER22/SpringBootSabi.git",
-    "accountId": "0068d031-2213-473e-b386-cd52359346a9"
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/SPLINDER22/SpringBootSabi.git&quot;,
+    &quot;accountId&quot;: &quot;0068d031-2213-473e-b386-cd52359346a9&quot;
   }
-}]]></component>
+}</component>
   <component name="ProjectColorInfo">{
   &quot;associatedIndex&quot;: 0
 }</component>
@@ -85,13 +76,55 @@
       <option name="project" value="LOCAL" />
       <updated>1764625781759</updated>
     </task>
-    <option name="localTasksCounter" value="2" />
+    <task id="LOCAL-00002" summary="Correcion final pre sustentacion Santiago">
+      <option name="closed" value="true" />
+      <created>1764679177194</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1764679177194</updated>
+    </task>
+    <task id="LOCAL-00003" summary="Correcion final pre sustentacion Santiago">
+      <option name="closed" value="true" />
+      <created>1764679200478</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1764679200478</updated>
+    </task>
+    <task id="LOCAL-00004" summary="terminar funcionamiento admin">
+      <option name="closed" value="true" />
+      <created>1764679993116</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1764679993116</updated>
+    </task>
+    <task id="LOCAL-00005" summary="terminar funcionamiento admin">
+      <option name="closed" value="true" />
+      <created>1764681637917</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1764681637917</updated>
+    </task>
+    <task id="LOCAL-00006" summary="vistas entrenadores y sus verificaciones">
+      <option name="closed" value="true" />
+      <created>1764682233824</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1764682233824</updated>
+    </task>
+    <option name="localTasksCounter" value="7" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="Mejoras V2 santiago final" />
     <MESSAGE value="Correcion final pre sustentacion Santiago" />
-    <option name="LAST_COMMIT_MESSAGE" value="Correcion final pre sustentacion Santiago" />
+    <MESSAGE value="terminar funcionamiento admin" />
+    <MESSAGE value="vistas entrenadores y sus verificaciones" />
+    <option name="LAST_COMMIT_MESSAGE" value="vistas entrenadores y sus verificaciones" />
   </component>
   <component name="github-copilot-workspace">
     <instructionFileLocations>

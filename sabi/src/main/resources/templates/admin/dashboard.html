@@ -202,11 +202,11 @@
                     <div class="card-body">
                         <div class="mb-3">
                             <div class="d-flex justify-content-between align-items-center mb-2">
-                                <span class="text-success"><i class="fas fa-check-circle"></i> Verificados</span>
+                                <span class="text-primary"><i class="fas fa-check-circle"></i> Verificados</span>
                                 <span class="font-weight-bold" th:text="${entrenadoresVerificados}">0</span>
                             </div>
                             <div class="progress mb-3" style="height: 20px;">
-                                <div class="progress-bar bg-success progress-bar-striped progress-bar-animated" role="progressbar"
+                                <div class="progress-bar bg-primary progress-bar-striped progress-bar-animated" role="progressbar"
                                      th:style="'width: ' + ${totalEntrenadores > 0 ? (entrenadoresVerificados * 100.0 / totalEntrenadores) : 0} + '%'"
                                      th:text="${totalEntrenadores > 0 ? #numbers.formatDecimal((entrenadoresVerificados * 100.0 / totalEntrenadores), 1, 1) : 0} + '%'">
                                     0%

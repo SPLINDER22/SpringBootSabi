@@ -51,6 +51,8 @@ public class PerfilController {
             Entrenador entrenador = (Entrenador) usuario;
             model.addAttribute("especialidad", entrenador.getEspecialidad());
             model.addAttribute("aniosExperiencia", entrenador.getAniosExperiencia());
+            model.addAttribute("entrenador", entrenador);
+            model.addAttribute("esVerificado", entrenador.isVerified());
 
             // Pasar especialidades como lista
             String especialidadesStr = entrenador.getEspecialidades();

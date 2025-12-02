@@ -169,6 +169,26 @@
                     <i class="fas fa-dumbbell me-2"></i>Panel del Entrenador
                 </h2>
                 <p style="margin: 0.5rem 0 0 0; opacity: 0.9;" th:text="'Bienvenido, ' + ${usuario.nombre}">Bienvenido</p>
+
+                <!-- Badge de Verificación SABI -->
+                <div th:if="${esVerificado}" class="mt-2">
+                    <span class="badge badge-verificado-entrenador" style="background: linear-gradient(135deg, #2861E3 0%, #1e4ba8 100%);
+                          color: white; padding: 0.5rem 1rem; font-size: 0.9rem; border-radius: 20px;
+                          box-shadow: 0 3px 10px rgba(40, 97, 227, 0.3); border: 2px solid rgba(255,255,255,0.3);">
+                        <i class="fas fa-check-circle me-1"></i>
+                        <strong>VERIFICADO POR SABI</strong>
+                    </span>
+                </div>
+
+                <!-- Estado de verificación pendiente -->
+                <div th:if="${!esVerificado}" class="mt-2">
+                    <span class="badge" style="background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+                          color: white; padding: 0.5rem 1rem; font-size: 0.9rem; border-radius: 20px;
+                          box-shadow: 0 3px 10px rgba(251, 191, 36, 0.3); border: 2px solid rgba(255,255,255,0.3);">
+                        <i class="fas fa-clock me-1"></i>
+                        Verificación Pendiente
+                    </span>
+                </div>
             </div>
             <div class="text-end">
                 <div th:if="${aniosExperiencia != null && aniosExperiencia > 0}" style="font-size: 0.9rem; opacity: 0.9;">
