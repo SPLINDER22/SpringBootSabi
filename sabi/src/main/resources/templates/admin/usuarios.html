@@ -95,7 +95,7 @@
                                         Nombre Usuario
                                     </strong>
                                     <span th:if="${usuario.rol.name() == 'ENTRENADOR' && #lists.contains(entrenadoresVerificadosIds, usuario.id)}"
-                                          class="badge badge-success ml-1"
+                                          class="badge badge-verificado ml-1"
                                           title="Entrenador Verificado por SABI">
                                         <i class="fas fa-check-circle"></i> Verificado
                                     </span>

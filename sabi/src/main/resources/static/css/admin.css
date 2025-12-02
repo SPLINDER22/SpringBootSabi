@@ -99,14 +99,21 @@
     }
 }
 
+/* Badge de verificación personalizado */
+.badge-verificado {
+    background-color: #2861E3 !important;
+    color: white !important;
+    border: none !important;
+}
+
 /* Badge de verificación en lista */
 .badge.badge-success {
-    background-color: #28a745;
+    background-color: #2861E3 !important;
 }
 
 /* Estilos para perfil completo */
 .card-header.bg-primary {
-    background: linear-gradient(135deg, #4e73df 0%, #224abe 100%) !important;
+    background: linear-gradient(135deg, #2861E3 0%, #1e4ba8 100%) !important;
 }
 
 .card-header.bg-info {
