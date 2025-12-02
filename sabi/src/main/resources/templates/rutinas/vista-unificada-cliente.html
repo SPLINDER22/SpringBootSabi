@@ -56,9 +56,9 @@
             transition: transform 0.3s;
         }
 
-        .semana-header.collapsed i {
-            transform: rotate(-90deg);
-        }
+        /* Rotar sólo el icono chevron para evitar rotar todos los iconos del header */
+        .semana-header i.fa-chevron-down { transition: transform 0.3s; }
+        .semana-header.collapsed i.fa-chevron-down { transform: rotate(-90deg); }
 
         .semana-content {
             padding-left: 10px;
@@ -91,9 +91,9 @@
             transition: transform 0.3s;
         }
 
-        .dia-header.collapsed i {
-            transform: rotate(-90deg);
-        }
+        /* Rotar sólo el icono chevron para los días */
+        .dia-header i.fa-chevron-down { transition: transform 0.3s; }
+        .dia-header.collapsed i.fa-chevron-down { transform: rotate(-90deg); }
 
         .dia-content {
             padding-left: 15px;
@@ -791,108 +791,100 @@
                                     checkIcon.style.fontSize = '1.1rem';
                                     ejercicioBtn.appendChild(checkIcon);
                                 }
+
+                                // --- ACTUALIZAR BADGE DEL DÍA SI TODOS LOS EJERCICIOS DEL DÍA ESTÁN COMPLETOS ---
+                                try {
+                                    const diaContent = ejercicioBtn.closest('.dia-content');
+                                    if (diaContent) {
+                                        // Buscar todos los botones de ejercicio dentro de este día
+                                        const ejerciciosInDia = diaContent.querySelectorAll('.ejercicio-btn');
+                                        let allEjCompleted = true;
+                                        ejerciciosInDia.forEach(b => {
+                                            if (b.getAttribute('data-completado') !== 'true') {
+                                                allEjCompleted = false;
+                                            }
+                                        });
+
+                                        const diaId = (diaContent.id || '').replace('dia-content-', '');
+                                        const diaHeader = document.getElementById('dia-header-' + diaId);
+                                        if (diaHeader) {
+                                            const existingBadge = diaHeader.querySelector('.badge-dia-completado');
+                                            if (allEjCompleted && !existingBadge) {
+                                                const span = document.createElement('span');
+                                                span.className = 'badge bg-success ms-2 badge-dia-completado';
+                                                span.style.fontSize = '0.7rem';
+                                                span.innerHTML = '<i class="fas fa-check-circle"></i>';
+                                                // Insertar dentro del primer span del header para mantener estructura
+                                                const primarySpan = diaHeader.querySelector('span');
+                                                if (primarySpan) {
+                                                    primarySpan.appendChild(span);
+                                                } else {
+                                                    diaHeader.insertBefore(span, diaHeader.firstChild);
+                                                }
+                                            } else if (!allEjCompleted && existingBadge) {
+                                                existingBadge.remove();
+                                            }
+                                        }
+                                    }
+                                } catch (e) {
+                                    console.error('Error actualizando badge de día:', e);
+                                }
+                                // --- fin actualización badge día ---
                             }
                         }
                     }
-                    // ================================================================
-
-                    // Éxito: mostrar mensaje y cambiar botón a verde
-                    btn.innerHTML = '<i class="fas fa-check-circle me-2"></i>¡Guardado!';
-                    btn.classList.remove('btn-primary');
-                    btn.classList.add('btn-success');
-
-                    // Deshabilitar los campos del formulario para mostrar que ya está guardado
-                    const inputs = form.querySelectorAll('input, select, textarea');
-                    inputs.forEach(input => {
-                        input.style.backgroundColor = '#e8f5e9';
-                        input.style.borderColor = '#4caf50';
-                    });
-
-                    // Agregar badge de "Completado"
-                    const serieCard = form.closest('.serie-card');
-                    if (serieCard && !serieCard.querySelector('.badge-completado')) {
-                        const serieTitle = serieCard.querySelector('.serie-title');
-                        const badge = document.createElement('span');
-                        badge.className = 'badge bg-success badge-completado ms-2';
-                        badge.innerHTML = '<i class="fas fa-check me-1"></i>Completado';
-                        serieTitle.appendChild(badge);
-                    }
-
-                    // Cambiar texto del botón permanentemente
-                    setTimeout(() => {
-                        btn.innerHTML = '<i class="fas fa-edit me-2"></i>Actualizar Registro';
-                        btn.classList.remove('btn-success');
-                        btn.classList.add('btn-warning');
-                        btn.disabled = false;
-                    }, 1500);
-                } else {
-                    // Error: mostrar mensaje
-                    btn.innerHTML = '<i class="fas fa-exclamation-circle me-2"></i>Error';
-                    btn.classList.remove('btn-primary');
-                    btn.classList.add('btn-danger');
-                    alert('Error al guardar: ' + (data.message || 'Error desconocido'));
-
-                    // Resetear después de 2 segundos
-                    setTimeout(() => {
-                        btn.innerHTML = originalText;
-                        btn.classList.remove('btn-danger');
-                        btn.classList.add('btn-primary');
-                        btn.disabled = false;
-                    }, 2000);
                 }
             })
-            .catch(error => {
-                console.error('Error:', error);
-                btn.innerHTML = '<i class="fas fa-exclamation-circle me-2"></i>Error';
-                btn.classList.remove('btn-primary');
-                btn.classList.add('btn-danger');
-                alert('Error de conexión. Por favor, intenta nuevamente.');
-
-                // Resetear después de 2 segundos
-                setTimeout(() => {
-                    btn.innerHTML = originalText;
-                    btn.classList.remove('btn-danger');
-                    btn.classList.add('btn-primary');
-                    btn.disabled = false;
-                }, 2000);
+            .catch(err => {
+                console.error('Error guardando registro (fetch):', err);
+                alert('Ocurrió un error al guardar el registro. Intenta nuevamente.');
+                // Restaurar botón en caso de error
+                btn.innerHTML = originalText;
+                btn.disabled = false;
             });
 
             return false;
         }
 
-        // Manejar colapso de acordeones
-        document.addEventListener('DOMContentLoaded', function() {
-            // Manejar iconos de chevron en semanas
-            document.querySelectorAll('.semana-header').forEach(header => {
-                const target = header.getAttribute('data-bs-target');
-                const collapseElement = document.querySelector(target);
-
-                collapseElement.addEventListener('show.bs.collapse', () => {
-                    header.classList.remove('collapsed');
+        // Asegurar que los headers tengan la clase `collapsed` correcta cuando los Collapses de Bootstrap cambien
+        document.addEventListener('DOMContentLoaded', () => {
+            // Adjuntar listeners a todos los collapse para sincronizar la clase collapsed en los headers
+            document.querySelectorAll('.collapse').forEach(col => {
+                col.addEventListener('show.bs.collapse', () => {
+                    if (col.id && col.id.startsWith('semana-content-')) {
+                        const semanaId = col.id.replace('semana-content-', '');
+                        const header = document.getElementById('semana-header-' + semanaId);
+                        if (header) header.classList.remove('collapsed');
+                    } else if (col.id && col.id.startsWith('dia-content-')) {
+                        const diaId = col.id.replace('dia-content-', '');
+                        const header = document.getElementById('dia-header-' + diaId);
+                        if (header) header.classList.remove('collapsed');
+                    }
                 });
 
-                collapseElement.addEventListener('hide.bs.collapse', () => {
-                    header.classList.add('collapsed');
+                col.addEventListener('hide.bs.collapse', () => {
+                    if (col.id && col.id.startsWith('semana-content-')) {
+                        const semanaId = col.id.replace('semana-content-', '');
+                        const header = document.getElementById('semana-header-' + semanaId);
+                        if (header) header.classList.add('collapsed');
+                    } else if (col.id && col.id.startsWith('dia-content-')) {
+                        const diaId = col.id.replace('dia-content-', '');
+                        const header = document.getElementById('dia-header-' + diaId);
+                        if (header) header.classList.add('collapsed');
+                    }
                 });
             });
 
-            // Manejar iconos de chevron en días
-            document.querySelectorAll('.dia-header').forEach(header => {
-                const target = header.getAttribute('data-bs-target');
-                const collapseElement = document.querySelector(target);
-
-                collapseElement.addEventListener('show.bs.collapse', () => {
-                    header.classList.remove('collapsed');
-                });
-
-                collapseElement.addEventListener('hide.bs.collapse', () => {
-                    header.classList.add('collapsed');
-                });
-            });
-
-            // Ejecutar navegación automática si hay parámetros
-            navegacionAutomatica();
+            // Llamar a la navegación automática (si el servidor pasó parámetros)
+            try {
+                if (typeof navegacionAutomatica === 'function') {
+                    navegacionAutomatica();
+                }
+            } catch (e) {
+                console.error('Error ejecutando navegacionAutomatica:', e);
+            }
         });
+
         /*]]>*/
     </script>
 </section>
