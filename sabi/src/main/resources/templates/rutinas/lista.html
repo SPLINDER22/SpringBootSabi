@@ -10,10 +10,36 @@
         .action-buttons form { display:inline-block; margin:0; }
         .action-buttons .btn i { margin-right:.25rem; }
         .table thead th { white-space:nowrap; }
+
+        /* estilos para modo asignar: más color y destaque */
+        .modo-asignar {
+            background: linear-gradient(90deg, rgba(250,255,240,0.95), rgba(245,255,250,0.95));
+            border: 1px solid rgba(40,167,69,0.12);
+            padding: 1rem;
+            border-radius: 8px;
+        }
+        .modo-asignar h1, .modo-asignar .h3 { color: #155724; }
+        .modo-asignar .alert {
+            background-color: #fff8e6;
+            border-color: #ffecb3;
+            color: #7a4b00;
+        }
+        /* Botones más vivos en modo asignar */
+        .modo-asignar .btn-success {
+            background-color: #28a745;
+            border-color: #28a745;
+            color: #fff;
+            box-shadow: 0 2px 6px rgba(40,167,69,0.12);
+        }
+        .modo-asignar .btn-info {
+            background-color: #17a2b8;
+            border-color: #17a2b8;
+            color: #fff;
+        }
     </style>
 </head>
 <body th:replace="layout/layout :: layout('Lista de rutinas', ~{::section})">
-<section th:fragment="section">
+<section th:fragment="section" th:classappend="${modoAsignar} ? ' modo-asignar' : ''">
     <h1 class="h3 mb-4 text-gray-800">Lista de Rutinas</h1>
 
     <div th:if="${modoAsignar}" class="alert alert-warning py-2 mb-3">
@@ -30,8 +56,8 @@
         </div>
     </div>
 
-    <!-- Botón crear sólo visible para entrenador (oculto en modo asignar para evitar distracción) -->
-    <div class="mb-3 text-end" th:if="${!isCliente and !modoAsignar}">
+    <!-- Botón crear visible para entrenador incluso en modo asignar -->
+    <div class="mb-3 text-end" th:if="${!isCliente}">
         <a th:href="@{/rutinas/nueva}" class="btn btn-success"><i class="fas fa-plus"></i> Crear Rutina</a>
     </div>
 
