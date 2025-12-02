@@ -13,7 +13,10 @@
     <div class="login-form-section">
         <h1 class="login-title">Inicio de Sesión</h1>
 
-
+        <!-- Botón para regresar al inicio -->
+        <a th:href="@{/}" class="btn-back-home" style="display: inline-block; margin-bottom: 20px; padding: 10px 20px; background-color: #2861E3; color: white; text-decoration: none; border-radius: 8px; font-size: 0.9rem; transition: all 0.3s ease;">
+            <i class="fas fa-arrow-left"></i> Regresar al Inicio
+        </a>
 
         <form th:action="@{/auth/login}" method="post" class="login-form">
             <div class="form-group">
