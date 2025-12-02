@@ -324,7 +324,7 @@
                           semanaNum=${semana != null ? semana.numeroSemana : 0}">
 
                 <!-- Header de Semana -->
-                <div class="semana-header"
+                <div class="semana-header collapsed"
                      th:id="'semana-header-' + ${semanaId}"
                      th:attr="data-bs-toggle='collapse', data-bs-target='#semana-content-' + ${semanaId}">
                     <span>
@@ -350,7 +350,7 @@
                                   diaNum=${dia != null ? dia.numeroDia : 0}">
 
                         <!-- Header de Día -->
-                        <div class="dia-header"
+                        <div class="dia-header collapsed"
                              th:id="'dia-header-' + ${diaId}"
                              th:attr="data-bs-toggle='collapse', data-bs-target='#dia-content-' + ${diaId}">
                             <span>
@@ -484,15 +484,27 @@
 
                 // Abrir semana
                 const semanaCollapse = document.getElementById('semana-content-' + autoSemanaId);
-                if (semanaCollapse) {
-                    const bsCollapse = new bootstrap.Collapse(semanaCollapse, { toggle: true });
+                const semanaHeader = document.getElementById('semana-header-' + autoSemanaId);
+                if (semanaCollapse && semanaHeader) {
+                    // Remover clase collapsed del header
+                    semanaHeader.classList.remove('collapsed');
+
+                    // Abrir el collapse
+                    const bsCollapse = new bootstrap.Collapse(semanaCollapse, { toggle: false });
+                    bsCollapse.show();
 
                     // Después de abrir la semana, abrir el día
                     setTimeout(() => {
                         if (autoDiaId) {
                             const diaCollapse = document.getElementById('dia-content-' + autoDiaId);
-                            if (diaCollapse) {
-                                const bsDiaCollapse = new bootstrap.Collapse(diaCollapse, { toggle: true });
+                            const diaHeader = document.getElementById('dia-header-' + autoDiaId);
+                            if (diaCollapse && diaHeader) {
+                                // Remover clase collapsed del header
+                                diaHeader.classList.remove('collapsed');
+
+                                // Abrir el collapse
+                                const bsDiaCollapse = new bootstrap.Collapse(diaCollapse, { toggle: false });
+                                bsDiaCollapse.show();
 
                                 // Después de abrir el día, seleccionar el ejercicio
                                 setTimeout(() => {
@@ -505,12 +517,18 @@
                                             setTimeout(() => {
                                                 ejercicioBtn.click();
                                             }, 500);
+                                        } else {
+                                            console.error('No se encontró el botón del ejercicio con ID:', autoEjercicioId);
                                         }
                                     }
-                                }, 300);
+                                }, 400);
+                            } else {
+                                console.error('No se encontró el día con ID:', autoDiaId);
                             }
                         }
-                    }, 300);
+                    }, 400);
+                } else {
+                    console.error('No se encontró la semana con ID:', autoSemanaId);
                 }
             }
         }
