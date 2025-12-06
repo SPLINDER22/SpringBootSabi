@@ -543,7 +543,7 @@
             }
         }
 
-        function seleccionarEjercicio(btnElement) {
+        function seleccionarEjercicio(btnElement, shouldScroll = true) {
             const ejercicioId = btnElement.getAttribute('data-ejercicio-id');
 
             // Remover selección previa
@@ -714,6 +714,14 @@
 
             // Actualizar panel derecho
             document.getElementById('series-display').innerHTML = html;
+
+            // Hacer scroll al inicio del panel derecho solo si se indica
+            if (shouldScroll) {
+                const rightPanel = document.querySelector('.right-panel');
+                if (rightPanel) {
+                    rightPanel.scrollTop = 0;
+                }
+            }
         }
 
         function registrarSerie(event, serieId) {
@@ -754,6 +762,11 @@
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
+                    // Mostrar mensaje de éxito
+                    btn.innerHTML = '<i class="fas fa-check-circle me-2"></i>¡Guardado!';
+                    btn.classList.remove('btn-primary');
+                    btn.classList.add('btn-success');
+
                     // ====== ACTUALIZAR LOS ATRIBUTOS DATA EN EL HTML ORIGINAL ======
                     // Buscar el elemento serie-data-item correspondiente en el DOM original
                     const serieDataItem = document.querySelector(`.serie-data-item[data-serie-id="${serieId}"]`);
@@ -831,8 +844,22 @@
                                 }
                                 // --- fin actualización badge día ---
                             }
+
+                            // Recargar la vista del ejercicio después de 1 segundo para mostrar el nuevo estado
+                            setTimeout(() => {
+                                // Buscar el botón del ejercicio actual y hacer clic para recargar SIN hacer scroll
+                                const ejercicioBtnReload = document.getElementById('ejercicio-btn-' + ejercicioActualId);
+                                if (ejercicioBtnReload) {
+                                    seleccionarEjercicio(ejercicioBtnReload, false);
+                                }
+                            }, 1000);
                         }
                     }
+                } else {
+                    // Mostrar error si el servidor responde con success: false
+                    alert('Error: ' + (data.message || 'No se pudo guardar el registro'));
+                    btn.innerHTML = originalText;
+                    btn.disabled = false;
                 }
             })
             .catch(err => {
