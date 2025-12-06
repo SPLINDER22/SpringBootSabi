@@ -9,8 +9,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.List;
 
@@ -21,16 +19,8 @@ public class DiaController {
     @Autowired
     private SemanaService semanaService;
 
-    private boolean hasRole(UserDetails userDetails, String role) {
-        if (userDetails == null) return false;
-        return userDetails.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_" + role) || a.getAuthority().equals(role));
-    }
-
     @GetMapping("/dias/detallar/{idSemana}")
-    public String detallarDias(@PathVariable Long idSemana,
-                                @RequestParam(value = "readonly", required = false) Boolean readonly,
-                                @AuthenticationPrincipal UserDetails userDetails,
-                                Model model, RedirectAttributes redirectAttributes) {
+    public String detallarDias(@PathVariable Long idSemana, Model model, RedirectAttributes redirectAttributes) {
         SemanaDTO semanaDTO;
         try {
             semanaDTO = semanaService.getSemanaById(idSemana);
@@ -38,11 +28,10 @@ public class DiaController {
             redirectAttributes.addFlashAttribute("error", "La semana especificada no existe.");
             return "redirect:/rutinas";
         }
-        List<?> dias = diaService.getDiasSemana(idSemana);
 
+        List<?> dias = diaService.getDiasSemana(idSemana);
         List<?> semanas = semanaService.getSemanasRutina(semanaDTO.getIdRutina());
-        boolean esCliente = hasRole(userDetails, "CLIENTE");
-        boolean readonlyEffective = esCliente || Boolean.TRUE.equals(readonly);
+
         model.addAttribute("semanas", semanas);
         model.addAttribute("dias", dias);
         model.addAttribute("totalDias", dias.size());
@@ -50,17 +39,11 @@ public class DiaController {
         if (semanaDTO != null) {
             model.addAttribute("idRutina", semanaDTO.getIdRutina());
         }
-        model.addAttribute("readonly", readonlyEffective);
         return "dias/lista";
     }
 
     @GetMapping("/dias/crear/{idSemana}")
-    public String crearDiaView(@PathVariable Long idSemana,
-                               @AuthenticationPrincipal UserDetails userDetails,
-                               Model model, RedirectAttributes redirectAttributes) {
-        if (hasRole(userDetails, "CLIENTE")) {
-            return "redirect:/dias/detallar/" + idSemana + "?readonly=true";
-        }
+    public String crearDiaView(@PathVariable Long idSemana, Model model, RedirectAttributes redirectAttributes) {
         SemanaDTO semanaDTO;
         try {
             semanaDTO = semanaService.getSemanaById(idSemana);
@@ -68,11 +51,13 @@ public class DiaController {
             redirectAttributes.addFlashAttribute("error", "La semana no existe.");
             return "redirect:/rutinas";
         }
+
         var dias = diaService.getDiasSemana(idSemana);
         int total = dias != null ? dias.size() : 0;
         DiaDTO diaDTO = new DiaDTO();
         diaDTO.setIdSemana(idSemana);
         diaDTO.setNumeroDia((long) (total + 1));
+
         model.addAttribute("semana", semanaDTO);
         model.addAttribute("dias", dias);
         model.addAttribute("totalDias", total);
@@ -84,14 +69,7 @@ public class DiaController {
     }
 
     @GetMapping("/dias/editar/{idDia}")
-    public String editarDiaView(@PathVariable Long idDia,
-                                 @AuthenticationPrincipal UserDetails userDetails,
-                                 Model model, RedirectAttributes redirectAttributes) {
-        if (hasRole(userDetails, "CLIENTE")) {
-            DiaDTO diaDTO;
-            try { diaDTO = diaService.getDiaById(idDia); } catch (RuntimeException ex) { return "redirect:/rutinas"; }
-            return "redirect:/dias/detallar/" + diaDTO.getIdSemana() + "?readonly=true";
-        }
+    public String editarDiaView(@PathVariable Long idDia, Model model, RedirectAttributes redirectAttributes) {
         DiaDTO diaDTO;
         try {
             diaDTO = diaService.getDiaById(idDia);
@@ -99,9 +77,11 @@ public class DiaController {
             redirectAttributes.addFlashAttribute("error", "El día no existe.");
             return "redirect:/rutinas";
         }
+
         SemanaDTO semanaDTO = semanaService.getSemanaById(diaDTO.getIdSemana());
         var dias = diaService.getDiasSemana(diaDTO.getIdSemana());
         int total = dias != null ? dias.size() : 0;
+
         model.addAttribute("semana", semanaDTO);
         model.addAttribute("dias", dias);
         model.addAttribute("totalDias", total);
@@ -113,14 +93,10 @@ public class DiaController {
     }
 
     @PostMapping("/dias/guardar")
-    public String guardarDia(@ModelAttribute DiaDTO diaDTO,
-                             @AuthenticationPrincipal UserDetails userDetails,
-                             RedirectAttributes redirectAttributes) {
-        if (hasRole(userDetails, "CLIENTE")) {
-            return "redirect:/dias/detallar/" + diaDTO.getIdSemana() + "?readonly=true";
-        }
+    public String guardarDia(@ModelAttribute DiaDTO diaDTO, RedirectAttributes redirectAttributes) {
         boolean esNuevo = diaDTO.getIdDia() == null;
         DiaDTO saved = diaService.createDia(diaDTO);
+
         if (esNuevo) {
             if (saved == null || saved.getIdDia() == null) {
                 redirectAttributes.addFlashAttribute("error", "No se pudo crear el día. Intenta nuevamente.");
@@ -131,19 +107,13 @@ public class DiaController {
         } else {
             redirectAttributes.addFlashAttribute("success", "Día actualizado correctamente.");
         }
+
         Long idSemana = saved != null && saved.getIdSemana() != null ? saved.getIdSemana() : diaDTO.getIdSemana();
         return "redirect:/dias/detallar/" + idSemana;
     }
 
     @PostMapping("/dias/eliminar/{idDia}")
-    public String eliminarDia(@PathVariable Long idDia,
-                               @AuthenticationPrincipal UserDetails userDetails,
-                               RedirectAttributes redirectAttributes) {
-        if (hasRole(userDetails, "CLIENTE")) {
-            DiaDTO diaDTO;
-            try { diaDTO = diaService.getDiaById(idDia); } catch (RuntimeException ex) { return "redirect:/rutinas"; }
-            return "redirect:/dias/detallar/" + diaDTO.getIdSemana() + "?readonly=true";
-        }
+    public String eliminarDia(@PathVariable Long idDia, RedirectAttributes redirectAttributes) {
         DiaDTO diaDTO;
         try {
             diaDTO = diaService.getDiaById(idDia);
@@ -154,24 +124,5 @@ public class DiaController {
         diaService.deleteDia(idDia);
         redirectAttributes.addFlashAttribute("success", "Día eliminado correctamente.");
         return "redirect:/dias/detallar/" + diaDTO.getIdSemana();
-    }
-
-    @GetMapping("/dias/check/{idDia}")
-    public String toggleChecked(@PathVariable Long idDia,
-                                 @AuthenticationPrincipal UserDetails userDetails,
-                                 RedirectAttributes redirectAttributes) {
-        if (hasRole(userDetails, "CLIENTE")) {
-            DiaDTO diaDTO;
-            try { diaDTO = diaService.getDiaById(idDia); } catch (RuntimeException ex) { return "redirect:/rutinas"; }
-            return "redirect:/dias/detallar/" + diaDTO.getIdSemana() + "?readonly=true";
-        }
-        try {
-            var dia = diaService.toggleChecked(idDia);
-            redirectAttributes.addFlashAttribute("success", dia.getEstado() ? "Día marcado como completado." : "Día marcado como pendiente.");
-            return "redirect:/dias/detallar/" + dia.getIdSemana();
-        } catch (RuntimeException ex) {
-            redirectAttributes.addFlashAttribute("error", "No se pudo actualizar el estado del día.");
-            return "redirect:/rutinas";
-        }
     }
 }

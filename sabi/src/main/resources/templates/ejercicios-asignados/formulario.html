@@ -1,6 +1,19 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
       th:replace="layout/layout :: layout('Registro de ejercicio',~{::section})">
+<head>
+    <style>
+        .btn-outline-secondary {
+            color: #fff !important;
+            background: linear-gradient(180deg, #6c757d 0%, #5a6268 100%);
+            border: 2px solid #6c757d;
+        }
+        .btn-outline-secondary:hover {
+            background: linear-gradient(180deg, #5a6268 0%, #545b62 100%);
+            color: #fff !important;
+        }
+    </style>
+</head>
 <body>
 <section th:fragment="section">
     <div class="shadow-sm bg-white rounded p-4 mb-4">
