@@ -128,6 +128,10 @@ public class ClienteController {
             model.addAttribute("diaActual", diaDTO);
             model.addAttribute("porcentajeCompletado", porcentajeCompletado);
 
+            // Calcular progreso detallado por semana
+            List<com.sabi.sabi.dto.ProgresoSemanaDTO> progresosPorSemana = diaService.calcularProgresoPorSemana(clienteId);
+            model.addAttribute("progresosPorSemana", progresosPorSemana);
+
             // Obtener semana actual y primer ejercicio del día para navegación automática
             if (diaDTO != null) {
                 Long semanaActual = diaDTO.getIdSemana();

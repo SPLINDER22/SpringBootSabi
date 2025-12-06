@@ -43,6 +43,10 @@ public class SemanasController {
         if (readonlyEffective && rutinaDTO != null && rutinaDTO.getIdCliente() != null) {
             long porcentajeCompletado = diaService.calcularProgresoRutina(rutinaDTO.getIdCliente());
             model.addAttribute("porcentajeCompletado", porcentajeCompletado);
+
+            // Agregar progreso detallado por semana
+            List<com.sabi.sabi.dto.ProgresoSemanaDTO> progresosPorSemana = diaService.calcularProgresoPorSemana(rutinaDTO.getIdCliente());
+            model.addAttribute("progresosPorSemana", progresosPorSemana);
         }
 
         model.addAttribute("semanas", semanas);

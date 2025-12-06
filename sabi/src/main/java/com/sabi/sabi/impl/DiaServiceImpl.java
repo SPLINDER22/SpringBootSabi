@@ -1,6 +1,7 @@
 package com.sabi.sabi.impl;
 
 import com.sabi.sabi.dto.DiaDTO;
+import com.sabi.sabi.dto.ProgresoSemanaDTO;
 import com.sabi.sabi.entity.Dia;
 import com.sabi.sabi.entity.Rutina;
 import com.sabi.sabi.entity.Semana;
@@ -244,5 +245,47 @@ public class DiaServiceImpl implements DiaService {
         }
         if (totalDias == 0) return 0L;
         return Math.round(((double) diasCompletados / (double) totalDias) * 100.0);
+    }
+
+    @Override
+    public List<ProgresoSemanaDTO> calcularProgresoPorSemana(long idCliente) {
+        List<ProgresoSemanaDTO> progresosSemanas = new java.util.ArrayList<>();
+
+        Optional<Rutina> rutina = rutinaRepository.findActiveByClienteId(idCliente);
+        if (rutina.isEmpty()) {
+            return progresosSemanas; // Lista vacía si no hay rutina activa
+        }
+
+        List<Semana> semanas = semanaRepository.getSemanasRutina(rutina.get().getId());
+        if (semanas == null || semanas.isEmpty()) {
+            return progresosSemanas;
+        }
+
+        // Recorrer cada semana y calcular su progreso
+        for (Semana semana : semanas) {
+            List<Dia> dias = diaRepository.getDiasSemana(semana.getId());
+            if (dias == null || dias.isEmpty()) {
+                continue;
+            }
+
+            long totalDias = dias.size();
+            long diasCompletados = 0;
+
+            for (Dia dia : dias) {
+                if (dia.getEstado() != null && dia.getEstado()) {
+                    diasCompletados++;
+                }
+            }
+
+            ProgresoSemanaDTO progresoSemana = new ProgresoSemanaDTO();
+            progresoSemana.setNumeroSemana(semana.getNumeroSemana());
+            progresoSemana.setDiasCompletados(diasCompletados);
+            progresoSemana.setTotalDias(totalDias);
+            progresoSemana.setNombreSemana(semana.getDescripcion()); // Si la semana tiene nombre/descripción
+
+            progresosSemanas.add(progresoSemana);
+        }
+
+        return progresosSemanas;
     }
 }

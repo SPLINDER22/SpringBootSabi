@@ -1,6 +1,7 @@
 package com.sabi.sabi.service;
 
 import com.sabi.sabi.dto.DiaDTO;
+import com.sabi.sabi.dto.ProgresoSemanaDTO;
 import com.sabi.sabi.entity.Dia;
 
 import java.util.List;
@@ -25,4 +26,6 @@ public interface DiaService {
     DiaDTO getDiaActual(long idCliente);
 
     long calcularProgresoRutina(long idCliente);
+
+    List<ProgresoSemanaDTO> calcularProgresoPorSemana(long idCliente);
 }
