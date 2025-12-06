@@ -22,4 +22,6 @@ public interface EjercicioAsignadoService {
     boolean desactivateEjercicioAsignado(long id);
 
     EjercicioAsignadoDTO toggleChecked(long idEjercicioAsignado);
+
+    EjercicioAsignadoDTO duplicarEjercicioAsignado(long id);
 }

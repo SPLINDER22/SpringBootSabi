@@ -22,4 +22,6 @@ public interface SemanaService {
     void alterCheck(long id);
 
     boolean desactivateSemana(long id);
+
+    SemanaDTO duplicarSemana(long id);
 }

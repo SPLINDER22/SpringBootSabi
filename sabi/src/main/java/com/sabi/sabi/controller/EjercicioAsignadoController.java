@@ -152,8 +152,21 @@ public class EjercicioAsignadoController {
             redirectAttributes.addFlashAttribute("error", "El ejercicio no existe.");
             return "redirect:/rutinas";
         }
-        ejercicioAsignadoService.desactivateEjercicioAsignado(idEje);
+        ejercicioAsignadoService.deleteEjercicioAsignado(idEje);
         redirectAttributes.addFlashAttribute("success", "Ejercicio eliminado correctamente.");
         return "redirect:/ejes/detallar/" + ejeDTO.getIdDia();
+    }
+
+    @PostMapping("/ejes/duplicar/{idEje}")
+    public String duplicarEjercicio(@PathVariable Long idEje, RedirectAttributes redirectAttributes) {
+        try {
+            EjercicioAsignadoDTO ejeOriginal = ejercicioAsignadoService.getEjercicioAsignadoById(idEje);
+            ejercicioAsignadoService.duplicarEjercicioAsignado(idEje);
+            redirectAttributes.addFlashAttribute("success", "Ejercicio y sus series duplicados correctamente.");
+            return "redirect:/ejes/detallar/" + ejeOriginal.getIdDia();
+        } catch (RuntimeException ex) {
+            redirectAttributes.addFlashAttribute("error", "Error al duplicar el ejercicio: " + ex.getMessage());
+            return "redirect:/rutinas";
+        }
     }
 }

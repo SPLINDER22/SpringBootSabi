@@ -28,4 +28,6 @@ public interface DiaService {
     long calcularProgresoRutina(long idCliente);
 
     List<ProgresoSemanaDTO> calcularProgresoPorSemana(long idCliente);
+
+    DiaDTO duplicarDia(long id);
 }

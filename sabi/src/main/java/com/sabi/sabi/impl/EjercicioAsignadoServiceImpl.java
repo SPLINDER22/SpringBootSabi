@@ -27,6 +27,10 @@ public class EjercicioAsignadoServiceImpl implements EjercicioAsignadoService {
     private EjercicioRepository ejercicioRepository;
     @Autowired
     private com.sabi.sabi.repository.RegistroSerieRepository registroSerieRepository;
+    @Autowired
+    private com.sabi.sabi.repository.SerieRepository serieRepository;
+    @Autowired
+    private com.sabi.sabi.service.SerieService serieService;
 
     private EjercicioAsignadoDTO mapManual(EjercicioAsignado e){
         if(e==null) return null;
@@ -257,5 +261,38 @@ public class EjercicioAsignadoServiceImpl implements EjercicioAsignadoService {
         ejercicioAsignado.setEstado(ejercicioAsignado.getEstado() == null ? Boolean.TRUE : !ejercicioAsignado.getEstado());
         ejercicioAsignadoRepository.save(ejercicioAsignado);
         return mapManual(ejercicioAsignado);
+    }
+
+    @Override
+    @Transactional
+    public EjercicioAsignadoDTO duplicarEjercicioAsignado(long id) {
+        EjercicioAsignado ejercicioOriginal = ejercicioAsignadoRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("EjercicioAsignado not found with id: " + id));
+
+        // Crear un nuevo ejercicio asignado con los mismos datos
+        EjercicioAsignadoDTO nuevoEjeDTO = new EjercicioAsignadoDTO();
+        nuevoEjeDTO.setIdDia(ejercicioOriginal.getDia().getId());
+        nuevoEjeDTO.setIdEjercicio(ejercicioOriginal.getEjercicio() != null ? ejercicioOriginal.getEjercicio().getId() : null);
+        nuevoEjeDTO.setComentarios(ejercicioOriginal.getComentarios());
+        nuevoEjeDTO.setNumeroSeries(0L); // Se actualizará al agregar series
+        // El orden se asignará automáticamente al final en createEjercicioAsignado
+
+        EjercicioAsignadoDTO nuevoEje = createEjercicioAsignado(nuevoEjeDTO);
+
+        // Duplicar todas las series del ejercicio original al nuevo ejercicio
+        List<com.sabi.sabi.entity.Serie> seriesOriginales = serieRepository.getSerieEje(id);
+
+        for (com.sabi.sabi.entity.Serie serieOriginal : seriesOriginales) {
+            com.sabi.sabi.dto.SerieDTO nuevaSerieDTO = new com.sabi.sabi.dto.SerieDTO();
+            nuevaSerieDTO.setIdEjercicioAsignado(nuevoEje.getIdEjercicioAsignado());
+            nuevaSerieDTO.setComentarios(serieOriginal.getComentarios());
+            nuevaSerieDTO.setPeso(serieOriginal.getPeso());
+            nuevaSerieDTO.setRepeticiones(serieOriginal.getRepeticiones());
+            nuevaSerieDTO.setDescanso(serieOriginal.getDescanso());
+            nuevaSerieDTO.setIntensidad(serieOriginal.getIntensidad());
+            serieService.createSerie(nuevaSerieDTO);
+        }
+
+        return nuevoEje;
     }
 }

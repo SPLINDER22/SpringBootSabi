@@ -103,6 +103,19 @@ public class SemanasController {
         return "redirect:/semanas/detallar/" + idRutina;
     }
 
+    @PostMapping("/semanas/duplicar/{idSemana}")
+    public String duplicarSemana(@PathVariable Long idSemana, RedirectAttributes redirectAttributes) {
+        try {
+            SemanaDTO semanaOriginal = semanaService.getSemanaById(idSemana);
+            semanaService.duplicarSemana(idSemana);
+            redirectAttributes.addFlashAttribute("success", "Semana y todo su contenido duplicado correctamente.");
+            return "redirect:/semanas/detallar/" + semanaOriginal.getIdRutina();
+        } catch (RuntimeException ex) {
+            redirectAttributes.addFlashAttribute("error", "Error al duplicar la semana: " + ex.getMessage());
+            return "redirect:/rutinas";
+        }
+    }
+
     @GetMapping("/semanas/progreso/{idRutina}")
     public String verProgresoCliente(@PathVariable Long idRutina,
                                      @AuthenticationPrincipal UserDetails userDetails,

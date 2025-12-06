@@ -249,6 +249,12 @@
                     <a th:href="@{/semanas/editar/{idSemana}(idSemana=${semId})}" class="btn btn-sm btn-editar-semana">
                         <i class="fas fa-edit"></i> Editar
                     </a>
+                    <form th:action="@{/semanas/duplicar/{idSemana}(idSemana=${semId})}" method="post" style="display:inline;">
+                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                        <button type="submit" class="btn btn-sm btn-warning" title="Duplicar semana y todo su contenido">
+                            <i class="fas fa-copy"></i> Duplicar
+                        </button>
+                    </form>
                     <form th:action="@{/semanas/eliminar/{idSemana}(idSemana=${semId})}" method="post" onsubmit="return confirm('¿Eliminar semana?')">
                         <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
                         <button type="submit" class="btn btn-sm btn-eliminar-semana">

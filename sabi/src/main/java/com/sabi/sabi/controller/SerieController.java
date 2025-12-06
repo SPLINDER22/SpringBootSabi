@@ -172,4 +172,17 @@ public class SerieController {
         redirectAttributes.addFlashAttribute("success", "Serie eliminada correctamente.");
         return "redirect:/series/detallar/" + serieDTO.getIdEjercicioAsignado();
     }
+
+    @PostMapping("/series/duplicar/{idSerie}")
+    public String duplicarSerie(@PathVariable Long idSerie, RedirectAttributes redirectAttributes) {
+        try {
+            SerieDTO serieOriginal = serieService.getSerieById(idSerie);
+            serieService.duplicarSerie(idSerie);
+            redirectAttributes.addFlashAttribute("success", "Serie duplicada correctamente.");
+            return "redirect:/series/detallar/" + serieOriginal.getIdEjercicioAsignado();
+        } catch (RuntimeException ex) {
+            redirectAttributes.addFlashAttribute("error", "Error al duplicar la serie: " + ex.getMessage());
+            return "redirect:/rutinas";
+        }
+    }
 }

@@ -125,4 +125,17 @@ public class DiaController {
         redirectAttributes.addFlashAttribute("success", "Día eliminado correctamente.");
         return "redirect:/dias/detallar/" + diaDTO.getIdSemana();
     }
+
+    @PostMapping("/dias/duplicar/{idDia}")
+    public String duplicarDia(@PathVariable Long idDia, RedirectAttributes redirectAttributes) {
+        try {
+            DiaDTO diaOriginal = diaService.getDiaById(idDia);
+            diaService.duplicarDia(idDia);
+            redirectAttributes.addFlashAttribute("success", "Día y todo su contenido duplicado correctamente.");
+            return "redirect:/dias/detallar/" + diaOriginal.getIdSemana();
+        } catch (RuntimeException ex) {
+            redirectAttributes.addFlashAttribute("error", "Error al duplicar el día: " + ex.getMessage());
+            return "redirect:/rutinas";
+        }
+    }
 }
