@@ -1,0 +1,80 @@
+/* Tema Amarillo - Ejercicios */
+.form-container-ejercicio {
+    background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
+    border-radius: 12px;
+    padding: 2rem;
+    box-shadow: 0 4px 12px rgba(246, 194, 62, 0.15);
+    border-left: 5px solid #f6c23e;
+}
+
+.form-container-ejercicio h2 {
+    color: #78350f;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+}
+
+.form-container-ejercicio h2 i {
+    color: #f6c23e;
+    font-size: 1.5rem;
+}
+
+.form-container-ejercicio .form-label {
+    color: #92400e;
+    font-weight: 600;
+    font-size: 0.95rem;
+    margin-bottom: 0.5rem;
+}
+
+.form-container-ejercicio .form-control,
+.form-container-ejercicio .form-select {
+    border: 2px solid #fde68a;
+    border-radius: 8px;
+    padding: 0.6rem 0.75rem;
+    transition: all 0.2s ease;
+    background-color: #fff;
+}
+
+.form-container-ejercicio .form-control:focus,
+.form-container-ejercicio .form-select:focus {
+    border-color: #f6c23e;
+    box-shadow: 0 0 0 0.2rem rgba(246, 194, 62, 0.25);
+    background-color: #fff;
+}
+
+.form-container-ejercicio .form-text {
+    color: #b45309;
+    font-size: 0.875rem;
+}
+
+.form-container-ejercicio strong {
+    color: #78350f;
+}
+
+.btn-ejercicio-primary {
+    background: linear-gradient(135deg, #f6c23e 0%, #f59e0b 100%);
+    border: none;
+    color: #78350f;
+    font-weight: 600;
+    padding: 0.6rem 1.5rem;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 6px rgba(246, 194, 62, 0.3);
+}
+
+.btn-ejercicio-primary:hover {
+    background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(246, 194, 62, 0.4);
+    color: #78350f;
+}
+
+.info-badge-ejercicio {
+    background: #fef9c3;
+    color: #78350f;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    border-left: 3px solid #f6c23e;
+}
+

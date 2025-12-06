@@ -1,30 +1,23 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
       th:replace="layout/layout :: layout('Registro de dia',~{::section})">
-<head>
-    <style>
-        .btn-outline-secondary {
-            color: #fff !important;
-            background: linear-gradient(180deg, #6c757d 0%, #5a6268 100%);
-            border: 2px solid #6c757d;
-        }
-        .btn-outline-secondary:hover {
-            background: linear-gradient(180deg, #5a6268 0%, #545b62 100%);
-            color: #fff !important;
-        }
-    </style>
-</head>
 <body>
 <section th:fragment="section">
-    <div class="shadow-sm bg-white rounded p-4 mb-4">
-        <div class="d-flex justify-content-between align-items-center mb-3">
-            <h2 th:text="${dia.idDia == null ? 'Crear dia' : 'Editar dia'}"></h2>
+    <link rel="stylesheet" th:href="@{/css/form-common.css}">
+    <link rel="stylesheet" th:href="@{/css/form-dias.css}">
+
+    <div class="form-container-dia">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2>
+                <i class="fas fa-list-ol"></i>
+                <span th:text="${dia.idDia == null ? 'Crear día' : 'Editar día'}"></span>
+            </h2>
             <a th:href="@{'/dias/detallar/' + ${dia.idSemana}}" class="btn btn-outline-secondary">
                 <i class="bi bi-arrow-left-circle me-1"></i>Volver a la lista
             </a>
         </div>
 
-        <div class="mb-3" th:if="${semana != null}">
+        <div class="mb-3 info-badge-dia" th:if="${semana != null}">
             <strong>Semana:</strong> <span th:text="${semana.numeroSemana}"></span>
         </div>
 
@@ -57,7 +50,7 @@
             </div>
 
             <div class="d-flex justify-content-end">
-                <button type="submit" class="btn btn-success me-2">
+                <button type="submit" class="btn btn-dia-primary me-2">
                     <i class="bi bi-save me-1"></i>
                     <span th:text="${dia.idDia == null ? 'Guardar y continuar' : 'Guardar'}"></span>
                 </button>

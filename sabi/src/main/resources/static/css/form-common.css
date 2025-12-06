@@ -1,0 +1,79 @@
+/* Estilos comunes para formularios */
+.btn-outline-secondary {
+    color: #fff !important;
+    background: linear-gradient(180deg, #6c757d 0%, #5a6268 100%);
+    border: 2px solid #6c757d;
+    font-weight: 500;
+    padding: 0.6rem 1.5rem;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+}
+
+.btn-outline-secondary:hover {
+    background: linear-gradient(180deg, #5a6268 0%, #545b62 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(108, 117, 125, 0.3);
+    color: #fff !important;
+}
+/* Tema Púrpura - Rutinas */
+.form-container-rutina {
+    background: linear-gradient(135deg, #f3f0ff 0%, #e9e3ff 100%);
+    border-radius: 12px;
+    padding: 2rem;
+    box-shadow: 0 4px 12px rgba(139, 92, 246, 0.15);
+    border-left: 5px solid #8b5cf6;
+}
+
+.form-container-rutina h2 {
+    color: #6d28d9;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+}
+
+.form-container-rutina h2 i {
+    color: #8b5cf6;
+    font-size: 1.5rem;
+}
+
+.form-container-rutina .form-label {
+    color: #5b21b6;
+    font-weight: 600;
+    font-size: 0.95rem;
+    margin-bottom: 0.5rem;
+}
+
+.form-container-rutina .form-control,
+.form-container-rutina .form-select {
+    border: 2px solid #c4b5fd;
+    border-radius: 8px;
+    padding: 0.6rem 0.75rem;
+    transition: all 0.2s ease;
+}
+
+.form-container-rutina .form-control:focus,
+.form-container-rutina .form-select:focus {
+    border-color: #8b5cf6;
+    box-shadow: 0 0 0 0.2rem rgba(139, 92, 246, 0.25);
+    background-color: #fff;
+}
+
+.btn-rutina-primary {
+    background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+    border: none;
+    color: #fff;
+    font-weight: 600;
+    padding: 0.6rem 1.5rem;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 6px rgba(139, 92, 246, 0.3);
+}
+
+.btn-rutina-primary:hover {
+    background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(139, 92, 246, 0.4);
+    color: #fff;
+}
+

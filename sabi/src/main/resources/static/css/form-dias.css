@@ -1,0 +1,80 @@
+/* Tema Verde - Días */
+.form-container-dia {
+    background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+    border-radius: 12px;
+    padding: 2rem;
+    box-shadow: 0 4px 12px rgba(28, 200, 138, 0.15);
+    border-left: 5px solid #1cc88a;
+}
+
+.form-container-dia h2 {
+    color: #065f46;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+}
+
+.form-container-dia h2 i {
+    color: #1cc88a;
+    font-size: 1.5rem;
+}
+
+.form-container-dia .form-label {
+    color: #047857;
+    font-weight: 600;
+    font-size: 0.95rem;
+    margin-bottom: 0.5rem;
+}
+
+.form-container-dia .form-control,
+.form-container-dia .form-select {
+    border: 2px solid #86efac;
+    border-radius: 8px;
+    padding: 0.6rem 0.75rem;
+    transition: all 0.2s ease;
+    background-color: #fff;
+}
+
+.form-container-dia .form-control:focus,
+.form-container-dia .form-select:focus {
+    border-color: #1cc88a;
+    box-shadow: 0 0 0 0.2rem rgba(28, 200, 138, 0.25);
+    background-color: #fff;
+}
+
+.form-container-dia .form-text {
+    color: #059669;
+    font-size: 0.875rem;
+}
+
+.form-container-dia strong {
+    color: #065f46;
+}
+
+.btn-dia-primary {
+    background: linear-gradient(135deg, #1cc88a 0%, #17a673 100%);
+    border: none;
+    color: #fff;
+    font-weight: 600;
+    padding: 0.6rem 1.5rem;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 6px rgba(28, 200, 138, 0.3);
+}
+
+.btn-dia-primary:hover {
+    background: linear-gradient(135deg, #17a673 0%, #13865c 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(28, 200, 138, 0.4);
+    color: #fff;
+}
+
+.info-badge-dia {
+    background: #d1fae5;
+    color: #065f46;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    border-left: 3px solid #1cc88a;
+}
+
