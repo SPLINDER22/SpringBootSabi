@@ -25,6 +25,8 @@ public class EjercicioAsignadoServiceImpl implements EjercicioAsignadoService {
     private DiaRepository diaRepository;
     @Autowired
     private EjercicioRepository ejercicioRepository;
+    @Autowired
+    private com.sabi.sabi.repository.RegistroSerieRepository registroSerieRepository;
 
     private EjercicioAsignadoDTO mapManual(EjercicioAsignado e){
         if(e==null) return null;
@@ -67,7 +69,28 @@ public class EjercicioAsignadoServiceImpl implements EjercicioAsignadoService {
     @Override
     public List<EjercicioAsignadoDTO> getEjesDia(Long idDia) {
         List<EjercicioAsignado> ejesDia = ejercicioAsignadoRepository.getEjesDia(idDia);
-        return ejesDia.stream().map(this::mapManual).toList();
+        return ejesDia.stream().map(e -> {
+            EjercicioAsignadoDTO dto = mapManual(e);
+            // Calcular el estado basándose en si tiene registros de series completadas
+            if (e.getSeries() != null && !e.getSeries().isEmpty()) {
+                long totalSeries = e.getSeries().size();
+                // Contar series que tienen al menos un registro
+                long seriesCompletadas = e.getSeries().stream()
+                    .filter(s -> {
+                        if (s.getId() != null) {
+                            // Verificar si esta serie tiene registros en la base de datos
+                            return !registroSerieRepository.findBySerie_IdIn(java.util.List.of(s.getId())).isEmpty();
+                        }
+                        return false;
+                    })
+                    .count();
+                // Si todas las series tienen registros, marcar el ejercicio como completado
+                dto.setEstado(totalSeries > 0 && seriesCompletadas == totalSeries);
+            } else {
+                dto.setEstado(e.getEstado()); // Mantener el estado manual si no hay series
+            }
+            return dto;
+        }).toList();
     }
 
     @Override

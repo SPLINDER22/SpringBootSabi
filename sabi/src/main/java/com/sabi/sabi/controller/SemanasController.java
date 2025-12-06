@@ -22,6 +22,12 @@ public class SemanasController {
     private RutinaService rutinaService;
     @Autowired
     private com.sabi.sabi.service.DiaService diaService;
+    @Autowired
+    private com.sabi.sabi.service.EjercicioAsignadoService ejercicioAsignadoService;
+    @Autowired
+    private com.sabi.sabi.repository.SerieRepository serieRepository;
+    @Autowired
+    private com.sabi.sabi.repository.RegistroSerieRepository registroSerieRepository;
 
     private boolean hasRole(UserDetails userDetails, String role) {
         if (userDetails == null) return false;
@@ -163,5 +169,130 @@ public class SemanasController {
         semanaService.alterCheck(idSemana);
         redirectAttributes.addFlashAttribute("success", "Estado de la semana cambiado correctamente.");
         return "redirect:/semanas/detallar/" + idRutina;
+    }
+
+    @GetMapping("/semanas/progreso/{idRutina}")
+    public String verProgresoCliente(@PathVariable Long idRutina,
+                                     @AuthenticationPrincipal UserDetails userDetails,
+                                     Model model, RedirectAttributes redirectAttributes) {
+        boolean esEntrenador = hasRole(userDetails, "ENTRENADOR");
+        if (!esEntrenador) {
+            return "redirect:/semanas/detallar/" + idRutina;
+        }
+
+        try {
+            RutinaDTO rutinaDTO = rutinaService.getRutinaById(idRutina);
+            if (rutinaDTO == null) {
+                redirectAttributes.addFlashAttribute("error", "Rutina no encontrada");
+                return "redirect:/rutinas";
+            }
+
+            List<?> semanas = semanaService.getSemanasRutina(idRutina);
+            System.out.println("DEBUG: Total semanas encontradas: " + semanas.size());
+
+            // Calcular progreso general
+            if (rutinaDTO.getIdCliente() != null) {
+                long porcentajeCompletado = diaService.calcularProgresoRutina(rutinaDTO.getIdCliente());
+                model.addAttribute("porcentajeCompletado", porcentajeCompletado);
+
+                List<com.sabi.sabi.dto.ProgresoSemanaDTO> progresosPorSemana = diaService.calcularProgresoPorSemana(rutinaDTO.getIdCliente());
+                model.addAttribute("progresosPorSemana", progresosPorSemana);
+            }
+
+            // Cargar estructura completa: semanas -> días -> ejercicios -> series -> registros
+            java.util.Map<Long, java.util.List<?>> diasPorSemana = new java.util.HashMap<>();
+            java.util.Map<Long, java.util.List<?>> ejerciciosPorDia = new java.util.HashMap<>();
+            java.util.Map<Long, java.util.List<?>> seriesPorEjercicio = new java.util.HashMap<>();
+            java.util.Map<Long, com.sabi.sabi.entity.RegistroSerie> registrosPorSerie = new java.util.HashMap<>();
+
+            for (Object semanaObj : semanas) {
+                if (semanaObj instanceof com.sabi.sabi.entity.Semana) {
+                    com.sabi.sabi.entity.Semana semana = (com.sabi.sabi.entity.Semana) semanaObj;
+                    Long idSemana = semana.getId();
+                    System.out.println("DEBUG: Procesando semana ID: " + idSemana + ", Numero: " + semana.getNumeroSemana());
+
+                    if (idSemana != null) {
+                        java.util.List<?> dias = diaService.getDiasSemana(idSemana);
+                        System.out.println("DEBUG: Días encontrados para semana " + idSemana + ": " + dias.size());
+
+                        if (!dias.isEmpty()) {
+                            diasPorSemana.put(idSemana, dias);
+                            System.out.println("DEBUG: Agregado al mapa diasPorSemana con key: " + idSemana);
+                        }
+
+                        for (Object diaObj : dias) {
+                            if (diaObj instanceof com.sabi.sabi.entity.Dia) {
+                                com.sabi.sabi.entity.Dia dia = (com.sabi.sabi.entity.Dia) diaObj;
+                                Long idDia = dia.getId();
+                                System.out.println("DEBUG: Procesando dia ID: " + idDia + ", Numero: " + dia.getNumeroDia());
+
+                                if (idDia != null) {
+                                    java.util.List<?> ejercicios = ejercicioAsignadoService.getEjesDia(idDia);
+                                    System.out.println("DEBUG: Ejercicios encontrados para dia " + idDia + ": " + ejercicios.size());
+
+                                    // DEBUG: Mostrar estado de cada ejercicio
+                                    for (Object ejeObj : ejercicios) {
+                                        if (ejeObj instanceof com.sabi.sabi.dto.EjercicioAsignadoDTO) {
+                                            com.sabi.sabi.dto.EjercicioAsignadoDTO ejeDebug = (com.sabi.sabi.dto.EjercicioAsignadoDTO) ejeObj;
+                                            System.out.println("  - Ejercicio ID: " + ejeDebug.getIdEjercicioAsignado() +
+                                                             ", Nombre: " + ejeDebug.getNombreEjercicio() +
+                                                             ", Estado: " + ejeDebug.getEstado());
+                                        }
+                                    }
+
+                                    if (!ejercicios.isEmpty()) {
+                                        ejerciciosPorDia.put(idDia, ejercicios);
+                                    }
+
+                                    for (Object ejeObj : ejercicios) {
+                                        if (ejeObj instanceof com.sabi.sabi.dto.EjercicioAsignadoDTO) {
+                                            com.sabi.sabi.dto.EjercicioAsignadoDTO eje = (com.sabi.sabi.dto.EjercicioAsignadoDTO) ejeObj;
+                                            Long idEje = eje.getIdEjercicioAsignado();
+
+                                            if (idEje != null) {
+                                                java.util.List<com.sabi.sabi.entity.Serie> series = serieRepository.getSerieEje(idEje);
+                                                if (series != null && !series.isEmpty()) {
+                                                    seriesPorEjercicio.put(idEje, series);
+
+                                                    // Cargar registros de series
+                                                    java.util.List<Long> seriesIds = series.stream()
+                                                        .map(com.sabi.sabi.entity.Serie::getId)
+                                                        .filter(java.util.Objects::nonNull)
+                                                        .collect(java.util.stream.Collectors.toList());
+
+                                                    if (!seriesIds.isEmpty()) {
+                                                        registroSerieRepository.findBySerie_IdIn(seriesIds).forEach(r -> {
+                                                            if (r.getSerie() != null && r.getSerie().getId() != null) {
+                                                                registrosPorSerie.put(r.getSerie().getId(), r);
+                                                            }
+                                                        });
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            System.out.println("DEBUG: Total entradas en diasPorSemana: " + diasPorSemana.size());
+            System.out.println("DEBUG: Keys en diasPorSemana: " + diasPorSemana.keySet());
+
+            model.addAttribute("semanas", semanas);
+            model.addAttribute("diasPorSemana", diasPorSemana);
+            model.addAttribute("ejerciciosPorDia", ejerciciosPorDia);
+            model.addAttribute("seriesPorEjercicio", seriesPorEjercicio);
+            model.addAttribute("registrosPorSerie", registrosPorSerie);
+            model.addAttribute("rutina", rutinaDTO);
+
+            return "semanas/progreso";
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            redirectAttributes.addFlashAttribute("error", "Error al cargar el progreso: " + ex.getMessage());
+            return "redirect:/rutinas";
+        }
     }
 }
