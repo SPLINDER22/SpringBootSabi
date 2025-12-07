@@ -25,8 +25,28 @@ public class DataSourceConfig {
     public DataSource dataSource() {
         String databaseUrl = System.getenv("DATABASE_URL");
 
+        // Try alternative environment variables used by Railway
         if (databaseUrl == null || databaseUrl.isEmpty()) {
-            throw new IllegalStateException("❌ DATABASE_URL environment variable is not set");
+            String pgHost = System.getenv("PGHOST");
+            String pgPort = System.getenv("PGPORT");
+            String pgDatabase = System.getenv("PGDATABASE");
+            String pgUser = System.getenv("PGUSER");
+            String pgPassword = System.getenv("PGPASSWORD");
+
+            if (pgHost != null && pgDatabase != null && pgUser != null && pgPassword != null) {
+                int port = (pgPort != null) ? Integer.parseInt(pgPort) : 5432;
+                databaseUrl = String.format("postgresql://%s:%s@%s:%d/%s",
+                    pgUser, pgPassword, pgHost, port, pgDatabase);
+                System.out.println("✅ Built DATABASE_URL from PG* environment variables");
+            } else {
+                System.err.println("❌ DATABASE_URL not set and PG* variables incomplete:");
+                System.err.println("   PGHOST: " + (pgHost != null ? "SET" : "NOT SET"));
+                System.err.println("   PGPORT: " + (pgPort != null ? "SET" : "NOT SET"));
+                System.err.println("   PGDATABASE: " + (pgDatabase != null ? "SET" : "NOT SET"));
+                System.err.println("   PGUSER: " + (pgUser != null ? "SET" : "NOT SET"));
+                System.err.println("   PGPASSWORD: " + (pgPassword != null ? "SET" : "NOT SET"));
+                throw new IllegalStateException("❌ DATABASE_URL environment variable is not set and PG* variables are incomplete");
+            }
         }
 
         System.out.println("🔍 Original DATABASE_URL: " + databaseUrl.replaceAll(":[^:@]+@", ":****@"));
@@ -95,6 +115,17 @@ public class DataSourceConfig {
 
                 String path = dbUri.getPath();
                 database = (path != null && path.length() > 1) ? path.substring(1) : "railway";
+
+                // Validate parsed values
+                if (host == null || host.isEmpty()) {
+                    throw new IllegalStateException("Failed to parse host from DATABASE_URL");
+                }
+                if (database == null || database.isEmpty()) {
+                    throw new IllegalStateException("Failed to parse database name from DATABASE_URL");
+                }
+                if (username == null || username.isEmpty()) {
+                    throw new IllegalStateException("Failed to parse username from DATABASE_URL");
+                }
 
                 // Build JDBC URL
                 jdbcUrl = String.format("jdbc:postgresql://%s:%d/%s", host, port, database);
