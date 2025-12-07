@@ -4,26 +4,8 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="0b88328c-1fbb-4843-a1f3-0a61ddac63ac" name="Changes" comment="readme actualizado">
-      <change afterPath="$PROJECT_DIR$/.env.railway.example" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/RAILWAY_DEPLOYMENT_GUIDE.md" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/RAILWAY_STEP_BY_STEP.md" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/nixpacks.toml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/railway.toml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/verify-railway-deploy.ps1" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/README_RAILWAY.md" beforeDir="false" afterPath="$PROJECT_DIR$/README_RAILWAY.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sabi/ENVIRONMENT_VARIABLES.md" beforeDir="false" afterPath="$PROJECT_DIR$/sabi/ENVIRONMENT_VARIABLES.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sabi/Procfile" beforeDir="false" afterPath="$PROJECT_DIR$/sabi/Procfile" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sabi/RAILWAY_DEPLOYMENT.md" beforeDir="false" afterPath="$PROJECT_DIR$/sabi/RAILWAY_DEPLOYMENT.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sabi/RESUMEN_RAILWAY.md" beforeDir="false" afterPath="$PROJECT_DIR$/sabi/RESUMEN_RAILWAY.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sabi/railway.json" beforeDir="false" afterPath="$PROJECT_DIR$/sabi/railway.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sabi/src/main/java/com/sabi/sabi/config/MailConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/sabi/src/main/java/com/sabi/sabi/config/MailConfig.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sabi/src/main/resources/application-h2.properties" beforeDir="false" afterPath="$PROJECT_DIR$/sabi/src/main/resources/application-h2.properties" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sabi/src/main/resources/application-mysql.properties" beforeDir="false" afterPath="$PROJECT_DIR$/sabi/src/main/resources/application-mysql.properties" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sabi/src/main/resources/application-prod.properties" beforeDir="false" afterPath="$PROJECT_DIR$/sabi/src/main/resources/application-prod.properties" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sabi/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/sabi/src/main/resources/application.properties" afterDir="false" />
+    <list default="true" id="0b88328c-1fbb-4843-a1f3-0a61ddac63ac" name="Changes" comment="Configuracion de datos para eficiciencia en servidores">
+      <change beforePath="$PROJECT_DIR$/nixpacks.toml" beforeDir="false" afterPath="$PROJECT_DIR$/nixpacks.toml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -157,7 +139,15 @@
       <option name="project" value="LOCAL" />
       <updated>1765129516311</updated>
     </task>
-    <option name="localTasksCounter" value="9" />
+    <task id="LOCAL-00009" summary="Configuracion de datos para eficiciencia en servidores">
+      <option name="closed" value="true" />
+      <created>1765131081138</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1765131081138</updated>
+    </task>
+    <option name="localTasksCounter" value="10" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
@@ -167,7 +157,8 @@
     <MESSAGE value="vistas entrenadores y sus verificaciones" />
     <MESSAGE value="Creacion funciones para servidores" />
     <MESSAGE value="readme actualizado" />
-    <option name="LAST_COMMIT_MESSAGE" value="readme actualizado" />
+    <MESSAGE value="Configuracion de datos para eficiciencia en servidores" />
+    <option name="LAST_COMMIT_MESSAGE" value="Configuracion de datos para eficiciencia en servidores" />
   </component>
   <component name="github-copilot-workspace">
     <instructionFileLocations>

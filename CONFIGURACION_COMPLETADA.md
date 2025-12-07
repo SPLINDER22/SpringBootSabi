@@ -38,6 +38,24 @@
 
 ## 🚀 SIGUIENTE PASO: SUBIR A RAILWAY
 
+### ⚠️ ERROR COMÚN: "No start command could be found"
+**SOLUCIÓN**: He actualizado los archivos de configuración para incluir múltiples opciones de comando de inicio:
+- ✅ `nixpacks.toml` - Actualizado con `[start]` en lugar de `[phases.start]`
+- ✅ `railway.toml` - Incluye `startCommand` explícito
+- ✅ `Procfile` - Archivo adicional de respaldo
+- ✅ `start.sh` - Script de inicio bash
+
+**Ahora haz commit y push nuevamente:**
+```powershell
+git add .
+git commit -m "Fix: Agregar comandos de inicio para Railway"
+git push origin main
+```
+
+Railway debería detectar el comando de inicio automáticamente.
+
+---
+
 ### 1️⃣ Preparar Git
 ```powershell
 cd C:\Users\USER\Downloads\SpringBootSabi

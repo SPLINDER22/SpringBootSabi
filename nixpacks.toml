@@ -4,7 +4,7 @@ nixPkgs = ['maven', 'openjdk21']
 [phases.build]
 cmds = ['cd sabi && mvn clean package -DskipTests']
 
-[phases.start]
+[start]
 cmd = 'cd sabi && java -Dserver.port=$PORT -Dspring.profiles.active=prod -jar target/sabi-0.0.1-SNAPSHOT.jar'
 
 [variables]

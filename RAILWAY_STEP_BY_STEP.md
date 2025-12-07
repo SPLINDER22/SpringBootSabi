@@ -175,6 +175,21 @@ Archivo esperado: sabi/target/sabi-0.0.1-SNAPSHOT.jar
 #### Error: "Port already in use"
 **Solución:** Railway asigna el puerto automáticamente a través de `$PORT`
 
+#### Error: "No start command could be found"
+**Solución:** Railway no detecta el comando de inicio
+1. Verifica que estos archivos existan en la raíz:
+   - `nixpacks.toml` con sección `[start]`
+   - `railway.toml` con `startCommand`
+   - `Procfile`
+   - `start.sh`
+2. Haz commit y push nuevamente:
+   ```powershell
+   git add .
+   git commit -m "Fix: Agregar comandos de inicio"
+   git push
+   ```
+3. Railway redesplegará automáticamente
+
 #### Error: "OutOfMemoryError"
 **Solución:** Aumenta JAVA_OPTS:
 ```
