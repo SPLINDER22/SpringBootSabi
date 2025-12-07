@@ -10,8 +10,8 @@ import javax.sql.DataSource;
 import java.net.URI;
 
 /**
- * DataSource configuration for Railway
- * Railway provides DATABASE_URL or individual PG* environment variables
+ * DataSource configuration for Railway with MySQL
+ * Railway provides MYSQLURL and MYSQL* environment variables
  */
 @Configuration
 @Profile("prod")
@@ -24,67 +24,71 @@ public class DataSourceConfig {
         String username;
         String password;
 
-        // Try DATABASE_URL first (Railway's default format)
-        String databaseUrl = System.getenv("DATABASE_URL");
+        System.out.println("=== 🔍 RAILWAY MySQL DATABASE CONFIGURATION ===");
 
-        System.out.println("=== 🔍 RAILWAY DATABASE CONFIGURATION ===");
+        // Try MYSQLURL first (Railway's MySQL format)
+        String mysqlUrl = System.getenv("MYSQLURL");
 
-        if (databaseUrl != null && !databaseUrl.isEmpty()) {
-            System.out.println("✅ DATABASE_URL found, parsing...");
+        if (mysqlUrl != null && !mysqlUrl.isEmpty()) {
+            System.out.println("✅ MYSQLURL found, parsing...");
             try {
-                // Parse DATABASE_URL: postgresql://user:password@host:port/database
-                URI dbUri = new URI(databaseUrl.replace("postgresql://", "jdbc:postgresql://"));
+                // Parse MYSQLURL: mysql://user:password@host:port/database
+                URI dbUri = new URI(mysqlUrl);
 
                 String host = dbUri.getHost();
                 int port = dbUri.getPort();
                 String path = dbUri.getPath();
 
-                if (port == -1) port = 5432;
+                if (port == -1) port = 3306;
 
-                jdbcUrl = String.format("jdbc:postgresql://%s:%d%s", host, port, path);
+                // Build JDBC URL with proper MySQL parameters
+                jdbcUrl = String.format("jdbc:mysql://%s:%d%s?useSSL=true&allowPublicKeyRetrieval=true&serverTimezone=UTC&characterEncoding=UTF-8",
+                    host, port, path);
 
                 String userInfo = dbUri.getUserInfo();
                 if (userInfo != null && userInfo.contains(":")) {
-                    String[] credentials = userInfo.split(":");
+                    String[] credentials = userInfo.split(":", 2);
                     username = credentials[0];
                     password = credentials[1];
                 } else {
-                    throw new IllegalStateException("DATABASE_URL missing user credentials");
+                    throw new IllegalStateException("MYSQLURL missing user credentials");
                 }
 
-                System.out.println("✅ Parsed from DATABASE_URL");
+                System.out.println("✅ Parsed from MYSQLURL");
                 System.out.println("   Host: " + host);
                 System.out.println("   Port: " + port);
                 System.out.println("   Database: " + path);
 
             } catch (Exception e) {
-                System.err.println("❌ Error parsing DATABASE_URL: " + e.getMessage());
-                throw new IllegalStateException("Failed to parse DATABASE_URL", e);
+                System.err.println("❌ Error parsing MYSQLURL: " + e.getMessage());
+                e.printStackTrace();
+                throw new IllegalStateException("Failed to parse MYSQLURL", e);
             }
         } else {
-            // Fallback to individual PG* variables
-            System.out.println("📌 DATABASE_URL not found, using PG* variables...");
+            // Fallback to individual MYSQL* variables
+            System.out.println("📌 MYSQLURL not found, using MYSQL* variables...");
 
-            String pgHost = System.getenv("PGHOST");
-            String pgPort = System.getenv("PGPORT");
-            String pgDatabase = System.getenv("PGDATABASE");
-            String pgUser = System.getenv("PGUSER");
-            String pgPassword = System.getenv("PGPASSWORD");
+            String mysqlHost = System.getenv("MYSQLHOST");
+            String mysqlPort = System.getenv("MYSQLPORT");
+            String mysqlDatabase = System.getenv("MYSQLDATABASE");
+            String mysqlUser = System.getenv("MYSQLUSER");
+            String mysqlPassword = System.getenv("MYSQLPASSWORD");
 
-            System.out.println("PGHOST: " + (pgHost != null ? pgHost : "NOT SET"));
-            System.out.println("PGPORT: " + (pgPort != null ? pgPort : "NOT SET"));
-            System.out.println("PGDATABASE: " + (pgDatabase != null ? pgDatabase : "NOT SET"));
-            System.out.println("PGUSER: " + (pgUser != null ? pgUser : "NOT SET"));
+            System.out.println("MYSQLHOST: " + (mysqlHost != null ? mysqlHost : "NOT SET"));
+            System.out.println("MYSQLPORT: " + (mysqlPort != null ? mysqlPort : "NOT SET"));
+            System.out.println("MYSQLDATABASE: " + (mysqlDatabase != null ? mysqlDatabase : "NOT SET"));
+            System.out.println("MYSQLUSER: " + (mysqlUser != null ? mysqlUser : "NOT SET"));
 
-            if (pgHost == null || pgDatabase == null || pgUser == null || pgPassword == null) {
-                System.err.println("❌ Missing required PostgreSQL environment variables!");
-                throw new IllegalStateException("Missing PostgreSQL environment variables");
+            if (mysqlHost == null || mysqlDatabase == null || mysqlUser == null || mysqlPassword == null) {
+                System.err.println("❌ Missing required MySQL environment variables!");
+                throw new IllegalStateException("Missing MySQL environment variables (MYSQLHOST, MYSQLDATABASE, MYSQLUSER, MYSQLPASSWORD)");
             }
 
-            int port = (pgPort != null && !pgPort.isEmpty()) ? Integer.parseInt(pgPort) : 5432;
-            jdbcUrl = String.format("jdbc:postgresql://%s:%d/%s", pgHost, port, pgDatabase);
-            username = pgUser;
-            password = pgPassword;
+            int port = (mysqlPort != null && !mysqlPort.isEmpty()) ? Integer.parseInt(mysqlPort) : 3306;
+            jdbcUrl = String.format("jdbc:mysql://%s:%d/%s?useSSL=true&allowPublicKeyRetrieval=true&serverTimezone=UTC&characterEncoding=UTF-8",
+                mysqlHost, port, mysqlDatabase);
+            username = mysqlUser;
+            password = mysqlPassword;
         }
 
         System.out.println("🔗 JDBC URL: " + jdbcUrl.replaceAll(":[^:@]+@", ":****@"));
@@ -95,7 +99,7 @@ public class DataSourceConfig {
             dataSource.setJdbcUrl(jdbcUrl);
             dataSource.setUsername(username);
             dataSource.setPassword(password);
-            dataSource.setDriverClassName("org.postgresql.Driver");
+            dataSource.setDriverClassName("com.mysql.cj.jdbc.Driver");
 
             // Hikari pool settings optimized for Railway
             dataSource.setMaximumPoolSize(5);
@@ -104,17 +108,25 @@ public class DataSourceConfig {
             dataSource.setIdleTimeout(600000);
             dataSource.setMaxLifetime(1800000);
 
-            // PostgreSQL specific settings
-            dataSource.addDataSourceProperty("ApplicationName", "Sabi-Railway");
-            dataSource.addDataSourceProperty("stringtype", "unspecified");
+            // MySQL specific settings
+            dataSource.addDataSourceProperty("cachePrepStmts", "true");
+            dataSource.addDataSourceProperty("prepStmtCacheSize", "250");
+            dataSource.addDataSourceProperty("prepStmtCacheSqlLimit", "2048");
+            dataSource.addDataSourceProperty("useServerPrepStmts", "true");
+            dataSource.addDataSourceProperty("useLocalSessionState", "true");
+            dataSource.addDataSourceProperty("rewriteBatchedStatements", "true");
+            dataSource.addDataSourceProperty("cacheResultSetMetadata", "true");
+            dataSource.addDataSourceProperty("cacheServerConfiguration", "true");
+            dataSource.addDataSourceProperty("elideSetAutoCommits", "true");
+            dataSource.addDataSourceProperty("maintainTimeStats", "false");
 
-            System.out.println("✅ DataSource configured successfully!");
+            System.out.println("✅ MySQL DataSource configured successfully!");
             return dataSource;
 
         } catch (Exception e) {
-            System.err.println("❌ Error configuring DataSource: " + e.getMessage());
+            System.err.println("❌ Error configuring MySQL DataSource: " + e.getMessage());
             e.printStackTrace();
-            throw new IllegalStateException("Failed to configure DataSource", e);
+            throw new IllegalStateException("Failed to configure MySQL DataSource", e);
         }
     }
 }
