@@ -20,4 +20,7 @@ public interface SuscripcionRepository extends JpaRepository<Suscripcion,Long> {
 
     // Obtener suscripciones activas (ACEPTADA) con una duración específica en semanas
     List<Suscripcion> findByEstadoTrueAndEstadoSuscripcionAndDuracionSemanas(EstadoSuscripcion estadoSuscripcion, Integer duracionSemanas);
+
+    // Buscar suscripción entre cliente y entrenador
+    Optional<Suscripcion> findByCliente_IdAndEntrenador_IdAndEstadoTrue(Long clienteId, Long entrenadorId);
 }

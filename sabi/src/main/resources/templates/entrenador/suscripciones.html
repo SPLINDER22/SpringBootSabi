@@ -1451,6 +1451,24 @@
                 });
             });
         })();
+
+        // Detectar parámetro de estado en la URL y activar filtro automáticamente
+        (function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const estadoParam = urlParams.get('estado');
+
+            if (estadoParam) {
+                // Buscar el botón correspondiente
+                const botonFiltro = document.querySelector(`.btn-filter[data-filter="${estadoParam}"]`);
+
+                if (botonFiltro) {
+                    // Simular clic en el botón para aplicar el filtro
+                    setTimeout(() => {
+                        botonFiltro.click();
+                    }, 100);
+                }
+            }
+        })();
     </script>
 </section>
 </body>
