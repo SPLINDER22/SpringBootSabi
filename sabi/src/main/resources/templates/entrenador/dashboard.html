@@ -32,6 +32,16 @@
             box-shadow: 0 8px 25px rgba(0,0,0,0.15);
         }
 
+        /* Efecto adicional para tarjetas clickeables */
+        a:hover .stats-card {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 12px 35px rgba(0,0,0,0.18);
+        }
+
+        a:active .stats-card {
+            transform: translateY(-3px) scale(0.98);
+        }
+
         .stats-card.primary {
             border-left-color: #0ea5e9;
         }
@@ -201,34 +211,52 @@
     <!-- Métricas Principales -->
     <div class="row mb-4">
         <div class="col-lg-4 col-md-6 mb-3">
-            <div class="stats-card primary position-relative">
-                <div class="stats-label">
-                    <i class="fas fa-users me-1"></i>Clientes Activos
+            <a th:href="@{/entrenador/suscripciones(estado='aceptadas')}" style="text-decoration: none; color: inherit; display: block;">
+                <div class="stats-card primary position-relative" style="cursor: pointer;">
+                    <div class="stats-label">
+                        <i class="fas fa-users me-1"></i>Clientes Activos
+                    </div>
+                    <div class="stats-number" style="color: #0ea5e9;" th:text="${totalClientes}">0</div>
+                    <small class="text-muted" style="font-size: 0.95rem;">Con suscripción aceptada</small>
+                    <i class="fas fa-users stats-icon" style="color: #0ea5e9;"></i>
+                    <div class="mt-2">
+                        <i class="fas fa-arrow-right" style="color: #0ea5e9; font-size: 0.9rem;"></i>
+                        <small style="color: #0ea5e9; font-weight: 600; margin-left: 0.3rem;">Ver clientes</small>
+                    </div>
                 </div>
-                <div class="stats-number" style="color: #0ea5e9;" th:text="${totalClientes}">0</div>
-                <small class="text-muted" style="font-size: 0.95rem;">Con suscripción aceptada</small>
-                <i class="fas fa-users stats-icon" style="color: #0ea5e9;"></i>
-            </div>
+            </a>
         </div>
         <div class="col-lg-4 col-md-6 mb-3">
-            <div class="stats-card success position-relative">
-                <div class="stats-label">
-                    <i class="fas fa-dumbbell me-1"></i>Rutinas Creadas
+            <a th:href="@{/rutinas}" style="text-decoration: none; color: inherit; display: block;">
+                <div class="stats-card success position-relative" style="cursor: pointer;">
+                    <div class="stats-label">
+                        <i class="fas fa-dumbbell me-1"></i>Rutinas Creadas
+                    </div>
+                    <div class="stats-number" style="color: #0c4a6e;" th:text="${totalRutinas}">0</div>
+                    <small class="text-muted" style="font-size: 0.95rem;">Total de rutinas diseñadas</small>
+                    <i class="fas fa-dumbbell stats-icon" style="color: #0c4a6e;"></i>
+                    <div class="mt-2">
+                        <i class="fas fa-arrow-right" style="color: #0c4a6e; font-size: 0.9rem;"></i>
+                        <small style="color: #0c4a6e; font-weight: 600; margin-left: 0.3rem;">Ver rutinas</small>
+                    </div>
                 </div>
-                <div class="stats-number" style="color: #0c4a6e;" th:text="${totalRutinas}">0</div>
-                <small class="text-muted" style="font-size: 0.95rem;">Total de rutinas diseñadas</small>
-                <i class="fas fa-dumbbell stats-icon" style="color: #0c4a6e;"></i>
-            </div>
+            </a>
         </div>
         <div class="col-lg-4 col-md-6 mb-3">
-            <div class="stats-card warning position-relative">
-                <div class="stats-label">
-                    <i class="fas fa-clock me-1"></i>Solicitudes
+            <a th:href="@{/entrenador/suscripciones(estado='pendientes')}" style="text-decoration: none; color: inherit; display: block;">
+                <div class="stats-card warning position-relative" style="cursor: pointer;">
+                    <div class="stats-label">
+                        <i class="fas fa-clock me-1"></i>Solicitudes
+                    </div>
+                    <div class="stats-number" style="color: #0284c7;" th:text="${solicitudesPendientes}">0</div>
+                    <small class="text-muted" style="font-size: 0.95rem;">Peticiones pendientes</small>
+                    <i class="fas fa-bell stats-icon" style="color: #0284c7;"></i>
+                    <div class="mt-2">
+                        <i class="fas fa-arrow-right" style="color: #0284c7; font-size: 0.9rem;"></i>
+                        <small style="color: #0284c7; font-weight: 600; margin-left: 0.3rem;">Ver solicitudes</small>
+                    </div>
                 </div>
-                <div class="stats-number" style="color: #0284c7;" th:text="${solicitudesPendientes}">0</div>
-                <small class="text-muted" style="font-size: 0.95rem;">Peticiones pendientes</small>
-                <i class="fas fa-bell stats-icon" style="color: #0284c7;"></i>
-            </div>
+            </a>
         </div>
     </div>
 
@@ -238,7 +266,7 @@
             <div class="stats-card" style="border-left-color: #fbbf24;">
                 <h5 class="mb-3 d-flex align-items-center justify-content-between">
                     <span><i class="fas fa-star text-warning me-2"></i>Tu Calificación</span>
-                    <button type="button" class="btn btn-outline-primary btn-sm" data-bs-toggle="modal" data-bs-target="#modalResenas">
+                    <button type="button" class="btn btn-outline-primary btn-sm" data-toggle="modal" data-target="#modalResenas">
                         <i class="fas fa-comments me-1"></i> Ver reseñas
                     </button>
                 </h5>
@@ -268,16 +296,15 @@
     </div>
 
     <!-- Modal Reseñas del Entrenador -->
-    <div class="modal fade" id="modalResenas" tabindex="-1" aria-labelledby="modalResenasLabel" aria-hidden="true">
-        <div class="modal-dialog modal-lg modal-dialog-scrollable">
+    <div class="modal fade" id="modalResenas" tabindex="-1" role="dialog" aria-labelledby="modalResenasLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
             <div class="modal-content">
                 <div class="modal-header" style="background:#fef3c7; border-bottom:0;">
                     <h5 class="modal-title" id="modalResenasLabel" style="color:#b45309;">
                         <i class="fas fa-star text-warning me-2"></i>Reseñas de tus clientes
                     </h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <div class="modal-body" style="background:#fff7ed;">
+                <div class="modal-body" style="background:#fff7ed; max-height: 500px; overflow-y: auto;">
                     <div th:if="${resenas == null || #lists.isEmpty(resenas)}" class="empty-state">
                         <i class="fas fa-comment-slash"></i>
                         <h5 style="color:#0c4a6e;">Aún no tienes reseñas</h5>
@@ -294,7 +321,10 @@
                                 <p class="mb-2" th:text="${r.comentario}" style="color:#1e293b; font-size:1rem;">Comentario del cliente</p>
                                 <small class="text-muted">
                                     <i class="fas fa-user me-1"></i><span th:text="${r.clienteNombre}">Cliente</span>
-                                    <span class="ms-2"><i class="fas fa-calendar me-1"></i><span th:text="${#dates.format(r.fecha,'dd/MM/yyyy')}">01/01/2025</span></span>
+                                    <span class="ms-2" th:if="${r.fecha != null}">
+                                        <i class="fas fa-calendar me-1"></i>
+                                        <span th:text="${#temporals.format(r.fecha, 'dd/MM/yyyy')}">01/01/2025</span>
+                                    </span>
                                 </small>
                             </div>
                             <div class="text-end">
@@ -304,7 +334,9 @@
                     </div>
                 </div>
                 <div class="modal-footer" style="background:#fff7ed; border-top:0;">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                    <button type="button" class="btn btn-primary" data-dismiss="modal">
+                        <i class="fas fa-times-circle mr-1"></i>Cerrar
+                    </button>
                 </div>
             </div>
         </div>
