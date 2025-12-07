@@ -26,23 +26,35 @@ public class DataSourceConfig {
         String username;
         String password;
 
-        System.out.println("=== 🔍 RAILWAY MySQL DATABASE CONFIGURATION ===");
+        System.out.println("\n=== 🔍 RAILWAY MySQL DATABASE CONFIGURATION ===");
 
-        // Print all available environment variables for debugging
-        System.out.println("Environment Variables:");
-        System.out.println("  MYSQLURL: " + (System.getenv("MYSQLURL") != null ? "SET" : "NOT SET"));
-        System.out.println("  MYSQLHOST: " + System.getenv("MYSQLHOST"));
-        System.out.println("  MYSQLPORT: " + System.getenv("MYSQLPORT"));
-        System.out.println("  MYSQLDATABASE: " + System.getenv("MYSQLDATABASE"));
-        System.out.println("  MYSQLUSER: " + System.getenv("MYSQLUSER"));
-        System.out.println("  MYSQLPASSWORD: " + (System.getenv("MYSQLPASSWORD") != null ? "****" : "NOT SET"));
+        // Print ALL environment variables for complete debugging
+        System.out.println("📋 ALL Environment Variables:");
+        System.getenv().forEach((key, value) -> {
+            String displayValue = value;
+            if (key.contains("PASSWORD") || key.contains("PASS")) {
+                displayValue = "****";
+            }
+            System.out.println("  " + key + ": " + displayValue);
+        });
 
-        // Try individual MYSQL* variables first (more reliable)
+        System.out.println("\n🎯 MySQL Specific Variables:");
         String mysqlHost = System.getenv("MYSQLHOST");
         String mysqlPort = System.getenv("MYSQLPORT");
         String mysqlDatabase = System.getenv("MYSQLDATABASE");
         String mysqlUser = System.getenv("MYSQLUSER");
         String mysqlPassword = System.getenv("MYSQLPASSWORD");
+
+        System.out.println("  MYSQLHOST: " + mysqlHost);
+        System.out.println("  MYSQLPORT: " + mysqlPort);
+        System.out.println("  MYSQLDATABASE: " + mysqlDatabase);
+        System.out.println("  MYSQLUSER: " + mysqlUser);
+        System.out.println("  MYSQLPASSWORD: " + (mysqlPassword != null && !mysqlPassword.isEmpty() ? "****" : "NOT SET"));
+
+        // Verify password is not empty
+        if (mysqlPassword != null && !mysqlPassword.isEmpty()) {
+            System.out.println("  Password length: " + mysqlPassword.length() + " characters");
+        }
 
         if (mysqlHost != null && mysqlDatabase != null && mysqlUser != null && mysqlPassword != null) {
             System.out.println("✅ Using individual MYSQL* variables");
@@ -117,7 +129,16 @@ public class DataSourceConfig {
         }
 
         System.out.println("🔗 JDBC URL: " + jdbcUrl.replaceAll(":[^:@]+@", ":****@"));
+        System.out.println("👤 Username: " + username);
+        System.out.println("🔐 Password configured: " + (password != null && !password.isEmpty() ? "YES (length: " + password.length() + ")" : "❌ NO - THIS IS THE PROBLEM!"));
         System.out.println("==========================================");
+
+        // CRITICAL CHECK: Ensure password is set
+        if (password == null || password.isEmpty()) {
+            System.err.println("🚨 CRITICAL ERROR: Password is NULL or EMPTY!");
+            System.err.println("Check Railway variables: MYSQLPASSWORD must be set correctly!");
+            throw new IllegalStateException("MySQL password is not configured. Please set MYSQLPASSWORD in Railway environment variables.");
+        }
 
         try {
             HikariDataSource dataSource = new HikariDataSource();
@@ -125,6 +146,9 @@ public class DataSourceConfig {
             dataSource.setUsername(username);
             dataSource.setPassword(password);
             dataSource.setDriverClassName("com.mysql.cj.jdbc.Driver");
+
+            // Verify password was set
+            System.out.println("✅ HikariCP DataSource configured with username: " + username);
 
             // Hikari pool settings optimized for Railway
             dataSource.setMaximumPoolSize(5);

@@ -4,8 +4,16 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="0b88328c-1fbb-4843-a1f3-0a61ddac63ac" name="Changes" comment="Otra correcion mas para serrvidores y basese de datos">
+    <list default="true" id="0b88328c-1fbb-4843-a1f3-0a61ddac63ac" name="Changes" comment="Otra correcion mas para base de datos">
+      <change afterPath="$PROJECT_DIR$/FIX_MYSQL_ACCESS_DENIED.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/GUIA_VISUAL_RAILWAY.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/URGENTE_CONFIGURAR_MYSQL_RAILWAY.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/URGENTE_HACER_AHORA.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/URGENTE_MYSQL_PASSWORD_RAILWAY.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/deploy-mysql-fix.ps1" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CLOUDINARY_RAILWAY_SETUP.md" beforeDir="false" afterPath="$PROJECT_DIR$/CLOUDINARY_RAILWAY_SETUP.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/RESUMEN_COMPLETO.md" beforeDir="false" afterPath="$PROJECT_DIR$/RESUMEN_COMPLETO.md" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/sabi/src/main/java/com/sabi/sabi/config/DataSourceConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/sabi/src/main/java/com/sabi/sabi/config/DataSourceConfig.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -204,7 +212,15 @@
       <option name="project" value="LOCAL" />
       <updated>1765135964652</updated>
     </task>
-    <option name="localTasksCounter" value="17" />
+    <task id="LOCAL-00017" summary="Otra correcion mas para base de datos">
+      <option name="closed" value="true" />
+      <created>1765139886285</created>
+      <option name="number" value="00017" />
+      <option name="presentableId" value="LOCAL-00017" />
+      <option name="project" value="LOCAL" />
+      <updated>1765139886285</updated>
+    </task>
+    <option name="localTasksCounter" value="18" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
@@ -222,7 +238,8 @@
     <MESSAGE value="Correccion del build para su funcionamiento con railway" />
     <MESSAGE value="Cambiar a Java 17 para compatibilidad con Railway" />
     <MESSAGE value="Otra correcion mas para serrvidores y basese de datos" />
-    <option name="LAST_COMMIT_MESSAGE" value="Otra correcion mas para serrvidores y basese de datos" />
+    <MESSAGE value="Otra correcion mas para base de datos" />
+    <option name="LAST_COMMIT_MESSAGE" value="Otra correcion mas para base de datos" />
   </component>
   <component name="github-copilot-workspace">
     <instructionFileLocations>

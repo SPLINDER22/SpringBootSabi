@@ -35,7 +35,7 @@ Sigue **CLOUDINARY_RAILWAY_SETUP.md** - Pasos del 1 al 6
 
 2. **Copiar credenciales** del Dashboard (1 min)
    - Cloud name
-   - API Key  
+   - API Key
    - API Secret
 
 3. **Agregar en Railway** (2 min)
