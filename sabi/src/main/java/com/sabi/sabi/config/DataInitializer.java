@@ -12,6 +12,7 @@ import com.sabi.sabi.entity.Semana;
 import com.sabi.sabi.entity.Dia;
 import com.sabi.sabi.entity.EjercicioAsignado;
 import com.sabi.sabi.entity.Serie;
+import com.sabi.sabi.entity.Comentario;
 import com.sabi.sabi.entity.enums.*;
 import com.sabi.sabi.repository.EjercicioRepository;
 import com.sabi.sabi.repository.UsuarioRepository;
@@ -22,18 +23,20 @@ import com.sabi.sabi.repository.EjercicioAsignadoRepository;
 import com.sabi.sabi.repository.SerieRepository;
 import com.sabi.sabi.entity.Suscripcion;
 import com.sabi.sabi.repository.SuscripcionRepository;
+import com.sabi.sabi.repository.ComentarioRepository;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.Optional;
 
 @Component
 @RequiredArgsConstructor
-public class    DataInitializer implements CommandLineRunner {
+public class DataInitializer implements CommandLineRunner {
 
         private final UsuarioRepository usuarioRepository;
         private final EjercicioRepository ejercicioRepository;
@@ -45,8 +48,10 @@ public class    DataInitializer implements CommandLineRunner {
         private final SerieRepository serieRepository;
         private final DiagnosticoRepository diagnosticoRepository;
         private final SuscripcionRepository suscripcionRepository;
+        private final ComentarioRepository comentarioRepository;
 
         @Override
+        @Transactional
         public void run(String... args) {
                 // Crear usuario administrador
                 crearAdminSiNoExiste("Admin Sabi", "admin@sabi.com", "1234567");
@@ -220,6 +225,9 @@ public class    DataInitializer implements CommandLineRunner {
                 // Crear suscripciones de ejemplo (mezcla de estados)
                 inicializarSuscripcionesDemo();
 
+                // Crear comentarios/reseñas de clientes para el entrenador Ernesto
+                inicializarComentariosParaErnesto();
+
                 // Mostrar en consola un resumen de los usuarios creados / existentes
                 System.out.println("");
                 System.out.println("Resumen de usuarios iniciales:");
@@ -255,6 +263,9 @@ public class    DataInitializer implements CommandLineRunner {
                     .email(email)
                     .contraseña(passwordEncoder.encode(rawPassword))
                     .rol(Rol.CLIENTE)
+                    .sexo(Sexo.MASCULINO)
+                    .fechaNacimiento(LocalDate.of(1995, 1, 15))
+                    .telefono("3000000000")
                     .estado(true)
                     .objetivo("Mejorar resistencia")
                     .build();
@@ -314,11 +325,19 @@ public class    DataInitializer implements CommandLineRunner {
                                                      String habitosAlimenticios) {
         Cliente cliente;
         if (usuarioRepository.findByEmail(email).isEmpty()) {
+            // Definir valores por defecto de perfil para clientes demo
+            Sexo sexoPorDefecto = nombre.endsWith("a") ? Sexo.FEMENINO : Sexo.MASCULINO;
+            LocalDate fechaNacimientoDefecto = LocalDate.of(1990, 1, 1);
+            String telefonoDefecto = "3000000000";
+
             cliente = Cliente.builder()
                     .nombre(nombre)
                     .email(email)
                     .contraseña(passwordEncoder.encode(rawPassword))
                     .rol(Rol.CLIENTE)
+                    .sexo(sexoPorDefecto)
+                    .fechaNacimiento(fechaNacimientoDefecto)
+                    .telefono(telefonoDefecto)
                     .estado(true)
                     .objetivo("Mejorar condición física")
                     .build();
@@ -327,6 +346,17 @@ public class    DataInitializer implements CommandLineRunner {
         } else {
             cliente = (Cliente) usuarioRepository.findByEmail(email).get();
             System.out.println("Usuario ya existe: " + email + " (no se muestra contraseña raw)");
+            // Asegurar que tenga datos básicos si vienen nulos
+            if (cliente.getSexo() == null) {
+                cliente.setSexo(nombre.endsWith("a") ? Sexo.FEMENINO : Sexo.MASCULINO);
+            }
+            if (cliente.getFechaNacimiento() == null) {
+                cliente.setFechaNacimiento(LocalDate.of(1990, 1, 1));
+            }
+            if (cliente.getTelefono() == null) {
+                cliente.setTelefono("3000000000");
+            }
+            usuarioRepository.save(cliente);
         }
 
         // Crear diagnóstico personalizado si no existe
@@ -385,75 +415,130 @@ public class    DataInitializer implements CommandLineRunner {
 
     // Método para crear cliente con historial de 2 diagnósticos para comparativa
     private void crearClienteConHistorialDiagnosticos(String nombre, String email, String rawPassword) {
+        System.out.println("\n========== CREAR CLIENTE CON HISTORIAL ==========");
+        System.out.println("📋 Nombre: " + nombre);
+        System.out.println("📧 Email: " + email);
+
         Cliente cliente;
         if (usuarioRepository.findByEmail(email).isEmpty()) {
+            Sexo sexoPorDefecto = nombre.endsWith("a") ? Sexo.FEMENINO : Sexo.MASCULINO;
+            LocalDate fechaNacimientoDefecto = LocalDate.of(1988, 6, 15);
+            String telefonoDefecto = "3000000000";
+
             cliente = Cliente.builder()
                     .nombre(nombre)
                     .email(email)
                     .contraseña(passwordEncoder.encode(rawPassword))
                     .rol(Rol.CLIENTE)
+                    .sexo(sexoPorDefecto)
+                    .fechaNacimiento(fechaNacimientoDefecto)
+                    .telefono(telefonoDefecto)
                     .estado(true)
                     .build();
             usuarioRepository.save(cliente);
-            System.out.println("Usuario creado con historial: " + nombre + " | " + email);
+            System.out.println("✅ Usuario CREADO con ID: " + cliente.getId());
         } else {
             cliente = (Cliente) usuarioRepository.findByEmail(email).get();
-            System.out.println("Usuario ya existe: " + email);
+            System.out.println("ℹ️ Usuario YA EXISTE con ID: " + cliente.getId());
         }
 
-        // Verificar si ya tiene diagnósticos
-        if (!diagnosticoRepository.findByClienteIdAndEstadoTrue(cliente.getId()).isEmpty()) {
-            System.out.println("   ⏭️ Cliente ya tiene diagnósticos, saltando creación");
-            return;
+        // Verificar si ya tiene diagnósticos y eliminarlos para recrear el historial
+        System.out.println("🔍 Buscando diagnósticos existentes para cliente ID: " + cliente.getId());
+        var diagnosticosExistentes = diagnosticoRepository.findByClienteIdAndEstadoTrue(cliente.getId());
+        System.out.println("📊 Diagnósticos activos encontrados: " + diagnosticosExistentes.size());
+
+        if (!diagnosticosExistentes.isEmpty()) {
+            System.out.println("   🗑️ Cliente ya tiene " + diagnosticosExistentes.size() + " diagnóstico(s), eliminándolos para recrear historial...");
+            diagnosticosExistentes.forEach(d -> {
+                d.setEstado(false);
+                diagnosticoRepository.save(d);
+            });
+            // También eliminar diagnósticos con estado false
+            var todosLosDiagnosticos = diagnosticoRepository.findAll().stream()
+                .filter(d -> d.getCliente() != null && d.getCliente().getId().equals(cliente.getId()))
+                .toList();
+            System.out.println("   🗑️ Total diagnósticos (activos + inactivos) a eliminar: " + todosLosDiagnosticos.size());
+            diagnosticoRepository.deleteAll(todosLosDiagnosticos);
+            System.out.println("   ✅ Diagnósticos eliminados, procediendo a crear historial nuevo");
+        } else {
+            System.out.println("   ℹ️ No hay diagnósticos previos, creando historial desde cero");
         }
+
+        System.out.println("🔍 Verificando email para crear diagnósticos: " + email);
+        System.out.println("🔍 Cliente ID actual: " + cliente.getId());
+        System.out.println("🔍 Comparando: '" + email + "' con 'cliente3@sabi.com'");
 
         // Datos del diagnóstico ANTIGUO (hace 3 meses) - estado inicial
         if (email.equals("cliente3@sabi.com")) {
+            System.out.println("✅ Email coincide con cliente3@sabi.com - Creando historial de Miguel Ángel...");
             // Miguel Ángel - Progreso de pérdida de peso
             // Diagnóstico 1: hace 3 meses - sobrepeso
-            Diagnostico diagnostico1 = Diagnostico.builder()
-                    .cliente(cliente)
-                    .fecha(java.time.LocalDate.now().minusMonths(3))
-                    .peso(90.0) // peso inicial más alto
-                    .estatura(177.0)
-                    .nivelExperiencia(NivelExperiencia.PRINCIPIANTE) // era principiante
-                    .disponibilidadTiempo("3 veces por semana, 40 min")
-                    .accesoRecursos("casa con mancuernas")
-                    .lesiones("Dolor de rodilla leve")
-                    .condicionesMedicas("ninguna")
-                    .horasSueno(6L) // dormía menos
-                    .habitosAlimenticios("Dieta irregular, comida rápida frecuente")
-                    .objetivo("Perder grasa y tonificar el cuerpo")
-                    .estado(false) // inactivo porque es antiguo
-                    .build();
-            diagnosticoRepository.save(diagnostico1);
+            System.out.println("   📝 Creando diagnóstico 1 (hace 3 meses)...");
+            try {
+                Diagnostico diagnostico1 = Diagnostico.builder()
+                        .cliente(cliente)
+                        .fecha(java.time.LocalDate.now().minusMonths(3))
+                        .peso(90.0) // peso inicial más alto
+                        .estatura(177.0)
+                        .nivelExperiencia(NivelExperiencia.PRINCIPIANTE) // era principiante
+                        .disponibilidadTiempo("3 veces por semana, 40 min")
+                        .accesoRecursos("casa con mancuernas")
+                        .lesiones("Dolor de rodilla leve")
+                        .condicionesMedicas("ninguna")
+                        .horasSueno(6L) // dormía menos
+                        .habitosAlimenticios("Dieta irregular, comida rápida frecuente")
+                        .objetivo("Perder grasa y tonificar el cuerpo")
+                        .estado(false) // inactivo porque es antiguo
+                        .build();
+                diagnosticoRepository.save(diagnostico1);
+                diagnosticoRepository.flush(); // Forzar guardado inmediato
+                System.out.println("   ✅ Diagnóstico 1 guardado con ID: " + diagnostico1.getId() + ", estado: " + diagnostico1.getEstado());
+            } catch (Exception e) {
+                System.err.println("   ❌ ERROR al guardar diagnóstico 1: " + e.getMessage());
+                e.printStackTrace();
+            }
 
             // Diagnóstico 2: actual - mejoría visible
-            Diagnostico diagnostico2 = Diagnostico.builder()
-                    .cliente(cliente)
-                    .fecha(java.time.LocalDate.now())
-                    .peso(82.0) // perdió 8kg
-                    .estatura(177.0)
-                    .nivelExperiencia(NivelExperiencia.INTERMEDIO) // mejoró nivel
-                    .disponibilidadTiempo("5 veces por semana, 55 min") // más tiempo
-                    .accesoRecursos("gimnasio completo") // mejor acceso
-                    .lesiones("Recuperado, sin dolor") // mejoró
-                    .condicionesMedicas("ninguna")
-                    .horasSueno(7L) // duerme más
-                    .habitosAlimenticios("Dieta alta en proteínas, controlada")
-                    .objetivo("Mantener peso y mejorar composición corporal")
-                    .estado(true) // activo
-                    .build();
-            diagnosticoRepository.save(diagnostico2);
+            System.out.println("   📝 Creando diagnóstico 2 (actual)...");
+            try {
+                Diagnostico diagnostico2 = Diagnostico.builder()
+                        .cliente(cliente)
+                        .fecha(java.time.LocalDate.now())
+                        .peso(82.0) // perdió 8kg
+                        .estatura(177.0)
+                        .nivelExperiencia(NivelExperiencia.INTERMEDIO) // mejoró nivel
+                        .disponibilidadTiempo("5 veces por semana, 55 min") // más tiempo
+                        .accesoRecursos("gimnasio completo") // mejor acceso
+                        .lesiones("Recuperado, sin dolor") // mejoró
+                        .condicionesMedicas("ninguna")
+                        .horasSueno(7L) // duerme más
+                        .habitosAlimenticios("Dieta alta en proteínas, controlada")
+                        .objetivo("Mantener peso y mejorar composición corporal")
+                        .estado(true) // activo
+                        .build();
+                diagnosticoRepository.save(diagnostico2);
+                diagnosticoRepository.flush(); // Forzar guardado inmediato
+                System.out.println("   ✅ Diagnóstico 2 guardado con ID: " + diagnostico2.getId() + ", estado: " + diagnostico2.getEstado());
+            } catch (Exception e) {
+                System.err.println("   ❌ ERROR al guardar diagnóstico 2: " + e.getMessage());
+                e.printStackTrace();
+            }
 
             // Actualizar objetivo en perfil con el más reciente
             cliente.setObjetivo("Mantener peso y mejorar composición corporal");
             usuarioRepository.save(cliente);
 
             System.out.println("✅ Historial creado para Miguel Ángel:");
-            System.out.println("   📊 Diagnóstico 1 (hace 3 meses): 90kg - Principiante");
-            System.out.println("   📊 Diagnóstico 2 (actual): 82kg - Intermedio");
+            System.out.println("   📊 Diagnóstico 1 (hace 3 meses): 90kg - Principiante - Estado: false");
+            System.out.println("   📊 Diagnóstico 2 (actual): 82kg - Intermedio - Estado: true");
             System.out.println("   💪 Progreso: -8kg, mejoró nivel");
+
+            // Verificar que se guardaron correctamente
+            var verificacion = diagnosticoRepository.findByClienteIdAndEstadoTrue(cliente.getId());
+            System.out.println("   🔍 VERIFICACIÓN: Diagnósticos activos encontrados: " + verificacion.size());
+            verificacion.forEach(d -> System.out.println("      - ID: " + d.getId() + ", Peso: " + d.getPeso() + "kg, Estado: " + d.getEstado()));
+
+            System.out.println("==================================================\n");
 
         } else if (email.equals("cliente7@sabi.com")) {
             // Valentina Morales - Progreso de ganancia muscular
@@ -501,6 +586,8 @@ public class    DataInitializer implements CommandLineRunner {
             System.out.println("   📊 Diagnóstico 1 (hace 3 meses): 56kg - Principiante");
             System.out.println("   📊 Diagnóstico 2 (actual): 62kg - Principiante");
             System.out.println("   💪 Progreso: +6kg masa muscular");
+        } else {
+            System.out.println("❌ Email NO coincide con ningún perfil de historial. Recibido: '" + email + "'");
         }
     }
 
@@ -1108,6 +1195,114 @@ public class    DataInitializer implements CommandLineRunner {
                            return "/img/perfildata/sabi admin.jpg"; // archivo existente en carpeta
                 default:
                     return rol == Rol.ENTRENADOR ? "/img/entrenador.jpg" : (rol == Rol.ADMIN ? "/img/fotoPerfil.png" : "/img/cliente.jpg");
+            }
+        }
+
+        /**
+         * Inicializa comentarios/reseñas de clientes existentes para el entrenador Ernesto Espinel
+         */
+        private void inicializarComentariosParaErnesto() {
+            // Obtener el entrenador Ernesto
+            Optional<Usuario> usuarioErnestoOpt = usuarioRepository.findByEmail("entrenador@sabi.com");
+            if (!usuarioErnestoOpt.isPresent()) {
+                System.out.println("⚠️ No se pudo encontrar al entrenador Ernesto para agregar comentarios");
+                return;
+            }
+
+            Entrenador ernesto = (Entrenador) usuarioErnestoOpt.get();
+
+            // Crear comentarios de diferentes clientes existentes
+            crearComentarioSiNoExiste(
+                    "rojasmena1222@gmail.com", // Carlos Colmenares
+                    ernesto,
+                    5.0,
+                    "¡Excelente entrenador! Ernesto es muy profesional y atento. He visto resultados increíbles en mi condición física. Sus rutinas son desafiantes pero adaptadas a mi nivel. 100% recomendado.",
+                    java.time.LocalDateTime.now().minusDays(15)
+            );
+
+            crearComentarioSiNoExiste(
+                    "cliente2@sabi.com", // Laura Torres
+                    ernesto,
+                    5.0,
+                    "Ernesto es un entrenador excepcional. Me ayudó a alcanzar mis objetivos de pérdida de peso de manera saludable y sostenible. Muy paciente y motivador. ¡Gracias por todo!",
+                    java.time.LocalDateTime.now().minusDays(20)
+            );
+
+            crearComentarioSiNoExiste(
+                    "cliente4@sabi.com", // Paula Ruiz
+                    ernesto,
+                    4.5,
+                    "Muy buen entrenador, conoce mucho sobre técnicas avanzadas de entrenamiento. Me ha ayudado a mejorar mi rendimiento deportivo notablemente. Recomendado para personas con experiencia.",
+                    java.time.LocalDateTime.now().minusDays(10)
+            );
+
+            crearComentarioSiNoExiste(
+                    "cliente6@sabi.com", // Roberto Gómez
+                    ernesto,
+                    5.0,
+                    "Ernesto transformó completamente mi manera de entrenar. Es meticuloso, profesional y siempre busca la mejor forma de ayudarte a alcanzar tus metas. Sin duda el mejor entrenador con el que he trabajado.",
+                    java.time.LocalDateTime.now().minusDays(25)
+            );
+
+            crearComentarioSiNoExiste(
+                    "cliente7@sabi.com", // Valentina Morales
+                    ernesto,
+                    4.0,
+                    "Muy buen entrenador, las rutinas son efectivas y bien estructuradas. Me gusta su enfoque personalizado y su constante seguimiento del progreso. Definitivamente vale la pena.",
+                    java.time.LocalDateTime.now().minusDays(8)
+            );
+
+            crearComentarioSiNoExiste(
+                    "cliente9@sabi.com", // Carolina Vargas
+                    ernesto,
+                    5.0,
+                    "Ernesto es simplemente increíble. Su conocimiento técnico es impresionante y siempre está actualizado con las últimas tendencias del fitness. Me ha ayudado a superar mis límites de forma segura.",
+                    java.time.LocalDateTime.now().minusDays(5)
+            );
+
+            crearComentarioSiNoExiste(
+                    "cliente10@sabi.com", // Sebastián Rojas
+                    ernesto,
+                    4.5,
+                    "Gran profesional. Ernesto sabe cómo motivarte incluso en los días más difíciles. Sus rutinas son variadas y nunca aburren. He ganado mucha fuerza y resistencia gracias a él.",
+                    java.time.LocalDateTime.now().minusDays(12)
+            );
+
+            System.out.println("✅ Comentarios/reseñas inicializados para el entrenador Ernesto Espinel");
+        }
+
+        /**
+         * Crea un comentario si no existe previamente
+         */
+        private void crearComentarioSiNoExiste(String emailCliente, Entrenador entrenador, Double calificacion,
+                                                String texto, java.time.LocalDateTime fecha) {
+            // Buscar el cliente por email
+            Optional<Usuario> usuarioClienteOpt = usuarioRepository.findByEmail(emailCliente);
+            if (!usuarioClienteOpt.isPresent()) {
+                System.out.println("⚠️ No se pudo encontrar al cliente con email: " + emailCliente);
+                return;
+            }
+
+            Cliente cliente = (Cliente) usuarioClienteOpt.get();
+
+            // Verificar si ya existe un comentario de este cliente para este entrenador
+            boolean existeComentario = comentarioRepository.findAll().stream()
+                    .anyMatch(c -> c.getCliente().getId().equals(cliente.getId()) &&
+                                   c.getEntrenador().getId().equals(entrenador.getId()));
+
+            if (!existeComentario) {
+                Comentario comentario = Comentario.builder()
+                        .cliente(cliente)
+                        .entrenador(entrenador)
+                        .calificacion(calificacion)
+                        .texto(texto)
+                        .fechaCreacion(fecha)
+                        .estado(true)
+                        .rutina(null) // No asociado a una rutina específica
+                        .build();
+
+                comentarioRepository.save(comentario);
+                System.out.println("  ✅ Comentario creado: " + cliente.getNombre() + " → " + calificacion + " estrellas");
             }
         }
 }
