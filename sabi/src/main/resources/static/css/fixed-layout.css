@@ -163,10 +163,44 @@
         position: fixed !important;
         left: -14rem;
         transition: left 0.3s ease;
+        width: 14rem !important;
+        z-index: 1060 !important; /* Mayor que la navegación de rutinas */
     }
 
     .sidebar-toggled #accordionSidebar {
         left: 0;
+        box-shadow: 2px 0 10px rgba(0,0,0,0.3);
+    }
+
+    /* Overlay oscuro cuando el sidebar está abierto en móvil */
+    body.sidebar-toggled::before {
+        content: '';
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 1050;
+        animation: fadeIn 0.3s;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+
+    /* Ajustar el ancho del sidebar en móvil para que no se vea cortado */
+    #accordionSidebar .sidebar-brand {
+        padding: 1rem 0.5rem;
+    }
+
+    #accordionSidebar .nav-item .nav-link {
+        padding: 0.75rem 0.5rem;
+    }
+
+    #accordionSidebar .nav-item .nav-link span {
+        font-size: 0.85rem;
     }
 }
 
