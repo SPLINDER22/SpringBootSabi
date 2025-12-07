@@ -1,5 +1,7 @@
 package com.sabi.sabi.config;
 
+import com.cloudinary.Cloudinary;
+import com.cloudinary.utils.ObjectUtils;
 import com.zaxxer.hikari.HikariDataSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -150,6 +152,49 @@ public class DataSourceConfig {
             System.err.println("❌ Error configuring MySQL DataSource: " + e.getMessage());
             e.printStackTrace();
             throw new IllegalStateException("Failed to configure MySQL DataSource", e);
+        }
+    }
+
+    /**
+     * Cloudinary configuration for image storage
+     * Uses environment variables: CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY, CLOUDINARY_API_SECRET
+     */
+    @Bean
+    public Cloudinary cloudinary() {
+        System.out.println("=== 📸 CLOUDINARY CONFIGURATION ===");
+
+        String cloudName = System.getenv("CLOUDINARY_CLOUD_NAME");
+        String apiKey = System.getenv("CLOUDINARY_API_KEY");
+        String apiSecret = System.getenv("CLOUDINARY_API_SECRET");
+
+        System.out.println("Environment Variables:");
+        System.out.println("  CLOUDINARY_CLOUD_NAME: " + (cloudName != null ? cloudName : "NOT SET"));
+        System.out.println("  CLOUDINARY_API_KEY: " + (apiKey != null ? "SET" : "NOT SET"));
+        System.out.println("  CLOUDINARY_API_SECRET: " + (apiSecret != null ? "SET (****)" : "NOT SET"));
+
+        if (cloudName != null && !cloudName.isEmpty() &&
+            apiKey != null && !apiKey.isEmpty() &&
+            apiSecret != null && !apiSecret.isEmpty()) {
+
+            System.out.println("✅ Cloudinary configured successfully!");
+            System.out.println("   Cloud Name: " + cloudName);
+            System.out.println("=====================================");
+
+            return new Cloudinary(ObjectUtils.asMap(
+                "cloud_name", cloudName,
+                "api_key", apiKey,
+                "api_secret", apiSecret,
+                "secure", true
+            ));
+        } else {
+            System.out.println("⚠️ Cloudinary not configured - using local storage (temporary)");
+            System.out.println("   Files will be stored in /tmp and deleted on restart");
+            System.out.println("   To enable Cloudinary, set these environment variables:");
+            System.out.println("   - CLOUDINARY_CLOUD_NAME");
+            System.out.println("   - CLOUDINARY_API_KEY");
+            System.out.println("   - CLOUDINARY_API_SECRET");
+            System.out.println("=====================================");
+            return null; // Will fallback to local storage
         }
     }
 }

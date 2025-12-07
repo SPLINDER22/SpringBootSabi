@@ -92,6 +92,13 @@
             <scope>runtime</scope>
         </dependency>
 
+        <!-- Cloudinary para almacenamiento de imágenes en la nube -->
+        <dependency>
+            <groupId>com.cloudinary</groupId>
+            <artifactId>cloudinary-http44</artifactId>
+            <version>1.36.0</version>
+        </dependency>
+
         <!-- H2 In-Memory Database -->
         <dependency>
 			<groupId>com.h2database</groupId>
