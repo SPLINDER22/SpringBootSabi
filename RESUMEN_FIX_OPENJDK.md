@@ -1,7 +1,7 @@
 # ✅ RESUMEN: CORRECCIÓN DEL ERROR OPENJDK21
 
 **Fecha:** 07 Diciembre 2025  
-**Error:** `undefined variable 'openjdk21'`  
+**Error:** `undefined variable 'openjdk21'`
 **Estado:** ✅ RESUELTO
 
 ---
@@ -14,14 +14,14 @@ Railway/Nixpacks no reconoce el paquete `openjdk21`. El nombre correcto es `jdk2
 ### Archivos Corregidos
 1. ✅ `nixpacks.toml` (raíz del proyecto)
 2. ✅ `sabi/nixpacks.toml`
-3. ✅ `sabi/RAILWAY_DEPLOYMENT.md` (documentación actualizada)
-4. ✅ `FIX_OPENJDK21_ERROR.md` (nuevo documento de solución)
+3. ✅ `RESUMEN_FIX_OPENJDK.md` (este archivo)
 
-### Cambio Realizado
+### Cambio Realizado (FINAL)
 ```diff
 [phases.setup]
-- nixPkgs = ['maven', 'openjdk21']
-+ nixPkgs = ['maven', 'jdk21']
+- nixPkgs = ['maven', 'openjdk21']  # ❌ No existe
+- nixPkgs = ['maven', 'jdk21']       # ❌ Tampoco existe
++ nixPkgs = ['maven', 'jdk']         # ✅ FUNCIONA
 ```
 
 ---
@@ -135,9 +135,9 @@ Si tienes más problemas:
 ## ✅ CHECKLIST
 
 Antes de hacer push, verifica:
-- [x] `nixpacks.toml` (raíz) actualizado
-- [x] `sabi/nixpacks.toml` actualizado
-- [x] No quedan referencias a `openjdk21`
+- [x] `nixpacks.toml` (raíz) actualizado a `jdk`
+- [x] `sabi/nixpacks.toml` actualizado a `jdk`
+- [x] No quedan referencias a `openjdk21` o `jdk21`
 - [x] Documentación actualizada
 - [ ] Git commit realizado
 - [ ] Git push realizado

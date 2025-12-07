@@ -4,12 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="0b88328c-1fbb-4843-a1f3-0a61ddac63ac" name="Changes" comment="Listo postgres y configurado">
-      <change beforePath="$PROJECT_DIR$/sabi/src/main/resources/db/migration/V1_0__create_comentarios.sql" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/sabi/src/main/resources/db/migration/V1_1__alter_comentarios_nullable.sql" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/sabi/src/main/resources/db/migration/V1_2__create_mensajes_pregrabados.sql" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/sabi/src/main/resources/db/migration/V1_3__add_entrenador_verified.sql" beforeDir="false" />
-    </list>
+    <list default="true" id="0b88328c-1fbb-4843-a1f3-0a61ddac63ac" name="Changes" comment="Listo EL OPENJDK21 y configurado" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -166,7 +161,15 @@
       <option name="project" value="LOCAL" />
       <updated>1765131635383</updated>
     </task>
-    <option name="localTasksCounter" value="12" />
+    <task id="LOCAL-00012" summary="Listo EL OPENJDK21 y configurado">
+      <option name="closed" value="true" />
+      <created>1765132248015</created>
+      <option name="number" value="00012" />
+      <option name="presentableId" value="LOCAL-00012" />
+      <option name="project" value="LOCAL" />
+      <updated>1765132248015</updated>
+    </task>
+    <option name="localTasksCounter" value="13" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
@@ -179,7 +182,8 @@
     <MESSAGE value="Configuracion de datos para eficiciencia en servidores" />
     <MESSAGE value="Configuracion v2" />
     <MESSAGE value="Listo postgres y configurado" />
-    <option name="LAST_COMMIT_MESSAGE" value="Listo postgres y configurado" />
+    <MESSAGE value="Listo EL OPENJDK21 y configurado" />
+    <option name="LAST_COMMIT_MESSAGE" value="Listo EL OPENJDK21 y configurado" />
   </component>
   <component name="github-copilot-workspace">
     <instructionFileLocations>

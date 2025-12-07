@@ -30,12 +30,12 @@ Write-Host ""
 
 # Hacer commit
 Write-Host "💾 Creando commit..." -ForegroundColor Yellow
-git commit -m "Fix: Cambiar openjdk21 a jdk21 para compatibilidad con Nixpacks
+git commit -m "Fix: Usar jdk genérico en lugar de jdk21 para Nixpacks
 
 - Actualizado nixpacks.toml (raíz) y sabi/nixpacks.toml
-- Nixpacks no reconoce 'openjdk21', el paquete correcto es 'jdk21'
-- Documentación actualizada en RAILWAY_DEPLOYMENT.md
-- Agregados documentos: FIX_OPENJDK21_ERROR.md y RESUMEN_FIX_OPENJDK.md"
+- Nixpacks no reconoce 'openjdk21' ni 'jdk21'
+- Usando 'jdk' genérico que sí está disponible
+- Documentación actualizada en RESUMEN_FIX_OPENJDK.md"
 
 if ($LASTEXITCODE -eq 0) {
     Write-Host "   ✓ Commit creado exitosamente" -ForegroundColor Green
