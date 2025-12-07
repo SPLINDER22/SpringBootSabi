@@ -89,8 +89,8 @@ public class RutinaController {
             redirectAttributes.addFlashAttribute("error", "No se pudo determinar la rutina adoptada. Intenta nuevamente.");
             return "redirect:/rutina/cliente";
         }
-        redirectAttributes.addFlashAttribute("success", "Rutina adoptada correctamente. Ahora puedes gestionar sus semanas.");
-        return "redirect:/semanas/detallar/" + activaNueva.getIdRutina();
+        redirectAttributes.addFlashAttribute("success", "¡Rutina adoptada correctamente! Comienza tu entrenamiento.");
+        return "redirect:/rutina/cliente/vista-unificada/" + activaNueva.getIdRutina();
     }
 
     @PostMapping("/rutinas/finalizar/{idRutina}")

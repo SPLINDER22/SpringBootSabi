@@ -7,12 +7,9 @@
     <div class="d-flex justify-content-between align-items-center mb-3">
         <h1 class="h3 mb-0 text-gray-800" th:text="${ejercicio.nombre}">Nombre Ejercicio</h1>
         <div>
-            <a th:if="${fromEjes}" th:href="@{'/ejes/detallar/' + ${idDia}}" class="btn btn-outline-secondary">
+            <button onclick="window.history.back()" class="btn btn-outline-secondary">
                 <i class="fas fa-arrow-left"></i> Volver
-            </a>
-            <a th:if="${!fromEjes}" th:href="@{/ejercicios}" class="btn btn-outline-secondary">
-                <i class="fas fa-arrow-left"></i> Volver
-            </a>
+            </button>
         </div>
     </div>
 

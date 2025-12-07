@@ -793,6 +793,7 @@
                                      th:id="'series-data-' + ${ejeId}"
                                      style="display: none;"
                                      th:attr="data-ejercicio-nombre=${nombreEjercicio},
+                                              data-ejercicio-id-base=${eje != null ? eje.idEjercicio : 0},
                                               data-ejercicio-comentarios=${eje != null ? eje.comentarios : ''}">
                                     <div th:each="serieMap : ${ejeData.series}"
                                          th:with="serie=${serieMap.serie},
@@ -1143,6 +1144,7 @@
             // Obtener datos de las series
             const seriesData = document.getElementById('series-data-' + ejercicioId);
             const ejercicioNombre = seriesData.getAttribute('data-ejercicio-nombre');
+            const ejercicioIdBase = seriesData.getAttribute('data-ejercicio-id-base');
             const ejercicioComentarios = seriesData.getAttribute('data-ejercicio-comentarios');
             const seriesItems = seriesData.querySelectorAll('.serie-data-item');
 
@@ -1150,7 +1152,19 @@
             let html = `
                 <div class="ejercicio-info">
                     <div class="ejercicio-nombre">
-                        <i class="fas fa-running me-2"></i>${ejercicioNombre}
+                        <i class="fas fa-running me-2"></i>
+                        <a href="/ejercicios/detalle/${ejercicioIdBase}"
+                           style="color: #0c4a6e; text-decoration: none; border-bottom: 2px solid transparent; transition: all 0.2s;"
+                           onmouseover="this.style.borderBottom='2px solid #0284c7'; this.style.color='#0284c7';"
+                           onmouseout="this.style.borderBottom='2px solid transparent'; this.style.color='#0c4a6e';">
+                            ${ejercicioNombre}
+                        </a>
+                        <a href="/ejercicios/detalle/${ejercicioIdBase}"
+                           class="btn btn-sm btn-outline-primary ms-2"
+                           style="font-size: 0.85rem; padding: 0.4rem 0.8rem; border-radius: 20px;"
+                           title="Ver descripción y tutorial del ejercicio">
+                            <i class="fas fa-book-open me-1"></i>Ver Tutorial
+                        </a>
                     </div>
                     ${ejercicioComentarios && ejercicioComentarios !== 'null' && ejercicioComentarios !== '' ? `
                         <div class="comentarios-section">
