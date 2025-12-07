@@ -362,13 +362,13 @@
 
                     <!-- Layout principal de la tarjeta: cabecera compacta + contenido -->
                     <div class="d-flex flex-column h-100">
-                        <!-- Cabecera azul con datos del cliente y estado resumido -->
-                        <div class="px-3 pt-3 pb-2 text-white" style="background:#0d6efd;">
+                        <!-- Cabecera amarilla con datos del cliente y estado resumido -->
+                        <div class="px-3 pt-3 pb-2 text-dark" style="background:#ffc107;">
                             <div class="d-flex align-items-center">
                                 <img th:src="${fotosClientes[suscripcion.idCliente]} ?: @{/img/fotoPerfil.png}"
                                      alt="Foto del cliente"
                                      class="rounded-circle me-3"
-                                     style="width: 56px; height: 56px; object-fit: cover; border: 2px solid rgba(255,255,255,.7);">
+                                     style="width: 56px; height: 56px; object-fit: cover; border: 2px solid rgba(0,0,0,.2);">
                                 <div class="flex-grow-1">
                                     <div class="d-flex justify-content-between align-items-start">
                                         <div>
@@ -471,7 +471,7 @@
                                 </a>
                                 <form th:if="${estado == 'PENDIENTE'}"
                                       th:action="@{/suscripciones/rechazar/{id}(id=${suscripcion.idSuscripcion})}"
-                                      method="post" class="mb-0">
+                                      method="post" class="mb-0 form-rechazar-suscripcion">
                                     <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
                                     <input type="hidden" name="redirectTo" value="/entrenador/suscripciones"/>
                                     <button type="submit" class="btn btn-outline-danger btn-sm w-100">
@@ -504,8 +504,8 @@
                      th:with="estado=${suscripcion.estadoSuscripcion != null ? #strings.toString(suscripcion.estadoSuscripcion) : ''}">
 
                     <div class="d-flex flex-column h-100">
-                        <!-- Cabecera azul -->
-                        <div class="px-3 pt-3 pb-2 text-white" style="background:#0d6efd;">
+                        <!-- Cabecera cyan -->
+                        <div class="px-3 pt-3 pb-2 text-white" style="background:#17a2b8;">
                             <div class="d-flex align-items-center">
                                 <img th:src="${fotosClientes[suscripcion.idCliente]} ?: @{/img/fotoPerfil.png}"
                                      alt="Foto del cliente"
@@ -915,7 +915,7 @@
                                                     class="fas fa-notes-medical"></i></a>
                                             <form th:if="${estado == 'PENDIENTE'}"
                                                   th:action="@{/suscripciones/rechazar/{id}(id=${suscripcion.idSuscripcion})}"
-                                                  method="post" class="mb-0">
+                                                  method="post" class="mb-0 form-rechazar-suscripcion">
                                                 <input type="hidden" th:name="${_csrf.parameterName}"
                                                        th:value="${_csrf.token}"/>
                                                 <input type="hidden" name="redirectTo"
@@ -1421,6 +1421,32 @@
                     window.scrollTo({
                         top: 0,
                         behavior: 'smooth'
+                    });
+                });
+            });
+        })();
+
+        // Confirmación para rechazar suscripción
+        (function() {
+            const formsRechazar = document.querySelectorAll('.form-rechazar-suscripcion');
+
+            formsRechazar.forEach(form => {
+                form.addEventListener('submit', function(e) {
+                    e.preventDefault();
+
+                    Swal.fire({
+                        title: '¿Estás seguro?',
+                        text: "¿Deseas rechazar esta suscripción?",
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#dc3545',
+                        cancelButtonColor: '#6c757d',
+                        confirmButtonText: 'Sí, rechazar',
+                        cancelButtonText: 'Cancelar'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            form.submit();
+                        }
                     });
                 });
             });
