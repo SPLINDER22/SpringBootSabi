@@ -76,8 +76,8 @@ SPRING_PROFILES_ACTIVE=prod
 JAVA_OPTS=-Xmx512m -Xms256m
 
 # Email Configuration (IMPORTANTE: Usa tus credenciales reales)
-MAIL_USERNAME=sabi.gaes5@gmail.com
-MAIL_PASSWORD=zkyl zvnv gknn riyt
+MAIL_USERNAME=Sabi.geas5@gmail.com
+MAIL_PASSWORD=Williamespinel1
 
 # Upload Paths (Railway usa sistema de archivos efímero)
 UPLOAD_PATH=/tmp/uploads/perfiles

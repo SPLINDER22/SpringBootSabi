@@ -28,7 +28,7 @@ public class EmailService {
             MimeMessage message = mailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
 
-            helper.setFrom("sabi.gaes5@gmail.com");
+            helper.setFrom("Sabi.geas5@gmail.com");
             helper.setTo(usuario.getEmail());
 
             if (usuario.getRol() == Rol.CLIENTE) {
@@ -53,7 +53,7 @@ public class EmailService {
             MimeMessage message = mailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
 
-            helper.setFrom("sabi.gaes5@gmail.com");
+            helper.setFrom("Sabi.geas5@gmail.com");
             helper.setTo(destinatarios.toArray(new String[0]));
             helper.setSubject(asunto);
 
@@ -488,7 +488,7 @@ public class EmailService {
             MimeMessage message = mailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
 
-            helper.setFrom("sabi.gaes5@gmail.com");
+            helper.setFrom("Sabi.geas5@gmail.com");
             helper.setTo(emailEntrenador);
             helper.setSubject("🔔 Nueva solicitud de entrenamiento - " + nombreCliente);
 
@@ -626,7 +626,7 @@ public class EmailService {
             MimeMessage message = mailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
 
-            helper.setFrom("sabi.gaes5@gmail.com");
+            helper.setFrom("Sabi.geas5@gmail.com");
             helper.setTo(emailCliente);
             helper.setSubject("💰 Cotización recibida de " + nombreEntrenador);
 
@@ -781,7 +781,7 @@ public class EmailService {
             MimeMessage message = mailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
 
-            helper.setFrom("sabi.gaes5@gmail.com");
+            helper.setFrom("Sabi.geas5@gmail.com");
             helper.setTo(emailCliente);
             helper.setSubject("🎉 ¡Felicitaciones! Has completado tu rutina - " + nombreRutina);
 
@@ -923,7 +923,7 @@ public class EmailService {
             MimeMessage message = mailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
 
-            helper.setFrom("sabi.gaes5@gmail.com");
+            helper.setFrom("Sabi.geas5@gmail.com");
             helper.setTo(emailDestino);
             helper.setSubject("⚠️ Aviso de bloqueo de cuenta en SABI");
 
@@ -958,7 +958,7 @@ public class EmailService {
             MimeMessage message = mailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
 
-            helper.setFrom("sabi.gaes5@gmail.com");
+            helper.setFrom("Sabi.geas5@gmail.com");
             helper.setTo(emailDestino);
             helper.setSubject("✅ Tu cuenta de Entrenador ha sido verificada en SABI");
 

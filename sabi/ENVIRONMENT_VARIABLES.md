@@ -29,8 +29,8 @@ JAVA_OPTS=-Xmx512m -Xms256m
 ### 3. Correo Electrónico
 
 ```bash
-MAIL_USERNAME=sabi.gaes5@gmail.com
-MAIL_PASSWORD=zkyl zvnv gknn riyt
+MAIL_USERNAME=Sabi.geas5@gmail.com
+MAIL_PASSWORD=Williamespinel1
 ```
 
 **⚠️ IMPORTANTE**: 
@@ -160,8 +160,8 @@ Copia y pega en Railway → Variables:
 # === OBLIGATORIAS ===
 SPRING_PROFILES_ACTIVE=prod
 JAVA_OPTS=-Xmx512m -Xms256m
-MAIL_USERNAME=sabi.gaes5@gmail.com
-MAIL_PASSWORD=zkyl zvnv gknn riyt
+MAIL_USERNAME=Sabi.geas5@gmail.com
+MAIL_PASSWORD=Williamespinel1
 UPLOAD_PATH=/tmp/uploads/perfiles
 UPLOAD_DIAGNOSTICOS_PATH=/tmp/uploads/diagnosticos
 

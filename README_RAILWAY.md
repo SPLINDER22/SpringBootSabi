@@ -295,7 +295,7 @@ Proyecto privado y confidencial.
 
 ## 📞 Soporte
 
-- **Email**: sabi.gaes5@gmail.com
+- **Email**: Sabi.geas5@gmail.com
 - **Documentación**: Ver carpeta `/sabi/docs`
 
 ---

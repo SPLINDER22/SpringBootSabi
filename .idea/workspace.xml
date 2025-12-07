@@ -4,24 +4,25 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="0b88328c-1fbb-4843-a1f3-0a61ddac63ac" name="Changes" comment="Correciones santiago">
-      <change afterPath="$PROJECT_DIR$/.idea/copilotDiffState.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sabi/ENVIRONMENT_VARIABLES.md" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sabi/Procfile" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sabi/RAILWAY_DEPLOYMENT.md" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sabi/TROUBLESHOOTING.md" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sabi/nixpacks.toml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sabi/railway.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sabi/src/main/java/com/sabi/sabi/config/FileStorageConfig.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sabi/src/main/java/com/sabi/sabi/controller/HealthController.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sabi/src/main/resources/application-prod.properties" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sabi/verify-deploy.ps1" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sabi/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/sabi/.gitignore" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sabi/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/sabi/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sabi/src/main/java/com/sabi/sabi/config/SecurityConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/sabi/src/main/java/com/sabi/sabi/config/SecurityConfig.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sabi/src/main/java/com/sabi/sabi/config/WebMvcConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/sabi/src/main/java/com/sabi/sabi/config/WebMvcConfig.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sabi/src/main/java/com/sabi/sabi/controller/EntrenadorController.java" beforeDir="false" afterPath="$PROJECT_DIR$/sabi/src/main/java/com/sabi/sabi/controller/EntrenadorController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sabi/src/main/java/com/sabi/sabi/controller/PerfilController.java" beforeDir="false" afterPath="$PROJECT_DIR$/sabi/src/main/java/com/sabi/sabi/controller/PerfilController.java" afterDir="false" />
+    <list default="true" id="0b88328c-1fbb-4843-a1f3-0a61ddac63ac" name="Changes" comment="readme actualizado">
+      <change afterPath="$PROJECT_DIR$/.env.railway.example" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/RAILWAY_DEPLOYMENT_GUIDE.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/RAILWAY_STEP_BY_STEP.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/nixpacks.toml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/railway.toml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/verify-railway-deploy.ps1" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/README_RAILWAY.md" beforeDir="false" afterPath="$PROJECT_DIR$/README_RAILWAY.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sabi/ENVIRONMENT_VARIABLES.md" beforeDir="false" afterPath="$PROJECT_DIR$/sabi/ENVIRONMENT_VARIABLES.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sabi/Procfile" beforeDir="false" afterPath="$PROJECT_DIR$/sabi/Procfile" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sabi/RAILWAY_DEPLOYMENT.md" beforeDir="false" afterPath="$PROJECT_DIR$/sabi/RAILWAY_DEPLOYMENT.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sabi/RESUMEN_RAILWAY.md" beforeDir="false" afterPath="$PROJECT_DIR$/sabi/RESUMEN_RAILWAY.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sabi/railway.json" beforeDir="false" afterPath="$PROJECT_DIR$/sabi/railway.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sabi/src/main/java/com/sabi/sabi/config/MailConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/sabi/src/main/java/com/sabi/sabi/config/MailConfig.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sabi/src/main/resources/application-h2.properties" beforeDir="false" afterPath="$PROJECT_DIR$/sabi/src/main/resources/application-h2.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sabi/src/main/resources/application-mysql.properties" beforeDir="false" afterPath="$PROJECT_DIR$/sabi/src/main/resources/application-mysql.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sabi/src/main/resources/application-prod.properties" beforeDir="false" afterPath="$PROJECT_DIR$/sabi/src/main/resources/application-prod.properties" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/sabi/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/sabi/src/main/resources/application.properties" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -140,7 +141,23 @@
       <option name="project" value="LOCAL" />
       <updated>1764682233824</updated>
     </task>
-    <option name="localTasksCounter" value="7" />
+    <task id="LOCAL-00007" summary="Creacion funciones para servidores">
+      <option name="closed" value="true" />
+      <created>1765129454059</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1765129454059</updated>
+    </task>
+    <task id="LOCAL-00008" summary="readme actualizado">
+      <option name="closed" value="true" />
+      <created>1765129516311</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1765129516311</updated>
+    </task>
+    <option name="localTasksCounter" value="9" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
@@ -148,7 +165,9 @@
     <MESSAGE value="Correcion final pre sustentacion Santiago" />
     <MESSAGE value="terminar funcionamiento admin" />
     <MESSAGE value="vistas entrenadores y sus verificaciones" />
-    <option name="LAST_COMMIT_MESSAGE" value="vistas entrenadores y sus verificaciones" />
+    <MESSAGE value="Creacion funciones para servidores" />
+    <MESSAGE value="readme actualizado" />
+    <option name="LAST_COMMIT_MESSAGE" value="readme actualizado" />
   </component>
   <component name="github-copilot-workspace">
     <instructionFileLocations>
