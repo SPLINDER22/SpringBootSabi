@@ -27,6 +27,7 @@ import com.sabi.sabi.service.ReportePdfService;
 import com.sabi.sabi.service.RutinaService;
 import com.sabi.sabi.service.SuscripcionService;
 import com.sabi.sabi.service.UsuarioService;
+import com.sabi.sabi.service.ComentarioService;
 import com.sabi.sabi.repository.EntrenadorRepository;
 
 @Controller
@@ -57,6 +58,9 @@ public class EntrenadorController {
     
     @Autowired
     private MensajePregrabadoService mensajePregrabadoService;
+
+    @Autowired
+    private ComentarioService comentarioService;
 
     @GetMapping("/entrenador/dashboard")
     public String entrenadorDashboard(@AuthenticationPrincipal UserDetails userDetails, Model model) {
@@ -107,6 +111,67 @@ public class EntrenadorController {
         var entrenadorCompleto = entrenadorRepository.findById(entrenadorId).orElse(null);
         boolean esVerificado = entrenadorCompleto != null && entrenadorCompleto.isVerified();
 
+        // Obtener comentarios/reseñas del entrenador
+        List<Map<String, Object>> resenas = new java.util.ArrayList<>();
+        try {
+            System.out.println("🔍 Buscando comentarios para entrenador ID: " + entrenadorId);
+            var comentariosDTO = comentarioService.getComentariosPorEntrenador(entrenadorId);
+            System.out.println("📊 Comentarios encontrados: " + (comentariosDTO != null ? comentariosDTO.size() : 0));
+
+            if (comentariosDTO != null && !comentariosDTO.isEmpty()) {
+                for (var c : comentariosDTO) {
+                    try {
+                        if (c.getCalificacion() != null && c.getCalificacion() > 0) {
+                            Map<String, Object> resena = new java.util.HashMap<>();
+                            resena.put("estrellas", c.getCalificacion().intValue());
+                            resena.put("comentario", c.getTexto() != null ? c.getTexto() : "Sin comentario");
+                            resena.put("fecha", c.getFechaCreacion());
+
+                            // Obtener nombre del cliente
+                            String nombreCliente = "Cliente";
+                            if (c.getIdCliente() != null) {
+                                try {
+                                    var cliente = clienteService.getClienteById(c.getIdCliente());
+                                    if (cliente != null && cliente.getNombre() != null) {
+                                        nombreCliente = cliente.getNombre();
+                                        if (cliente.getApellido() != null && !cliente.getApellido().isEmpty()) {
+                                            nombreCliente += " " + cliente.getApellido();
+                                        }
+                                    }
+                                } catch (Exception ex) {
+                                    System.err.println("⚠️ Error al obtener cliente ID " + c.getIdCliente() + ": " + ex.getMessage());
+                                }
+                            }
+                            resena.put("clienteNombre", nombreCliente);
+                            resenas.add(resena);
+                            System.out.println("✅ Reseña agregada: " + nombreCliente + " - " + c.getCalificacion() + " estrellas");
+                        }
+                    } catch (Exception ex) {
+                        System.err.println("⚠️ Error procesando comentario: " + ex.getMessage());
+                    }
+                }
+
+                // Ordenar por fecha descendente
+                resenas.sort((r1, r2) -> {
+                    try {
+                        java.time.LocalDateTime f1 = (java.time.LocalDateTime) r1.get("fecha");
+                        java.time.LocalDateTime f2 = (java.time.LocalDateTime) r2.get("fecha");
+                        if (f1 == null && f2 == null) return 0;
+                        if (f1 == null) return 1;
+                        if (f2 == null) return -1;
+                        return f2.compareTo(f1);
+                    } catch (Exception e) {
+                        return 0;
+                    }
+                });
+            }
+        } catch (Exception e) {
+            System.err.println("❌ Error al cargar comentarios: " + e.getMessage());
+            e.printStackTrace();
+        }
+
+        System.out.println("📋 Total de reseñas a mostrar: " + resenas.size());
+
         // Información de solicitudes pendientes con datos del cliente
         var solicitudesInfo = solicitudesPendientes.stream()
             .map(s -> {
@@ -131,6 +196,7 @@ public class EntrenadorController {
         model.addAttribute("usuario", usuario);
         model.addAttribute("entrenador", entrenadorCompleto);
         model.addAttribute("esVerificado", esVerificado);
+        model.addAttribute("resenas", resenas);
 
         return "entrenador/dashboard";
     }
@@ -167,6 +233,7 @@ public class EntrenadorController {
         var suscripcionesCotizadas = suscripciones.stream()
             .filter(s -> s.getEstadoSuscripcion() == com.sabi.sabi.entity.enums.EstadoSuscripcion.COTIZADA)
             .collect(java.util.stream.Collectors.toList());
+        // suscripciones aceptadas inicialmente (se filtrarán luego según rutinas activas)
         var suscripcionesAceptadas = suscripciones.stream()
             .filter(s -> s.getEstadoSuscripcion() == com.sabi.sabi.entity.enums.EstadoSuscripcion.ACEPTADA)
             .collect(java.util.stream.Collectors.toList());
@@ -200,18 +267,141 @@ public class EntrenadorController {
                 .collect(java.util.stream.Collectors.toMap(java.util.Map.Entry::getKey, java.util.Map.Entry::getValue));
         model.addAttribute("nombresClientes", nombresClientes);
 
+        // Mapa de apellidos de clientes
+        Map<Long, String> apellidosClientes = suscripciones.stream()
+                .map(com.sabi.sabi.dto.SuscripcionDTO::getIdCliente)
+                .filter(java.util.Objects::nonNull)
+                .distinct()
+                .map(id -> {
+                    var cli = clienteService.getClienteById(id);
+                    return cli != null && cli.getApellido() != null ? java.util.Map.entry(id, cli.getApellido()) : null;
+                })
+                .filter(java.util.Objects::nonNull)
+                .collect(java.util.stream.Collectors.toMap(java.util.Map.Entry::getKey, java.util.Map.Entry::getValue));
+        model.addAttribute("apellidosClientes", apellidosClientes);
+
+        // Mapa de emails de clientes
+        Map<Long, String> emailsClientes = suscripciones.stream()
+                .map(com.sabi.sabi.dto.SuscripcionDTO::getIdCliente)
+                .filter(java.util.Objects::nonNull)
+                .distinct()
+                .map(id -> {
+                    var cli = clienteService.getClienteById(id);
+                    return cli != null && cli.getEmail() != null ? java.util.Map.entry(id, cli.getEmail()) : null;
+                })
+                .filter(java.util.Objects::nonNull)
+                .collect(java.util.stream.Collectors.toMap(java.util.Map.Entry::getKey, java.util.Map.Entry::getValue));
+        model.addAttribute("emailsClientes", emailsClientes);
+
+        // Mapa de teléfonos de clientes
+        Map<Long, String> telefonosClientes = suscripciones.stream()
+                .map(com.sabi.sabi.dto.SuscripcionDTO::getIdCliente)
+                .filter(java.util.Objects::nonNull)
+                .distinct()
+                .map(id -> {
+                    var cli = clienteService.getClienteById(id);
+                    return cli != null && cli.getTelefono() != null ? java.util.Map.entry(id, cli.getTelefono()) : null;
+                })
+                .filter(java.util.Objects::nonNull)
+                .collect(java.util.stream.Collectors.toMap(java.util.Map.Entry::getKey, java.util.Map.Entry::getValue));
+        model.addAttribute("telefonosClientes", telefonosClientes);
+
+        // Mapa de fotos de perfil de clientes
+        Map<Long, String> fotosClientes = suscripciones.stream()
+                .map(com.sabi.sabi.dto.SuscripcionDTO::getIdCliente)
+                .filter(java.util.Objects::nonNull)
+                .distinct()
+                .map(id -> {
+                    var cli = clienteService.getClienteById(id);
+                    String foto = cli != null && cli.getFotoPerfilUrl() != null ? cli.getFotoPerfilUrl() : "/img/fotoPerfil.png";
+                    return java.util.Map.entry(id, foto);
+                })
+                .filter(java.util.Objects::nonNull)
+                .collect(java.util.stream.Collectors.toMap(java.util.Map.Entry::getKey, java.util.Map.Entry::getValue));
+        model.addAttribute("fotosClientes", fotosClientes);
+
+        // Mapa de edades de clientes
+        Map<Long, Integer> edadesClientes = suscripciones.stream()
+                .map(com.sabi.sabi.dto.SuscripcionDTO::getIdCliente)
+                .filter(java.util.Objects::nonNull)
+                .distinct()
+                .map(id -> {
+                    var cli = clienteService.getClienteById(id);
+                    return cli != null && cli.getEdad() != null ? java.util.Map.entry(id, cli.getEdad()) : null;
+                })
+                .filter(java.util.Objects::nonNull)
+                .collect(java.util.stream.Collectors.toMap(java.util.Map.Entry::getKey, java.util.Map.Entry::getValue));
+        model.addAttribute("edadesClientes", edadesClientes);
+
+        // Mapa de géneros de clientes
+        Map<Long, String> generosClientes = suscripciones.stream()
+                .map(com.sabi.sabi.dto.SuscripcionDTO::getIdCliente)
+                .filter(java.util.Objects::nonNull)
+                .distinct()
+                .map(id -> {
+                    var cli = clienteService.getClienteById(id);
+                    return cli != null && cli.getSexo() != null ? java.util.Map.entry(id, cli.getSexo().toString()) : null;
+                })
+                .filter(java.util.Objects::nonNull)
+                .collect(java.util.stream.Collectors.toMap(java.util.Map.Entry::getKey, java.util.Map.Entry::getValue));
+        model.addAttribute("generosClientes", generosClientes);
+
+        // Mapa de objetivos de clientes
+        Map<Long, String> objetivosClientes = suscripciones.stream()
+                .map(com.sabi.sabi.dto.SuscripcionDTO::getIdCliente)
+                .filter(java.util.Objects::nonNull)
+                .distinct()
+                .map(id -> {
+                    var cli = clienteService.getClienteById(id);
+                    return cli != null && cli.getObjetivo() != null ? java.util.Map.entry(id, cli.getObjetivo()) : null;
+                })
+                .filter(java.util.Objects::nonNull)
+                .collect(java.util.stream.Collectors.toMap(java.util.Map.Entry::getKey, java.util.Map.Entry::getValue));
+        model.addAttribute("objetivosClientes", objetivosClientes);
+
+        // Mapa de descripciones de clientes
+        Map<Long, String> descripcionesClientes = suscripciones.stream()
+                .map(com.sabi.sabi.dto.SuscripcionDTO::getIdCliente)
+                .filter(java.util.Objects::nonNull)
+                .distinct()
+                .map(id -> {
+                    var cli = clienteService.getClienteById(id);
+                    return cli != null && cli.getDescripcion() != null ? java.util.Map.entry(id, cli.getDescripcion()) : null;
+                })
+                .filter(java.util.Objects::nonNull)
+                .collect(java.util.stream.Collectors.toMap(java.util.Map.Entry::getKey, java.util.Map.Entry::getValue));
+        model.addAttribute("descripcionesClientes", descripcionesClientes);
+
         // Mapa de rutinas activas por cliente (para mostrar "Ver progreso")
-        Map<Long, Long> rutinasActivasClientes = suscripciones.stream()
+        // Solo para clientes con suscripción ACEPTADA que tienen rutina asignada por este entrenador
+        var todasRutinasEntrenador = rutinaService.getRutinasPorUsuario(usuario.getId());
+
+        Map<Long, Long> rutinasActivasClientes = suscripcionesAceptadas.stream()
                 .map(com.sabi.sabi.dto.SuscripcionDTO::getIdCliente)
                 .filter(java.util.Objects::nonNull)
                 .distinct()
                 .map(idCliente -> {
-                    var r = rutinaService.getRutinaActivaCliente(idCliente);
-                    return (r != null && r.getIdRutina() != null) ? java.util.Map.entry(idCliente, r.getIdRutina()) : null;
+                    var rutinasDelCliente = todasRutinasEntrenador.stream()
+                            .filter(r -> r.getIdCliente() != null && r.getIdCliente().equals(idCliente))
+                            .filter(r -> r.getEstado() != null && r.getEstado())
+                            .findFirst()
+                            .orElse(null);
+
+
+                    return (rutinasDelCliente != null && rutinasDelCliente.getIdRutina() != null)
+                            ? java.util.Map.entry(idCliente, rutinasDelCliente.getIdRutina())
+                            : null;
                 })
                 .filter(java.util.Objects::nonNull)
                 .collect(java.util.stream.Collectors.toMap(java.util.Map.Entry::getKey, java.util.Map.Entry::getValue));
         model.addAttribute("rutinasActivasClientes", rutinasActivasClientes);
+
+        // Filtrar suscripcionesAceptadas para excluir las que ya tienen rutina activa
+        // (así el contador del botón "Aceptadas" solo muestra las que están esperando rutina)
+        suscripcionesAceptadas = suscripcionesAceptadas.stream()
+                .filter(s -> !rutinasActivasClientes.containsKey(s.getIdCliente()))
+                .collect(java.util.stream.Collectors.toList());
+        model.addAttribute("suscripcionesAceptadas", suscripcionesAceptadas);
 
         // Mapa de diagnóstico actual por cliente (evitar valores null en toMap)
         Map<Long, com.sabi.sabi.dto.DiagnosticoDTO> diagnosticosActuales = suscripciones.stream()
@@ -225,8 +415,6 @@ public class EntrenadorController {
             .filter(java.util.Objects::nonNull)
             .collect(java.util.stream.Collectors.toMap(java.util.Map.Entry::getKey, java.util.Map.Entry::getValue));
         model.addAttribute("diagnosticosActuales", diagnosticosActuales);
-        // Log simple para depuración (se puede remover luego)
-        System.out.println("[EntrenadorController] rutinasActivasClientes=" + rutinasActivasClientes);
         return "entrenador/suscripciones";
     }
 
@@ -371,15 +559,34 @@ public class EntrenadorController {
     @GetMapping("/entrenador/diagnostico/vista/{clienteId}")
     public String verDiagnostico(@PathVariable Long clienteId, Model model, @AuthenticationPrincipal UserDetails userDetails) {
         try {
+            System.out.println("\n========== DEBUG VER DIAGNÓSTICO ==========");
+            System.out.println("Cliente ID solicitado: " + clienteId);
+
+            // Obtener info del cliente primero
+            com.sabi.sabi.dto.ClienteDTO cliente = clienteService.getClienteById(clienteId);
+            if (cliente != null) {
+                System.out.println("Cliente encontrado: " + cliente.getNombre() + " (" + cliente.getEmail() + ")");
+            } else {
+                System.out.println("⚠️ Cliente NO encontrado con ID: " + clienteId);
+            }
+
             // Obtener diagnostico actual del cliente
+            System.out.println("Buscando diagnóstico activo para cliente ID: " + clienteId);
             com.sabi.sabi.dto.DiagnosticoDTO diagnostico = clienteService.getDiagnosticoActualByClienteId(clienteId);
+
             if (diagnostico == null) {
+                System.out.println("❌ NO se encontró diagnóstico activo para el cliente ID: " + clienteId);
+                System.out.println("==========================================\n");
                 model.addAttribute("error", "No se encontro un diagnostico para este cliente.");
                 return "entrenador/ver-diagnostico";
             }
 
-            // Obtener datos completos del cliente (para objetivo, descripcion, foto)
-            com.sabi.sabi.dto.ClienteDTO cliente = clienteService.getClienteById(clienteId);
+            System.out.println("✅ Diagnóstico encontrado:");
+            System.out.println("   - ID Diagnóstico: " + diagnostico.getId());
+            System.out.println("   - Fecha: " + diagnostico.getFecha());
+            System.out.println("   - Peso: " + diagnostico.getPeso());
+            System.out.println("   - Estatura: " + diagnostico.getEstatura());
+            System.out.println("==========================================\n");
 
             // Marcar en la suscripción actual que el entrenador ya vio el diagnóstico
             try {
@@ -403,6 +610,8 @@ public class EntrenadorController {
             model.addAttribute("cliente", cliente);
             return "entrenador/ver-diagnostico";
         } catch (Exception e) {
+            System.err.println("❌ ERROR en verDiagnostico: " + e.getMessage());
+            e.printStackTrace();
             model.addAttribute("error", "Ocurrio un error al cargar el diagnostico: " + e.getMessage());
             return "entrenador/ver-diagnostico";
         }
@@ -425,6 +634,9 @@ public class EntrenadorController {
             info.put("objetivo", cliente.getObjetivo());
             info.put("descripcion", cliente.getDescripcion());
             info.put("id", cliente.getId());
+            info.put("edad", cliente.getEdad());
+            info.put("genero", cliente.getSexo() != null ? cliente.getSexo().toString() : null);
+            info.put("telefono", cliente.getTelefono());
 
             return org.springframework.http.ResponseEntity.ok(info);
         } catch (Exception e) {

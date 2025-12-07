@@ -131,6 +131,131 @@
                 transform: scale(1.1);
             }
         }
+
+        /* Estilos personalizados para las tarjetas de suscripción */
+        /* Más espacio entre la foto de perfil y los datos */
+        .tarjeta-suscripcion .rounded-circle {
+            margin-right: 1.25rem !important; /* Aumentado de me-3 (1rem) a 1.25rem */
+        }
+
+        /* Nombre del cliente un poco más grande */
+        .tarjeta-suscripcion h5.fw-bold {
+            font-size: 1.1rem !important; /* Ligeramente más grande */
+        }
+
+        /* Más espacio entre edad y sexo */
+        .tarjeta-suscripcion .d-flex.flex-wrap.gap-2 {
+            gap: 0.875rem !important; /* Aumentado de gap-2 (0.5rem) a 0.875rem */
+        }
+
+        /* Centrar contenido de botones con iconos */
+        .btn-sm.w-100 {
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+        }
+
+        /* Aumentar separación entre email y teléfono */
+        .tarjeta-suscripcion .card-body .d-flex.gap-3 {
+            gap: 1.5rem !important; /* Aumentado de gap-3 (1rem) a 1.5rem */
+        }
+
+        /* Aumentar separación entre iconos y datos de contacto */
+        .tarjeta-suscripcion .fas.fa-envelope,
+        .tarjeta-suscripcion .fas.fa-phone {
+            margin-right: 0.75rem !important; /* Aumentado de me-2 (0.5rem) a 0.75rem */
+        }
+
+        /* Aumentar espacio entre objetivo y cuadros de precio/duración */
+        .tarjeta-suscripcion .card-body .row.g-2.mt-auto {
+            margin-top: 1.5rem !important; /* Más espacio superior para los cuadros de precio y duración */
+        }
+
+        /* Aumentar espacio entre TODOS los iconos y sus textos en TODA la interfaz */
+        i.fas, i.bi, i.fa {
+            margin-right: 0.5rem !important; /* Espacio base entre iconos y texto */
+        }
+
+        /* Iconos en alertas y mensajes */
+        .alert i.fas {
+            margin-right: 0.6rem !important;
+        }
+
+        /* Iconos en botones de navegación y filtros */
+        .btn i.fas,
+        .btn i.bi {
+            margin-right: 0.5rem !important;
+        }
+
+        /* Iconos en títulos de sección */
+        h2 i.fas {
+            margin-right: 0.65rem !important;
+        }
+
+        /* Iconos en las tarjetas de suscripción */
+        .tarjeta-suscripcion i.fas,
+        .tarjeta-suscripcion i.bi {
+            margin-right: 0.65rem !important;
+        }
+
+        /* Iconos en la cabecera de las tarjetas (edad, sexo) */
+        .tarjeta-suscripcion .opacity-90 i.fas {
+            margin-right: 0.5rem !important;
+        }
+
+        /* Iconos en cuadros de precio y duración */
+        .tarjeta-suscripcion .border.rounded-3 i.fas {
+            margin-right: 0.5rem !important;
+        }
+
+        /* Bordes más redondeados para los cuadros de precio y duración */
+        .tarjeta-suscripcion .border.rounded-3 {
+            border-radius: 0.75rem !important;
+            border-width: 1.5px !important;
+        }
+
+        /* ===== ESTILOS PARA VISTA DE LISTA ===== */
+
+        /* Iconos en la tabla de vista lista */
+        #vistaLista table i.fas,
+        #vistaLista table i.bi {
+            margin-right: 0 !important; /* Los iconos en botones de acción no tienen texto al lado */
+        }
+
+        /* Iconos en badges de estado en vista lista */
+        #vistaLista .badge i.fas {
+            margin-right: 0.5rem !important;
+        }
+
+        /* Espaciado en descripción de estado en vista lista */
+        #vistaLista .estado-descripcion {
+            margin-top: 0.5rem !important;
+        }
+
+        /* Botones de acción en vista lista centrados */
+        #vistaLista .btn-action {
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            width: 38px;
+            height: 38px;
+            padding: 0.5rem;
+        }
+
+        /* Espaciado entre botones de acción en vista lista */
+        #vistaLista .acciones-cell .d-inline-flex {
+            gap: 0.5rem !important;
+        }
+
+        /* Transición suave para filas de tabla al filtrar */
+        #vistaLista tbody tr {
+            transition: opacity 0.3s ease, transform 0.3s ease;
+        }
+
+        #vistaLista tbody tr[style*="display: none"] {
+            opacity: 0;
+            transform: scale(0.98);
+        }
     </style>
 </head>
 
@@ -169,39 +294,6 @@
             </div>
         </div>
     </div>
-    <!-- Modal Ver Diagnóstico -->
-    <div class="modal fade" id="modalDiagnostico" tabindex="-1" aria-labelledby="modalDiagnosticoLabel"
-         aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="modalDiagnosticoLabel">Último Diagnóstico</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <p><strong>Fecha:</strong> <span id="diagnosticoFecha"></span></p>
-                    <p><strong>Peso:</strong> <span id="diagnosticoPeso"></span> kg</p>
-                    <p><strong>Estatura:</strong> <span id="diagnosticoEstatura"></span> cm</p>
-                    <p><strong>Nivel de Experiencia:</strong> <span id="diagnosticoNivelExperiencia"></span></p>
-                    <p><strong>Disponibilidad de Tiempo:</strong> <span id="diagnosticoDisponibilidad"></span></p>
-                    <p><strong>Acceso a Recursos:</strong> <span id="diagnosticoRecursos"></span></p>
-                    <p><strong>Lesiones:</strong> <span id="diagnosticoLesiones"></span></p>
-                    <p><strong>Condiciones Médicas:</strong> <span id="diagnosticoCondiciones"></span></p>
-                    <p><strong>Porcentaje de Grasa Corporal:</strong> <span id="diagnosticoGrasa"></span>%</p>
-                    <p><strong>Circunferencia Cintura:</strong> <span id="diagnosticoCintura"></span> cm</p>
-                    <p><strong>Circunferencia Cadera:</strong> <span id="diagnosticoCadera"></span> cm</p>
-                    <p><strong>Frecuencia Cardiaca en Reposo:</strong> <span id="diagnosticoFrecuencia"></span> bpm</p>
-                    <p><strong>Presión Arterial:</strong> <span id="diagnosticoPresion"></span></p>
-                    <p><strong>Hábitos Alimenticios:</strong> <span id="diagnosticoHabitos"></span></p>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
-                </div>
-            </div>
-        </div>
-    </div>
 
     <!-- Contenedor principal -->
     <div class="container">
@@ -218,27 +310,30 @@
                 <div class="btn-group shadow-sm" role="group" aria-label="Filtrar suscripciones">
                     <button type="button" class="btn btn-outline-secondary btn-filter active" data-filter="todos">
                         <i class="fas fa-border-all me-1"></i> Todas
-                        <span class="badge bg-secondary ms-1" th:text="${#lists.size(suscripciones)}">0</span>
+                        <span class="badge bg-secondary text-white ms-1" th:text="${#lists.size(suscripciones)}">0</span>
                     </button>
                     <button type="button" class="btn btn-outline-warning btn-filter" data-filter="pendientes"
                             th:if="${!#lists.isEmpty(suscripcionesPendientes)}">
                         <i class="fas fa-clock me-1"></i> Pendientes
-                        <span class="badge bg-warning text-dark ms-1" th:text="${#lists.size(suscripcionesPendientes)}">0</span>
+                        <span class="badge bg-warning text-white ms-1"
+                              th:text="${#lists.size(suscripcionesPendientes)}">0</span>
                     </button>
                     <button type="button" class="btn btn-outline-info btn-filter" data-filter="cotizadas"
                             th:if="${!#lists.isEmpty(suscripcionesCotizadas)}">
                         <i class="fas fa-hand-holding-usd me-1"></i> Cotizadas
-                        <span class="badge bg-info ms-1" th:text="${#lists.size(suscripcionesCotizadas)}">0</span>
+                        <span class="badge bg-info text-white ms-1"
+                              th:text="${#lists.size(suscripcionesCotizadas)}">0</span>
                     </button>
                     <button type="button" class="btn btn-outline-primary btn-filter" data-filter="aceptadas"
                             th:if="${!#lists.isEmpty(suscripcionesAceptadas)}">
                         <i class="fas fa-check-circle me-1"></i> Aceptadas
-                        <span class="badge bg-primary ms-1" th:text="${#lists.size(suscripcionesAceptadas)}">0</span>
+                        <span class="badge bg-primary text-white ms-1" th:text="${#lists.size(suscripcionesAceptadas)}">0</span>
                     </button>
                     <button type="button" class="btn btn-outline-success btn-filter" data-filter="activas"
                             th:if="${rutinasActivasClientes != null and !rutinasActivasClientes.isEmpty()}">
                         <i class="fas fa-dumbbell me-1"></i> Activas
-                        <span class="badge bg-success ms-1" th:text="${#maps.size(rutinasActivasClientes)}">0</span>
+                        <span class="badge bg-success text-white ms-1"
+                              th:text="${#maps.size(rutinasActivasClientes)}">0</span>
                     </button>
                 </div>
             </div>
@@ -247,106 +342,142 @@
         <!-- Vista cuadrícula -->
         <div id="vistaGrid" class="row g-5 suscripciones-grid" th:if="${!#lists.isEmpty(suscripciones)}">
             <!-- Bloque PENDIENTES -->
-            <div class="col-12 bloque-pendientes" data-bloque="pendientes" th:if="${!#lists.isEmpty(suscripcionesPendientes)}">
+            <div class="col-12 bloque-pendientes" data-bloque="pendientes">
                 <h2 class="h5 mb-3 text-uppercase text-warning">
                     <i class="fas fa-clock me-2"></i>Pendientes
                 </h2>
             </div>
-            <div th:each="suscripcion : ${suscripcionesPendientes}" class="col-12 col-md-6 tarjeta-suscripcion" data-bloque="pendientes">
-                <div class="card card-suscripcion w-100 text-center"
+            <!-- Mensaje si no hay pendientes -->
+            <div class="col-12" data-bloque="pendientes"
+                 th:if="${#lists.isEmpty(suscripcionesPendientes)}">
+                <div class="alert alert-light border text-muted small mb-0">
+                    No hay suscripciones pendientes en este momento.
+                </div>
+            </div>
+            <div th:if="${!#lists.isEmpty(suscripcionesPendientes)}"
+                 th:each="suscripcion : ${suscripcionesPendientes}"
+                 class="col-12 col-md-6 col-lg-4 tarjeta-suscripcion" data-bloque="pendientes">
+                <div class="card card-suscripcion shadow-sm h-100 border-0 overflow-hidden"
                      th:with="estado=${suscripcion.estadoSuscripcion != null ? #strings.toString(suscripcion.estadoSuscripcion) : ''}">
-                    <div class="card-header">
-                        <h5 class="fw-semibold mb-0">Suscripción</h5>
-                    </div>
-                    <div class="card-body py-4">
-                        <div class="d-flex flex-column align-items-center mb-3">
-                            <h4 class="card-title fw-semibold mb-1">
-                                <i class="fas fa-user-circle text-primary me-2"></i>
-                                <strong th:text="${nombresClientes[suscripcion.idCliente]} ?: 'Cliente'">Cliente</strong>
-                            </h4>
-                            <!-- Badge estado actualizado -->
-                            <span class="badge rounded-pill px-3 py-2 estado-badge"
-                                  th:text="${estado}"
-                                  th:classappend="${estado == 'ACEPTADA' ? ' estado-aceptada' : (estado == 'COTIZADA' ? ' estado-cotizada' : (estado == 'RECHAZADA' ? ' estado-rechazada' : (estado == 'PENDIENTE' ? ' estado-pendiente' : ' estado-desconocida')))}">
-                                Estado
-                            </span>
-                            <p class="estado-descripcion small mt-2"
-                               th:switch="${estado}">
-                                <span th:case="'PENDIENTE'">Aún no se le ha cotizado la suscripción al cliente.</span>
-                                <span th:case="'COTIZADA'">El cliente ya recibió la cotización y se está a la espera de su aceptación y pago.</span>
-                                <span th:case="'ACEPTADA'">La suscripción ya está pagada y activa hasta la fecha de finalización.</span>
-                                <span th:case="*">Estado de la suscripción en proceso.</span>
-                            </p>
+
+                    <!-- Layout principal de la tarjeta: cabecera compacta + contenido -->
+                    <div class="d-flex flex-column h-100">
+                        <!-- Cabecera azul con datos del cliente y estado resumido -->
+                        <div class="px-3 pt-3 pb-2 text-white" style="background:#0d6efd;">
+                            <div class="d-flex align-items-center">
+                                <img th:src="${fotosClientes[suscripcion.idCliente]} ?: @{/img/fotoPerfil.png}"
+                                     alt="Foto del cliente"
+                                     class="rounded-circle me-3"
+                                     style="width: 56px; height: 56px; object-fit: cover; border: 2px solid rgba(255,255,255,.7);">
+                                <div class="flex-grow-1">
+                                    <div class="d-flex justify-content-between align-items-start">
+                                        <div>
+                                            <h5 class="fw-bold mb-1 small"
+                                                th:text="${nombresClientes[suscripcion.idCliente]} + ' ' + ${apellidosClientes[suscripcion.idCliente] ?: ''}">
+                                                Cliente</h5>
+                                            <div class="d-flex flex-wrap gap-2 small opacity-90">
+                                                <span th:if="${edadesClientes[suscripcion.idCliente] != null}">
+                                                    <i class="fas fa-birthday-cake me-1"></i>
+                                                    <span th:text="${edadesClientes[suscripcion.idCliente]} + ' años'">25 años</span>
+                                                </span>
+                                                <span th:if="${generosClientes[suscripcion.idCliente] != null}">
+                                                    <i class="fas fa-venus-mars me-1"></i>
+                                                    <span th:text="${generosClientes[suscripcion.idCliente]}">M</span>
+                                                </span>
+                                            </div>
+                                        </div>
+                                        <span class="badge estado-badge ms-2"
+                                              th:text="${estado}"
+                                              th:classappend="${estado == 'ACEPTADA' ? ' estado-aceptada' : (estado == 'COTIZADA' ? ' estado-cotizada' : (estado == 'RECHAZADA' ? ' estado-rechazada' : (estado == 'PENDIENTE' ? ' estado-pendiente' : ' estado-desconocida')))}">
+                                            PENDIENTE
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
 
-                        <div class="row g-3 justify-content-center">
-                            <div class="col-12 col-md-4">
-                                <div class="p-2">
-                                    <div class="text-muted small mb-1"><i
-                                            class="fas fa-dollar-sign text-primary me-1"></i>Precio
+                        <!-- Cuerpo: info contacto + objetivo + precio/duración en layout compacto -->
+                        <div class="card-body p-3 d-flex flex-column gap-3 flex-grow-1 bg-white">
+                            <!-- Contacto -->
+                            <div class="small">
+                                <div class="d-flex align-items-center flex-wrap gap-3">
+                                    <div class="d-flex align-items-center">
+                                        <i class="fas fa-envelope text-danger me-2"></i>
+                                        <span class="text-muted"
+                                              th:text="${emailsClientes[suscripcion.idCliente]} ?: 'Sin email'">email@cliente.com</span>
                                     </div>
-                                    <div class="fw-semibold"
-                                         th:text="${suscripcion.precio != null ? #numbers.formatDecimal(suscripcion.precio, 1, 'COMMA', 2, 'POINT') : 'Por Definirse'}">
-                                        Por Definirse
+                                    <div class="d-flex align-items-center"
+                                         th:if="${telefonosClientes[suscripcion.idCliente] != null}">
+                                        <i class="fas fa-phone text-success me-2"></i>
+                                        <span class="text-muted" th:text="${telefonosClientes[suscripcion.idCliente]}">+57 300 123 4567</span>
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-12 col-md-4">
-                                <div class="p-2">
-                                    <div class="text-muted small mb-1"><i class="fas fa-play text-primary me-1"></i>Duración
+
+                            <!-- Objetivo (compactado) -->
+                            <div th:if="${objetivosClientes[suscripcion.idCliente] != null}" class="small">
+                                <div class="d-flex align-items-center mb-1 text-primary">
+                                    <i class="fas fa-bullseye me-2"></i>
+                                    <span class="fw-semibold">Objetivo</span>
+                                </div>
+                                <p class="mb-0 text-muted" style="font-size:0.8rem;"
+                                   th:text="${objetivosClientes[suscripcion.idCliente]}">Objetivo del cliente</p>
+                            </div>
+
+                            <!-- Precio y Duración en línea -->
+                            <div class="row g-2 mt-auto">
+                                <div class="col-6">
+                                    <div class="border rounded-3 p-2 text-center h-100">
+                                        <div class="small text-muted mb-1"><i
+                                                class="fas fa-dollar-sign text-success me-1"></i> Precio
+                                        </div>
+                                        <div class="fw-bold text-success" style="font-size:0.95rem;"
+                                             th:text="${suscripcion.precio != null ? '$' + #numbers.formatDecimal(suscripcion.precio, 1, 'COMMA', 2, 'POINT') : 'Por Definir'}">
+                                            Por Definir
+                                        </div>
                                     </div>
-                                    <div class="fw-semibold"
-                                         th:text="${suscripcion.duracionSemanas != null ? suscripcion.duracionSemanas + ' semana(s)' : 'Por Definirse'}">
-                                        Por Definirse
+                                </div>
+                                <div class="col-6">
+                                    <div class="border rounded-3 p-2 text-center h-100">
+                                        <div class="small text-muted mb-1"><i
+                                                class="fas fa-calendar text-info me-1"></i> Duración
+                                        </div>
+                                        <div class="fw-bold text-info" style="font-size:0.95rem;"
+                                             th:text="${suscripcion.duracionSemanas != null ? suscripcion.duracionSemanas + ' sem.' : 'Por Definir'}">
+                                            Por Definir
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                    <div class="card-footer pb-4">
-                        <div class="d-flex flex-wrap gap-2 w-100 justify-content-center">
-                            <button th:if="${estado == 'PENDIENTE' && suscripcion.vistaDiagnostico}" type="button"
-                                    class="btn btn-success btn-action flex-fill btn-cotizar-diagnostico"
-                                    th:attr="data-id=${suscripcion.idSuscripcion},data-cliente=${suscripcion.idCliente},data-entrenador=${suscripcion.idEntrenador},data-precio=${suscripcion.precio},data-estado=${suscripcion.estadoSuscripcion}">
-                                <i class="fas fa-hand-holding-usd me-1"></i> Cotizar
-                            </button>
-                            <button th:if="${estado == 'PENDIENTE' && !suscripcion.vistaDiagnostico}" type="button"
-                                    class="btn btn-secondary btn-action flex-fill" disabled
-                                    title="Debes ver el diagnóstico antes de cotizar">
-                                <i class="fas fa-lock me-1"></i> Cotizar (bloqueado)
-                            </button>
-                            <!-- Botón Ver Detalles del Cliente -->
-                            <button th:if="${suscripcion.idCliente != null}"
-                                    type="button"
-                                    class="btn btn-outline-secondary btn-action flex-fill btn-ver-info-cliente"
-                                    th:attr="data-cliente-id=${suscripcion.idCliente}">
-                                <i class="fas fa-user me-1"></i> Detalles
-                            </button>
-                            <a th:if="${suscripcion.idCliente != null}"
-                               th:href="@{/entrenador/diagnostico/vista/{clienteId}(clienteId=${suscripcion.idCliente})}"
-                               class="btn btn-info btn-action text-white flex-fill">
-                                <i class="fas fa-notes-medical me-1"></i> Diagnóstico
-                            </a>
-                            <form th:if="${estado == 'PENDIENTE'}"
-                                  th:action="@{/suscripciones/rechazar/{id}(id=${suscripcion.idSuscripcion})}"
-                                  method="post" class="flex-fill mb-0">
-                                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
-                                <input type="hidden" name="redirectTo" value="/entrenador/suscripciones"/>
-                                <button type="submit" class="btn btn-danger btn-action w-100">
-                                    <i class="fas fa-times-circle me-1"></i> Rechazar
+
+                        <!-- Footer con acciones -->
+                        <div class="card-footer bg-light border-0 pt-0 pb-3 px-3">
+                            <div class="d-flex flex-column gap-2">
+                                <button th:if="${estado == 'PENDIENTE' && suscripcion.vistaDiagnostico}" type="button"
+                                        class="btn btn-success btn-sm btn-cotizar-diagnostico w-100"
+                                        th:attr="data-id=${suscripcion.idSuscripcion},data-cliente=${suscripcion.idCliente},data-entrenador=${suscripcion.idEntrenador},data-precio=${suscripcion.precio},data-estado=${suscripcion.estadoSuscripcion}">
+                                    <i class="fas fa-hand-holding-usd me-1"></i> Cotizar
                                 </button>
-                            </form>
-                            <div th:if="${estado == 'ACEPTADA'}" class="w-100 mt-2">
-                                <a th:if="${rutinasActivasClientes != null and rutinasActivasClientes.containsKey(suscripcion.idCliente)}"
-                                   th:href="@{'/semanas/detallar/' + ${rutinasActivasClientes[suscripcion.idCliente]} + '?readonly=true'}"
-                                   class="btn btn-primary btn-action w-100">
-                                    <i class="fas fa-chart-line me-1"></i> Progreso
+                                <button th:if="${estado == 'PENDIENTE' && !suscripcion.vistaDiagnostico}" type="button"
+                                        class="btn btn-secondary btn-sm w-100" disabled
+                                        title="Debes ver el diagnóstico antes de cotizar">
+                                    <i class="fas fa-lock me-1"></i> Cotizar (bloqueado)
+                                </button>
+                                <a th:if="${suscripcion.idCliente != null}"
+                                   th:href="@{/entrenador/diagnostico/vista/{clienteId}(clienteId=${suscripcion.idCliente})}"
+                                   class="btn btn-outline-info btn-sm w-100">
+                                    <i class="fas fa-notes-medical me-1"></i> Ver diagnóstico
                                 </a>
-                                <a th:if="${rutinasActivasClientes == null || !rutinasActivasClientes.containsKey(suscripcion.idCliente)}"
-                                   th:href="@{/rutinas(asignar=true, idCliente=${suscripcion.idCliente})}"
-                                   class="btn btn-success btn-action w-100">
-                                    <i class="fas fa-dumbbell me-1"></i> Asignar Rutina
-                                </a>
+                                <form th:if="${estado == 'PENDIENTE'}"
+                                      th:action="@{/suscripciones/rechazar/{id}(id=${suscripcion.idSuscripcion})}"
+                                      method="post" class="mb-0">
+                                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                                    <input type="hidden" name="redirectTo" value="/entrenador/suscripciones"/>
+                                    <button type="submit" class="btn btn-outline-danger btn-sm w-100">
+                                        <i class="fas fa-times-circle me-1"></i> Rechazar
+                                    </button>
+                                </form>
                             </div>
                         </div>
                     </div>
@@ -354,108 +485,117 @@
             </div>
 
             <!-- Bloque COTIZADAS -->
-            <div class="col-12 mt-4 bloque-cotizadas" data-bloque="cotizadas" th:if="${!#lists.isEmpty(suscripcionesCotizadas)}">
+            <div class="col-12 mt-4 bloque-cotizadas" data-bloque="cotizadas">
                 <h2 class="h5 mb-3 text-uppercase text-info">
                     <i class="fas fa-hand-holding-usd me-2"></i>Cotizadas
                 </h2>
             </div>
-            <div th:each="suscripcion : ${suscripcionesCotizadas}" class="col-12 col-md-6 tarjeta-suscripcion" data-bloque="cotizadas">
-                <div class="card card-suscripcion w-100 text-center"
+            <!-- Mensaje si no hay cotizadas -->
+            <div class="col-12" data-bloque="cotizadas"
+                 th:if="${#lists.isEmpty(suscripcionesCotizadas)}">
+                <div class="alert alert-light border text-muted small mb-0">
+                    No hay suscripciones cotizadas para mostrar.
+                </div>
+            </div>
+            <div th:if="${!#lists.isEmpty(suscripcionesCotizadas)}"
+                 th:each="suscripcion : ${suscripcionesCotizadas}"
+                 class="col-12 col-md-6 col-lg-4 tarjeta-suscripcion" data-bloque="cotizadas">
+                <div class="card card-suscripcion shadow-sm h-100 border-0 overflow-hidden"
                      th:with="estado=${suscripcion.estadoSuscripcion != null ? #strings.toString(suscripcion.estadoSuscripcion) : ''}">
-                    <div class="card-header">
-                        <h5 class="fw-semibold mb-0">Suscripción</h5>
-                    </div>
-                    <div class="card-body py-4">
-                        <div class="d-flex flex-column align-items-center mb-3">
-                            <h4 class="card-title fw-semibold mb-1">
-                                <i class="fas fa-user-circle text-primary me-2"></i>
-                                <strong th:text="${nombresClientes[suscripcion.idCliente]} ?: 'Cliente'">Cliente</strong>
-                            </h4>
-                            <!-- Badge estado actualizado -->
-                            <span class="badge rounded-pill px-3 py-2 estado-badge"
-                                  th:text="${estado}"
-                                  th:classappend="${estado == 'ACEPTADA' ? ' estado-aceptada' : (estado == 'COTIZADA' ? ' estado-cotizada' : (estado == 'RECHAZADA' ? ' estado-rechazada' : (estado == 'PENDIENTE' ? ' estado-pendiente' : ' estado-desconocida')))}">
-                                Estado
-                            </span>
-                            <p class="estado-descripcion small mt-2"
-                               th:switch="${estado}">
-                                <span th:case="'PENDIENTE'">Aún no se le ha cotizado la suscripción al cliente.</span>
-                                <span th:case="'COTIZADA'">El cliente ya recibió la cotización y se está a la espera de su aceptación y pago.</span>
-                                <span th:case="'ACEPTADA'">La suscripción ya está pagada y activa hasta la fecha de finalización.</span>
-                                <span th:case="*">Estado de la suscripción en proceso.</span>
-                            </p>
+
+                    <div class="d-flex flex-column h-100">
+                        <!-- Cabecera azul -->
+                        <div class="px-3 pt-3 pb-2 text-white" style="background:#0d6efd;">
+                            <div class="d-flex align-items-center">
+                                <img th:src="${fotosClientes[suscripcion.idCliente]} ?: @{/img/fotoPerfil.png}"
+                                     alt="Foto del cliente"
+                                     class="rounded-circle me-3"
+                                     style="width: 56px; height: 56px; object-fit: cover; border: 2px solid rgba(255,255,255,.7);">
+                                <div class="flex-grow-1">
+                                    <div class="d-flex justify-content-between align-items-start">
+                                        <div>
+                                            <h5 class="fw-bold mb-1 small"
+                                                th:text="${nombresClientes[suscripcion.idCliente]} + ' ' + ${apellidosClientes[suscripcion.idCliente] ?: ''}">
+                                                Cliente</h5>
+                                            <div class="d-flex flex-wrap gap-2 small opacity-90">
+                                                <span th:if="${edadesClientes[suscripcion.idCliente] != null}">
+                                                    <i class="fas fa-birthday-cake me-1"></i>
+                                                    <span th:text="${edadesClientes[suscripcion.idCliente]} + ' años'">25 años</span>
+                                                </span>
+                                                <span th:if="${generosClientes[suscripcion.idCliente] != null}">
+                                                    <i class="fas fa-venus-mars me-1"></i>
+                                                    <span th:text="${generosClientes[suscripcion.idCliente]}">M</span>
+                                                </span>
+                                            </div>
+                                        </div>
+                                        <span class="badge estado-badge estado-cotizada ms-2" th:text="${estado}">COTIZADA</span>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
 
-                        <div class="row g-3 justify-content-center">
-                            <div class="col-12 col-md-4">
-                                <div class="p-2">
-                                    <div class="text-muted small mb-1"><i
-                                            class="fas fa-dollar-sign text-primary me-1"></i>Precio
+                        <!-- Cuerpo -->
+                        <div class="card-body p-3 d-flex flex-column gap-3 flex-grow-1 bg-white">
+                            <!-- Contacto -->
+                            <div class="small">
+                                <div class="d-flex align-items-center flex-wrap gap-3">
+                                    <div class="d-flex align-items-center">
+                                        <i class="fas fa-envelope text-danger me-2"></i>
+                                        <span class="text-muted"
+                                              th:text="${emailsClientes[suscripcion.idCliente]} ?: 'Sin email'">email@cliente.com</span>
                                     </div>
-                                    <div class="fw-semibold"
-                                         th:text="${suscripcion.precio != null ? #numbers.formatDecimal(suscripcion.precio, 1, 'COMMA', 2, 'POINT') : 'Por Definirse'}">
-                                        Por Definirse
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-12 col-md-4">
-                                <div class="p-2">
-                                    <div class="text-muted small mb-1"><i class="fas fa-play text-primary me-1"></i>Duración
-                                    </div>
-                                    <div class="fw-semibold"
-                                         th:text="${suscripcion.duracionSemanas != null ? suscripcion.duracionSemanas + ' semana(s)' : 'Por Definirse'}">
-                                        Por Definirse
+                                    <div class="d-flex align-items-center"
+                                         th:if="${telefonosClientes[suscripcion.idCliente] != null}">
+                                        <i class="fas fa-phone text-success me-2"></i>
+                                        <span class="text-muted" th:text="${telefonosClientes[suscripcion.idCliente]}">+57 300 123 4567</span>
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-12 col-md-4" style="display:none;">
-                                <!-- antiguo campo de fin eliminado, se mantiene solo para estructura si es necesario -->
+
+                            <!-- Objetivo -->
+                            <div th:if="${objetivosClientes[suscripcion.idCliente] != null}" class="small">
+                                <div class="d-flex align-items-center mb-1 text-primary">
+                                    <i class="fas fa-bullseye me-2"></i>
+                                    <span class="fw-semibold">Objetivo</span>
+                                </div>
+                                <p class="mb-0 text-muted" style="font-size:0.8rem;"
+                                   th:text="${objetivosClientes[suscripcion.idCliente]}">Objetivo del cliente</p>
+                            </div>
+
+                            <!-- Precio y duración -->
+                            <div class="row g-2 mt-auto">
+                                <div class="col-6">
+                                    <div class="border rounded-3 p-2 text-center h-100">
+                                        <div class="small text-muted mb-1"><i
+                                                class="fas fa-dollar-sign text-success me-1"></i> Precio
+                                        </div>
+                                        <div class="fw-bold text-success" style="font-size:0.95rem;"
+                                             th:text="${suscripcion.precio != null ? '$' + #numbers.formatDecimal(suscripcion.precio, 1, 'COMMA', 2, 'POINT') : 'Por Definir'}">
+                                            Por Definir
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="border rounded-3 p-2 text-center h-100">
+                                        <div class="small text-muted mb-1"><i
+                                                class="fas fa-calendar text-info me-1"></i> uración
+                                        </div>
+                                        <div class="fw-bold text-info" style="font-size:0.95rem;"
+                                             th:text="${suscripcion.duracionSemanas != null ? suscripcion.duracionSemanas + ' sem.' : 'Por Definir'}">
+                                            Por Definir
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    <div class="card-footer pb-4">
-                        <div class="d-flex flex-wrap gap-2 w-100 justify-content-center">
-                            <button th:if="${estado == 'PENDIENTE' && suscripcion.vistaDiagnostico}" type="button"
-                                    class="btn btn-success btn-action flex-fill btn-cotizar-diagnostico"
-                                    th:attr="data-id=${suscripcion.idSuscripcion},data-cliente=${suscripcion.idCliente},data-entrenador=${suscripcion.idEntrenador},data-precio=${suscripcion.precio},data-estado=${suscripcion.estadoSuscripcion}">
-                                <i class="fas fa-hand-holding-usd me-1"></i> Cotizar
-                            </button>
-                            <button th:if="${estado == 'PENDIENTE' && !suscripcion.vistaDiagnostico}" type="button"
-                                    class="btn btn-secondary btn-action flex-fill" disabled
-                                    title="Debes ver el diagnóstico antes de cotizar">
-                                <i class="fas fa-lock me-1"></i> Cotizar (bloqueado)
-                            </button>
-                            <!-- Botón Ver Detalles del Cliente -->
-                            <button th:if="${suscripcion.idCliente != null}"
-                                    type="button"
-                                    class="btn btn-outline-secondary btn-action flex-fill btn-ver-info-cliente"
-                                    th:attr="data-cliente-id=${suscripcion.idCliente}">
-                                <i class="fas fa-user me-1"></i> Detalles
-                            </button>
-                            <a th:if="${suscripcion.idCliente != null}"
-                               th:href="@{/entrenador/diagnostico/vista/{clienteId}(clienteId=${suscripcion.idCliente})}"
-                               class="btn btn-info btn-action text-white flex-fill">
-                                <i class="fas fa-notes-medical me-1"></i> Diagnóstico
-                            </a>
-                            <form th:if="${estado == 'PENDIENTE'}"
-                                  th:action="@{/suscripciones/rechazar/{id}(id=${suscripcion.idSuscripcion})}"
-                                  method="post" class="flex-fill mb-0">
-                                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
-                                <input type="hidden" name="redirectTo" value="/entrenador/suscripciones"/>
-                                <button type="submit" class="btn btn-danger btn-action w-100">
-                                    <i class="fas fa-times-circle me-1"></i> Rechazar
-                                </button>
-                            </form>
-                            <div th:if="${estado == 'ACEPTADA'}" class="w-100 mt-2">
-                                <a th:if="${rutinasActivasClientes != null and rutinasActivasClientes.containsKey(suscripcion.idCliente)}"
-                                   th:href="@{'/semanas/detallar/' + ${rutinasActivasClientes[suscripcion.idCliente]} + '?readonly=true'}"
-                                   class="btn btn-primary btn-action w-100">
-                                    <i class="fas fa-chart-line me-1"></i> Progreso
-                                </a>
-                                <a th:if="${rutinasActivasClientes == null || !rutinasActivasClientes.containsKey(suscripcion.idCliente)}"
-                                   th:href="@{/rutinas(asignar=true, idCliente=${suscripcion.idCliente})}"
-                                   class="btn btn-success btn-action w-100">
-                                    <i class="fas fa-dumbbell me-1"></i> Asignar Rutina
+
+                        <!-- Footer -->
+                        <div class="card-footer bg-light border-0 pt-0 pb-3 px-3">
+                            <div class="d-flex flex-column gap-2">
+                                <a th:if="${suscripcion.idCliente != null}"
+                                   th:href="@{/entrenador/diagnostico/vista/{clienteId}(clienteId=${suscripcion.idCliente})}"
+                                   class="btn btn-outline-info btn-sm w-100">
+                                    <i class="fas fa-notes-medical me-1"></i> Ver diagnóstico
                                 </a>
                             </div>
                         </div>
@@ -464,105 +604,147 @@
             </div>
 
             <!-- Bloque ACEPTADAS -->
-            <div class="col-12 mt-4 bloque-aceptadas" data-bloque="aceptadas" th:if="${!#lists.isEmpty(suscripcionesAceptadas)}">
+            <div class="col-12 mt-4 bloque-aceptadas" data-bloque="aceptadas">
                 <h2 class="h5 mb-3 text-uppercase text-primary">
                     <i class="fas fa-check-circle me-2"></i>Aceptadas
                 </h2>
             </div>
-            <div th:each="suscripcion : ${suscripcionesAceptadas}" class="col-12 col-md-6 tarjeta-suscripcion" data-bloque="aceptadas">
-                <div class="card card-suscripcion w-100 text-center"
-                     th:with="estado=${suscripcion.estadoSuscripcion != null ? #strings.toString(suscripcion.estadoSuscripcion) : ''}">
-                    <div class="card-header">
-                        <h5 class="fw-semibold mb-0">Suscripción</h5>
-                    </div>
-                    <div class="card-body py-4">
-                        <div class="d-flex flex-column align-items-center mb-3">
-                            <h4 class="card-title fw-semibold mb-1">
-                                <i class="fas fa-user-circle text-primary me-2"></i>
-                                <strong th:text="${nombresClientes[suscripcion.idCliente]} ?: 'Cliente'">Cliente</strong>
-                            </h4>
-                            <!-- Badge estado actualizado -->
-                            <span class="badge rounded-pill px-3 py-2 estado-badge"
-                                  th:text="${estado}"
-                                  th:classappend="${estado == 'ACEPTADA' ? ' estado-aceptada' : (estado == 'COTIZADA' ? ' estado-cotizada' : (estado == 'RECHAZADA' ? ' estado-rechazada' : (estado == 'PENDIENTE' ? ' estado-pendiente' : ' estado-desconocida')))}">
-                                Estado
-                            </span>
-                            <p class="estado-descripcion small mt-2"
-                               th:switch="${estado}">
-                                <span th:case="'PENDIENTE'">Aún no se le ha cotizado la suscripción al cliente.</span>
-                                <span th:case="'COTIZADA'">El cliente ya recibió la cotización y se está a la espera de su aceptación y pago.</span>
-                                <span th:case="'ACEPTADA'">La suscripción ya está pagada y activa hasta la fecha de finalización.</span>
-                                <span th:case="*">Estado de la suscripción en proceso.</span>
-                            </p>
+            <!-- Mensaje si no hay aceptadas (por ejemplo, todas están activas) -->
+            <div class="col-12" data-bloque="aceptadas"
+                 th:if="${#lists.isEmpty(suscripcionesAceptadas)}">
+                <div class="alert alert-light border text-muted small mb-0">
+                    No hay suscripciones aceptadas sin rutina activa.
+                </div>
+            </div>
+            <div th:each="suscripcion : ${suscripcionesAceptadas}"
+                 th:if="${!#lists.isEmpty(suscripcionesAceptadas) and (rutinasActivasClientes == null or !rutinasActivasClientes.containsKey(suscripcion.idCliente))}"
+                 class="col-12 col-md-6 col-lg-4 tarjeta-suscripcion" data-bloque="aceptadas">
+                <div class="card card-suscripcion shadow-sm h-100 border-0 overflow-hidden"
+                     th:with="estado=${suscripcion.estadoSuscripcion != null ? #strings.toString(suscripcion.estadoSuscripcion) : ''},tieneRutina=${rutinasActivasClientes != null and rutinasActivasClientes.containsKey(suscripcion.idCliente)}">
+
+                    <div class="d-flex flex-column h-100">
+                        <!-- Cabecera: verde si tiene rutina, azul si solo aceptada -->
+                        <div class="px-3 pt-3 pb-2 text-white"
+                             th:style="${tieneRutina} ? 'background:#198754;' : 'background:#0d6efd;'">
+                            <!-- success/primary -->
+                            <div class="d-flex align-items-center">
+                                <img th:src="${fotosClientes[suscripcion.idCliente]} ?: @{/img/fotoPerfil.png}"
+                                     alt="Foto del cliente"
+                                     class="rounded-circle me-3"
+                                     style="width: 56px; height: 56px; object-fit: cover; border: 2px solid rgba(255,255,255,.7);">
+                                <div class="flex-grow-1">
+                                    <div class="d-flex justify-content-between align-items-start">
+                                        <div>
+                                            <h5 class="fw-bold mb-1 small"
+                                                th:text="${nombresClientes[suscripcion.idCliente]} + ' ' + ${apellidosClientes[suscripcion.idCliente] ?: ''}">
+                                                Cliente</h5>
+                                            <div class="d-flex flex-wrap gap-2 small opacity-90">
+                                                <span th:if="${edadesClientes[suscripcion.idCliente] != null}">
+                                                    <i class="fas fa-birthday-cake me-1"></i>
+                                                    <span th:text="${edadesClientes[suscripcion.idCliente]} + ' años'">25 años</span>
+                                                </span>
+                                                <span th:if="${generosClientes[suscripcion.idCliente] != null}">
+                                                    <i class="fas fa-venus-mars me-1"></i>
+                                                    <span th:text="${generosClientes[suscripcion.idCliente]}">M</span>
+                                                </span>
+                                            </div>
+                                        </div>
+                                        <span class="badge estado-badge ms-2"
+                                              th:text="${tieneRutina ? 'CON RUTINA' : estado}"
+                                              th:classappend="${tieneRutina ? ' estado-aceptada' : (estado == 'ACEPTADA' ? ' estado-aceptada' : ' estado-desconocida')}">
+                                            ACEPTADA
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
 
-                        <div class="row g-3 justify-content-center">
-                            <div class="col-12 col-md-4">
-                                <div class="p-2">
-                                    <div class="text-muted small mb-1"><i
-                                            class="fas fa-dollar-sign text-primary me-1"></i>Precio
+                        <!-- Cuerpo: contacto + objetivo + precio/duración -->
+                        <div class="card-body p-3 d-flex flex-column gap-3 flex-grow-1 bg-white">
+                            <!-- Contacto -->
+                            <div class="small">
+                                <div class="d-flex align-items-center flex-wrap gap-3">
+                                    <div class="d-flex align-items-center">
+                                        <i class="fas fa-envelope text-danger me-2"></i>
+                                        <span class="text-muted"
+                                              th:text="${emailsClientes[suscripcion.idCliente]} ?: 'Sin email'">email@cliente.com</span>
                                     </div>
-                                    <div class="fw-semibold"
-                                         th:text="${suscripcion.precio != null ? #numbers.formatDecimal(suscripcion.precio, 1, 'COMMA', 2, 'POINT') : 'Por Definirse'}">
-                                        Por Definirse
+                                    <div class="d-flex align-items-center"
+                                         th:if="${telefonosClientes[suscripcion.idCliente] != null}">
+                                        <i class="fas fa-phone text-success me-2"></i>
+                                        <span class="text-muted" th:text="${telefonosClientes[suscripcion.idCliente]}">+57 300 123 4567</span>
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-12 col-md-4">
-                                <div class="p-2">
-                                    <div class="text-muted small mb-1"><i class="fas fa-play text-primary me-1"></i>Duración
+
+                            <!-- Objetivo y descripción -->
+                            <div class="small">
+                                <div th:if="${objetivosClientes[suscripcion.idCliente] != null}" class="mb-1">
+                                    <div class="d-flex align-items-center text-primary mb-1">
+                                        <i class="fas fa-bullseye me-2"></i>
+                                        <span class="fw-semibold">Objetivo</span>
                                     </div>
-                                    <div class="fw-semibold"
-                                         th:text="${suscripcion.duracionSemanas != null ? suscripcion.duracionSemanas + ' semana(s)' : 'Por Definirse'}">
-                                        Por Definirse
+                                    <p class="mb-0 text-muted" style="font-size:0.8rem;"
+                                       th:text="${objetivosClientes[suscripcion.idCliente]}">Objetivo del cliente</p>
+                                </div>
+                                <div th:if="${descripcionesClientes[suscripcion.idCliente] != null}" class="mt-2">
+                                    <div class="d-flex align-items-center text-primary mb-1">
+                                        <i class="fas fa-comment-dots me-2"></i>
+                                        <span class="fw-semibold">Descripción</span>
+                                    </div>
+                                    <p class="mb-0 text-muted" style="font-size:0.8rem;"
+                                       th:text="${descripcionesClientes[suscripcion.idCliente]}">Descripción del
+                                        cliente</p>
+                                </div>
+                            </div>
+
+                            <!-- Precio y duración -->
+                            <div class="row g-2 mt-auto">
+                                <div class="col-6">
+                                    <div class="border rounded-3 p-2 text-center h-100">
+                                        <div class="small text-muted mb-1"><i
+                                                class="fas fa-dollar-sign text-success me-1"></i> Precio
+                                        </div>
+                                        <div class="fw-bold text-success" style="font-size:0.95rem;"
+                                             th:text="${suscripcion.precio != null ? '$' + #numbers.formatDecimal(suscripcion.precio, 1, 'COMMA', 2, 'POINT') : 'Por Definir'}">
+                                            Por Definir
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="border rounded-3 p-2 text-center h-100">
+                                        <div class="small text-muted mb-1"><i
+                                                class="fas fa-calendar text-info me-1"></i> Duración
+                                        </div>
+                                        <div class="fw-bold text-info" style="font-size:0.95rem;"
+                                             th:text="${suscripcion.duracionSemanas != null ? suscripcion.duracionSemanas + ' sem.' : 'Por Definir'}">
+                                            Por Definir
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                    <div class="card-footer pb-4">
-                        <div class="d-flex flex-wrap gap-2 w-100 justify-content-center">
-                            <button th:if="${estado == 'PENDIENTE' && suscripcion.vistaDiagnostico}" type="button"
-                                    class="btn btn-success btn-action flex-fill btn-cotizar-diagnostico"
-                                    th:attr="data-id=${suscripcion.idSuscripcion},data-cliente=${suscripcion.idCliente},data-entrenador=${suscripcion.idEntrenador},data-precio=${suscripcion.precio},data-estado=${suscripcion.estadoSuscripcion}">
-                                <i class="fas fa-hand-holding-usd me-1"></i> Cotizar
-                            </button>
-                            <button th:if="${estado == 'PENDIENTE' && !suscripcion.vistaDiagnostico}" type="button"
-                                    class="btn btn-secondary btn-action flex-fill" disabled
-                                    title="Debes ver el diagnóstico antes de cotizar">
-                                <i class="fas fa-lock me-1"></i> Cotizar (bloqueado)
-                            </button>
-                            <!-- Botón Ver Detalles del Cliente -->
-                            <button th:if="${suscripcion.idCliente != null}"
-                                    type="button"
-                                    class="btn btn-outline-secondary btn-action flex-fill btn-ver-info-cliente"
-                                    th:attr="data-cliente-id=${suscripcion.idCliente}">
-                                <i class="fas fa-user me-1"></i> Detalles
-                            </button>
-                            <a th:if="${suscripcion.idCliente != null}"
-                               th:href="@{/entrenador/diagnostico/vista/{clienteId}(clienteId=${suscripcion.idCliente})}"
-                               class="btn btn-info btn-action text-white flex-fill">
-                                <i class="fas fa-notes-medical me-1"></i> Diagnóstico
-                            </a>
-                            <form th:if="${estado == 'PENDIENTE'}"
-                                  th:action="@{/suscripciones/rechazar/{id}(id=${suscripcion.idSuscripcion})}"
-                                  method="post" class="flex-fill mb-0">
-                                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
-                                <input type="hidden" name="redirectTo" value="/entrenador/suscripciones"/>
-                                <button type="submit" class="btn btn-danger btn-action w-100">
-                                    <i class="fas fa-times-circle me-1"></i> Rechazar
-                                </button>
-                            </form>
-                            <div th:if="${estado == 'ACEPTADA'}" class="w-100 mt-2">
-                                <a th:if="${rutinasActivasClientes != null and rutinasActivasClientes.containsKey(suscripcion.idCliente)}"
+
+                        <!-- Footer con botones de acción -->
+                        <div class="card-footer bg-light border-0 pt-0 pb-3 px-3">
+                            <div class="d-flex flex-column gap-2">
+                                <!-- Ver progreso si tiene rutina asignada -->
+                                <a th:if="${tieneRutina}"
                                    th:href="@{'/semanas/detallar/' + ${rutinasActivasClientes[suscripcion.idCliente]} + '?readonly=true'}"
-                                   class="btn btn-primary btn-action w-100">
-                                    <i class="fas fa-chart-line me-1"></i> Progreso
+                                   class="btn btn-success btn-sm w-100">
+                                    <i class="fas fa-chart-line me-1"></i> Ver progreso
                                 </a>
-                                <a th:if="${rutinasActivasClientes == null || !rutinasActivasClientes.containsKey(suscripcion.idCliente)}"
+                                <!-- Asignar rutina si aún no la tiene -->
+                                <a th:if="${!tieneRutina}"
                                    th:href="@{/rutinas(asignar=true, idCliente=${suscripcion.idCliente})}"
-                                   class="btn btn-success btn-action w-100">
-                                    <i class="fas fa-dumbbell me-1"></i> Asignar Rutina
+                                   class="btn btn-primary btn-sm w-100">
+                                    <i class="fas fa-dumbbell me-1"></i> Asignar rutina
+                                </a>
+                                <!-- Ver diagnóstico -->
+                                <a th:if="${suscripcion.idCliente != null}"
+                                   th:href="@{/entrenador/diagnostico/vista/{clienteId}(clienteId=${suscripcion.idCliente})}"
+                                   class="btn btn-outline-info btn-sm w-100">
+                                    <i class="fas fa-notes-medical me-1"></i> Ver diagnóstico
                                 </a>
                             </div>
                         </div>
@@ -570,95 +752,101 @@
                 </div>
             </div>
 
-            <!-- Bloque ACEPTADAS CON RUTINA ASIGNADA -->
-            <div class="col-12 mt-5 bloque-activas" data-bloque="activas" th:if="${rutinasActivasClientes != null and !rutinasActivasClientes.isEmpty()}">
+            <!-- Bloque ACTIVAS (suscripciones aceptadas con rutina asignada) -->
+            <div class="col-12 mt-4 bloque-activas" data-bloque="activas">
                 <h2 class="h5 mb-3 text-uppercase text-success">
-                    <i class="fas fa-check-circle me-2"></i>Activas con Rutina Asignada
+                    <i class="fas fa-dumbbell me-2"></i>Activas
                 </h2>
             </div>
-            <div th:each="suscripcion : ${suscripcionesAceptadas}" class="col-12 col-md-6 tarjeta-suscripcion" data-bloque="activas"
-                 th:if="${rutinasActivasClientes != null and rutinasActivasClientes.containsKey(suscripcion.idCliente)}">
-                <div class="card card-suscripcion w-100 text-center border-success">
-                    <div class="card-header bg-success text-white">
-                        <h5 class="fw-semibold mb-0">
-                            <i class="fas fa-dumbbell me-2"></i>Entrenamiento Activo
-                        </h5>
-                    </div>
-                    <div class="card-body py-4">
-                        <div class="d-flex flex-column align-items-center mb-3">
-                            <h4 class="card-title fw-semibold mb-1">
-                                <i class="fas fa-user-circle text-success me-2"></i>
-                                <strong th:text="${nombresClientes[suscripcion.idCliente]} ?: 'Cliente'">Cliente</strong>
-                            </h4>
-                            <span class="badge rounded-pill px-3 py-2 bg-success">
-                                <i class="fas fa-heartbeat me-1"></i>En Progreso
-                            </span>
-                            <p class="small text-success mt-2">
-                                <i class="fas fa-info-circle me-1"></i>Este cliente tiene una rutina activa y está entrenando
-                            </p>
+            <!-- Mensaje cuando no hay activas -->
+            <div class="col-12" data-bloque="activas"
+                 th:if="${rutinasActivasClientes == null or #maps.isEmpty(rutinasActivasClientes)}">
+                <div class="alert alert-light border text-muted small mb-0">
+                    No hay suscripciones activas con rutina asignada en este momento.
+                </div>
+            </div>
+            <!-- Tarjetas de activas (una por cliente con rutina activa) -->
+            <div th:if="${rutinasActivasClientes != null and !#maps.isEmpty(rutinasActivasClientes)}"
+                 th:each="entry : ${rutinasActivasClientes}"
+                 class="col-12 col-md-6 col-lg-4 tarjeta-suscripcion" data-bloque="activas">
+                <div class="card card-suscripcion shadow-sm h-100 border-0 overflow-hidden"
+                     th:with="clienteId=${entry.key}, idRutina=${entry.value}">
+                    <div class="d-flex flex-column h-100">
+                        <!-- Cabecera verde ACTIVA -->
+                        <div class="px-3 pt-3 pb-2 text-white" style="background:#198754;">
+                            <div class="d-flex align-items-center">
+                                <img th:src="${fotosClientes != null and fotosClientes.get(clienteId) != null ? fotosClientes.get(clienteId) : '/img/fotoPerfil.png'}"
+                                     alt="Foto del cliente"
+                                     class="rounded-circle me-3"
+                                     style="width:56px;height:56px;object-fit:cover;border:2px solid rgba(255,255,255,.7);">
+                                <div class="flex-grow-1">
+                                    <div class="d-flex justify-content-between align-items-start">
+                                        <div>
+                                            <h5 class="fw-bold mb-1 small"
+                                                th:text="${(nombresClientes.get(clienteId) ?: 'Cliente') + ' ' + (apellidosClientes.get(clienteId) ?: '')}">Cliente</h5>
+                                            <div class="d-flex flex-wrap gap-2 small opacity-90">
+                                                <span th:if="${edadesClientes != null and edadesClientes.get(clienteId) != null}">
+                                                    <i class="fas fa-birthday-cake me-1"></i>
+                                                    <span th:text="${edadesClientes.get(clienteId)} + ' años'">25 años</span>
+                                                </span>
+                                                <span th:if="${generosClientes != null and generosClientes.get(clienteId) != null}">
+                                                    <i class="fas fa-venus-mars me-1"></i>
+                                                    <span th:text="${generosClientes.get(clienteId)}">M</span>
+                                                </span>
+                                            </div>
+                                        </div>
+                                        <span class="badge estado-badge estado-aceptada ms-2">ACTIVA</span>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
 
-                        <div class="row g-3 justify-content-center">
-                            <div class="col-12 col-md-4">
-                                <div class="p-2">
-                                    <div class="text-muted small mb-1">
-                                        <i class="fas fa-dollar-sign text-success me-1"></i>Precio
+                        <!-- Cuerpo: info contacto + objetivo + descripción -->
+                        <div class="card-body p-3 d-flex flex-column gap-3 flex-grow-1 bg-white">
+                            <div class="small">
+                                <div class="d-flex align-items-center flex-wrap gap-3">
+                                    <div class="d-flex align-items-center">
+                                        <i class="fas fa-envelope text-danger me-2"></i>
+                                        <span class="text-muted" th:text="${emailsClientes != null and emailsClientes.get(clienteId) != null ? emailsClientes.get(clienteId) : 'Sin email'}">email@cliente.com</span>
                                     </div>
-                                    <div class="fw-semibold"
-                                         th:text="${suscripcion.precio != null ? #numbers.formatDecimal(suscripcion.precio, 1, 'COMMA', 2, 'POINT') : 'N/A'}">
-                                        N/A
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-12 col-md-4">
-                                <div class="p-2">
-                                    <div class="text-muted small mb-1">
-                                        <i class="fas fa-calendar-alt text-success me-1"></i>Duración
-                                    </div>
-                                    <div class="fw-semibold"
-                                         th:text="${suscripcion.duracionSemanas != null ? suscripcion.duracionSemanas + ' semana(s)' : 'N/A'}">
-                                        N/A
+                                    <div class="d-flex align-items-center" th:if="${telefonosClientes != null and telefonosClientes.get(clienteId) != null}">
+                                        <i class="fas fa-phone text-success me-2"></i>
+                                        <span class="text-muted" th:text="${telefonosClientes.get(clienteId)}">+57 300 123 4567</span>
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-12 col-md-4">
-                                <div class="p-2">
-                                    <div class="text-muted small mb-1">
-                                        <i class="fas fa-fire text-success me-1"></i>Estado
+                            <div class="small">
+                                <div th:if="${objetivosClientes != null and objetivosClientes.get(clienteId) != null}" class="mb-1">
+                                    <div class="d-flex align-items-center text-primary mb-1">
+                                        <i class="fas fa-bullseye me-2"></i>
+                                        <span class="fw-semibold">Objetivo</span>
                                     </div>
-                                    <div class="fw-semibold text-success">
-                                        Activo
+                                    <p class="mb-0 text-muted" style="font-size:0.8rem;"
+                                       th:text="${objetivosClientes.get(clienteId)}">Objetivo del cliente</p>
+                                </div>
+                                <div th:if="${descripcionesClientes != null and descripcionesClientes.get(clienteId) != null}" class="mt-2">
+                                    <div class="d-flex align-items-center text-primary mb-1">
+                                        <i class="fas fa-comment-dots me-2"></i>
+                                        <span class="fw-semibold">Descripción</span>
                                     </div>
+                                    <p class="mb-0 text-muted" style="font-size:0.8rem;"
+                                       th:text="${descripcionesClientes.get(clienteId)}">Descripción del cliente</p>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                    <div class="card-footer pb-4 bg-light">
-                        <div class="d-flex flex-wrap gap-2 w-100 justify-content-center">
-                            <!-- Botón para ver progreso (destaca más) -->
-                            <a th:href="@{'/semanas/detallar/' + ${rutinasActivasClientes[suscripcion.idCliente]} + '?readonly=true'}"
-                               class="btn btn-success btn-action flex-fill">
-                                <i class="fas fa-chart-line me-1"></i> Ver Progreso
-                            </a>
-                            <!-- Botón Ver Detalles del Cliente -->
-                            <button th:if="${suscripcion.idCliente != null}"
-                                    type="button"
-                                    class="btn btn-outline-success btn-action flex-fill btn-ver-info-cliente"
-                                    th:attr="data-cliente-id=${suscripcion.idCliente}">
-                                <i class="fas fa-user me-1"></i> Detalles
-                            </button>
-                            <!-- Botón para ver diagnóstico -->
-                            <a th:if="${suscripcion.idCliente != null}"
-                               th:href="@{/entrenador/diagnostico/vista/{clienteId}(clienteId=${suscripcion.idCliente})}"
-                               class="btn btn-info btn-action text-white flex-fill">
-                                <i class="fas fa-notes-medical me-1"></i> Diagnóstico
-                            </a>
-                        </div>
-                        <div class="mt-3 pt-3 border-top">
-                            <small class="text-muted">
-                                <i class="fas fa-clock me-1"></i>
-                                Rutina ID: <span th:text="${rutinasActivasClientes[suscripcion.idCliente]}">-</span>
-                            </small>
+
+                        <!-- Footer con acciones para activas -->
+                        <div class="card-footer bg-light border-0 pt-0 pb-3 px-3">
+                            <div class="d-flex flex-column gap-2">
+                                <a th:href="@{'/semanas/detallar/' + ${idRutina} + '?readonly=true'}"
+                                   class="btn btn-success btn-sm w-100">
+                                    <i class="fas fa-chart-line me-1"></i> Ver progreso
+                                </a>
+                                <a th:href="@{/entrenador/diagnostico/vista/{clienteId}(clienteId=${clienteId})}"
+                                   class="btn btn-outline-info btn-sm w-100">
+                                    <i class="fas fa-notes-medical me-1"></i> Ver diagnóstico
+                                </a>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -683,7 +871,9 @@
                                 </thead>
                                 <tbody>
                                 <tr th:each="suscripcion : ${suscripciones}"
-                                    th:with="estado=${suscripcion.estadoSuscripcion != null ? #strings.toString(suscripcion.estadoSuscripcion) : ''}">
+                                    th:with="estado=${suscripcion.estadoSuscripcion != null ? #strings.toString(suscripcion.estadoSuscripcion) : ''},
+                                             tieneRutinaActiva=${rutinasActivasClientes != null and rutinasActivasClientes.containsKey(suscripcion.idCliente)}"
+                                    th:attr="data-estado=${#strings.toLowerCase(estado)}, data-tiene-rutina=${tieneRutinaActiva}">
                                     <td th:text="${nombresClientes[suscripcion.idCliente]} ?: 'Cliente'">Cliente</td>
                                     <td>
                                         <span class="badge rounded-pill px-3 py-2 estado-badge"
@@ -707,21 +897,17 @@
                                     <td class="text-end acciones-cell">
                                         <div class="d-inline-flex flex-wrap justify-content-end gap-2">
                                             <!-- Botón Cotizar Diagnóstico (cambiado a verde) -->
-                                            <button th:if="${estado == 'PENDIENTE' && suscripcion.vistaDiagnostico}" type="button"
+                                            <button th:if="${estado == 'PENDIENTE' && suscripcion.vistaDiagnostico}"
+                                                    type="button"
                                                     class="btn btn-success btn-action btn-cotizar-diagnostico"
                                                     th:attr="data-id=${suscripcion.idSuscripcion},data-cliente=${suscripcion.idCliente},data-entrenador=${suscripcion.idEntrenador},data-precio=${suscripcion.precio},data-estado=${suscripcion.estadoSuscripcion}">
                                                 <i class="fas fa-hand-holding-usd"></i>
                                             </button>
-                                            <button th:if="${estado == 'PENDIENTE' && !suscripcion.vistaDiagnostico}" type="button"
-                                                    class="btn btn-secondary btn-action" disabled title="Ver el diagnóstico para habilitar">
-                                                <i class="fas fa-lock"></i>
-                                            </button>
-                                            <!-- Botón Ver Detalles del Cliente (vista lista) -->
-                                            <button th:if="${suscripcion.idCliente != null}"
+                                            <button th:if="${estado == 'PENDIENTE' && !suscripcion.vistaDiagnostico}"
                                                     type="button"
-                                                    class="btn btn-outline-secondary btn-action btn-ver-info-cliente"
-                                                    th:attr="title='Ver detalles',data-cliente-id=${suscripcion.idCliente}">
-                                                <i class="fas fa-user"></i>
+                                                    class="btn btn-secondary btn-action" disabled
+                                                    title="Ver el diagnóstico para habilitar">
+                                                <i class="fas fa-lock"></i>
                                             </button>
                                             <a th:if="${suscripcion.idCliente != null}"
                                                th:href="@{/entrenador/diagnostico/vista/{clienteId}(clienteId=${suscripcion.idCliente})}"
@@ -756,116 +942,74 @@
                 </div>
             </div>
         </div>
-    </div>
 
-    <!-- Modal Ver Descripción del Cliente -->
-    <div class="modal fade" id="modalDescripcionCliente" tabindex="-1" aria-labelledby="modalDescripcionClienteLabel"
-         aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header bg-primary text-white">
-                    <h5 class="modal-title" id="modalDescripcionClienteLabel">
-                        <i class="fas fa-user-circle me-2"></i>Información del Cliente
-                    </h5>
-                </div>
-                <div class="modal-body">
-                    <div class="text-center mb-3">
-                        <img id="modalClienteFoto" src="/img/fotoPerfil.png" th:src="@{/img/fotoPerfil.png}"
-                             alt="Foto del cliente"
-                             class="rounded-circle"
-                             style="width: 100px; height: 100px; object-fit: cover; border: 3px solid #007bff;">
-                        <h4 id="modalClienteNombre" class="mt-2 mb-0">Nombre del Cliente</h4>
-                        <p id="modalClienteEmail" class="text-muted mb-0"><i class="fas fa-envelope me-1"></i>email@example.com
-                        </p>
-                    </div>
-                    <hr>
-                    <div id="modalClienteObjetivoContainer" style="display: none;">
-                        <h6 class="text-primary"><i class="fas fa-bullseye me-2"></i>Objetivo</h6>
-                        <p id="modalClienteObjetivo" class="bg-light p-3 rounded"></p>
-                    </div>
-                    <div id="modalClienteDescripcionContainer" style="display: none;">
-                        <h6 class="text-primary"><i class="fas fa-comment-dots me-2"></i>Descripción Personal</h6>
-                        <p id="modalClienteDescripcion" class="bg-light p-3 rounded"></p>
-                    </div>
-                    <div id="modalSinInfoAdicional" style="display: none;" class="alert alert-info">
-                        <i class="fas fa-info-circle me-2"></i>El cliente aún no ha agregado información adicional en su
-                        perfil.
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
-                    <a id="modalVerDiagnosticoCompleto" href="#" class="btn btn-primary">
-                        <i class="fas fa-file-medical me-1"></i>Ver Diagnóstico Completo
-                    </a>
-                </div>
-            </div>
-        </div>
-    </div>
 
-    <!-- Modal Cotizar Suscripcion -->
-    <div class="modal fade" id="modalEditarSuscripcion" tabindex="-1" aria-labelledby="modalEditarSuscripcionLabel"
-         aria-hidden="true" role="dialog">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <form th:action="@{/suscripciones/guardar}" method="post" id="form-editar-suscripcion" novalidate>
-                    <div class="modal-header bg-warning">
-                        <h5 class="modal-title text-dark" id="modalEditarSuscripcionLabel">
-                            <i class="fas fa-hand-holding-usd me-2"></i>Cotizar Diagnóstico del Cliente
-                        </h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar"><span
-                                aria-hidden="true">&times;</span></button>
-                    </div>
-                    <div class="modal-body">
-                        <div class="alert alert-info" role="alert">
-                            <i class="fas fa-info-circle me-2"></i>
-                            <strong>Importante:</strong> Revisa el diagnóstico completo del cliente antes de enviar una cotización.
-                            Ahora las fechas se calculan automáticamente según la duración en semanas que elijas.
+        <!-- Modal Cotizar Suscripcion -->
+        <div class="modal fade" id="modalEditarSuscripcion" tabindex="-1" aria-labelledby="modalEditarSuscripcionLabel"
+             aria-hidden="true" role="dialog">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <form th:action="@{/suscripciones/guardar}" method="post" id="form-editar-suscripcion" novalidate>
+                        <div class="modal-header bg-warning">
+                            <h5 class="modal-title text-dark" id="modalEditarSuscripcionLabel">
+                                <i class="fas fa-hand-holding-usd me-2"></i>Cotizar Diagnóstico del Cliente
+                            </h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar"><span
+                                    aria-hidden="true">&times;</span></button>
                         </div>
-                        <input type="hidden" name="idSuscripcion" id="modal-idSuscripcion">
+                        <div class="modal-body">
+                            <div class="alert alert-info" role="alert">
+                                <i class="fas fa-info-circle me-2"></i>
+                                <strong>Importante:</strong> Revisa el diagnóstico completo del cliente antes de enviar
+                                una cotización.
+                                Ahora las fechas se calculan automáticamente según la duración en semanas que elijas.
+                            </div>
+                            <input type="hidden" name="idSuscripcion" id="modal-idSuscripcion">
 
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label for="modal-precio" class="form-label">Precio</label>
-                                <input type="number" step="0.01" min="0" class="form-control" id="modal-precio"
-                                       name="precio" required>
-                                <div class="form-text" id="precio-rango-text" style="display:none;">
-                                    Rango permitido: <span id="precio-min"></span> - <span id="precio-max"></span>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="modal-precio" class="form-label">Precio</label>
+                                    <input type="number" step="0.01" min="0" class="form-control" id="modal-precio"
+                                           name="precio" required>
+                                    <div class="form-text" id="precio-rango-text" style="display:none;">
+                                        Rango permitido: <span id="precio-min"></span> - <span id="precio-max"></span>
+                                    </div>
+                                    <div class="invalid-feedback">El precio es obligatorio.</div>
+                                    <div class="valid-feedback">Precio válido.</div>
+                                    <div id="modal-precio-msg" class="invalid-feedback" style="display:none;"></div>
                                 </div>
-                                <div class="invalid-feedback">El precio es obligatorio.</div>
-                                <div class="valid-feedback">Precio válido.</div>
-                                <div id="modal-precio-msg" class="invalid-feedback" style="display:none;"></div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="modal-duracion" class="form-label">Duración</label>
+                                    <select id="modal-duracion" name="duracionSemanas" class="form-select" required>
+                                        <option value="" disabled selected>Selecciona...</option>
+                                        <option value="1">1 semana</option>
+                                        <option value="2">2 semanas</option>
+                                        <option value="3">3 semanas</option>
+                                        <option value="4">4 semanas</option>
+                                        <option value="5">5 semanas</option>
+                                        <option value="6">6 semanas</option>
+                                        <option value="7">7 semanas</option>
+                                        <option value="8">8 semanas</option>
+                                    </select>
+                                    <div class="invalid-feedback">Selecciona la duración en semanas.</div>
+                                </div>
                             </div>
-                            <div class="col-md-6 mb-3">
-                                <label for="modal-duracion" class="form-label">Duración</label>
-                                <select id="modal-duracion" name="duracionSemanas" class="form-select" required>
-                                    <option value="" disabled selected>Selecciona...</option>
-                                    <option value="1">1 semana</option>
-                                    <option value="2">2 semanas</option>
-                                    <option value="3">3 semanas</option>
-                                    <option value="4">4 semanas</option>
-                                    <option value="5">5 semanas</option>
-                                    <option value="6">6 semanas</option>
-                                    <option value="7">7 semanas</option>
-                                    <option value="8">8 semanas</option>
-                                </select>
-                                <div class="invalid-feedback">Selecciona la duración en semanas.</div>
-                            </div>
+
+                            <!-- Inputs ocultos reales para backend -->
+                            <input type="hidden" id="modal-fechainicio" name="fechaInicio" th:if="${false}">
+                            <input type="hidden" id="modal-fechafin" name="fechaFin" th:if="${false}">
+
+                            <div id="modal-rango-preview" class="mt-2 small text-muted" style="display:none;"></div>
+
+                            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                            <input type="hidden" name="redirectTo" value="/entrenador/suscripciones"/>
                         </div>
-
-                        <!-- Inputs ocultos reales para backend -->
-                        <input type="hidden" id="modal-fechainicio" name="fechaInicio" th:if="${false}">
-                        <input type="hidden" id="modal-fechafin" name="fechaFin" th:if="${false}">
-
-                        <div id="modal-rango-preview" class="mt-2 small text-muted" style="display:none;"></div>
-
-                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
-                        <input type="hidden" name="redirectTo" value="/entrenador/suscripciones"/>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
-                        <button type="submit" class="btn btn-primary">Guardar cambios</button>
-                    </div>
-                </form>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                            <button type="submit" class="btn btn-primary">Guardar cambios</button>
+                        </div>
+                    </form>
+                </div>
             </div>
         </div>
     </div>
@@ -1088,97 +1232,6 @@
         });
     </script>
     <script>
-        // Script para cargar info del cliente en modal compacto (event delegation)
-        document.addEventListener('click', async function(e) {
-            const btn = e.target.closest('.btn-ver-info-cliente');
-            if (!btn) return;
-            const clienteId = btn.getAttribute('data-cliente-id');
-            if (!clienteId) {
-                console.error('No se encontró el ID del cliente en el botón');
-                alert('Error: No se pudo obtener el ID del cliente');
-                return;
-            }
-            console.log('Cargando información del cliente ID:', clienteId);
-            try {
-                // Obtener el token CSRF
-                const csrfToken = document.querySelector('meta[name="_csrf"]')?.getAttribute('content');
-                const csrfHeader = document.querySelector('meta[name="_csrf_header"]')?.getAttribute('content');
-
-                const headers = {
-                    'Content-Type': 'application/json'
-                };
-
-                // Agregar token CSRF si existe
-                if (csrfToken && csrfHeader) {
-                    headers[csrfHeader] = csrfToken;
-                }
-
-                const response = await fetch(`/api/entrenador/cliente/${clienteId}/info`, {
-                    method: 'GET',
-                    headers: headers,
-                    credentials: 'same-origin'
-                });
-                console.log('Response status:', response.status);
-
-                if (!response.ok) {
-                    const errorText = await response.text();
-                    console.error('Error response:', errorText);
-                    throw new Error(`Error ${response.status}: ${errorText}`);
-                }
-
-                const info = await response.json();
-                console.log('Info recibida:', info);
-
-                const fallback = '/img/fotoPerfil.png';
-                const fotoEl = document.getElementById('modalClienteFoto');
-                const nombreEl = document.getElementById('modalClienteNombre');
-                const emailEl = document.getElementById('modalClienteEmail');
-                const objetivoContainer = document.getElementById('modalClienteObjetivoContainer');
-                const descripcionContainer = document.getElementById('modalClienteDescripcionContainer');
-                const sinInfo = document.getElementById('modalSinInfoAdicional');
-
-                if (fotoEl) fotoEl.src = info.fotoPerfilUrl || fallback;
-                if (nombreEl) nombreEl.textContent = info.nombre || 'Cliente';
-                if (emailEl) emailEl.textContent = info.email || '';
-
-                let tieneInfo = false;
-                if (info.objetivo && String(info.objetivo).trim() !== '') {
-                    document.getElementById('modalClienteObjetivo').textContent = info.objetivo;
-                    objetivoContainer.style.display = 'block';
-                    tieneInfo = true;
-                } else {
-                    objetivoContainer.style.display = 'none';
-                }
-                if (info.descripcion && String(info.descripcion).trim() !== '') {
-                    document.getElementById('modalClienteDescripcion').textContent = info.descripcion;
-                    descripcionContainer.style.display = 'block';
-                    tieneInfo = true;
-                } else {
-                    descripcionContainer.style.display = 'none';
-                }
-                sinInfo.style.display = tieneInfo ? 'none' : 'block';
-
-                // Actualizar link a diagnóstico completo
-                const linkDiag = document.getElementById('modalVerDiagnosticoCompleto');
-                if (linkDiag) linkDiag.href = `/entrenador/diagnostico/vista/${info.id}`;
-
-                // Mostrar modal usando jQuery (Bootstrap 4)
-                $('#modalDescripcionCliente').modal('show');
-            } catch (error) {
-                console.error('Error completo:', error);
-                alert('Error al cargar la información del cliente: ' + error.message);
-            }
-        });
-
-        // Asegurar que el modal se cierre correctamente (Bootstrap 4)
-        $('#modalDescripcionCliente').on('hidden.bs.modal', function () {
-            // Limpiar cualquier backdrop que pueda quedar
-            $('.modal-backdrop').remove();
-            $('body').removeClass('modal-open');
-            $('body').css({'overflow': '', 'padding-right': ''});
-        });
-    </script>
-    <script>
         (function(){
             const btnGrid = document.getElementById('btnVistaGrid');
             const btnLista = document.getElementById('btnVistaLista');
@@ -1193,8 +1246,21 @@
                 btnLista.classList.toggle('active', !grid);
                 try{localStorage.setItem(KEY, tipo);}catch(e){}
             }
-            const pref = (()=>{try{return localStorage.getItem(KEY);}catch(e){return null;}})();
-            setVista(pref==='lista' ? 'lista' : 'grid');
+            // Obtener preferencia guardada o establecer 'grid' por defecto
+            let pref = null;
+            try {
+                pref = localStorage.getItem(KEY);
+                // Si no hay preferencia guardada, establecer 'grid' como predeterminada
+                if (!pref) {
+                    localStorage.setItem(KEY, 'grid');
+                    pref = 'grid';
+                }
+            } catch(e) {
+                pref = 'grid';
+            }
+
+            // Aplicar la vista (será 'grid' por defecto)
+            setVista(pref === 'lista' ? 'lista' : 'grid');
             btnGrid?.addEventListener('click', ()=> setVista('grid'));
             btnLista?.addEventListener('click', ()=> setVista('lista'));
         })();
@@ -1282,6 +1348,14 @@
 
             if (filterButtons.length === 0) return;
 
+            // Mapeo de filtros (plural) a estados (singular)
+            const filterToEstado = {
+                'pendientes': 'pendiente',
+                'cotizadas': 'cotizada',
+                'aceptadas': 'aceptada',
+                'activas': 'aceptada' // Las activas son aceptadas con rutina
+            };
+
             filterButtons.forEach(button => {
                 button.addEventListener('click', function() {
                     const filter = this.getAttribute('data-filter');
@@ -1290,9 +1364,9 @@
                     filterButtons.forEach(btn => btn.classList.remove('active'));
                     this.classList.add('active');
 
-                    // Filtrar elementos
+                    // FILTRAR VISTA DE CUADRÍCULA (tarjetas)
                     if (filter === 'todos') {
-                        // Mostrar todos
+                        // Mostrar todos los elementos de cuadrícula
                         document.querySelectorAll('[data-bloque]').forEach(el => {
                             el.style.display = '';
                         });
@@ -1305,6 +1379,41 @@
                         // Mostrar solo los del filtro seleccionado
                         document.querySelectorAll(`[data-bloque="${filter}"]`).forEach(el => {
                             el.style.display = '';
+                        });
+                    }
+
+                    // FILTRAR VISTA DE LISTA (tabla)
+                    const tablaFilas = document.querySelectorAll('#vistaLista tbody tr[data-estado]');
+
+                    if (filter === 'todos') {
+                        // Mostrar todas las filas
+                        tablaFilas.forEach(fila => {
+                            fila.style.display = '';
+                        });
+                    } else if (filter === 'activas') {
+                        // Mostrar solo las que tienen rutina activa
+                        tablaFilas.forEach(fila => {
+                            const tieneRutina = fila.getAttribute('data-tiene-rutina') === 'true';
+                            const estadoFila = fila.getAttribute('data-estado');
+                            // Activas son las ACEPTADAS con rutina
+                            if (estadoFila === 'aceptada' && tieneRutina) {
+                                fila.style.display = '';
+                            } else {
+                                fila.style.display = 'none';
+                            }
+                        });
+                    } else {
+                        // Filtrar por estado específico (pendientes, cotizadas, aceptadas)
+                        const estadoBuscado = filterToEstado[filter] || filter.toLowerCase();
+
+                        tablaFilas.forEach(fila => {
+                            const estadoFila = fila.getAttribute('data-estado');
+
+                            if (estadoFila === estadoBuscado) {
+                                fila.style.display = '';
+                            } else {
+                                fila.style.display = 'none';
+                            }
                         });
                     }
 

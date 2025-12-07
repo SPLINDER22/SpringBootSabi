@@ -6,8 +6,8 @@
   box-shadow: 0 1px 2px rgba(0,0,0,.08);
 }
 .estado-aceptada { background-color: #16a34a !important; color: #ffffff !important; }
-.estado-cotizada { background-color: #0ea5e9 !important; color: #06283a !important; }
-.estado-pendiente { background-color: #f59e0b !important; color: #3b2f04 !important; }
+.estado-cotizada { background-color: #0ea5e9 !important; color: #ffffff !important; }
+.estado-pendiente { background-color: #f59e0b !important; color: #ffffff !important; }
 .estado-rechazada { background-color: #ef4444 !important; color: #ffffff !important; }
 .estado-desconocida { background-color: #6b7280 !important; color: #ffffff !important; }
 
