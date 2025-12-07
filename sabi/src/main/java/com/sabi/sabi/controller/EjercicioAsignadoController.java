@@ -31,50 +31,49 @@ public class EjercicioAsignadoController {
     @Autowired
     private SemanaService semanaService;
 
-    private boolean hasRole(UserDetails userDetails, String role) {
-        if (userDetails == null) return false;
-        return userDetails.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_" + role) || a.getAuthority().equals(role));
-    }
-
     @GetMapping("/ejes/detallar/{idDia}")
-    public String detallarDia(@PathVariable Long idDia,
-                              @org.springframework.web.bind.annotation.RequestParam(value = "readonly", required = false) Boolean readonly,
-                              @AuthenticationPrincipal UserDetails userDetails,
-                              Model model, RedirectAttributes redirectAttributes) {
+    public String detallarDia(@PathVariable Long idDia, Model model, RedirectAttributes redirectAttributes) {
         DiaDTO diaDTO;
         try {
             diaDTO = diaService.getDiaById(idDia);
+            if (diaDTO == null) {
+                redirectAttributes.addFlashAttribute("error", "El día especificado no existe.");
+                return "redirect:/rutinas";
+            }
         } catch (RuntimeException ex) {
-            redirectAttributes.addFlashAttribute("error", "El dia especificado no existe.");
-            return "redirect:/dias/detallar/" + idDia;
+            redirectAttributes.addFlashAttribute("error", "El día especificado no existe.");
+            return "redirect:/rutinas";
         }
 
-        SemanaDTO semanaDTO = semanaService.getSemanaById(diaDTO.getIdSemana());
-        List<?> semanas = semanaService.getSemanasRutina(semanaDTO.getIdRutina());
-        List<?> dias = diaService.getDiasSemana(semanaDTO.getIdSemana());
-        List<?> ejes = ejercicioAsignadoService.getEjesDia(idDia);
-        boolean esEntrenador = hasRole(userDetails, "ENTRENADOR");
-        boolean readonlyEffective = Boolean.TRUE.equals(readonly) && esEntrenador;
+        try {
+            SemanaDTO semanaDTO = semanaService.getSemanaById(diaDTO.getIdSemana());
+            if (semanaDTO == null) {
+                redirectAttributes.addFlashAttribute("error", "La semana no existe.");
+                return "redirect:/rutinas";
+            }
 
-        model.addAttribute("idRutina", semanaDTO.getIdRutina());
-        model.addAttribute("semanas", semanas);
-        model.addAttribute("dias", dias);
-        model.addAttribute("ejes", ejes);
-        model.addAttribute("totalEjes", ejes.size());
-        model.addAttribute("dia", diaDTO);
-        if (diaDTO != null) {
+            List<?> semanas = semanaService.getSemanasRutina(semanaDTO.getIdRutina());
+            List<?> dias = diaService.getDiasSemana(semanaDTO.getIdSemana());
+            List<?> ejes = ejercicioAsignadoService.getEjesDia(idDia);
+
+            model.addAttribute("idRutina", semanaDTO.getIdRutina());
+            model.addAttribute("semanas", semanas != null ? semanas : new java.util.ArrayList<>());
+            model.addAttribute("dias", dias != null ? dias : new java.util.ArrayList<>());
+            model.addAttribute("ejes", ejes != null ? ejes : new java.util.ArrayList<>());
+            model.addAttribute("totalEjes", ejes != null ? ejes.size() : 0);
+            model.addAttribute("dia", diaDTO);
             model.addAttribute("idSemana", diaDTO.getIdSemana());
+        } catch (Exception ex) {
+            redirectAttributes.addFlashAttribute("error", "Error al cargar los datos: " + ex.getMessage());
+            return "redirect:/rutinas";
         }
-        model.addAttribute("readonly", readonlyEffective);
+
         return "ejercicios-asignados/lista";
     }
 
     @GetMapping("/ejes/crear/{idDia}")
-    public String crearEjeView(@AuthenticationPrincipal UserDetails userDetails,
-                               @PathVariable Long idDia, Model model, RedirectAttributes redirectAttributes) {
-        if (hasRole(userDetails, "CLIENTE")) {
-            return "redirect:/ejes/detallar/" + idDia; // ya no forzamos readonly
-        }
+    public String crearEjeView(@AuthenticationPrincipal UserDetails userDetails, @PathVariable Long idDia,
+                               Model model, RedirectAttributes redirectAttributes) {
         DiaDTO diaDTO;
         try {
             diaDTO = diaService.getDiaById(idDia);
@@ -82,6 +81,7 @@ public class EjercicioAsignadoController {
             redirectAttributes.addFlashAttribute("error", "El dia no existe.");
             return "redirect:/rutinas";
         }
+
         var ejes = ejercicioAsignadoService.getEjesDia(idDia);
         int total = ejes != null ? ejes.size() : 0;
         EjercicioAsignadoDTO ejeDTO = new EjercicioAsignadoDTO();
@@ -102,12 +102,7 @@ public class EjercicioAsignadoController {
 
     @GetMapping("/ejes/editar/{idEje}")
     public String editarEjeView(@PathVariable Long idEje, Model model, RedirectAttributes redirectAttributes,
-                                 @AuthenticationPrincipal UserDetails userDetails) {
-        if (hasRole(userDetails, "CLIENTE")) {
-            EjercicioAsignadoDTO ejeDTO;
-            try { ejeDTO = ejercicioAsignadoService.getEjercicioAsignadoById(idEje); } catch (RuntimeException ex) { return "redirect:/rutinas"; }
-            return "redirect:/ejes/detallar/" + ejeDTO.getIdDia();
-        }
+                                @AuthenticationPrincipal UserDetails userDetails) {
         EjercicioAsignadoDTO ejeDTO;
         try {
             ejeDTO = ejercicioAsignadoService.getEjercicioAsignadoById(idEje);
@@ -115,9 +110,11 @@ public class EjercicioAsignadoController {
             redirectAttributes.addFlashAttribute("error", "El ejercicio no existe.");
             return "redirect:/rutinas";
         }
+
         DiaDTO diaDTO = diaService.getDiaById(ejeDTO.getIdDia());
         var ejes = ejercicioAsignadoService.getEjesDia(ejeDTO.getIdDia());
         int total = ejes != null ? ejes.size() : 0;
+
         model.addAttribute("dia", diaDTO);
         model.addAttribute("ejes", ejes);
         model.addAttribute("totalEjes", total);
@@ -133,14 +130,10 @@ public class EjercicioAsignadoController {
     }
 
     @PostMapping("/ejes/guardar")
-    public String guardarEje(@ModelAttribute EjercicioAsignadoDTO ejeDTO,
-                             @AuthenticationPrincipal UserDetails userDetails,
-                             RedirectAttributes redirectAttributes) {
-        if (hasRole(userDetails, "CLIENTE")) {
-            return "redirect:/ejes/detallar/" + ejeDTO.getIdDia();
-        }
+    public String guardarEje(@ModelAttribute EjercicioAsignadoDTO ejeDTO, RedirectAttributes redirectAttributes) {
         boolean esNuevo = ejeDTO.getIdEjercicioAsignado() == null;
         EjercicioAsignadoDTO guardado = ejercicioAsignadoService.createEjercicioAsignado(ejeDTO);
+
         if (esNuevo) {
             redirectAttributes.addFlashAttribute("success", "Ejercicio asignado creado correctamente. Ahora agrega sus series.");
             return "redirect:/series/detallar/" + guardado.getIdEjercicioAsignado();
@@ -151,14 +144,7 @@ public class EjercicioAsignadoController {
     }
 
     @PostMapping("/ejes/eliminar/{idEje}")
-    public String eliminarDia(@PathVariable Long idEje,
-                               @AuthenticationPrincipal UserDetails userDetails,
-                               RedirectAttributes redirectAttributes) {
-        if (hasRole(userDetails, "CLIENTE")) {
-            EjercicioAsignadoDTO ejeDTO;
-            try { ejeDTO = ejercicioAsignadoService.getEjercicioAsignadoById(idEje); } catch (RuntimeException ex) { return "redirect:/rutinas"; }
-            return "redirect:/ejes/detallar/" + ejeDTO.getIdDia();
-        }
+    public String eliminarDia(@PathVariable Long idEje, RedirectAttributes redirectAttributes) {
         EjercicioAsignadoDTO ejeDTO;
         try {
             ejeDTO = ejercicioAsignadoService.getEjercicioAsignadoById(idEje);
@@ -166,27 +152,20 @@ public class EjercicioAsignadoController {
             redirectAttributes.addFlashAttribute("error", "El ejercicio no existe.");
             return "redirect:/rutinas";
         }
-        ejercicioAsignadoService.desactivateEjercicioAsignado(idEje);
+        ejercicioAsignadoService.deleteEjercicioAsignado(idEje);
         redirectAttributes.addFlashAttribute("success", "Ejercicio eliminado correctamente.");
         return "redirect:/ejes/detallar/" + ejeDTO.getIdDia();
     }
 
-    // El cliente ahora SÍ puede togglear; el entrenador no (se mantiene sólo como gestión estructural)
-    @GetMapping("/ejes/check/{idEje}")
-    public String toggleChecked(@PathVariable Long idEje,
-                                 @AuthenticationPrincipal UserDetails userDetails,
-                                 RedirectAttributes redirectAttributes) {
-        if (!hasRole(userDetails, "CLIENTE")) { // no cliente: redirigir a vista sin acción
-            EjercicioAsignadoDTO ejeDTO;
-            try { ejeDTO = ejercicioAsignadoService.getEjercicioAsignadoById(idEje); } catch (RuntimeException ex) { return "redirect:/rutinas"; }
-            return "redirect:/ejes/detallar/" + ejeDTO.getIdDia() + "?readonly=true";
-        }
+    @PostMapping("/ejes/duplicar/{idEje}")
+    public String duplicarEjercicio(@PathVariable Long idEje, RedirectAttributes redirectAttributes) {
         try {
-            var eje = ejercicioAsignadoService.toggleChecked(idEje);
-            redirectAttributes.addFlashAttribute("success", eje.getEstado() ? "Ejercicio marcado como completado." : "Ejercicio marcado como pendiente.");
-            return "redirect:/ejes/detallar/" + eje.getIdDia();
+            EjercicioAsignadoDTO ejeOriginal = ejercicioAsignadoService.getEjercicioAsignadoById(idEje);
+            ejercicioAsignadoService.duplicarEjercicioAsignado(idEje);
+            redirectAttributes.addFlashAttribute("success", "Ejercicio y sus series duplicados correctamente.");
+            return "redirect:/ejes/detallar/" + ejeOriginal.getIdDia();
         } catch (RuntimeException ex) {
-            redirectAttributes.addFlashAttribute("error", "No se pudo actualizar el estado del ejercicio.");
+            redirectAttributes.addFlashAttribute("error", "Error al duplicar el ejercicio: " + ex.getMessage());
             return "redirect:/rutinas";
         }
     }

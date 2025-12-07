@@ -341,4 +341,58 @@ public class AdminController {
 
         return "redirect:/admin/entrenadores";
     }
+
+    /**
+     * Descargar certificación de un entrenador
+     */
+    @GetMapping("/entrenadores/certificacion/descargar")
+    @ResponseBody
+    public org.springframework.http.ResponseEntity<org.springframework.core.io.Resource> descargarCertificacion(
+            @RequestParam String ruta) {
+        try {
+            System.out.println("\n╔══════════════════════════════════════════════════════════════╗");
+            System.out.println("║  📥 DESCARGANDO CERTIFICACIÓN                                ║");
+            System.out.println("╚══════════════════════════════════════════════════════════════╝");
+            System.out.println("  📁 Ruta solicitada: " + ruta);
+
+            // Construir la ruta completa del archivo
+            String baseDir = System.getProperty("user.dir");
+            java.nio.file.Path filePath = java.nio.file.Paths.get(baseDir, ruta);
+
+            System.out.println("  📂 Ruta completa: " + filePath.toAbsolutePath());
+
+            // Verificar que el archivo existe
+            if (!java.nio.file.Files.exists(filePath)) {
+                System.out.println("  ❌ Archivo no encontrado");
+                return org.springframework.http.ResponseEntity.notFound().build();
+            }
+
+            // Cargar el archivo como recurso
+            org.springframework.core.io.Resource resource = new org.springframework.core.io.UrlResource(filePath.toUri());
+
+            if (!resource.exists() || !resource.isReadable()) {
+                System.out.println("  ❌ Archivo no accesible");
+                return org.springframework.http.ResponseEntity.notFound().build();
+            }
+
+            // Obtener el nombre del archivo
+            String nombreArchivo = filePath.getFileName().toString();
+            System.out.println("  ✅ Archivo encontrado: " + nombreArchivo);
+
+            // Configurar headers para descarga
+            org.springframework.http.HttpHeaders headers = new org.springframework.http.HttpHeaders();
+            headers.add(org.springframework.http.HttpHeaders.CONTENT_DISPOSITION,
+                    "attachment; filename=\"" + nombreArchivo + "\"");
+            headers.add(org.springframework.http.HttpHeaders.CONTENT_TYPE, "application/pdf");
+
+            return org.springframework.http.ResponseEntity.ok()
+                    .headers(headers)
+                    .body(resource);
+
+        } catch (Exception e) {
+            System.out.println("  ❌ Error al descargar: " + e.getMessage());
+            e.printStackTrace();
+            return org.springframework.http.ResponseEntity.internalServerError().build();
+        }
+    }
 }

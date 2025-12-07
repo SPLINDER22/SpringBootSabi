@@ -2,6 +2,7 @@
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mi Rutina</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
@@ -11,7 +12,7 @@
         }
 
         .container-fluid {
-            padding: 20px;
+            padding: 0 10px 10px 10px; /* Eliminar padding superior */
         }
 
         .main-layout {
@@ -290,30 +291,423 @@
             font-weight: 700;
             color: #0c4a6e;
         }
+
+        /* ==================== NAVEGACIÓN HORIZONTAL FIJA MÓVIL ==================== */
+
+        /* Contenedor de navegación horizontal (oculto en desktop) */
+        .mobile-nav-fixed {
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            /* Ajustar el contenedor principal para que tenga padding superior */
+            .container-fluid {
+                padding: 0 0 10px 0; /* Sin padding horizontal ni superior */
+            }
+
+            /* Contenedor unificado que incluye header y navegación - FIJO */
+            .header-nav-container {
+                position: fixed;
+                top: 56px; /* 👈 AQUÍ AJUSTAS LA SEPARACIÓN DEL NAVBAR - Aumenta o disminuye este valor */
+                left: 0;
+                right: 0;
+                z-index: 1030;
+                background: white;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+                padding: 10px 10px 10px 10px;
+            }
+
+            /* OCULTAR COMPLETAMENTE el header-title en móvil */
+            .header-title {
+                display: none !important;
+            }
+
+            /* Mostrar navegación fija solo en móvil */
+            .mobile-nav-fixed {
+                display: block;
+            }
+
+            /* IMPORTANTE: Agregar padding-top al contenido para compensar el header fijo */
+            /* 👇 AQUÍ AJUSTAS EL ESPACIO DEL CONTENIDO - Mucho más pequeño ahora */
+            .main-layout {
+                padding-top: 150px !important; /* Reducido considerablemente porque no hay header-title */
+            }
+
+            /* Contenedor scrolleable horizontal */
+            .nav-row {
+                overflow-x: auto;
+                overflow-y: hidden;
+                white-space: nowrap;
+                padding: 4px 0; /* Reducido de 8px a 4px */
+                -webkit-overflow-scrolling: touch;
+                scrollbar-width: thin;
+                scrollbar-color: #cbd5e1 #f1f5f9;
+            }
+
+            .nav-row::-webkit-scrollbar {
+                height: 6px;
+            }
+
+            .nav-row::-webkit-scrollbar-track {
+                background: #f1f5f9;
+                border-radius: 10px;
+            }
+
+            .nav-row::-webkit-scrollbar-thumb {
+                background: #cbd5e1;
+                border-radius: 10px;
+            }
+
+            .nav-row::-webkit-scrollbar-thumb:hover {
+                background: #94a3b8;
+            }
+
+            /* Botones de navegación horizontal - Semanas */
+            .nav-row.semanas-row .mobile-nav-btn {
+                display: inline-block;
+                background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
+                color: white;
+                padding: 8px 16px; /* Reducido de 10px 20px a 8px 16px */
+                border-radius: 20px;
+                margin-right: 6px; /* Reducido de 8px a 6px */
+                font-weight: 600;
+                font-size: 0.85rem;
+                border: none;
+                cursor: pointer;
+                white-space: nowrap;
+                transition: all 0.3s;
+                box-shadow: 0 2px 5px rgba(6, 182, 212, 0.3);
+            }
+
+            .nav-row.semanas-row .mobile-nav-btn:hover,
+            .nav-row.semanas-row .mobile-nav-btn.active {
+                background: linear-gradient(135deg, #0891b2 0%, #0e7490 100%);
+                transform: scale(1.05);
+                box-shadow: 0 4px 10px rgba(6, 182, 212, 0.5);
+            }
+
+            /* Botones de navegación horizontal - Días */
+            .nav-row.dias-row .mobile-nav-btn {
+                display: inline-block;
+                background: linear-gradient(135deg, #84cc16 0%, #65a30d 100%);
+                color: white;
+                padding: 6px 14px; /* Reducido de 8px 16px a 6px 14px */
+                border-radius: 18px;
+                margin-right: 5px; /* Reducido de 6px a 5px */
+                font-weight: 600;
+                font-size: 0.8rem;
+                border: none;
+                cursor: pointer;
+                white-space: nowrap;
+                transition: all 0.3s;
+                box-shadow: 0 2px 4px rgba(132, 204, 22, 0.3);
+            }
+
+            .nav-row.dias-row .mobile-nav-btn:hover,
+            .nav-row.dias-row .mobile-nav-btn.active {
+                background: linear-gradient(135deg, #65a30d 0%, #4d7c0f 100%);
+                transform: scale(1.05);
+                box-shadow: 0 4px 8px rgba(132, 204, 22, 0.5);
+            }
+
+            /* Botones de navegación horizontal - Ejercicios */
+            .nav-row.ejercicios-row .mobile-nav-btn {
+                display: inline-block;
+                background: white;
+                color: #3b82f6;
+                padding: 6px 12px; /* Reducido de 8px 14px a 6px 12px */
+                border-radius: 16px;
+                margin-right: 5px; /* Reducido de 6px a 5px */
+                font-weight: 500;
+                font-size: 0.75rem;
+                border: 2px solid #3b82f6;
+                cursor: pointer;
+                white-space: nowrap;
+                transition: all 0.3s;
+            }
+
+            .nav-row.ejercicios-row .mobile-nav-btn:hover,
+            .nav-row.ejercicios-row .mobile-nav-btn.active {
+                background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+                color: white;
+                border-color: transparent;
+                transform: scale(1.05);
+                box-shadow: 0 4px 10px rgba(59, 130, 246, 0.5);
+            }
+
+            /* Badge de completado en botones */
+            .mobile-nav-btn .badge {
+                font-size: 0.6rem;
+                padding: 0.15rem 0.35rem;
+                margin-left: 4px;
+            }
+
+            /* Ocultar el acordeón en móvil */
+            .left-panel {
+                display: none;
+            }
+        }
+
+        /* ==================== RESPONSIVE DESIGN CONTINÚA ==================== */
+
+        /* Tablet */
+        @media (max-width: 992px) {
+            .main-layout {
+                grid-template-columns: 350px 1fr;
+                gap: 15px;
+            }
+
+            .header-title h2 {
+                font-size: 1.5rem;
+            }
+
+            .semana-header {
+                font-size: 1rem;
+                padding: 12px 15px;
+            }
+
+            .dia-header {
+                font-size: 0.95rem;
+                padding: 10px 15px;
+            }
+
+            .ejercicio-btn {
+                font-size: 0.9rem;
+                padding: 8px 14px;
+            }
+        }
+
+        /* Mobile */
+        @media (max-width: 768px) {
+            .container-fluid {
+                padding: 0 10px 10px 10px; /* Eliminar padding superior */
+            }
+
+            /* Convertir layout de 2 columnas a 1 columna */
+            .main-layout {
+                grid-template-columns: 1fr;
+                gap: 15px;
+                height: auto;
+                min-height: auto;
+            }
+
+            /* Panel derecho ocupa todo el ancho */
+            .right-panel {
+                max-height: none;
+                overflow-y: visible;
+                padding: 15px;
+            }
+
+            /* Header responsive */
+            .header-title .d-flex {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .header-title h2 {
+                font-size: 1.2rem;
+                text-align: center;
+            }
+
+            .header-title p {
+                text-align: center;
+                font-size: 0.85rem;
+            }
+
+            .btn-finalizar {
+                width: 100%;
+                padding: 10px 16px;
+                font-size: 0.9rem;
+            }
+
+            /* Serie cards más compactas */
+            .serie-card {
+                padding: 15px;
+                margin-bottom: 12px;
+            }
+
+            .serie-title {
+                font-size: 1.1rem;
+                flex-wrap: wrap;
+            }
+
+            .ejercicio-info {
+                padding: 15px;
+            }
+
+            .ejercicio-nombre {
+                font-size: 1.2rem;
+                word-break: break-word;
+            }
+
+            /* Grid de información planeada en columna */
+            .planeado-box {
+                padding: 12px;
+                margin-bottom: 8px;
+            }
+
+            .planeado-value {
+                font-size: 1rem;
+            }
+
+            /* Formulario de registro responsive */
+            .registro-section h6 {
+                font-size: 0.95rem;
+            }
+
+            .form-label {
+                font-size: 0.85rem;
+                margin-bottom: 0.3rem;
+            }
+
+            .form-control,
+            .form-select {
+                font-size: 0.9rem;
+                padding: 0.5rem 0.75rem;
+            }
+
+            /* Botones de formulario */
+            .registro-serie-form button[type="submit"] {
+                font-size: 0.9rem;
+                padding: 10px 16px;
+            }
+
+            /* Comentarios más compactos */
+            .comentarios-section {
+                padding: 12px;
+            }
+
+            .comentarios-label {
+                font-size: 0.85rem;
+            }
+
+            .comentarios-text {
+                font-size: 0.85rem;
+            }
+
+            /* Empty state más pequeño */
+            .empty-state {
+                padding: 40px 15px;
+            }
+
+            .empty-state i {
+                font-size: 3rem;
+            }
+
+            .empty-state h4 {
+                font-size: 1.1rem;
+            }
+
+            .empty-state p {
+                font-size: 0.9rem;
+            }
+
+            /* Alertas más compactas */
+            .alert {
+                padding: 10px 12px;
+                font-size: 0.85rem;
+            }
+
+            /* Badges más pequeños */
+            .badge {
+                font-size: 0.7rem;
+                padding: 0.3rem 0.5rem;
+            }
+
+            /* Modal responsive */
+            .modal-body {
+                padding: 15px;
+            }
+
+            .modal-title {
+                font-size: 1.1rem;
+            }
+        }
+
+        /* Small mobile */
+        @media (max-width: 480px) {
+            .header-title {
+                padding: 10px 8px;
+            }
+
+            .mobile-nav-fixed {
+                padding: 8px 0;
+            }
+
+            .header-title h2 {
+                font-size: 1rem;
+            }
+
+            .header-title p {
+                font-size: 0.75rem;
+            }
+
+            .btn-finalizar {
+                font-size: 0.8rem;
+                padding: 8px 12px;
+            }
+        }
+
+        /* Mejoras generales de scrolling en móvil */
+        @media (max-width: 768px) {
+            body {
+                overflow-x: hidden;
+            }
+
+            .main-layout {
+                overflow: visible;
+            }
+
+            /* Evitar zoom en inputs en iOS */
+            input[type="text"],
+            input[type="number"],
+            select,
+            textarea {
+                font-size: 16px !important;
+            }
+        }
     </style>
 </head>
 <body th:replace="layout/layout :: layout('Mi Rutina', ~{::section})">
 <section th:fragment="section">
-    <div class="header-title">
-        <div class="d-flex justify-content-between align-items-center">
-            <div>
-                <h2 class="mb-1" style="font-weight: 800;">
+    <div class="header-nav-container">
+        <div class="header-title">
+            <div class="d-flex justify-content-between align-items-center">
+                <h2 class="mb-0" style="font-weight: 800;">
                     <i class="fas fa-dumbbell me-2"></i>
                     <span th:text="${rutina.nombre}">Mi Rutina</span>
                 </h2>
-                <p class="mb-0" style="opacity: 0.9;">
-                    <i class="fas fa-target me-1"></i>
-                    <span th:text="${rutina.objetivo}">Objetivo</span>
-                </p>
+                <button type="button" class="btn btn-finalizar" data-bs-toggle="modal" data-bs-target="#modalFinalizarRutina">
+                    <i class="fas fa-flag-checkered me-1"></i>Finalizar
+                </button>
             </div>
-            <button type="button" class="btn btn-finalizar" data-bs-toggle="modal" data-bs-target="#modalFinalizarRutina">
-                <i class="fas fa-flag-checkered me-2"></i>Finalizar Rutina
-            </button>
+            <p class="mb-0 mt-1" style="opacity: 0.9; font-size: 0.75rem;">
+                <i class="fas fa-target me-1"></i>
+                <span th:text="${rutina.objetivo}">Objetivo</span>
+            </p>
+        </div>
+
+        <!-- ==================== NAVEGACIÓN HORIZONTAL FIJA MÓVIL ==================== -->
+        <div class="mobile-nav-fixed">
+            <!-- Fila de Semanas -->
+            <div class="nav-row semanas-row" id="mobile-semanas-row">
+                <!-- Se llenará dinámicamente con JavaScript -->
+            </div>
+
+            <!-- Fila de Días -->
+            <div class="nav-row dias-row" id="mobile-dias-row" style="display: none;">
+                <!-- Se llenará dinámicamente con JavaScript -->
+            </div>
+
+            <!-- Fila de Ejercicios -->
+            <div class="nav-row ejercicios-row" id="mobile-ejercicios-row" style="display: none;">
+                <!-- Se llenará dinámicamente con JavaScript -->
+            </div>
         </div>
     </div>
 
     <div class="main-layout">
-        <!-- Panel Izquierdo: Acordeón de Semanas > Días > Ejercicios -->
+        <!-- Panel Izquierdo: Acordeón de Semanas > Días > Ejercicios (Desktop) -->
         <div class="left-panel">
             <!-- Mensaje si no hay semanas -->
             <div th:if="${semanasCompletas == null || semanasCompletas.isEmpty()}" class="alert alert-warning">
@@ -484,7 +878,168 @@
         const autoDiaId = /*[[${autoDiaId}]]*/ null;
         const autoEjercicioId = /*[[${autoEjercicioId}]]*/ null;
 
-        // Función para abrir automáticamente elementos al cargar
+        // Variables globales para navegación móvil
+        let currentSemanaId = null;
+        let currentDiaId = null;
+        let currentEjercicioId = null;
+
+        // ==================== FUNCIONES PARA NAVEGACIÓN MÓVIL ==================== //
+
+        function construirNavegacionMovil() {
+            // Solo construir en móvil
+            if (window.innerWidth > 768) return;
+
+            const semanasRow = document.getElementById('mobile-semanas-row');
+            const diasRow = document.getElementById('mobile-dias-row');
+            const ejerciciosRow = document.getElementById('mobile-ejercicios-row');
+
+            // Limpiar filas
+            semanasRow.innerHTML = '';
+            diasRow.innerHTML = '';
+            ejerciciosRow.innerHTML = '';
+
+            // Construir botones de semanas
+            const semanasHeaders = document.querySelectorAll('.semana-header');
+            semanasHeaders.forEach(header => {
+                const semanaId = header.id.replace('semana-header-', '');
+                const semanaText = header.querySelector('span').textContent.trim();
+
+                const btn = document.createElement('button');
+                btn.className = 'mobile-nav-btn';
+                btn.setAttribute('data-semana-id', semanaId);
+                btn.innerHTML = `<i class="fas fa-calendar-week me-1"></i>${semanaText}`;
+                btn.onclick = () => seleccionarSemanaMobile(semanaId);
+
+                semanasRow.appendChild(btn);
+            });
+        }
+
+        function seleccionarSemanaMobile(semanaId) {
+            currentSemanaId = semanaId;
+            currentDiaId = null;
+            currentEjercicioId = null;
+
+            // Actualizar botones activos de semanas
+            document.querySelectorAll('.semanas-row .mobile-nav-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            document.querySelector(`[data-semana-id="${semanaId}"]`)?.classList.add('active');
+
+            // Construir botones de días
+            const semanaContent = document.getElementById(`semana-content-${semanaId}`);
+            const diasHeaders = semanaContent?.querySelectorAll('.dia-header') || [];
+
+            const diasRow = document.getElementById('mobile-dias-row');
+            diasRow.innerHTML = '';
+
+            if (diasHeaders.length > 0) {
+                diasHeaders.forEach(header => {
+                    const diaId = header.id.replace('dia-header-', '');
+                    const diaText = header.querySelector('span').textContent.trim();
+                    const badge = header.querySelector('.badge');
+
+                    const btn = document.createElement('button');
+                    btn.className = 'mobile-nav-btn';
+                    btn.setAttribute('data-dia-id', diaId);
+                    btn.innerHTML = `<i class="fas fa-calendar-day me-1"></i>${diaText}`;
+                    if (badge) {
+                        btn.innerHTML += '<span class="badge bg-success ms-1"><i class="fas fa-check-circle"></i></span>';
+                    }
+                    btn.onclick = () => seleccionarDiaMobile(diaId);
+
+                    diasRow.appendChild(btn);
+                });
+                diasRow.style.display = 'block';
+            } else {
+                diasRow.style.display = 'none';
+            }
+
+            // Ocultar fila de ejercicios
+            document.getElementById('mobile-ejercicios-row').style.display = 'none';
+            document.getElementById('mobile-ejercicios-row').innerHTML = '';
+
+            // Limpiar panel de series
+            document.getElementById('series-display').innerHTML = `
+                <div class="empty-state">
+                    <i class="fas fa-hand-pointer"></i>
+                    <h4>Selecciona un día</h4>
+                    <p>Elige un día de la navegación superior</p>
+                </div>
+            `;
+        }
+
+        function seleccionarDiaMobile(diaId) {
+            currentDiaId = diaId;
+            currentEjercicioId = null;
+
+            // Actualizar botones activos de días
+            document.querySelectorAll('.dias-row .mobile-nav-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            document.querySelector(`[data-dia-id="${diaId}"]`)?.classList.add('active');
+
+            // Construir botones de ejercicios
+            const diaContent = document.getElementById(`dia-content-${diaId}`);
+            const ejerciciosBtns = diaContent?.querySelectorAll('.ejercicio-btn') || [];
+
+            const ejerciciosRow = document.getElementById('mobile-ejercicios-row');
+            ejerciciosRow.innerHTML = '';
+
+            if (ejerciciosBtns.length > 0) {
+                ejerciciosBtns.forEach(ejeBtn => {
+                    const ejeId = ejeBtn.getAttribute('data-ejercicio-id');
+                    const ejeText = ejeBtn.querySelector('span')?.textContent || ejeBtn.textContent;
+                    const checkIcon = ejeBtn.querySelector('.fa-check-circle');
+
+                    const btn = document.createElement('button');
+                    btn.className = 'mobile-nav-btn';
+                    btn.setAttribute('data-ejercicio-id', ejeId);
+                    btn.innerHTML = `<i class="fas fa-running me-1"></i>${ejeText.replace(/✓/g, '').trim()}`;
+                    if (checkIcon) {
+                        btn.innerHTML += '<span class="badge bg-success ms-1"><i class="fas fa-check-circle"></i></span>';
+                    }
+                    btn.onclick = () => seleccionarEjercicioMobile(ejeId);
+
+                    ejerciciosRow.appendChild(btn);
+                });
+                ejerciciosRow.style.display = 'block';
+            } else {
+                ejerciciosRow.style.display = 'none';
+            }
+
+            // Limpiar panel de series
+            document.getElementById('series-display').innerHTML = `
+                <div class="empty-state">
+                    <i class="fas fa-hand-pointer"></i>
+                    <h4>Selecciona un ejercicio</h4>
+                    <p>Elige un ejercicio de la navegación superior</p>
+                </div>
+            `;
+        }
+
+        function seleccionarEjercicioMobile(ejercicioId) {
+            currentEjercicioId = ejercicioId;
+
+            // Actualizar botones activos de ejercicios
+            document.querySelectorAll('.ejercicios-row .mobile-nav-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            document.querySelector(`[data-ejercicio-id="${ejercicioId}"]`)?.classList.add('active');
+
+            // Buscar el botón original del ejercicio y llamar a la función original
+            const originalBtn = document.getElementById(`ejercicio-btn-${ejercicioId}`);
+            if (originalBtn) {
+                seleccionarEjercicio(originalBtn, true);
+
+                // Hacer scroll al top del panel de series
+                setTimeout(() => {
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                }, 100);
+            }
+        }
+
+        // ==================== FUNCIÓN ORIGINAL CON ADAPTACIÓN ==================== //
+
         function navegacionAutomatica() {
             if (autoSemanaId) {
                 console.log('Navegación automática activada:');
@@ -492,58 +1047,89 @@
                 console.log('- Día ID:', autoDiaId);
                 console.log('- Ejercicio ID:', autoEjercicioId);
 
-                // Abrir semana
-                const semanaCollapse = document.getElementById('semana-content-' + autoSemanaId);
-                const semanaHeader = document.getElementById('semana-header-' + autoSemanaId);
-                if (semanaCollapse && semanaHeader) {
-                    // Remover clase collapsed del header
-                    semanaHeader.classList.remove('collapsed');
+                // Verificar si estamos en móvil
+                const isMobile = window.innerWidth <= 768;
 
-                    // Abrir el collapse
-                    const bsCollapse = new bootstrap.Collapse(semanaCollapse, { toggle: false });
-                    bsCollapse.show();
+                if (isMobile) {
+                    // ==================== NAVEGACIÓN AUTOMÁTICA EN MÓVIL ==================== //
+                    console.log('Modo móvil detectado - usando navegación adaptada');
 
-                    // Después de abrir la semana, abrir el día
-                    setTimeout(() => {
-                        if (autoDiaId) {
-                            const diaCollapse = document.getElementById('dia-content-' + autoDiaId);
-                            const diaHeader = document.getElementById('dia-header-' + autoDiaId);
-                            if (diaCollapse && diaHeader) {
-                                // Remover clase collapsed del header
-                                diaHeader.classList.remove('collapsed');
+                    // Primero construir la navegación móvil si no está construida
+                    construirNavegacionMovil();
 
-                                // Abrir el collapse
-                                const bsDiaCollapse = new bootstrap.Collapse(diaCollapse, { toggle: false });
-                                bsDiaCollapse.show();
+                    // Seleccionar la semana
+                    if (autoSemanaId) {
+                        seleccionarSemanaMobile(autoSemanaId);
 
-                                // Después de abrir el día, seleccionar el ejercicio
+                        // Después de un pequeño delay, seleccionar el día
+                        setTimeout(() => {
+                            if (autoDiaId) {
+                                seleccionarDiaMobile(autoDiaId);
+
+                                // Después de otro delay, seleccionar el ejercicio
                                 setTimeout(() => {
                                     if (autoEjercicioId) {
-                                        const ejercicioBtn = document.getElementById('ejercicio-btn-' + autoEjercicioId);
-                                        if (ejercicioBtn) {
-                                            // Hacer scroll al ejercicio
-                                            ejercicioBtn.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                                            // Seleccionar y mostrar el ejercicio
-                                            setTimeout(() => {
-                                                ejercicioBtn.click();
-                                            }, 500);
-                                        } else {
-                                            console.error('No se encontró el botón del ejercicio con ID:', autoEjercicioId);
-                                        }
+                                        seleccionarEjercicioMobile(autoEjercicioId);
                                     }
-                                }, 400);
-                            } else {
-                                console.error('No se encontró el día con ID:', autoDiaId);
+                                }, 200);
                             }
-                        }
-                    }, 400);
+                        }, 200);
+                    }
                 } else {
-                    console.error('No se encontró la semana con ID:', autoSemanaId);
+                    // ==================== NAVEGACIÓN AUTOMÁTICA EN DESKTOP (ORIGINAL) ==================== //
+                    // Abrir semana
+                    const semanaCollapse = document.getElementById('semana-content-' + autoSemanaId);
+                    const semanaHeader = document.getElementById('semana-header-' + autoSemanaId);
+                    if (semanaCollapse && semanaHeader) {
+                        // Remover clase collapsed del header
+                        semanaHeader.classList.remove('collapsed');
+
+                        // Abrir el collapse
+                        const bsCollapse = new bootstrap.Collapse(semanaCollapse, { toggle: false });
+                        bsCollapse.show();
+
+                        // Después de abrir la semana, abrir el día
+                        setTimeout(() => {
+                            if (autoDiaId) {
+                                const diaCollapse = document.getElementById('dia-content-' + autoDiaId);
+                                const diaHeader = document.getElementById('dia-header-' + autoDiaId);
+                                if (diaCollapse && diaHeader) {
+                                    // Remover clase collapsed del header
+                                    diaHeader.classList.remove('collapsed');
+
+                                    // Abrir el collapse
+                                    const bsDiaCollapse = new bootstrap.Collapse(diaCollapse, { toggle: false });
+                                    bsDiaCollapse.show();
+
+                                    // Después de abrir el día, seleccionar el ejercicio
+                                    setTimeout(() => {
+                                        if (autoEjercicioId) {
+                                            const ejercicioBtn = document.getElementById('ejercicio-btn-' + autoEjercicioId);
+                                            if (ejercicioBtn) {
+                                                // Hacer scroll al ejercicio
+                                                ejercicioBtn.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                                                // Seleccionar y mostrar el ejercicio
+                                                setTimeout(() => {
+                                                    ejercicioBtn.click();
+                                                }, 500);
+                                            } else {
+                                                console.error('No se encontró el botón del ejercicio con ID:', autoEjercicioId);
+                                            }
+                                        }
+                                    }, 400);
+                                } else {
+                                    console.error('No se encontró el día con ID:', autoDiaId);
+                                }
+                            }
+                        }, 400);
+                    } else {
+                        console.error('No se encontró la semana con ID:', autoSemanaId);
+                    }
                 }
             }
         }
 
-        function seleccionarEjercicio(btnElement) {
+        function seleccionarEjercicio(btnElement, shouldScroll = true) {
             const ejercicioId = btnElement.getAttribute('data-ejercicio-id');
 
             // Remover selección previa
@@ -714,6 +1300,14 @@
 
             // Actualizar panel derecho
             document.getElementById('series-display').innerHTML = html;
+
+            // Hacer scroll al inicio del panel derecho solo si se indica
+            if (shouldScroll) {
+                const rightPanel = document.querySelector('.right-panel');
+                if (rightPanel) {
+                    rightPanel.scrollTop = 0;
+                }
+            }
         }
 
         function registrarSerie(event, serieId) {
@@ -754,6 +1348,11 @@
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
+                    // Mostrar mensaje de éxito
+                    btn.innerHTML = '<i class="fas fa-check-circle me-2"></i>¡Guardado!';
+                    btn.classList.remove('btn-primary');
+                    btn.classList.add('btn-success');
+
                     // ====== ACTUALIZAR LOS ATRIBUTOS DATA EN EL HTML ORIGINAL ======
                     // Buscar el elemento serie-data-item correspondiente en el DOM original
                     const serieDataItem = document.querySelector(`.serie-data-item[data-serie-id="${serieId}"]`);
@@ -792,6 +1391,14 @@
                                     ejercicioBtn.appendChild(checkIcon);
                                 }
 
+                                // --- ACTUALIZAR BADGE EN NAVEGACIÓN MÓVIL DEL EJERCICIO ---
+                                if (window.innerWidth <= 768) {
+                                    const mobileEjercicioBtn = document.querySelector(`.ejercicios-row .mobile-nav-btn[data-ejercicio-id="${ejercicioActualId}"]`);
+                                    if (mobileEjercicioBtn && !mobileEjercicioBtn.querySelector('.badge')) {
+                                        mobileEjercicioBtn.innerHTML += '<span class="badge bg-success ms-1"><i class="fas fa-check-circle"></i></span>';
+                                    }
+                                }
+
                                 // --- ACTUALIZAR BADGE DEL DÍA SI TODOS LOS EJERCICIOS DEL DÍA ESTÁN COMPLETOS ---
                                 try {
                                     const diaContent = ejercicioBtn.closest('.dia-content');
@@ -821,8 +1428,25 @@
                                                 } else {
                                                     diaHeader.insertBefore(span, diaHeader.firstChild);
                                                 }
+
+                                                // --- ACTUALIZAR BADGE EN NAVEGACIÓN MÓVIL DEL DÍA ---
+                                                if (window.innerWidth <= 768) {
+                                                    const mobileDiaBtn = document.querySelector(`.dias-row .mobile-nav-btn[data-dia-id="${diaId}"]`);
+                                                    if (mobileDiaBtn && !mobileDiaBtn.querySelector('.badge')) {
+                                                        mobileDiaBtn.innerHTML += '<span class="badge bg-success ms-1"><i class="fas fa-check-circle"></i></span>';
+                                                    }
+                                                }
                                             } else if (!allEjCompleted && existingBadge) {
                                                 existingBadge.remove();
+
+                                                // --- REMOVER BADGE EN NAVEGACIÓN MÓVIL DEL DÍA ---
+                                                if (window.innerWidth <= 768) {
+                                                    const mobileDiaBtn = document.querySelector(`.dias-row .mobile-nav-btn[data-dia-id="${diaId}"]`);
+                                                    if (mobileDiaBtn) {
+                                                        const mobileBadge = mobileDiaBtn.querySelector('.badge');
+                                                        if (mobileBadge) mobileBadge.remove();
+                                                    }
+                                                }
                                             }
                                         }
                                     }
@@ -831,8 +1455,22 @@
                                 }
                                 // --- fin actualización badge día ---
                             }
+
+                            // Recargar la vista del ejercicio después de 1 segundo para mostrar el nuevo estado
+                            setTimeout(() => {
+                                // Buscar el botón del ejercicio actual y hacer clic para recargar SIN hacer scroll
+                                const ejercicioBtnReload = document.getElementById('ejercicio-btn-' + ejercicioActualId);
+                                if (ejercicioBtnReload) {
+                                    seleccionarEjercicio(ejercicioBtnReload, false);
+                                }
+                            }, 1000);
                         }
                     }
+                } else {
+                    // Mostrar error si el servidor responde con success: false
+                    alert('Error: ' + (data.message || 'No se pudo guardar el registro'));
+                    btn.innerHTML = originalText;
+                    btn.disabled = false;
                 }
             })
             .catch(err => {
@@ -848,6 +1486,18 @@
 
         // Asegurar que los headers tengan la clase `collapsed` correcta cuando los Collapses de Bootstrap cambien
         document.addEventListener('DOMContentLoaded', () => {
+            // Construir navegación móvil al cargar
+            construirNavegacionMovil();
+
+            // Reconstruir al cambiar tamaño de ventana
+            let resizeTimer;
+            window.addEventListener('resize', () => {
+                clearTimeout(resizeTimer);
+                resizeTimer = setTimeout(() => {
+                    construirNavegacionMovil();
+                }, 250);
+            });
+
             // Adjuntar listeners a todos los collapse para sincronizar la clase collapsed en los headers
             document.querySelectorAll('.collapse').forEach(col => {
                 col.addEventListener('show.bs.collapse', () => {

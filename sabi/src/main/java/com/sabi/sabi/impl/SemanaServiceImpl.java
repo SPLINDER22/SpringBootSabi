@@ -21,6 +21,18 @@ public class SemanaServiceImpl implements SemanaService {
     private ModelMapper modelMapper; // aún usado en otros lugares si se requiere
     @Autowired
     private RutinaRepository rutinaRepository;
+    @Autowired
+    private com.sabi.sabi.repository.DiaRepository diaRepository;
+    @Autowired
+    private com.sabi.sabi.service.DiaService diaService;
+    @Autowired
+    private com.sabi.sabi.repository.EjercicioAsignadoRepository ejercicioAsignadoRepository;
+    @Autowired
+    private com.sabi.sabi.service.EjercicioAsignadoService ejercicioAsignadoService;
+    @Autowired
+    private com.sabi.sabi.repository.SerieRepository serieRepository;
+    @Autowired
+    private com.sabi.sabi.service.SerieService serieService;
 
     private SemanaDTO mapSemana(Semana s){
         if (s == null) return null;
@@ -196,5 +208,68 @@ public class SemanaServiceImpl implements SemanaService {
         existingSemana.setEstado(!existingSemana.getEstado());
         semanaRepository.save(existingSemana);
         return true;
+    }
+
+    @Override
+    @Transactional
+    public SemanaDTO duplicarSemana(long id) {
+        Semana semanaOriginal = semanaRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Semana not found with id: " + id));
+
+        // Crear una nueva semana con los mismos datos
+        SemanaDTO nuevaSemanaDTO = new SemanaDTO();
+        nuevaSemanaDTO.setIdRutina(semanaOriginal.getRutina().getId());
+        nuevaSemanaDTO.setDescripcion(semanaOriginal.getDescripcion());
+        nuevaSemanaDTO.setNumeroDias(0L); // Se actualizará al agregar días
+        // El número de semana se asignará automáticamente al final en createSemana
+
+        SemanaDTO nuevaSemana = createSemana(nuevaSemanaDTO);
+
+        // Duplicar todos los días de la semana original a la NUEVA semana
+        List<com.sabi.sabi.entity.Dia> diasOriginales = diaRepository.getDiasSemana(id);
+
+        for (com.sabi.sabi.entity.Dia diaOriginal : diasOriginales) {
+            // Crear un nuevo día asignado a la NUEVA semana
+            com.sabi.sabi.dto.DiaDTO nuevoDiaDTO = new com.sabi.sabi.dto.DiaDTO();
+            nuevoDiaDTO.setIdSemana(nuevaSemana.getIdSemana()); // ¡IMPORTANTE! Asignar a la nueva semana
+            nuevoDiaDTO.setDescripcion(diaOriginal.getDescripcion());
+            nuevoDiaDTO.setNumeroEjercicios(0L);
+
+            // Crear el nuevo día
+            com.sabi.sabi.dto.DiaDTO nuevoDia = diaService.createDia(nuevoDiaDTO);
+
+            // Duplicar todos los ejercicios del día original al nuevo día
+            List<com.sabi.sabi.entity.EjercicioAsignado> ejerciciosOriginales =
+                ejercicioAsignadoRepository.getEjesDia(diaOriginal.getId());
+
+            for (com.sabi.sabi.entity.EjercicioAsignado ejercicioOriginal : ejerciciosOriginales) {
+                // Crear un nuevo ejercicio asignado al NUEVO día
+                com.sabi.sabi.dto.EjercicioAsignadoDTO nuevoEjeDTO = new com.sabi.sabi.dto.EjercicioAsignadoDTO();
+                nuevoEjeDTO.setIdDia(nuevoDia.getIdDia()); // Asignar al nuevo día
+                nuevoEjeDTO.setIdEjercicio(ejercicioOriginal.getEjercicio() != null ? ejercicioOriginal.getEjercicio().getId() : null);
+                nuevoEjeDTO.setComentarios(ejercicioOriginal.getComentarios());
+                nuevoEjeDTO.setNumeroSeries(0L);
+
+                // Crear el nuevo ejercicio
+                com.sabi.sabi.dto.EjercicioAsignadoDTO nuevoEje = ejercicioAsignadoService.createEjercicioAsignado(nuevoEjeDTO);
+
+                // Duplicar todas las series del ejercicio original al nuevo ejercicio
+                List<com.sabi.sabi.entity.Serie> seriesOriginales = serieRepository.getSerieEje(ejercicioOriginal.getIdEjercicioAsignado());
+
+                for (com.sabi.sabi.entity.Serie serieOriginal : seriesOriginales) {
+                    com.sabi.sabi.dto.SerieDTO nuevaSerieDTO = new com.sabi.sabi.dto.SerieDTO();
+                    nuevaSerieDTO.setIdEjercicioAsignado(nuevoEje.getIdEjercicioAsignado()); // Asignar al nuevo ejercicio
+                    nuevaSerieDTO.setComentarios(serieOriginal.getComentarios());
+                    nuevaSerieDTO.setPeso(serieOriginal.getPeso());
+                    nuevaSerieDTO.setRepeticiones(serieOriginal.getRepeticiones());
+                    nuevaSerieDTO.setDescanso(serieOriginal.getDescanso());
+                    nuevaSerieDTO.setIntensidad(serieOriginal.getIntensidad());
+
+                    serieService.createSerie(nuevaSerieDTO);
+                }
+            }
+        }
+
+        return nuevaSemana;
     }
 }

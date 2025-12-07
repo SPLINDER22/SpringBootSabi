@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>Progreso del Cliente</title>
+    <style>
+        /* Estilos para barra de progreso */
+        .progress-container {
+            background: #ffffff;
+            border: 2px solid #e9ecef;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+        .progress-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+        .progress-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #495057;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .progress-percentage {
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+        .progress-percentage.low { color: #dc3545; }
+        .progress-percentage.medium { color: #ffc107; }
+        .progress-percentage.high { color: #28a745; }
+        .progress {
+            height: 30px;
+            border-radius: 8px;
+            background-color: #e9ecef;
+            overflow: hidden;
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);
+        }
+        .progress-bar {
+            transition: width 0.6s ease, background-color 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 0.875rem;
+        }
+        .progress-bar.bg-danger {
+            background: linear-gradient(90deg, #dc3545 0%, #c82333 100%);
+        }
+        .progress-bar.bg-warning {
+            background: linear-gradient(90deg, #ffc107 0%, #e0a800 100%);
+        }
+        .progress-bar.bg-success {
+            background: linear-gradient(90deg, #28a745 0%, #218838 100%);
+        }
+
+        /* Estilos para semanas */
+        .semana-card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+            overflow: hidden;
+        }
+        .semana-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1rem 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .semana-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin: 0;
+        }
+        .semana-body {
+            padding: 1.5rem;
+        }
+
+        /* Estilos para días */
+        .dia-card {
+            background: #f8f9fa;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+            overflow: hidden;
+            border: 2px solid #e9ecef;
+        }
+        .dia-header {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            padding: 0.75rem 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .dia-title {
+            font-size: 1rem;
+            font-weight: 600;
+            margin: 0;
+        }
+        .dia-body {
+            padding: 1rem;
+        }
+
+        /* Estilos para ejercicios */
+        .ejercicio-card {
+            background: white;
+            border-radius: 6px;
+            margin-bottom: 1rem;
+            border: 1px solid #dee2e6;
+        }
+        .ejercicio-header {
+            background: #e9ecef;
+            padding: 0.5rem 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #dee2e6;
+        }
+        .ejercicio-nombre {
+            font-weight: 600;
+            color: #495057;
+            font-size: 0.95rem;
+        }
+        .ejercicio-body {
+            padding: 0.75rem 1rem;
+        }
+
+        /* Estilos para series compactas */
+        .series-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 0.75rem;
+        }
+        .serie-item {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            padding: 0.5rem;
+            font-size: 0.85rem;
+        }
+        .serie-item.completada {
+            background: #d4edda;
+            border-color: #c3e6cb;
+        }
+        .serie-numero {
+            font-weight: 700;
+            color: #495057;
+            margin-bottom: 0.25rem;
+        }
+        .serie-dato {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.15rem;
+            color: #6c757d;
+        }
+        .serie-dato-label {
+            font-weight: 500;
+        }
+        .serie-dato-valor {
+            font-weight: 600;
+            color: #495057;
+        }
+        .serie-dato.realizado .serie-dato-valor {
+            color: #28a745;
+        }
+
+        /* Badges de estado */
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            font-size: 0.75rem;
+            padding: 0.3rem 0.6rem;
+            border-radius: 1rem;
+            font-weight: 500;
+            border: 1px solid transparent;
+        }
+        .badge-complete {
+            background: #d4edda;
+            border-color: #c3e6cb;
+            color: #155724;
+        }
+        .badge-pending {
+            background: #f8f9fa;
+            border-color: #dee2e6;
+            color: #6c757d;
+        }
+        .badge-partial {
+            background: #fff3cd;
+            border-color: #ffeaa7;
+            color: #856404;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .series-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Icono de check */
+        .check-icon {
+            color: #28a745;
+            font-size: 1rem;
+            margin-left: 0.5rem;
+        }
+    </style>
+</head>
+<body th:replace="layout/layout :: layout('Progreso del Cliente', ~{::section})">
+<section th:fragment="section">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <div>
+            <h1 class="h3 mb-0 text-gray-800">
+                <i class="fas fa-chart-line me-2"></i>Progreso del Cliente:
+                <span th:text="${rutina != null ? rutina.nombre : 'Rutina'}"></span>
+            </h1>
+            <div class="mt-2">
+                <span class="badge bg-info text-white" style="font-size: 0.9rem; padding: 0.5rem 1rem;">
+                    <i class="fas fa-eye me-1"></i>Vista de Progreso Detallado
+                </span>
+            </div>
+        </div>
+        <div>
+            <a th:href="@{/rutinas}" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-left"></i> Volver a Rutinas
+            </a>
+        </div>
+    </div>
+
+    <!-- Barra de progreso general -->
+    <div th:if="${porcentajeCompletado != null}" class="progress-container">
+        <div class="progress-header">
+            <div class="progress-title">
+                <i class="fas fa-chart-line"></i>
+                <span>Progreso General de la Rutina</span>
+            </div>
+            <div class="progress-percentage"
+                 th:classappend="${porcentajeCompletado < 25 ? 'low' : (porcentajeCompletado >= 75 ? 'high' : 'medium')}"
+                 th:text="${porcentajeCompletado + '%'}">
+                0%
+            </div>
+        </div>
+        <div class="progress">
+            <div class="progress-bar"
+                 role="progressbar"
+                 th:classappend="${porcentajeCompletado < 25 ? 'bg-danger' : (porcentajeCompletado >= 75 ? 'bg-success' : 'bg-warning')}"
+                 th:style="${'width:' + porcentajeCompletado + '%;'}"
+                 th:attr="aria-valuenow=${porcentajeCompletado}"
+                 aria-valuemin="0"
+                 aria-valuemax="100">
+                <span th:text="${porcentajeCompletado + '%'}">0%</span>
+            </div>
+        </div>
+
+        <!-- Progreso detallado por semana -->
+        <div th:if="${progresosPorSemana != null && !progresosPorSemana.isEmpty()}"
+             class="mt-4"
+             style="background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+                    padding: 16px;
+                    border-radius: 12px;
+                    border-left: 4px solid #3b82f6;">
+            <div style="font-size: 1rem; font-weight: 600; color: #1e293b; margin-bottom: 14px;">
+                <i class="fas fa-calendar-week me-2" style="color: #3b82f6;"></i>Progreso por Semana
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 8px;">
+                <div th:each="progreso : ${progresosPorSemana}"
+                     style="display: flex; align-items: center; justify-content: space-between;
+                            background: white; padding: 12px 16px; border-radius: 8px;
+                            box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <span style="font-weight: 700; color: #3b82f6; font-size: 1.05rem;">
+                            Semana <span th:text="${progreso.numeroSemana}">1</span>:
+                        </span>
+                        <span style="color: #475569; font-size: 0.95rem;">
+                            <strong style="color: #059669;" th:text="${progreso.diasCompletados}">4</strong> de
+                            <strong th:text="${progreso.totalDias}">5</strong> días completados
+                        </span>
+                    </div>
+                    <div th:if="${progreso.diasCompletados == progreso.totalDias}"
+                         style="color: #059669; font-size: 1.2rem;">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                    <div th:if="${progreso.diasCompletados < progreso.totalDias}"
+                         style="color: #f59e0b; font-size: 0.875rem; font-weight: 600; display: flex; align-items: center; gap: 6px;">
+                        <i class="fas fa-clock"></i>
+                        <span><span th:text="${progreso.totalDias - progreso.diasCompletados}">1</span> pendiente<span th:if="${progreso.totalDias - progreso.diasCompletados > 1}">s</span></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Estructura detallada de semanas, días, ejercicios y series -->
+    <div th:if="${semanas == null || #lists.isEmpty(semanas)}" class="alert alert-info">
+        No hay semanas registradas en esta rutina.
+    </div>
+
+    <div th:if="${semanas != null && !#lists.isEmpty(semanas)}">
+        <div th:each="semana : ${semanas}" class="semana-card">
+            <div class="semana-header">
+                <div class="semana-title">
+                    <i class="fas fa-calendar-week me-2"></i>
+                    Semana <span th:text="${semana.numeroSemana}">1</span>
+                    <span th:if="${semana.descripcion != null && !#strings.isEmpty(semana.descripcion)}"
+                          th:text="' - ' + ${semana.descripcion}" class="fw-normal"></span>
+                </div>
+            </div>
+            <div class="semana-body">
+                <!-- Acceso directo al mapa usando la propiedad -->
+                <div th:with="dias=${diasPorSemana[semana.id]}">
+                    <div th:if="${dias == null || #lists.isEmpty(dias)}" class="alert alert-warning">
+                        No hay días registrados en esta semana.
+                    </div>
+
+                    <div th:if="${dias != null && !#lists.isEmpty(dias)}">
+                        <div th:each="dia : ${dias}" class="dia-card">
+                            <div class="dia-header">
+                                <div class="dia-title">
+                                    <i class="fas fa-calendar-day me-2"></i>
+                                    Día <span th:text="${dia.numeroDia}">1</span>
+                                    <span th:if="${dia.descripcion != null && !#strings.isEmpty(dia.descripcion)}"
+                                          th:text="' - ' + ${dia.descripcion}"></span>
+                                </div>
+                                <div>
+                                    <span th:if="${dia.estado}" class="status-badge badge-complete">
+                                        <i class="fas fa-check-circle me-1"></i>Completado
+                                    </span>
+                                    <span th:unless="${dia.estado}" class="status-badge badge-pending">
+                                        <i class="far fa-circle me-1"></i>Pendiente
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="dia-body">
+                                <!-- Acceso directo al mapa usando la propiedad del día -->
+                                <div th:with="ejercicios=${ejerciciosPorDia[dia.id]}">
+                                    <div th:if="${ejercicios == null || #lists.isEmpty(ejercicios)}" class="text-muted small">
+                                        No hay ejercicios asignados a este día.
+                                    </div>
+
+                                    <div th:if="${ejercicios != null && !#lists.isEmpty(ejercicios)}">
+                                        <div th:each="ejercicio : ${ejercicios}" class="ejercicio-card">
+                                            <div class="ejercicio-header">
+                                                <div class="ejercicio-nombre">
+                                                    <i class="fas fa-dumbbell me-2"></i>
+                                                    <span th:text="${ejercicio.nombreEjercicio ?: 'Sin nombre'}">Ejercicio</span>
+                                                </div>
+                                                <div>
+                                                    <span th:if="${ejercicio.estado}" class="status-badge badge-complete">
+                                                        <i class="fas fa-check-circle me-1"></i>Completado
+                                                    </span>
+                                                    <span th:unless="${ejercicio.estado}" class="status-badge badge-pending">
+                                                        <i class="far fa-circle me-1"></i>Pendiente
+                                                    </span>
+                                                </div>
+                                            </div>
+                                            <div class="ejercicio-body">
+                                                <div th:if="${ejercicio.comentarios != null && !#strings.isEmpty(ejercicio.comentarios)}"
+                                                     class="mb-2 text-muted small">
+                                                    <i class="fas fa-comment me-1"></i>
+                                                    <span th:text="${ejercicio.comentarios}"></span>
+                                                </div>
+
+                                                <!-- Acceso directo al mapa usando la propiedad del ejercicio -->
+                                                <div th:with="series=${seriesPorEjercicio[ejercicio.idEjercicioAsignado]}">
+                                                    <div th:if="${series == null || #lists.isEmpty(series)}" class="text-muted small">
+                                                        No hay series planificadas.
+                                                    </div>
+
+                                                    <div th:if="${series != null && !#lists.isEmpty(series)}">
+                                                        <div class="mb-2" style="font-weight: 600; font-size: 0.9rem; color: #495057;">
+                                                            <i class="fas fa-layer-group me-1"></i>
+                                                            Series (<span th:text="${#lists.size(series)}">0</span>)
+                                                        </div>
+                                                        <div class="series-grid">
+                                                            <div th:each="serie : ${series}"
+                                                                 th:with="registro=${registrosPorSerie[serie.id]}"
+                                                                 th:classappend="${registro != null ? 'completada' : ''}"
+                                                                 class="serie-item">
+                                                                <div class="serie-numero">
+                                                                    Serie #<span th:text="${serie.orden ?: '?'}">1</span>
+                                                                    <i th:if="${registro != null}" class="fas fa-check-circle check-icon"></i>
+                                                                </div>
+
+                                                                <!-- Repeticiones -->
+                                                                <div class="serie-dato">
+                                                                    <span class="serie-dato-label">Reps:</span>
+                                                                    <span class="serie-dato-valor" th:text="${serie.repeticiones ?: '-'}">-</span>
+                                                                </div>
+                                                                <div th:if="${registro != null && registro.repeticionesReales != null}"
+                                                                     class="serie-dato realizado">
+                                                                    <span class="serie-dato-label">Real:</span>
+                                                                    <span class="serie-dato-valor" th:text="${registro.repeticionesReales}">-</span>
+                                                                </div>
+
+                                                                <!-- Peso -->
+                                                                <div class="serie-dato">
+                                                                    <span class="serie-dato-label">Peso:</span>
+                                                                    <span class="serie-dato-valor" th:text="${serie.peso != null ? serie.peso + ' kg' : '-'}">-</span>
+                                                                </div>
+                                                                <div th:if="${registro != null && registro.pesoReal != null}"
+                                                                     class="serie-dato realizado">
+                                                                    <span class="serie-dato-label">Real:</span>
+                                                                    <span class="serie-dato-valor" th:text="${registro.pesoReal + ' kg'}">-</span>
+                                                                </div>
+
+                                                                <!-- Intensidad si está disponible -->
+                                                                <div th:if="${registro != null && registro.intensidadReal != null}"
+                                                                     class="serie-dato realizado">
+                                                                    <span class="serie-dato-label">Intensidad:</span>
+                                                                    <span class="serie-dato-valor" th:text="${registro.intensidadReal}">-</span>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+</body>
+</html>
