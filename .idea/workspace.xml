@@ -4,7 +4,12 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="0b88328c-1fbb-4843-a1f3-0a61ddac63ac" name="Changes" comment="Listo EL OPENJDK21 y configurado" />
+    <list default="true" id="0b88328c-1fbb-4843-a1f3-0a61ddac63ac" name="Changes" comment="tecer intento del openjdk">
+      <change afterPath="$PROJECT_DIR$/FIX_MAVEN_BUILD_ERROR.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/build.sh" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SOLUCION_FINAL_JDK.md" beforeDir="false" afterPath="$PROJECT_DIR$/SOLUCION_FINAL_JDK.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/nixpacks.toml" beforeDir="false" afterPath="$PROJECT_DIR$/nixpacks.toml" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -169,7 +174,15 @@
       <option name="project" value="LOCAL" />
       <updated>1765132248015</updated>
     </task>
-    <option name="localTasksCounter" value="13" />
+    <task id="LOCAL-00013" summary="tecer intento del openjdk">
+      <option name="closed" value="true" />
+      <created>1765132515105</created>
+      <option name="number" value="00013" />
+      <option name="presentableId" value="LOCAL-00013" />
+      <option name="project" value="LOCAL" />
+      <updated>1765132515105</updated>
+    </task>
+    <option name="localTasksCounter" value="14" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
@@ -183,7 +196,8 @@
     <MESSAGE value="Configuracion v2" />
     <MESSAGE value="Listo postgres y configurado" />
     <MESSAGE value="Listo EL OPENJDK21 y configurado" />
-    <option name="LAST_COMMIT_MESSAGE" value="Listo EL OPENJDK21 y configurado" />
+    <MESSAGE value="tecer intento del openjdk" />
+    <option name="LAST_COMMIT_MESSAGE" value="tecer intento del openjdk" />
   </component>
   <component name="github-copilot-workspace">
     <instructionFileLocations>

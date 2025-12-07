@@ -67,11 +67,12 @@ git push origin main
 
 ## 📊 COMPARACIÓN DE INTENTOS
 
-| Intento | Paquete | Resultado | Razón |
-|---------|---------|-----------|-------|
+| Intento | Cambio | Resultado | Razón |
+|---------|--------|-----------|-------|
 | 1 | `openjdk21` | ❌ | No existe en Nix |
 | 2 | `jdk21` | ❌ | No existe en Nix |
-| 3 | `jdk` | ✅ | **Existe y funciona** |
+| 3 | `jdk` | ⚠️ | Maven build falló |
+| 4 | `jdk` + `build.sh` | ✅ | **Script con debug** |
 
 ## ⏱️ LÍNEA DE TIEMPO DESPUÉS DEL PUSH
 
