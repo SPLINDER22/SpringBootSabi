@@ -16,6 +16,7 @@ public interface SuscripcionService {
     SuscripcionDTO getSuscripcionActualByClienteId(Long clienteId);
     List<SuscripcionDTO> getHistorialByClienteId(Long clienteId);
     void cancelarSuscripcion(Long id);
+    void cancelarSuscripcionPorClienteYEntrenador(Long clienteId, Long entrenadorId);
     boolean existsSuscripcionActivaByClienteId(Long clienteId);
 
     // Obtener clientes con suscripciones activas de una duración específica

@@ -180,6 +180,14 @@ public class SuscripcionServiceImpl implements SuscripcionService {
     }
 
     @Override
+    public void cancelarSuscripcionPorClienteYEntrenador(Long clienteId, Long entrenadorId) {
+        Suscripcion suscripcion = suscripcionRepository.findByCliente_IdAndEntrenador_IdAndEstadoTrue(clienteId, entrenadorId)
+                .orElseThrow(() -> new RuntimeException("No se encontró suscripción activa entre el cliente y el entrenador"));
+        suscripcion.setEstadoSuscripcion(EstadoSuscripcion.RECHAZADA);
+        suscripcionRepository.save(suscripcion);
+    }
+
+    @Override
     public boolean existsSuscripcionActivaByClienteId(Long clienteId) {
         return suscripcionRepository.existsByCliente_IdAndEstadoTrueAndEstadoSuscripcionIsNot(clienteId, EstadoSuscripcion.RECHAZADA);
     }

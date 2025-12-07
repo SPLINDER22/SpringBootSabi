@@ -117,43 +117,62 @@ public class RutinaController {
             redirectAttributes.addFlashAttribute("error", "Rutina no válida para finalizar.");
             return "redirect:/rutina/cliente";
         }
+
         try {
+            // Finalizar la rutina
             rutinaService.finalizarRutinaCliente(idRutina, usuario.getId());
+
             boolean hayTexto = texto != null && !texto.isBlank();
             boolean hayCal = calificacion != null;
+
             if (hayCal && (calificacion < 0 || calificacion > 5)) {
                 redirectAttributes.addFlashAttribute("error", "La calificación debe estar entre 0 y 5.");
                 return "redirect:/rutina/cliente";
             }
-            if (hayTexto || hayCal) {
-                if (rutina.getIdEntrenador() != null) {
-                    ComentarioDTO dto = new ComentarioDTO();
-                    dto.setTexto(hayTexto ? texto.trim() : null);
-                    dto.setCalificacion(hayCal ? calificacion : null);
-                    dto.setIdCliente(usuario.getId());
-                    dto.setIdEntrenador(rutina.getIdEntrenador());
-                    dto.setIdRutina(idRutina);
-                    try {
-                        comentarioService.crearComentario(dto);
-                        if (hayTexto && hayCal) {
-                            redirectAttributes.addFlashAttribute("success", "Rutina finalizada, comentario y calificación registrados.");
-                        } else if (hayTexto) {
-                            redirectAttributes.addFlashAttribute("success", "Rutina finalizada y comentario registrado.");
-                        } else {
-                            redirectAttributes.addFlashAttribute("success", "Rutina finalizada y calificación registrada.");
-                        }
-                    } catch (Exception ex) {
-                        redirectAttributes.addFlashAttribute("warning", "Rutina finalizada, pero el comentario/calificación no se guardó: " + ex.getMessage());
-                    }
-                } else {
-                    redirectAttributes.addFlashAttribute("warning", "Rutina finalizada. No se encontró entrenador para asociar el comentario/calificación.");
+
+            // Si la rutina fue asignada por un entrenador
+            if (rutina.getIdEntrenador() != null) {
+                // Validar que el comentario no esté vacío
+                if (!hayTexto) {
+                    redirectAttributes.addFlashAttribute("error", "Debes dejar un comentario cuando finalizas una rutina asignada por un entrenador.");
+                    return "redirect:/rutina/cliente";
                 }
+
+                // Crear comentario y calificación
+                ComentarioDTO dto = new ComentarioDTO();
+                dto.setTexto(texto.trim());
+                dto.setCalificacion(hayCal ? calificacion : null);
+                dto.setIdCliente(usuario.getId());
+                dto.setIdEntrenador(rutina.getIdEntrenador());
+                dto.setIdRutina(idRutina);
+
+                try {
+                    comentarioService.crearComentario(dto);
+                } catch (Exception ex) {
+                    redirectAttributes.addFlashAttribute("warning", "Rutina finalizada, pero el comentario/calificación no se guardó: " + ex.getMessage());
+                }
+
+                // Cancelar la suscripción entre el cliente y el entrenador
+                try {
+                    suscripcionService.cancelarSuscripcionPorClienteYEntrenador(usuario.getId(), rutina.getIdEntrenador());
+                    redirectAttributes.addFlashAttribute("success", "Rutina finalizada, comentario registrado y suscripción cancelada correctamente.");
+                } catch (Exception ex) {
+                    redirectAttributes.addFlashAttribute("warning", "Rutina finalizada y comentario registrado, pero no se pudo cancelar la suscripción: " + ex.getMessage());
+                }
+
             } else {
-                redirectAttributes.addFlashAttribute("success", "Rutina finalizada correctamente.");
+                // Rutina sin entrenador
+                if (hayTexto || hayCal) {
+                    redirectAttributes.addFlashAttribute("warning", "Rutina finalizada. No se encontró entrenador para asociar el comentario/calificación.");
+                } else {
+                    redirectAttributes.addFlashAttribute("success", "Rutina finalizada correctamente.");
+                }
             }
+
         } catch (Exception ex) {
             redirectAttributes.addFlashAttribute("error", "No se pudo finalizar la rutina: " + ex.getMessage());
         }
+
         return "redirect:/rutina/cliente";
     }
 
