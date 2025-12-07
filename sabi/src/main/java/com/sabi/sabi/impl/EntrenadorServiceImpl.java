@@ -28,7 +28,9 @@ public class EntrenadorServiceImpl implements EntrenadorService {
     @Override
     public List<EntrenadorDTO> getAllActiveEntrenadores() {
         List<Entrenador> entrenadores = entrenadorRepository.findByEstadoTrue();
+        // Ordenar: Verificados primero, luego no verificados
         return entrenadores.stream()
+                .sorted((e1, e2) -> Boolean.compare(e2.isVerified(), e1.isVerified()))
                 .map(this::mapToDTO)
                 .toList();
     }
@@ -144,7 +146,9 @@ public class EntrenadorServiceImpl implements EntrenadorService {
     public List<EntrenadorDTO> buscarEntrenadores(String nombre) {
         List<Entrenador> list = entrenadorRepository
                 .findByNombreContainingIgnoreCaseAndEstadoTrue(nombre);
+        // Ordenar: Verificados primero
         return list.stream()
+                .sorted((e1, e2) -> Boolean.compare(e2.isVerified(), e1.isVerified()))
                 .map(this::mapToDTO)
                 .toList();
     }
@@ -171,6 +175,10 @@ public class EntrenadorServiceImpl implements EntrenadorService {
             max = tmp;
         }
         List<Entrenador> list = entrenadorRepository.searchActive(n, esp, min, max, minExp, cert);
-        return list.stream().map(this::mapToDTO).toList();
+        // Ordenar: Verificados primero, luego no verificados
+        return list.stream()
+                .sorted((e1, e2) -> Boolean.compare(e2.isVerified(), e1.isVerified()))
+                .map(this::mapToDTO)
+                .toList();
     }
 }

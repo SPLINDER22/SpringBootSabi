@@ -305,6 +305,20 @@ public class DiagnosticoController {
         return "redirect:/cliente/dashboard";
     }
 
+    @GetMapping("/cliente/ver")
+    public String verDiagnosticoCliente(@AuthenticationPrincipal UserDetails userDetails, Model model) {
+        Long clienteId = clienteService.getClienteByEmail(userDetails.getUsername()).getId();
+        DiagnosticoDTO diagnostico = clienteService.getDiagnosticoActualByClienteId(clienteId);
+        
+        if (diagnostico == null) {
+            model.addAttribute("error", "No tienes un diagnóstico registrado.");
+            return "redirect:/cliente/dashboard";
+        }
+        
+        model.addAttribute("diagnostico", diagnostico);
+        return "cliente/diagnostico-ver";
+    }
+
     @GetMapping("/historial")
     public String historialDiagnosticos(@AuthenticationPrincipal UserDetails userDetails, Model model) {
         Long clienteId = clienteService.getClienteByEmail(userDetails.getUsername()).getId();
