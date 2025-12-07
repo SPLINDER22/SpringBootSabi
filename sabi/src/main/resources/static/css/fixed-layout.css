@@ -1,0 +1,172 @@
+/* Hacer el sidebar y navbar fijos */
+#accordionSidebar {
+    position: fixed !important;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    overflow-y: auto;
+    overflow-x: hidden;
+    z-index: 1000;
+}
+
+/* Hacer el navbar fijo */
+.topbar {
+    position: fixed !important;
+    top: 0;
+    right: 0;
+    left: 0;
+    z-index: 999;
+    margin-left: 14rem; /* Ancho del sidebar cuando está expandido */
+}
+
+/* Ajustar el contenido principal para que no quede debajo del navbar */
+#content {
+    padding-top: 4.5rem;
+}
+
+/* Ajustar cuando el sidebar está colapsado */
+.sidebar-toggled .topbar {
+    margin-left: 6.5rem; /* Ancho del sidebar cuando está colapsado */
+}
+
+/* Ajustar el content-wrapper para que tenga margen del sidebar */
+#content-wrapper {
+    margin-left: 14rem;
+}
+
+.sidebar-toggled #content-wrapper {
+    margin-left: 6.5rem;
+}
+
+/* Colores para los iconos del sidebar - Paleta vibrante y moderna */
+.sidebar .nav-item .nav-link i.fa-home {
+    color: #6366f1 !important; /* Índigo vibrante */
+}
+
+.sidebar .nav-item .nav-link i.fa-running {
+    color: #ec4899 !important; /* Rosa vibrante */
+}
+
+.sidebar .nav-item .nav-link i.fa-calendar-check {
+    color: #8b5cf6 !important; /* Púrpura */
+}
+
+.sidebar .nav-item .nav-link i.fa-credit-card {
+    color: #10b981 !important; /* Verde esmeralda */
+}
+
+.sidebar .nav-item .nav-link i.fa-envelope-open-text {
+    color: #f59e0b !important; /* Ámbar */
+}
+
+.sidebar .nav-item .nav-link i.fa-envelope {
+    color: #3b82f6 !important; /* Azul brillante */
+}
+
+.sidebar .nav-item .nav-link i.fa-user-md {
+    color: #06b6d4 !important; /* Cian */
+}
+
+.sidebar .nav-item .nav-link i.fa-notes-medical {
+    color: #14b8a6 !important; /* Verde azulado */
+}
+
+.sidebar .nav-item .nav-link i.fa-user-friends {
+    color: #f97316 !important; /* Naranja */
+}
+
+.sidebar .nav-item .nav-link i.fa-users {
+    color: #a855f7 !important; /* Púrpura brillante */
+}
+
+.sidebar .nav-item .nav-link i.fa-user-check {
+    color: #22c55e !important; /* Verde lima */
+}
+
+.sidebar .nav-item .nav-link i.fa-tachometer-alt {
+    color: #ef4444 !important; /* Rojo brillante */
+}
+
+/* Color para el icono de la marca */
+.sidebar-brand-icon i.fa-dumbbell {
+    color: #8b5cf6 !important;
+    font-size: 2rem;
+}
+
+.sidebar-brand-text {
+    color: #6366f1 !important;
+    font-weight: 700;
+}
+
+/* Mejorar el hover de los items del sidebar */
+.sidebar .nav-item .nav-link:hover {
+    background-color: #f3f4f6;
+    border-radius: 0.5rem;
+    margin: 0 0.5rem;
+    padding-left: 1rem;
+    transition: all 0.2s ease;
+}
+
+.sidebar .nav-item .nav-link:hover i {
+    transform: scale(1.1);
+    transition: transform 0.2s ease;
+}
+
+.sidebar .nav-item.active .nav-link {
+    background-color: #e0e7ff;
+    border-radius: 0.5rem;
+    margin: 0 0.5rem;
+    padding-left: 1rem;
+}
+
+/* Mejorar el texto del sidebar */
+.sidebar .nav-item .nav-link span {
+    color: #374151 !important;
+    font-weight: 500;
+    font-size: 0.9rem;
+}
+
+.sidebar .nav-item .nav-link:hover span {
+    color: #1f2937 !important;
+    font-weight: 600;
+}
+
+/* Estilizar el scrollbar del sidebar */
+#accordionSidebar::-webkit-scrollbar {
+    width: 6px;
+}
+
+#accordionSidebar::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+#accordionSidebar::-webkit-scrollbar-thumb {
+    background: #d1d5db;
+    border-radius: 3px;
+}
+
+#accordionSidebar::-webkit-scrollbar-thumb:hover {
+    background: #9ca3af;
+}
+
+/* Responsive - Mobile */
+@media (max-width: 768px) {
+    .topbar {
+        margin-left: 0 !important;
+    }
+
+    #content-wrapper {
+        margin-left: 0 !important;
+    }
+
+    #accordionSidebar {
+        position: fixed !important;
+        left: -14rem;
+        transition: left 0.3s ease;
+    }
+
+    .sidebar-toggled #accordionSidebar {
+        left: 0;
+    }
+}
+

@@ -9,6 +9,7 @@ import com.sabi.sabi.service.SerieService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -206,5 +207,24 @@ public class SerieServiceImpl implements SerieService {
         serie.setEstado(!serie.getEstado());
         serieRepository.save(serie);
         return true;
+    }
+
+    @Override
+    @Transactional
+    public SerieDTO duplicarSerie(long id) {
+        Serie serieOriginal = serieRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Serie not found with id: " + id));
+
+        // Crear una nueva serie con los mismos datos
+        SerieDTO nuevaSerieDTO = new SerieDTO();
+        nuevaSerieDTO.setIdEjercicioAsignado(serieOriginal.getEjercicioAsignado().getIdEjercicioAsignado());
+        nuevaSerieDTO.setComentarios(serieOriginal.getComentarios());
+        nuevaSerieDTO.setPeso(serieOriginal.getPeso());
+        nuevaSerieDTO.setRepeticiones(serieOriginal.getRepeticiones());
+        nuevaSerieDTO.setDescanso(serieOriginal.getDescanso());
+        nuevaSerieDTO.setIntensidad(serieOriginal.getIntensidad());
+        // El orden se asignará automáticamente al final en createSerie
+
+        return createSerie(nuevaSerieDTO);
     }
 }

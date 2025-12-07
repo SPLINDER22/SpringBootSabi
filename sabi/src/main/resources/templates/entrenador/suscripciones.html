@@ -338,7 +338,7 @@
                             </form>
                             <div th:if="${estado == 'ACEPTADA'}" class="w-100 mt-2">
                                 <a th:if="${rutinasActivasClientes != null and rutinasActivasClientes.containsKey(suscripcion.idCliente)}"
-                                   th:href="@{'/semanas/detallar/' + ${rutinasActivasClientes[suscripcion.idCliente]} + '?readonly=true'}"
+                                   th:href="@{'/semanas/progreso/' + ${rutinasActivasClientes[suscripcion.idCliente]}}"
                                    class="btn btn-primary btn-action w-100">
                                     <i class="fas fa-chart-line me-1"></i> Progreso
                                 </a>
@@ -448,7 +448,7 @@
                             </form>
                             <div th:if="${estado == 'ACEPTADA'}" class="w-100 mt-2">
                                 <a th:if="${rutinasActivasClientes != null and rutinasActivasClientes.containsKey(suscripcion.idCliente)}"
-                                   th:href="@{'/semanas/detallar/' + ${rutinasActivasClientes[suscripcion.idCliente]} + '?readonly=true'}"
+                                   th:href="@{'/semanas/progreso/' + ${rutinasActivasClientes[suscripcion.idCliente]}}"
                                    class="btn btn-primary btn-action w-100">
                                     <i class="fas fa-chart-line me-1"></i> Progreso
                                 </a>
@@ -555,7 +555,7 @@
                             </form>
                             <div th:if="${estado == 'ACEPTADA'}" class="w-100 mt-2">
                                 <a th:if="${rutinasActivasClientes != null and rutinasActivasClientes.containsKey(suscripcion.idCliente)}"
-                                   th:href="@{'/semanas/detallar/' + ${rutinasActivasClientes[suscripcion.idCliente]} + '?readonly=true'}"
+                                   th:href="@{'/semanas/progreso/' + ${rutinasActivasClientes[suscripcion.idCliente]}}"
                                    class="btn btn-primary btn-action w-100">
                                     <i class="fas fa-chart-line me-1"></i> Progreso
                                 </a>
@@ -636,7 +636,7 @@
                     <div class="card-footer pb-4 bg-light">
                         <div class="d-flex flex-wrap gap-2 w-100 justify-content-center">
                             <!-- Botón para ver progreso (destaca más) -->
-                            <a th:href="@{'/semanas/detallar/' + ${rutinasActivasClientes[suscripcion.idCliente]} + '?readonly=true'}"
+                            <a th:href="@{'/semanas/progreso/' + ${rutinasActivasClientes[suscripcion.idCliente]}}"
                                class="btn btn-success btn-action flex-fill">
                                 <i class="fas fa-chart-line me-1"></i> Ver Progreso
                             </a>
@@ -739,7 +739,7 @@
                                                         class="fas fa-times-circle"></i></button>
                                             </form>
                                             <a th:if="${estado == 'ACEPTADA' && rutinasActivasClientes != null and rutinasActivasClientes.containsKey(suscripcion.idCliente)}"
-                                               th:href="@{'/semanas/detallar/' + ${rutinasActivasClientes[suscripcion.idCliente]} + '?readonly=true'}"
+                                               th:href="@{'/semanas/progreso/' + ${rutinasActivasClientes[suscripcion.idCliente]}}"
                                                class="btn btn-primary btn-action" title="Progreso"><i
                                                     class="fas fa-chart-line"></i></a>
                                             <a th:if="${estado == 'ACEPTADA' && (rutinasActivasClientes == null || !rutinasActivasClientes.containsKey(suscripcion.idCliente))}"

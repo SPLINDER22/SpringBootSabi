@@ -25,6 +25,12 @@ public class EjercicioAsignadoServiceImpl implements EjercicioAsignadoService {
     private DiaRepository diaRepository;
     @Autowired
     private EjercicioRepository ejercicioRepository;
+    @Autowired
+    private com.sabi.sabi.repository.RegistroSerieRepository registroSerieRepository;
+    @Autowired
+    private com.sabi.sabi.repository.SerieRepository serieRepository;
+    @Autowired
+    private com.sabi.sabi.service.SerieService serieService;
 
     private EjercicioAsignadoDTO mapManual(EjercicioAsignado e){
         if(e==null) return null;
@@ -67,7 +73,28 @@ public class EjercicioAsignadoServiceImpl implements EjercicioAsignadoService {
     @Override
     public List<EjercicioAsignadoDTO> getEjesDia(Long idDia) {
         List<EjercicioAsignado> ejesDia = ejercicioAsignadoRepository.getEjesDia(idDia);
-        return ejesDia.stream().map(this::mapManual).toList();
+        return ejesDia.stream().map(e -> {
+            EjercicioAsignadoDTO dto = mapManual(e);
+            // Calcular el estado basándose en si tiene registros de series completadas
+            if (e.getSeries() != null && !e.getSeries().isEmpty()) {
+                long totalSeries = e.getSeries().size();
+                // Contar series que tienen al menos un registro
+                long seriesCompletadas = e.getSeries().stream()
+                    .filter(s -> {
+                        if (s.getId() != null) {
+                            // Verificar si esta serie tiene registros en la base de datos
+                            return !registroSerieRepository.findBySerie_IdIn(java.util.List.of(s.getId())).isEmpty();
+                        }
+                        return false;
+                    })
+                    .count();
+                // Si todas las series tienen registros, marcar el ejercicio como completado
+                dto.setEstado(totalSeries > 0 && seriesCompletadas == totalSeries);
+            } else {
+                dto.setEstado(e.getEstado()); // Mantener el estado manual si no hay series
+            }
+            return dto;
+        }).toList();
     }
 
     @Override
@@ -234,5 +261,38 @@ public class EjercicioAsignadoServiceImpl implements EjercicioAsignadoService {
         ejercicioAsignado.setEstado(ejercicioAsignado.getEstado() == null ? Boolean.TRUE : !ejercicioAsignado.getEstado());
         ejercicioAsignadoRepository.save(ejercicioAsignado);
         return mapManual(ejercicioAsignado);
+    }
+
+    @Override
+    @Transactional
+    public EjercicioAsignadoDTO duplicarEjercicioAsignado(long id) {
+        EjercicioAsignado ejercicioOriginal = ejercicioAsignadoRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("EjercicioAsignado not found with id: " + id));
+
+        // Crear un nuevo ejercicio asignado con los mismos datos
+        EjercicioAsignadoDTO nuevoEjeDTO = new EjercicioAsignadoDTO();
+        nuevoEjeDTO.setIdDia(ejercicioOriginal.getDia().getId());
+        nuevoEjeDTO.setIdEjercicio(ejercicioOriginal.getEjercicio() != null ? ejercicioOriginal.getEjercicio().getId() : null);
+        nuevoEjeDTO.setComentarios(ejercicioOriginal.getComentarios());
+        nuevoEjeDTO.setNumeroSeries(0L); // Se actualizará al agregar series
+        // El orden se asignará automáticamente al final en createEjercicioAsignado
+
+        EjercicioAsignadoDTO nuevoEje = createEjercicioAsignado(nuevoEjeDTO);
+
+        // Duplicar todas las series del ejercicio original al nuevo ejercicio
+        List<com.sabi.sabi.entity.Serie> seriesOriginales = serieRepository.getSerieEje(id);
+
+        for (com.sabi.sabi.entity.Serie serieOriginal : seriesOriginales) {
+            com.sabi.sabi.dto.SerieDTO nuevaSerieDTO = new com.sabi.sabi.dto.SerieDTO();
+            nuevaSerieDTO.setIdEjercicioAsignado(nuevoEje.getIdEjercicioAsignado());
+            nuevaSerieDTO.setComentarios(serieOriginal.getComentarios());
+            nuevaSerieDTO.setPeso(serieOriginal.getPeso());
+            nuevaSerieDTO.setRepeticiones(serieOriginal.getRepeticiones());
+            nuevaSerieDTO.setDescanso(serieOriginal.getDescanso());
+            nuevaSerieDTO.setIntensidad(serieOriginal.getIntensidad());
+            serieService.createSerie(nuevaSerieDTO);
+        }
+
+        return nuevoEje;
     }
 }

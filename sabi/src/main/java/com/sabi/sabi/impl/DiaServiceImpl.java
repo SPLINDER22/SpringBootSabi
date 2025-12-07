@@ -1,6 +1,7 @@
 package com.sabi.sabi.impl;
 
 import com.sabi.sabi.dto.DiaDTO;
+import com.sabi.sabi.dto.ProgresoSemanaDTO;
 import com.sabi.sabi.entity.Dia;
 import com.sabi.sabi.entity.Rutina;
 import com.sabi.sabi.entity.Semana;
@@ -11,6 +12,7 @@ import com.sabi.sabi.service.DiaService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -25,6 +27,14 @@ public class DiaServiceImpl implements DiaService {
     private SemanaRepository semanaRepository;
     @Autowired
     private RutinaRepository rutinaRepository;
+    @Autowired
+    private com.sabi.sabi.repository.EjercicioAsignadoRepository ejercicioAsignadoRepository;
+    @Autowired
+    private com.sabi.sabi.service.EjercicioAsignadoService ejercicioAsignadoService;
+    @Autowired
+    private com.sabi.sabi.repository.SerieRepository serieRepository;
+    @Autowired
+    private com.sabi.sabi.service.SerieService serieService;
 
     @Override
     public List<DiaDTO> getAllDia() {
@@ -244,5 +254,96 @@ public class DiaServiceImpl implements DiaService {
         }
         if (totalDias == 0) return 0L;
         return Math.round(((double) diasCompletados / (double) totalDias) * 100.0);
+    }
+
+    @Override
+    public List<ProgresoSemanaDTO> calcularProgresoPorSemana(long idCliente) {
+        List<ProgresoSemanaDTO> progresosSemanas = new java.util.ArrayList<>();
+
+        Optional<Rutina> rutina = rutinaRepository.findActiveByClienteId(idCliente);
+        if (rutina.isEmpty()) {
+            return progresosSemanas; // Lista vacía si no hay rutina activa
+        }
+
+        List<Semana> semanas = semanaRepository.getSemanasRutina(rutina.get().getId());
+        if (semanas == null || semanas.isEmpty()) {
+            return progresosSemanas;
+        }
+
+        // Recorrer cada semana y calcular su progreso
+        for (Semana semana : semanas) {
+            List<Dia> dias = diaRepository.getDiasSemana(semana.getId());
+            if (dias == null || dias.isEmpty()) {
+                continue;
+            }
+
+            long totalDias = dias.size();
+            long diasCompletados = 0;
+
+            for (Dia dia : dias) {
+                if (dia.getEstado() != null && dia.getEstado()) {
+                    diasCompletados++;
+                }
+            }
+
+            ProgresoSemanaDTO progresoSemana = new ProgresoSemanaDTO();
+            progresoSemana.setNumeroSemana(semana.getNumeroSemana());
+            progresoSemana.setDiasCompletados(diasCompletados);
+            progresoSemana.setTotalDias(totalDias);
+            progresoSemana.setNombreSemana(semana.getDescripcion()); // Si la semana tiene nombre/descripción
+
+            progresosSemanas.add(progresoSemana);
+        }
+
+        return progresosSemanas;
+    }
+
+    @Override
+    @Transactional
+    public DiaDTO duplicarDia(long id) {
+        Dia diaOriginal = diaRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Dia not found with id: " + id));
+
+        // Crear un nuevo día con los mismos datos
+        DiaDTO nuevoDiaDTO = new DiaDTO();
+        nuevoDiaDTO.setIdSemana(diaOriginal.getSemana().getId());
+        nuevoDiaDTO.setDescripcion(diaOriginal.getDescripcion());
+        nuevoDiaDTO.setNumeroEjercicios(0L); // Se actualizará al agregar ejercicios
+        // El número de día se asignará automáticamente al final en createDia
+
+        DiaDTO nuevoDia = createDia(nuevoDiaDTO);
+
+        // Duplicar todos los ejercicios del día original al NUEVO día
+        List<com.sabi.sabi.entity.EjercicioAsignado> ejerciciosOriginales =
+            ejercicioAsignadoRepository.getEjesDia(id);
+
+        for (com.sabi.sabi.entity.EjercicioAsignado ejercicioOriginal : ejerciciosOriginales) {
+            // Crear un nuevo ejercicio asignado al NUEVO día
+            com.sabi.sabi.dto.EjercicioAsignadoDTO nuevoEjeDTO = new com.sabi.sabi.dto.EjercicioAsignadoDTO();
+            nuevoEjeDTO.setIdDia(nuevoDia.getIdDia()); // ¡IMPORTANTE! Asignar al nuevo día
+            nuevoEjeDTO.setIdEjercicio(ejercicioOriginal.getEjercicio() != null ? ejercicioOriginal.getEjercicio().getId() : null);
+            nuevoEjeDTO.setComentarios(ejercicioOriginal.getComentarios());
+            nuevoEjeDTO.setNumeroSeries(0L);
+
+            // Crear el nuevo ejercicio
+            com.sabi.sabi.dto.EjercicioAsignadoDTO nuevoEje = ejercicioAsignadoService.createEjercicioAsignado(nuevoEjeDTO);
+
+            // Duplicar todas las series del ejercicio original al nuevo ejercicio
+            List<com.sabi.sabi.entity.Serie> seriesOriginales = serieRepository.getSerieEje(ejercicioOriginal.getIdEjercicioAsignado());
+
+            for (com.sabi.sabi.entity.Serie serieOriginal : seriesOriginales) {
+                com.sabi.sabi.dto.SerieDTO nuevaSerieDTO = new com.sabi.sabi.dto.SerieDTO();
+                nuevaSerieDTO.setIdEjercicioAsignado(nuevoEje.getIdEjercicioAsignado()); // Asignar al nuevo ejercicio
+                nuevaSerieDTO.setComentarios(serieOriginal.getComentarios());
+                nuevaSerieDTO.setPeso(serieOriginal.getPeso());
+                nuevaSerieDTO.setRepeticiones(serieOriginal.getRepeticiones());
+                nuevaSerieDTO.setDescanso(serieOriginal.getDescanso());
+                nuevaSerieDTO.setIntensidad(serieOriginal.getIntensidad());
+
+                serieService.createSerie(nuevaSerieDTO);
+            }
+        }
+
+        return nuevoDia;
     }
 }

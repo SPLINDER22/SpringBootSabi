@@ -1,0 +1,91 @@
+/* Tema Naranja - Series */
+.form-container-serie {
+    background: linear-gradient(135deg, #fff4e6 0%, #ffe4cc 100%);
+    border-radius: 12px;
+    padding: 2rem;
+    box-shadow: 0 4px 12px rgba(251, 146, 60, 0.15);
+    border-left: 5px solid #fb923c;
+}
+
+.form-container-serie h2 {
+    color: #c2410c;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+}
+
+.form-container-serie h2 i {
+    color: #fb923c;
+    font-size: 1.5rem;
+}
+
+.form-container-serie .form-label {
+    color: #9a3412;
+    font-weight: 600;
+    font-size: 0.95rem;
+    margin-bottom: 0.5rem;
+}
+
+.form-container-serie .form-control,
+.form-container-serie .form-select {
+    border: 2px solid #fed7aa;
+    border-radius: 8px;
+    padding: 0.6rem 0.75rem;
+    transition: all 0.2s ease;
+    background-color: #fff;
+}
+
+.form-container-serie .form-control:focus,
+.form-container-serie .form-select:focus {
+    border-color: #fb923c;
+    box-shadow: 0 0 0 0.2rem rgba(251, 146, 60, 0.25);
+    background-color: #fff;
+}
+
+.form-container-serie .form-text {
+    color: #c2410c;
+    font-size: 0.875rem;
+}
+
+.form-container-serie strong {
+    color: #9a3412;
+}
+
+.btn-serie-primary {
+    background: linear-gradient(135deg, #fb923c 0%, #f97316 100%);
+    border: none;
+    color: #fff;
+    font-weight: 600;
+    padding: 0.6rem 1.5rem;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 6px rgba(251, 146, 60, 0.3);
+}
+
+.btn-serie-primary:hover {
+    background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(251, 146, 60, 0.4);
+    color: #fff;
+}
+
+.info-badge-serie {
+    background: #ffedd5;
+    color: #9a3412;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    border-left: 3px solid #fb923c;
+}
+
+/* Grid mejorado para campos */
+.form-container-serie .row {
+    margin-bottom: 0;
+}
+
+.form-container-serie .col-12,
+.form-container-serie .col-md-4,
+.form-container-serie .col-md-8 {
+    margin-bottom: 1rem;
+}
+

@@ -19,4 +19,6 @@ public interface SerieService {
     boolean deleteSerie(long id);
 
     boolean desactivateSerie(long id);
+
+    SerieDTO duplicarSerie(long id);
 }
