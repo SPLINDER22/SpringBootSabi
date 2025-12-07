@@ -5,8 +5,9 @@ nixPkgs = ['maven', 'jdk']
 cmds = ['chmod +x build.sh', './build.sh']
 
 [start]
-cmd = 'cd sabi && java -Dserver.port=$PORT -Dspring.profiles.active=prod -jar target/sabi-0.0.1-SNAPSHOT.jar'
+cmd = 'cd sabi && java $JAVA_OPTS -Dserver.port=$PORT -Dspring.profiles.active=${SPRING_PROFILES_ACTIVE:-prod} -jar target/sabi-0.0.1-SNAPSHOT.jar'
 
 [variables]
 MAVEN_OPTS = '-Xmx512m'
+JAVA_OPTS = '-Xmx512m -Xms256m'
 

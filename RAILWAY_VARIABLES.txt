@@ -1,0 +1,30 @@
+# ============================================
+# CONFIGURACIÓN COMPLETA PARA RAILWAY
+# ============================================
+# Copia estas variables en Railway → Variables
+
+# OBLIGATORIAS - MÍNIMO PARA FUNCIONAR
+# --------------------------------------------
+
+SPRING_PROFILES_ACTIVE=prod
+
+# NOTA: DATABASE_URL se crea AUTOMÁTICAMENTE cuando agregas PostgreSQL
+# NO la configures manualmente
+
+# OPCIONALES PERO RECOMENDADAS
+# --------------------------------------------
+
+# Correo (si no las pones, el correo no funcionará pero la app SÍ iniciará)
+MAIL_USERNAME=Sabi.geas5@gmail.com
+MAIL_PASSWORD=Williamespinel1
+
+# Rutas de archivos
+UPLOAD_PATH=/app/uploads/perfiles
+UPLOAD_DIAGNOSTICOS_PATH=/app/uploads/diagnosticos
+
+# Memoria Java
+JAVA_OPTS=-Xmx512m -Xms256m
+
+# Zona horaria
+TZ=America/Bogota
+

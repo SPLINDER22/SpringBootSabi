@@ -19,6 +19,12 @@ echo "📦 Maven version:"
 mvn --version
 
 echo ""
+echo "🔍 Environment variables:"
+echo "PORT: ${PORT:-not set}"
+echo "DATABASE_URL: ${DATABASE_URL:+configured}"
+echo "SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE:-not set}"
+
+echo ""
 echo "🔨 Building project..."
 cd sabi
 
@@ -28,7 +34,12 @@ ls -la
 
 echo ""
 echo "🚀 Starting Maven build..."
-mvn clean package -DskipTests -B -e
+mvn clean package -DskipTests -B -e 2>&1 | tee build.log || {
+    echo ""
+    echo "❌ Build failed! Last 50 lines of output:"
+    tail -50 build.log
+    exit 1
+}
 
 echo ""
 echo "✅ Build completed successfully!"
