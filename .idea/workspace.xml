@@ -5,19 +5,24 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="0b88328c-1fbb-4843-a1f3-0a61ddac63ac" name="Changes" comment="Correciones santiago">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sabi/COMPARATIVA_DIAGNOSTICOS_IMC.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/sabi/CORRECCION_VERIFICACION_ENTRENADORES.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/sabi/RESUMEN_FINAL_v1.4.0.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/sabi/SISTEMA_FOTOS_OPTIMIZADO.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/sabi/src/main/java/com/sabi/sabi/controller/AdminController.java" beforeDir="false" afterPath="$PROJECT_DIR$/sabi/src/main/java/com/sabi/sabi/controller/AdminController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sabi/src/main/java/com/sabi/sabi/controller/DiagnosticoController.java" beforeDir="false" afterPath="$PROJECT_DIR$/sabi/src/main/java/com/sabi/sabi/controller/DiagnosticoController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sabi/src/main/java/com/sabi/sabi/impl/EntrenadorServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/sabi/src/main/java/com/sabi/sabi/impl/EntrenadorServiceImpl.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sabi/src/main/resources/templates/admin/entrenadores.html" beforeDir="false" afterPath="$PROJECT_DIR$/sabi/src/main/resources/templates/admin/entrenadores.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sabi/src/main/resources/templates/admin/perfil-usuario.html" beforeDir="false" afterPath="$PROJECT_DIR$/sabi/src/main/resources/templates/admin/perfil-usuario.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sabi/src/main/resources/templates/auth/completar-perfil-entrenador.html" beforeDir="false" afterPath="$PROJECT_DIR$/sabi/src/main/resources/templates/auth/completar-perfil-entrenador.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sabi/src/main/resources/templates/cliente/diagnostico.html" beforeDir="false" afterPath="$PROJECT_DIR$/sabi/src/main/resources/templates/cliente/diagnostico.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sabi/src/main/resources/templates/entrenador/ver-diagnostico.html" beforeDir="false" afterPath="$PROJECT_DIR$/sabi/src/main/resources/templates/entrenador/ver-diagnostico.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/copilotDiffState.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/sabi/ENVIRONMENT_VARIABLES.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/sabi/Procfile" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/sabi/RAILWAY_DEPLOYMENT.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/sabi/TROUBLESHOOTING.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/sabi/nixpacks.toml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/sabi/railway.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/sabi/src/main/java/com/sabi/sabi/config/FileStorageConfig.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/sabi/src/main/java/com/sabi/sabi/controller/HealthController.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/sabi/src/main/resources/application-prod.properties" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/sabi/verify-deploy.ps1" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sabi/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/sabi/.gitignore" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sabi/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/sabi/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sabi/src/main/java/com/sabi/sabi/config/SecurityConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/sabi/src/main/java/com/sabi/sabi/config/SecurityConfig.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sabi/src/main/java/com/sabi/sabi/config/WebMvcConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/sabi/src/main/java/com/sabi/sabi/config/WebMvcConfig.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sabi/src/main/java/com/sabi/sabi/controller/EntrenadorController.java" beforeDir="false" afterPath="$PROJECT_DIR$/sabi/src/main/java/com/sabi/sabi/controller/EntrenadorController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sabi/src/main/java/com/sabi/sabi/controller/PerfilController.java" beforeDir="false" afterPath="$PROJECT_DIR$/sabi/src/main/java/com/sabi/sabi/controller/PerfilController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sabi/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/sabi/src/main/resources/application.properties" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

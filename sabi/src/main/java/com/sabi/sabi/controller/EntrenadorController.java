@@ -701,7 +701,19 @@ public class EntrenadorController {
     @ResponseBody
     public org.springframework.http.ResponseEntity<org.springframework.core.io.Resource> descargarCertificacion(@PathVariable String filename) {
         try {
-            java.nio.file.Path file = java.nio.file.Paths.get("uploads/certificaciones").resolve(filename);
+            // Resolver ruta de certificaciones desde la raíz de uploads
+            java.nio.file.Path uploadsRoot = java.nio.file.Paths.get("uploads");
+            if (!uploadsRoot.isAbsolute()) {
+                uploadsRoot = uploadsRoot.toAbsolutePath();
+            }
+
+            // Si estamos en producción, usar /tmp/uploads
+            String uploadsPath = System.getenv("UPLOAD_PATH");
+            if (uploadsPath != null && uploadsPath.startsWith("/tmp")) {
+                uploadsRoot = java.nio.file.Paths.get("/tmp/uploads");
+            }
+
+            java.nio.file.Path file = uploadsRoot.resolve("certificaciones").resolve(filename);
             org.springframework.core.io.Resource resource = new org.springframework.core.io.UrlResource(file.toUri());
 
             if (resource.exists() || resource.isReadable()) {

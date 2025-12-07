@@ -253,7 +253,7 @@ public class PerfilController {
             }
 
             // Crear directorio para certificaciones si no existe
-            Path certDir = Paths.get("uploads/certificaciones");
+            Path certDir = Paths.get(uploadPath).getParent().resolve("certificaciones");
             if (!Files.exists(certDir)) {
                 Files.createDirectories(certDir);
                 System.out.println("  📁 Directorio de certificaciones creado");
