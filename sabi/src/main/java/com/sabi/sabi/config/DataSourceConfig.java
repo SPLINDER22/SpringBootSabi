@@ -26,22 +26,70 @@ public class DataSourceConfig {
 
         System.out.println("=== 🔍 RAILWAY MySQL DATABASE CONFIGURATION ===");
 
-        // Try MYSQLURL first (Railway's MySQL format)
-        String mysqlUrl = System.getenv("MYSQLURL");
+        // Print all available environment variables for debugging
+        System.out.println("Environment Variables:");
+        System.out.println("  MYSQLURL: " + (System.getenv("MYSQLURL") != null ? "SET" : "NOT SET"));
+        System.out.println("  MYSQLHOST: " + System.getenv("MYSQLHOST"));
+        System.out.println("  MYSQLPORT: " + System.getenv("MYSQLPORT"));
+        System.out.println("  MYSQLDATABASE: " + System.getenv("MYSQLDATABASE"));
+        System.out.println("  MYSQLUSER: " + System.getenv("MYSQLUSER"));
+        System.out.println("  MYSQLPASSWORD: " + (System.getenv("MYSQLPASSWORD") != null ? "****" : "NOT SET"));
 
-        if (mysqlUrl != null && !mysqlUrl.isEmpty()) {
-            System.out.println("✅ MYSQLURL found, parsing...");
+        // Try individual MYSQL* variables first (more reliable)
+        String mysqlHost = System.getenv("MYSQLHOST");
+        String mysqlPort = System.getenv("MYSQLPORT");
+        String mysqlDatabase = System.getenv("MYSQLDATABASE");
+        String mysqlUser = System.getenv("MYSQLUSER");
+        String mysqlPassword = System.getenv("MYSQLPASSWORD");
+
+        if (mysqlHost != null && mysqlDatabase != null && mysqlUser != null && mysqlPassword != null) {
+            System.out.println("✅ Using individual MYSQL* variables");
+
+            int port = 3306;
+            if (mysqlPort != null && !mysqlPort.isEmpty()) {
+                try {
+                    port = Integer.parseInt(mysqlPort);
+                } catch (NumberFormatException e) {
+                    System.err.println("⚠️ Invalid MYSQLPORT, using default 3306");
+                }
+            }
+
+            jdbcUrl = String.format("jdbc:mysql://%s:%d/%s?useSSL=true&allowPublicKeyRetrieval=true&serverTimezone=UTC&characterEncoding=UTF-8",
+                mysqlHost, port, mysqlDatabase);
+            username = mysqlUser;
+            password = mysqlPassword;
+
+            System.out.println("   Host: " + mysqlHost);
+            System.out.println("   Port: " + port);
+            System.out.println("   Database: " + mysqlDatabase);
+            System.out.println("   User: " + mysqlUser);
+
+        } else {
+            // Fallback to MYSQLURL
+            String mysqlUrl = System.getenv("MYSQLURL");
+
+            if (mysqlUrl == null || mysqlUrl.isEmpty()) {
+                System.err.println("❌ No MySQL configuration found!");
+                System.err.println("Missing: MYSQLHOST=" + mysqlHost + ", MYSQLDATABASE=" + mysqlDatabase +
+                                 ", MYSQLUSER=" + mysqlUser + ", MYSQLPASSWORD=" + (mysqlPassword != null ? "SET" : "NULL"));
+                throw new IllegalStateException("Missing MySQL environment variables. Please configure MySQL in Railway.");
+            }
+
+            System.out.println("📌 Parsing MYSQLURL: " + mysqlUrl.replaceAll(":[^:@]+@", ":****@"));
+
             try {
-                // Parse MYSQLURL: mysql://user:password@host:port/database
                 URI dbUri = new URI(mysqlUrl);
 
                 String host = dbUri.getHost();
                 int port = dbUri.getPort();
                 String path = dbUri.getPath();
 
+                if (host == null || host.isEmpty()) {
+                    throw new IllegalStateException("Invalid MYSQLURL: missing host");
+                }
+
                 if (port == -1) port = 3306;
 
-                // Build JDBC URL with proper MySQL parameters
                 jdbcUrl = String.format("jdbc:mysql://%s:%d%s?useSSL=true&allowPublicKeyRetrieval=true&serverTimezone=UTC&characterEncoding=UTF-8",
                     host, port, path);
 
@@ -51,7 +99,7 @@ public class DataSourceConfig {
                     username = credentials[0];
                     password = credentials[1];
                 } else {
-                    throw new IllegalStateException("MYSQLURL missing user credentials");
+                    throw new IllegalStateException("MYSQLURL missing user credentials (format: mysql://user:password@host:port/database)");
                 }
 
                 System.out.println("✅ Parsed from MYSQLURL");
@@ -62,33 +110,8 @@ public class DataSourceConfig {
             } catch (Exception e) {
                 System.err.println("❌ Error parsing MYSQLURL: " + e.getMessage());
                 e.printStackTrace();
-                throw new IllegalStateException("Failed to parse MYSQLURL", e);
+                throw new IllegalStateException("Failed to parse MYSQLURL: " + e.getMessage(), e);
             }
-        } else {
-            // Fallback to individual MYSQL* variables
-            System.out.println("📌 MYSQLURL not found, using MYSQL* variables...");
-
-            String mysqlHost = System.getenv("MYSQLHOST");
-            String mysqlPort = System.getenv("MYSQLPORT");
-            String mysqlDatabase = System.getenv("MYSQLDATABASE");
-            String mysqlUser = System.getenv("MYSQLUSER");
-            String mysqlPassword = System.getenv("MYSQLPASSWORD");
-
-            System.out.println("MYSQLHOST: " + (mysqlHost != null ? mysqlHost : "NOT SET"));
-            System.out.println("MYSQLPORT: " + (mysqlPort != null ? mysqlPort : "NOT SET"));
-            System.out.println("MYSQLDATABASE: " + (mysqlDatabase != null ? mysqlDatabase : "NOT SET"));
-            System.out.println("MYSQLUSER: " + (mysqlUser != null ? mysqlUser : "NOT SET"));
-
-            if (mysqlHost == null || mysqlDatabase == null || mysqlUser == null || mysqlPassword == null) {
-                System.err.println("❌ Missing required MySQL environment variables!");
-                throw new IllegalStateException("Missing MySQL environment variables (MYSQLHOST, MYSQLDATABASE, MYSQLUSER, MYSQLPASSWORD)");
-            }
-
-            int port = (mysqlPort != null && !mysqlPort.isEmpty()) ? Integer.parseInt(mysqlPort) : 3306;
-            jdbcUrl = String.format("jdbc:mysql://%s:%d/%s?useSSL=true&allowPublicKeyRetrieval=true&serverTimezone=UTC&characterEncoding=UTF-8",
-                mysqlHost, port, mysqlDatabase);
-            username = mysqlUser;
-            password = mysqlPassword;
         }
 
         System.out.println("🔗 JDBC URL: " + jdbcUrl.replaceAll(":[^:@]+@", ":****@"));
