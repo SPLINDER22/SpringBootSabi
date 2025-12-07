@@ -277,17 +277,26 @@
                                 <div th:if="${entrenador.certificaciones != null && !#strings.isEmpty(entrenador.certificaciones)}" class="mt-2">
                                     <div class="alert alert-info mb-2" style="font-size: 0.85rem; padding: 8px 12px;">
                                         <i class="fas fa-info-circle"></i>
-                                        Haz clic en cada certificación para ver el documento PDF y verificar su autenticidad.
+                                        Puedes ver o descargar cada certificación para verificar su autenticidad.
                                     </div>
                                     <th:block th:each="cert, iterStat : ${#strings.arraySplit(entrenador.certificaciones, ',')}">
-                                        <a th:href="@{'/' + ${cert}}"
-                                           target="_blank"
-                                           class="btn btn-sm btn-primary mb-2 mr-1"
-                                           style="box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
-                                            <i class="fas fa-file-pdf"></i>
-                                            Certificación [[${iterStat.count}]]
-                                            <i class="fas fa-external-link-alt ms-1" style="font-size: 0.7rem;"></i>
-                                        </a>
+                                        <div class="btn-group mb-2 mr-2" role="group">
+                                            <a th:href="@{'/' + ${#strings.trim(cert)}}"
+                                               target="_blank"
+                                               class="btn btn-sm btn-primary"
+                                               style="box-shadow: 0 2px 4px rgba(0,0,0,0.1);"
+                                               title="Ver certificación en nueva pestaña">
+                                                <i class="fas fa-file-pdf"></i>
+                                                Certificación [[${iterStat.count}]]
+                                                <i class="fas fa-external-link-alt ms-1" style="font-size: 0.7rem;"></i>
+                                            </a>
+                                            <a th:href="@{/admin/entrenadores/certificacion/descargar(ruta=${#strings.trim(cert)})}"
+                                               class="btn btn-sm btn-success"
+                                               title="Descargar certificación"
+                                               download>
+                                                <i class="fas fa-download"></i>
+                                            </a>
+                                        </div>
                                     </th:block>
                                 </div>
 

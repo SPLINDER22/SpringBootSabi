@@ -534,9 +534,12 @@
                                 <br>
                                 <small class="text-muted">${certTrimmed.substring(certTrimmed.lastIndexOf('/') + 1)}</small>
                             </div>
-                            <div>
-                                <a href="/${certTrimmed}" target="_blank" class="btn btn-primary btn-sm">
-                                    <i class="fas fa-eye"></i> Ver PDF
+                            <div class="btn-group" role="group">
+                                <a href="/${certTrimmed}" target="_blank" class="btn btn-primary btn-sm" title="Ver en nueva pestaña">
+                                    <i class="fas fa-eye"></i> Ver
+                                </a>
+                                <a href="/admin/entrenadores/certificacion/descargar?ruta=${certTrimmed}" class="btn btn-success btn-sm" title="Descargar PDF" download>
+                                    <i class="fas fa-download"></i> Descargar
                                 </a>
                             </div>
                         `;

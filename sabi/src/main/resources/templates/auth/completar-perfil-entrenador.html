@@ -659,45 +659,14 @@
         }
 
         // ========================================
-        // 🚨 VALIDACIÓN OBLIGATORIA DE CERTIFICACIONES
+        // 💡 ADVERTENCIA OPCIONAL DE CERTIFICACIONES
         // ========================================
         const certificacionesInput = document.getElementById('certificaciones');
-        const errorCertificaciones = document.getElementById('errorCertificaciones');
 
+        // Si no hay certificaciones, mostrar advertencia pero permitir continuar
         if (!certificacionesInput.files || certificacionesInput.files.length === 0) {
-            e.preventDefault();
-            errorCertificaciones.style.display = 'block';
-            certificacionesInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
-
-            // Mostrar alerta SweetAlert2 si está disponible
-            if (typeof Swal !== 'undefined') {
-                Swal.fire({
-                    icon: 'error',
-                    title: '¡Certificaciones Obligatorias!',
-                    html: `
-                        <div style="text-align: left; padding: 15px;">
-                            <p style="margin-bottom: 15px;">
-                                <strong>Debes subir al menos 1 certificación</strong> para completar tu registro como entrenador.
-                            </p>
-                            <div style="background: #fff3cd; padding: 12px; border-radius: 8px; border-left: 4px solid #ffc107;">
-                                <i class="fas fa-exclamation-triangle" style="color: #856404;"></i>
-                                <strong style="color: #856404;">Importante:</strong>
-                                <ul style="margin: 10px 0 0 0; color: #856404;">
-                                    <li>Las certificaciones son <strong>obligatorias</strong></li>
-                                    <li>Sin ellas, <strong>no podrás ser verificado</strong> por el administrador</li>
-                                    <li>Los clientes confían más en entrenadores certificados</li>
-                                </ul>
-                            </div>
-                        </div>
-                    `,
-                    confirmButtonText: 'Subir Certificaciones',
-                    confirmButtonColor: '#2461E9'
-                });
-            } else {
-                alert('⚠️ Por favor, sube al menos 1 certificación en formato PDF.\n\nSin certificaciones no podrás ser verificado por el administrador de SABI.');
-            }
-
-            return false;
+            // Opcional: mostrar advertencia sin bloquear
+            console.log('⚠️ Entrenador registrándose sin certificaciones - podrá subirlas después');
         }
 
         // Validar que sean archivos PDF

@@ -163,33 +163,49 @@
         <div class="categoria">
             <div class="categoria-titulo"><i class="fas fa-weight"></i> Datos Fisicos</div>
             <div class="row g-3">
-                <div class="col-md-3">
-                    <div class="info-row">
+                <div class="col-md-4">
+                    <div class="info-row text-center" th:with="peso=${diagnostico.peso}">
                         <div class="info-label">⚖️ Peso</div>
-                        <div class="info-value" th:text="${diagnostico.peso + ' kg'}"></div>
-                    </div>
-                </div>
-                <div class="col-md-3">
-                    <div class="info-row">
-                        <div class="info-label">📏 Estatura</div>
-                        <div class="info-value" th:text="${diagnostico.estatura + ' cm'}"></div>
-                    </div>
-                </div>
-                <div class="col-md-3" th:with="imc=${diagnostico.peso != null && diagnostico.estatura != null ? T(java.lang.Math).round((diagnostico.peso / ((diagnostico.estatura/100)*(diagnostico.estatura/100))) * 10) / 10.0 : null}">
-                    <div class="info-row">
-                        <div class="info-label">📊 IMC</div>
-                        <div class="info-value">
-                            <span th:text="${imc}"></span>
-                            <div th:if="${imc != null}">
-                                <span th:if="${imc < 18.5}" class="imc-badge" style="background: #dbeafe; color: #1e40af;">Bajo peso</span>
-                                <span th:if="${imc >= 18.5 && imc < 25}" class="imc-badge" style="background: #d1fae5; color: #065f46;">Peso normal</span>
-                                <span th:if="${imc >= 25 && imc < 30}" class="imc-badge" style="background: #fed7aa; color: #92400e;">Sobrepeso</span>
-                                <span th:if="${imc >= 30}" class="imc-badge" style="background: #fecaca; color: #991b1b;">Obesidad</span>
-                            </div>
+                        <div class="info-value" style="font-size: 2rem; font-weight: bold; margin: 10px 0;" th:text="${peso + ' kg'}"></div>
+                        <!-- Indicador visual del peso -->
+                        <div th:if="${peso != null}">
+                            <span th:if="${peso < 50}" class="imc-badge" style="background: #dbeafe; color: #1e40af;">Bajo</span>
+                            <span th:if="${peso >= 50 && peso < 70}" class="imc-badge" style="background: #d1fae5; color: #065f46;">Normal</span>
+                            <span th:if="${peso >= 70 && peso < 90}" class="imc-badge" style="background: #fed7aa; color: #92400e;">Medio-Alto</span>
+                            <span th:if="${peso >= 90}" class="imc-badge" style="background: #fecaca; color: #991b1b;">Alto</span>
                         </div>
                     </div>
                 </div>
-                <div class="col-md-3">
+                <div class="col-md-4">
+                    <div class="info-row text-center" th:with="estatura=${diagnostico.estatura}">
+                        <div class="info-label">📏 Estatura</div>
+                        <div class="info-value" style="font-size: 2rem; font-weight: bold; margin: 10px 0;" th:text="${estatura + ' cm'}"></div>
+                        <!-- Indicador visual de la estatura -->
+                        <div th:if="${estatura != null}">
+                            <span th:if="${estatura < 155}" class="imc-badge" style="background: #dbeafe; color: #1e40af;">Baja</span>
+                            <span th:if="${estatura >= 155 && estatura < 175}" class="imc-badge" style="background: #d1fae5; color: #065f46;">Media</span>
+                            <span th:if="${estatura >= 175 && estatura < 190}" class="imc-badge" style="background: #fed7aa; color: #92400e;">Alta</span>
+                            <span th:if="${estatura >= 190}" class="imc-badge" style="background: #fecaca; color: #991b1b;">Muy Alta</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4" th:with="imc=${diagnostico.peso != null && diagnostico.estatura != null ? T(java.lang.Math).round((diagnostico.peso / ((diagnostico.estatura/100)*(diagnostico.estatura/100))) * 10) / 10.0 : null}">
+                    <div class="info-row text-center">
+                        <div class="info-label">📊 IMC</div>
+                        <div class="info-value" style="font-size: 2rem; font-weight: bold; margin: 10px 0;">
+                            <span th:text="${imc}"></span>
+                        </div>
+                        <div th:if="${imc != null}">
+                            <span th:if="${imc < 18.5}" class="imc-badge" style="background: #dbeafe; color: #1e40af;">Bajo peso</span>
+                            <span th:if="${imc >= 18.5 && imc < 25}" class="imc-badge" style="background: #d1fae5; color: #065f46;">Peso normal</span>
+                            <span th:if="${imc >= 25 && imc < 30}" class="imc-badge" style="background: #fed7aa; color: #92400e;">Sobrepeso</span>
+                            <span th:if="${imc >= 30}" class="imc-badge" style="background: #fecaca; color: #991b1b;">Obesidad</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row g-3 mt-2">
+                <div class="col-md-12">
                     <div class="info-row">
                         <div class="info-label">🎯 Nivel Experiencia</div>
                         <div class="info-value" th:text="${diagnostico.nivelExperiencia}"></div>
@@ -258,16 +274,34 @@
         <div class="categoria">
             <div class="categoria-titulo"><i class="fas fa-heart"></i> Habitos de Vida</div>
             <div class="row g-3">
-                <div class="col-md-4">
-                    <div class="info-row">
-                        <div class="info-label">😴 Horas de Sueno</div>
-                        <div class="info-value" th:text="${diagnostico.horasSueno + ' horas'}"></div>
+                <div class="col-md-6">
+                    <div class="info-row text-center" th:with="sueno=${diagnostico.horasSueno}">
+                        <div class="info-label">😴 Horas de Sueño</div>
+                        <div class="info-value" style="font-size: 2rem; font-weight: bold; margin: 10px 0;" th:text="${sueno + ' horas'}"></div>
+                        <!-- Indicador visual del sueño -->
+                        <div th:if="${sueno != null}">
+                            <span th:if="${sueno < 6}" class="imc-badge" style="background: #fecaca; color: #991b1b;">Insuficiente</span>
+                            <span th:if="${sueno >= 6 && sueno < 7}" class="imc-badge" style="background: #fed7aa; color: #92400e;">Bajo</span>
+                            <span th:if="${sueno >= 7 && sueno <= 9}" class="imc-badge" style="background: #d1fae5; color: #065f46;">Óptimo</span>
+                            <span th:if="${sueno > 9}" class="imc-badge" style="background: #dbeafe; color: #1e40af;">Excesivo</span>
+                        </div>
                     </div>
                 </div>
-                <div class="col-md-8">
-                    <div class="info-row">
-                        <div class="info-label">🍎 Habitos Alimenticios</div>
-                        <div class="info-value" th:text="${diagnostico.habitosAlimenticios}"></div>
+                <div class="col-md-6">
+                    <div class="info-row text-center">
+                        <div class="info-label">🍎 Hábitos Alimenticios</div>
+                        <div class="info-value" style="font-size: 1.2rem; font-weight: 600; margin: 10px 0;" th:text="${diagnostico.habitosAlimenticios}"></div>
+                        <!-- Indicador visual de la dieta -->
+                        <div th:with="dieta=${diagnostico.habitosAlimenticios != null ? diagnostico.habitosAlimenticios.toLowerCase() : ''}">
+                            <span th:if="${#strings.contains(dieta, 'excelente') || #strings.contains(dieta, 'muy buen') || #strings.contains(dieta, 'saludable')}"
+                                  class="imc-badge" style="background: #d1fae5; color: #065f46;">Muy Bueno</span>
+                            <span th:if="${#strings.contains(dieta, 'bueno') || #strings.contains(dieta, 'adecuado')}"
+                                  class="imc-badge" style="background: #dbeafe; color: #1e40af;">Bueno</span>
+                            <span th:if="${#strings.contains(dieta, 'regular') || #strings.contains(dieta, 'moderado')}"
+                                  class="imc-badge" style="background: #fed7aa; color: #92400e;">Regular</span>
+                            <span th:if="${#strings.contains(dieta, 'malo') || #strings.contains(dieta, 'deficiente') || #strings.contains(dieta, 'pobre')}"
+                                  class="imc-badge" style="background: #fecaca; color: #991b1b;">Necesita Mejora</span>
+                        </div>
                     </div>
                 </div>
                 <div class="col-md-4" th:if="${diagnostico.nivelEstres != null}">
