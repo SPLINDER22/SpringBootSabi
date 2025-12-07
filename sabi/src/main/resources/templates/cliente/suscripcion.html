@@ -41,9 +41,11 @@
                         </div>
                     </div>
                     <div class="btns" style="margin-top:8px;">
-                        <a th:href="${telefonoEntrenador != null ? 'https://wa.me/' + telefonoEntrenador : '#'}"
+                        <a id="btnWhatsAppEntrenador" href="#"
                            class="btn-whatsapp" th:classappend="${telefonoEntrenador == null ? ' disabled' : ''}"
-                           target="_blank"><i class="fab fa-whatsapp me-2" aria-hidden="true"></i>WhatsApp</a>
+                           target="_blank" th:attr="data-telefono=${telefonoEntrenador}">
+                            <i class="fab fa-whatsapp me-2" aria-hidden="true"></i>WhatsApp
+                        </a>
                         <a th:href="${emailEntrenador != null ? 'mailto:' + emailEntrenador : '#'}" class="btn-email"
                            th:classappend="${emailEntrenador == null ? ' disabled' : ''}"><i class="fas fa-envelope me-2" aria-hidden="true"></i>Enviar un correo</a>
                     </div>
@@ -145,6 +147,34 @@
         <!-- Script de confirmación SweetAlert para cancelar suscripción -->
         <script th:inline="javascript">
         document.addEventListener('DOMContentLoaded', function(){
+            // Formatear número de WhatsApp con prefijo +57 para Colombia
+            const btnWhatsApp = document.getElementById('btnWhatsAppEntrenador');
+            if (btnWhatsApp) {
+                const telefono = btnWhatsApp.getAttribute('data-telefono');
+                if (telefono && telefono.trim() !== '') {
+                    // Limpiar el número (eliminar espacios, guiones, paréntesis, etc.)
+                    let numeroLimpio = telefono.replace(/[\s\-\(\)]/g, '');
+
+                    // Si el número no empieza con +57, agregarlo
+                    if (!numeroLimpio.startsWith('+57') && !numeroLimpio.startsWith('57')) {
+                        // Si empieza con 0, quitarlo (ej: 0300 -> 300)
+                        if (numeroLimpio.startsWith('0')) {
+                            numeroLimpio = numeroLimpio.substring(1);
+                        }
+                        numeroLimpio = '57' + numeroLimpio;
+                    } else if (numeroLimpio.startsWith('+57')) {
+                        // Remover el + si ya lo tiene
+                        numeroLimpio = numeroLimpio.substring(1);
+                    }
+
+                    // Crear el enlace de WhatsApp
+                    btnWhatsApp.href = 'https://wa.me/' + numeroLimpio;
+                } else {
+                    btnWhatsApp.href = '#';
+                }
+            }
+
+            // Confirmación para cancelar suscripción
             const formCancelar = document.getElementById('formCancelarSuscripcion');
             if(formCancelar){
                 formCancelar.addEventListener('submit', function(e){

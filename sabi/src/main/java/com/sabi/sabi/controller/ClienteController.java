@@ -575,6 +575,14 @@ public class ClienteController {
             .collect(java.util.stream.Collectors.toList());
     }
 
+    // 🔐 FILTRAR SOLO ENTRENADORES VERIFICADOS POR SABI
+    if (entrenadores != null) {
+        entrenadores = entrenadores.stream()
+            .filter(e -> e.getVerified() != null && e.getVerified())
+            .collect(java.util.stream.Collectors.toList());
+        System.out.println("✅ Mostrando solo entrenadores verificados por SABI: " + entrenadores.size() + " entrenadores");
+    }
+
         model.addAttribute("entrenadores", entrenadores);
         model.addAttribute("tieneDiagnostico", tieneDiagnostico);
         model.addAttribute("objetivoCliente", objetivoCliente);
