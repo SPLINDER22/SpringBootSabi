@@ -15,7 +15,7 @@ public interface RutinaRepository extends JpaRepository<Rutina,Long> {
     List<Rutina> findByEstadoTrue();
     List<Rutina> findByClienteIdAndEstadoTrue(Long clienteId);
 
-    @Query("SELECT r FROM Rutina r LEFT JOIN FETCH r.entrenador e WHERE (e.id = :usuarioId) AND r.estado = true AND r.cliente IS NULL")
+    @Query("SELECT r FROM Rutina r LEFT JOIN FETCH r.entrenador e WHERE (e.id = :usuarioId) AND r.estado = true")
     List<Rutina> getRutinasPorUsuario(@Param("usuarioId") Long usuarioId);
 
     @Query("SELECT r FROM Rutina r WHERE r.cliente = :cliente AND r.estadoRutina = 'ACTIVA' AND r.estado = true")

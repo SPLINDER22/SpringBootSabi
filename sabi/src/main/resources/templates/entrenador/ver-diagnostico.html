@@ -119,11 +119,11 @@
                     <p class="mb-1" th:if="${cliente.sexo != null}">
                         <i class="fas fa-venus-mars"></i>
                         <strong>Género:</strong>
-                        <span th:if="${cliente.sexo.toLowerCase() == 'masculino' || cliente.sexo.toLowerCase() == 'm'}">👨 Masculino</span>
-                        <span th:if="${cliente.sexo.toLowerCase() == 'femenino' || cliente.sexo.toLowerCase() == 'f'}">👩 Femenino</span>
-                        <span th:if="${cliente.sexo.toLowerCase() != 'masculino' && cliente.sexo.toLowerCase() != 'm' && cliente.sexo.toLowerCase() != 'femenino' && cliente.sexo.toLowerCase() != 'f'}" th:text="${cliente.sexo}"></span>
+                        <span th:if="${cliente.sexo.toString() == 'MASCULINO'}">👨 Masculino</span>
+                        <span th:if="${cliente.sexo.toString() == 'FEMENINO'}">👩 Femenino</span>
+                        <span th:if="${cliente.sexo.toString() != 'MASCULINO' && cliente.sexo.toString() != 'FEMENINO'}" th:text="${cliente.sexo}"></span>
                     </p>
-                    <p class="mb-0"><i class="fas fa-calendar"></i> Diagnostico del: <span th:text="${#temporals.format(diagnostico.fecha, 'dd/MM/yyyy')}"></span></p>
+                    <p class="mb-0"><i class="fas fa-calendar"></i> Diagnostico del: <span th:if="${diagnostico.fecha != null}" th:text="${#temporals.format(diagnostico.fecha, 'dd/MM/yyyy')}"></span><span th:if="${diagnostico.fecha == null}">Fecha no disponible</span></p>
                 </div>
             </div>
         </div>
@@ -166,20 +166,21 @@
                 <div class="col-md-3">
                     <div class="info-row">
                         <div class="info-label">⚖️ Peso</div>
-                        <div class="info-value" th:text="${diagnostico.peso + ' kg'}"></div>
+                        <div class="info-value" th:text="${diagnostico.peso != null ? diagnostico.peso + ' kg' : 'No especificado'}"></div>
                     </div>
                 </div>
                 <div class="col-md-3">
                     <div class="info-row">
                         <div class="info-label">📏 Estatura</div>
-                        <div class="info-value" th:text="${diagnostico.estatura + ' cm'}"></div>
+                        <div class="info-value" th:text="${diagnostico.estatura != null ? diagnostico.estatura + ' cm' : 'No especificado'}"></div>
                     </div>
                 </div>
                 <div class="col-md-3" th:with="imc=${diagnostico.peso != null && diagnostico.estatura != null ? T(java.lang.Math).round((diagnostico.peso / ((diagnostico.estatura/100)*(diagnostico.estatura/100))) * 10) / 10.0 : null}">
                     <div class="info-row">
                         <div class="info-label">📊 IMC</div>
                         <div class="info-value">
-                            <span th:text="${imc}"></span>
+                            <span th:if="${imc != null}" th:text="${imc}"></span>
+                            <span th:if="${imc == null}">No calculado</span>
                             <div th:if="${imc != null}">
                                 <span th:if="${imc < 18.5}" class="imc-badge" style="background: #dbeafe; color: #1e40af;">Bajo peso</span>
                                 <span th:if="${imc >= 18.5 && imc < 25}" class="imc-badge" style="background: #d1fae5; color: #065f46;">Peso normal</span>
@@ -192,7 +193,7 @@
                 <div class="col-md-3">
                     <div class="info-row">
                         <div class="info-label">🎯 Nivel Experiencia</div>
-                        <div class="info-value" th:text="${diagnostico.nivelExperiencia}"></div>
+                        <div class="info-value" th:text="${diagnostico.nivelExperiencia != null ? diagnostico.nivelExperiencia : 'No especificado'}"></div>
                     </div>
                 </div>
             </div>
@@ -205,7 +206,7 @@
                 <div class="col-md-4">
                     <div class="info-row">
                         <div class="info-label">⏰ Disponibilidad de Tiempo</div>
-                        <div class="info-value" th:text="${diagnostico.disponibilidadTiempo}"></div>
+                        <div class="info-value" th:text="${diagnostico.disponibilidadTiempo != null ? diagnostico.disponibilidadTiempo : 'No especificado'}"></div>
                     </div>
                 </div>
                 <div class="col-md-4" th:if="${diagnostico.diasDisponiblesSemana != null}">
@@ -223,7 +224,7 @@
                 <div class="col-md-12">
                     <div class="info-row">
                         <div class="info-label">🏋️ Acceso a Recursos</div>
-                        <div class="info-value" th:text="${diagnostico.accesoRecursos}"></div>
+                        <div class="info-value" th:text="${diagnostico.accesoRecursos != null ? diagnostico.accesoRecursos : 'No especificado'}"></div>
                     </div>
                 </div>
             </div>
@@ -236,13 +237,13 @@
                 <div class="col-md-6">
                     <div class="info-row">
                         <div class="info-label">🤕 Lesiones</div>
-                        <div class="info-value" th:text="${diagnostico.lesiones}"></div>
+                        <div class="info-value" th:text="${diagnostico.lesiones != null ? diagnostico.lesiones : 'No especificado'}"></div>
                     </div>
                 </div>
                 <div class="col-md-6">
                     <div class="info-row">
                         <div class="info-label">🏥 Condiciones Medicas</div>
-                        <div class="info-value" th:text="${diagnostico.condicionesMedicas}"></div>
+                        <div class="info-value" th:text="${diagnostico.condicionesMedicas != null ? diagnostico.condicionesMedicas : 'No especificado'}"></div>
                     </div>
                 </div>
                 <div class="col-md-12" th:if="${diagnostico.limitacionesFisicas != null && !diagnostico.limitacionesFisicas.isEmpty()}">
@@ -258,7 +259,7 @@
         <div class="categoria">
             <div class="categoria-titulo"><i class="fas fa-heart"></i> Habitos de Vida</div>
             <div class="row g-3">
-                <div class="col-md-4">
+                <div class="col-md-4" th:if="${diagnostico.horasSueno != null}">
                     <div class="info-row">
                         <div class="info-label">😴 Horas de Sueno</div>
                         <div class="info-value" th:text="${diagnostico.horasSueno + ' horas'}"></div>
@@ -267,7 +268,7 @@
                 <div class="col-md-8">
                     <div class="info-row">
                         <div class="info-label">🍎 Habitos Alimenticios</div>
-                        <div class="info-value" th:text="${diagnostico.habitosAlimenticios}"></div>
+                        <div class="info-value" th:text="${diagnostico.habitosAlimenticios != null ? diagnostico.habitosAlimenticios : 'No especificado'}"></div>
                     </div>
                 </div>
                 <div class="col-md-4" th:if="${diagnostico.nivelEstres != null}">
