@@ -4,7 +4,14 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="0b88328c-1fbb-4843-a1f3-0a61ddac63ac" name="Changes" comment="Cambiar a Java 17 para compatibilidad con Railway" />
+    <list default="true" id="0b88328c-1fbb-4843-a1f3-0a61ddac63ac" name="Changes" comment="Cambiar a Java 17 para compatibilidad con Railway">
+      <change afterPath="$PROJECT_DIR$/ACCION_INMEDIATA_FIX.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/FIX_DATABASE_URL_PARSING.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/deploy-railway.ps1" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/FIX_DATABASE_URL.md" beforeDir="false" afterPath="$PROJECT_DIR$/FIX_DATABASE_URL.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sabi/src/main/java/com/sabi/sabi/config/DataSourceConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/sabi/src/main/java/com/sabi/sabi/config/DataSourceConfig.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sabi/src/main/resources/application-prod.properties" beforeDir="false" afterPath="$PROJECT_DIR$/sabi/src/main/resources/application-prod.properties" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
