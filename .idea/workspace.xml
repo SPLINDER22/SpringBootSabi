@@ -4,12 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="0b88328c-1fbb-4843-a1f3-0a61ddac63ac" name="Changes" comment="error mio solucion appro">
-      <change afterPath="$PROJECT_DIR$/FIX_MAIL_STARTTLS_ERROR.md" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/GUIA_EMAIL_SERVICES.md" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sabi/src/main/java/com/sabi/sabi/service/SendGridEmailService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-    </list>
+    <list default="true" id="0b88328c-1fbb-4843-a1f3-0a61ddac63ac" name="Changes" comment="error mio solucion appro" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />

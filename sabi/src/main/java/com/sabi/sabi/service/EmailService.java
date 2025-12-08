@@ -6,6 +6,7 @@ import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
@@ -19,36 +20,71 @@ public class EmailService {
 
     private final JavaMailSender mailSender;
 
-    @Value("${spring.mail.username:Sabi.geas5@gmail.com}")
+    @Autowired(required = false)
+    private SendGridEmailService sendGridService;
+
+    @Value("${spring.mail.username:sabi.gaes5@gmail.com}")
     private String fromEmail;
 
     public EmailService(JavaMailSender mailSender) {
         this.mailSender = mailSender;
     }
 
-    @Async
-    public void enviarCorreoBienvenida(Usuario usuario) {
+    /**
+     * Método helper para enviar email usando SendGrid o Gmail según disponibilidad
+     */
+    private void enviarEmailInteligente(String toEmail, String subject, String htmlContent) {
+        // Intentar con SendGrid primero si está configurado
+        if (sendGridService != null && sendGridService.isConfigured()) {
+            logger.info("📧 Usando SendGrid para enviar email a: {}", toEmail);
+            sendGridService.sendEmail(toEmail, subject, htmlContent);
+        } else {
+            // Fallback a Gmail SMTP
+            logger.info("📧 Usando Gmail SMTP (fallback) para enviar email a: {}", toEmail);
+            enviarConGmailSMTP(toEmail, subject, htmlContent);
+        }
+    }
+
+    /**
+     * Envío mediante Gmail SMTP (método de fallback)
+     */
+    private void enviarConGmailSMTP(String toEmail, String subject, String htmlContent) {
         try {
             MimeMessage message = mailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
 
             helper.setFrom(fromEmail);
-            helper.setTo(usuario.getEmail());
-
-            if (usuario.getRol() == Rol.CLIENTE) {
-                helper.setSubject("¡Bienvenido a SABI - Tu camino hacia el bienestar comienza aquí! 🎯");
-                helper.setText(construirMensajeBienvenidaCliente(usuario), true);
-            } else if (usuario.getRol() == Rol.ENTRENADOR) {
-                helper.setSubject("¡Bienvenido a SABI - Impulsa tu carrera como entrenador! 💪");
-                helper.setText(construirMensajeBienvenidaEntrenador(usuario), true);
-            }
+            helper.setTo(toEmail);
+            helper.setSubject(subject);
+            helper.setText(htmlContent, true);
 
             mailSender.send(message);
-            logger.info("Correo de bienvenida enviado exitosamente a: {}", usuario.getEmail());
+            logger.info("✅ Email enviado exitosamente a: {} (Gmail SMTP)", toEmail);
 
         } catch (MessagingException e) {
-            logger.error("Error al enviar correo de bienvenida a {}: {}", usuario.getEmail(), e.getMessage());
+            logger.error("❌ Error al enviar correo a {}: {}", toEmail, e.getMessage());
+        } catch (Exception e) {
+            logger.error("❌ Error inesperado al enviar correo a {}: {}", toEmail, e.getMessage());
         }
+    }
+
+    @Async
+    public void enviarCorreoBienvenida(Usuario usuario) {
+        String subject;
+        String htmlContent;
+
+        if (usuario.getRol() == Rol.CLIENTE) {
+            subject = "¡Bienvenido a SABI - Tu camino hacia el bienestar comienza aquí! 🎯";
+            htmlContent = construirMensajeBienvenidaCliente(usuario);
+        } else if (usuario.getRol() == Rol.ENTRENADOR) {
+            subject = "¡Bienvenido a SABI - Impulsa tu carrera como entrenador! 💪";
+            htmlContent = construirMensajeBienvenidaEntrenador(usuario);
+        } else {
+            logger.warn("Rol desconocido para usuario: {}", usuario.getEmail());
+            return;
+        }
+
+        enviarEmailInteligente(usuario.getEmail(), subject, htmlContent);
     }
 
     @Async
