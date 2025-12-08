@@ -5,14 +5,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="0b88328c-1fbb-4843-a1f3-0a61ddac63ac" name="Changes" comment="error mio solucion appro">
-      <change afterPath="$PROJECT_DIR$/CAMBIOS_PERMANENTES_VISTAS.md" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/SOLUCION_DIALECTO_HIBERNATE.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/FIX_MAIL_STARTTLS_ERROR.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/GUIA_EMAIL_SERVICES.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/sabi/src/main/java/com/sabi/sabi/service/SendGridEmailService.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/VISTAS_MODERNAS_IMPLEMENTADAS.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/sabi/src/main/resources/static/css/dashboard-cliente-modern.css" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/sabi/src/main/resources/static/css/registro-new.css" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/sabi/src/main/resources/templates/auth/registro-new.html" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/sabi/src/main/resources/templates/cliente/dashboard-modern.html" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
