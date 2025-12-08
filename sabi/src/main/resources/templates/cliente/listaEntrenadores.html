@@ -6,7 +6,7 @@
     <title>Lista De Entrenadores</title>
 </head>
 
-<body th:replace="layout/layout :: layout('Lista de entrenadores', ~{::section})">
+<body th:replace="~{layout/layout :: layout('Lista de entrenadores', ~{::section})}">
 <section th:fragment="section">
     <div class="page-entrenadores">
         <!-- Panel de filtros ampliado -->

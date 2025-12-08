@@ -62,7 +62,7 @@
         }
     </style>
 </head>
-<body th:replace="layout/layout :: layout('Enviar Correo a Clientes', ~{::section})">
+<body th:replace="~{layout/layout :: layout('Enviar Correo a Clientes', ~{::section})}">
 <section th:fragment="section">
     <div class="container d-flex justify-content-center align-items-center" style="min-height: 80vh;">
         <div class="card shadow-lg border-primary w-100" style="max-width: 800px;">

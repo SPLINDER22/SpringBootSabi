@@ -169,7 +169,7 @@
         }
     </style>
 </head>
-<body th:replace="layout/layout :: layout('Dashboard Entrenador', ~{::section})">
+<body th:replace="~{layout/layout :: layout('Dashboard Entrenador', ~{::section})}">
 <section th:fragment="section">
     <!-- Dashboard Header -->
     <div class="dashboard-header">

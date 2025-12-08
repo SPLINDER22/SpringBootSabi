@@ -96,7 +96,7 @@
         }
     </style>
 </head>
-<body th:replace="layout/layout :: layout('Ver Diagnostico Completo', ~{::section})">
+<body th:replace="~{layout/layout :: layout('Ver Diagnostico Completo', ~{::section})}">
 <section th:fragment="section">
 <div class="container-fluid py-4">
     <div th:if="${error != null}" class="alert alert-danger" role="alert">

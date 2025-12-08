@@ -259,7 +259,7 @@
     </style>
 </head>
 
-<body th:replace="layout/layout :: layout('Lista de suscripciones', ~{::section})">
+<body th:replace="~{layout/layout :: layout('Lista de suscripciones', ~{::section})}">
 <section th:fragment="section" class="suscripciones-page">
     <!-- Alertas de éxito y error -->
     <div th:if="${success}" class="alert alert-success alert-dismissible fade show" role="alert">
