@@ -1,53 +1,140 @@
-/* Estilos base y fondo igual que login */
+/* ========================================
+   SABI REGISTRO - Diseño Moderno y Responsivo
+   ======================================== */
+
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
 }
+
+:root {
+    --primary-color: #2461E9;
+    --primary-dark: #1d4ed8;
+    --primary-light: #3b82f6;
+    --secondary-color: #10b981;
+    --error-color: #ef4444;
+    --text-dark: #1f2937;
+    --text-light: #6b7280;
+    --border-color: #e5e7eb;
+    --bg-light: #f9fafb;
+    --white: #ffffff;
+    --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.1);
+    --shadow-xl: 0 20px 40px rgba(0, 0, 0, 0.15);
+}
+
 body {
-    font-family: 'Arial', sans-serif;
-    height: 100vh;
-    overflow: hidden;
-    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" fill="%23e8f4ff"><g fill="%2393c5fd" opacity="0.3"><path d="M20 20h10v5h-5v5h-5zM30 30h5v10h-5zM40 25h5v5h-5zM15 35h5v5h-5z"/><circle cx="25" cy="45" r="3"/><circle cx="35" cy="15" r="2"/><path d="M50 40l5-5v10l-5-5zM60 30h8v2h-8zM65 35h6v2h-6z"/><circle cx="70" cy="20" r="2"/><path d="M10 60h5v5h-5zM20 65h3v3h-3zM30 55h4v4h-4z"/><circle cx="45" cy="65" r="2"/><path d="M60 60l3-3v6l-3-3zM70 55h5v2h-5zM75 60h4v2h-4z"/><circle cx="80" cy="45" r="3"/></g></svg>') repeat;
-    background-size: 100px 100px;
+    font-family: 'Poppins', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    min-height: 100vh;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     display: flex;
     justify-content: center;
     align-items: center;
+    padding: 2rem 1rem;
+    overflow-x: hidden;
 }
 
 .registro-container {
     display: flex;
-    width: 900px;
-    height: 600px;
-    border-radius: 20px;
+    width: 100%;
+    max-width: 1200px;
+    min-height: 750px;
+    border-radius: 24px;
     overflow: hidden;
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-    background: white;
+    box-shadow: var(--shadow-xl);
+    background: var(--white);
+    animation: fadeInUp 0.6s ease-out;
 }
 
-/* Overrides to ensure the registration page shows all fields and is scrollable when needed */
-/* These target the login-container/layout classes used by registro.html and ensure no clipping */
-.login-container, .registro-container {
-    width: 95%;
-    max-width: 1100px;
-    height: auto; /* allow content to determine height */
-    min-height: 70vh;
-    border-radius: 18px;
-    overflow: visible; /* avoid clipping form fields */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Logo Section - Lado Izquierdo */
+.logo-section {
+    flex: 0 0 420px;
+    background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
     display: flex;
-    gap: 0;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 3rem 2.5rem;
+    position: relative;
+    overflow: hidden;
 }
 
-/* Form section should scroll if it's taller than viewport */
+/* Form Section */
 .login-form-section, .registro-form-section {
-    flex: 1 1 65%;
-    padding: 40px 36px;
+    flex: 1;
+    padding: 3rem 3.5rem 2rem;
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
-    align-items: stretch;
-    max-height: calc(100vh - 80px);
+    max-height: calc(100vh - 4rem);
     overflow-y: auto;
+    background: var(--white);
+}
+
+/* Scrollbar personalizado */
+.login-form-section::-webkit-scrollbar,
+.registro-form-section::-webkit-scrollbar {
+    width: 8px;
+}
+
+.login-form-section::-webkit-scrollbar-track,
+.registro-form-section::-webkit-scrollbar-track {
+    background: var(--bg-light);
+}
+
+.login-form-section::-webkit-scrollbar-thumb,
+.registro-form-section::-webkit-scrollbar-thumb {
+    background: var(--primary-light);
+    border-radius: 4px;
+}
+
+/* ========================================
+   RESPONSIVE DESIGN
+   ======================================== */
+
+@media (max-width: 968px) {
+    .registro-container {
+        flex-direction: column-reverse;
+        min-height: auto;
+    }
+
+    .logo-section {
+        flex: 1;
+        padding: 2rem;
+        min-height: 250px;
+    }
+
+    .login-form-section,
+    .registro-form-section {
+        padding: 2.5rem 2rem;
+        max-height: none;
+    }
+}
+
+@media (max-width: 640px) {
+    body {
+        padding: 0.5rem;
+    }
+
+    .registro-container {
+        border-radius: 16px;
+    }
+
+    .login-form-section,
+    .registro-form-section {
+        padding: 2rem 1.5rem;
+    }
 }
 
 /* Logo section sizing */

@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SABI - Dashboard Cliente</title>
+    <link rel="icon" th:href="@{/img/logoF.png}" type="image/png">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" th:href="@{/css/dashboard-cliente-modern.css}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body>
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="logo">
+                <img th:src="@{/img/logoF.png}" alt="SABI Logo" />
+                <span>SABI</span>
+            </div>
+            <button class="sidebar-toggle" onclick="toggleSidebar()">
+                <i class="fas fa-bars"></i>
+            </button>
+        </div>
+
+        <nav class="sidebar-nav">
+            <a href="#" class="nav-item active">
+                <i class="fas fa-home"></i>
+                <span>Dashboard</span>
+            </a>
+            <a th:href="@{/diagnostico/cliente}" class="nav-item">
+                <i class="fas fa-clipboard-list"></i>
+                <span>Mi Diagnóstico</span>
+            </a>
+            <a th:href="@{/cliente/rutinas}" class="nav-item">
+                <i class="fas fa-dumbbell"></i>
+                <span>Mis Rutinas</span>
+            </a>
+            <a th:href="@{/entrenadores/ver}" class="nav-item">
+                <i class="fas fa-users"></i>
+                <span>Entrenadores</span>
+            </a>
+            <a th:href="@{/cliente/suscripciones}" class="nav-item">
+                <i class="fas fa-handshake"></i>
+                <span>Suscripciones</span>
+            </a>
+            <a th:href="@{/perfil}" class="nav-item">
+                <i class="fas fa-user-circle"></i>
+                <span>Mi Perfil</span>
+            </a>
+        </nav>
+
+        <div class="sidebar-footer">
+            <form th:action="@{/logout}" method="post" style="width: 100%;">
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                <button type="submit" class="nav-item logout-btn">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Cerrar Sesión</span>
+                </button>
+            </form>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Top Bar -->
+        <header class="top-bar">
+            <div class="top-bar-left">
+                <button class="mobile-menu-btn" onclick="toggleSidebar()">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <h1 class="page-title">Dashboard</h1>
+            </div>
+            <div class="top-bar-right">
+                <div class="user-info">
+                    <div class="user-avatar">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div class="user-details">
+                        <span class="user-name" sec:authentication="name">Usuario</span>
+                        <span class="user-role">Cliente</span>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Dashboard Content -->
+        <div class="dashboard-content">
+            <!-- Welcome Section -->
+            <section class="welcome-card">
+                <div class="welcome-content">
+                    <h2>¡Bienvenido de vuelta! 👋</h2>
+                    <p>Aquí está tu resumen de actividad</p>
+                </div>
+                <div class="welcome-illustration">
+                    <i class="fas fa-chart-line"></i>
+                </div>
+            </section>
+
+            <!-- Stats Grid -->
+            <section class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon blue">
+                        <i class="fas fa-clipboard-check"></i>
+                    </div>
+                    <div class="stat-details">
+                        <h3 th:text="${tieneDiagnostico ? 'Completado' : 'Pendiente'}">Pendiente</h3>
+                        <p>Diagnóstico</p>
+                    </div>
+                    <div class="stat-badge" th:classappend="${tieneDiagnostico ? 'success' : 'warning'}">
+                        <i th:class="${tieneDiagnostico ? 'fas fa-check-circle' : 'fas fa-exclamation-circle'}"></i>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon purple">
+                        <i class="fas fa-dumbbell"></i>
+                    </div>
+                    <div class="stat-details">
+                        <h3 th:text="${rutinaActiva != null ? 'Activa' : 'Sin rutina'}">Sin rutina</h3>
+                        <p>Rutina actual</p>
+                    </div>
+                    <div class="stat-badge" th:classappend="${rutinaActiva != null ? 'success' : 'info'}">
+                        <i th:class="${rutinaActiva != null ? 'fas fa-fire' : 'fas fa-info-circle'}"></i>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon green">
+                        <i class="fas fa-user-tie"></i>
+                    </div>
+                    <div class="stat-details">
+                        <h3 th:text="${suscripcionActiva != null ? 'Conectado' : 'Sin entrenador'}">Sin entrenador</h3>
+                        <p>Entrenador</p>
+                    </div>
+                    <div class="stat-badge" th:classappend="${suscripcionActiva != null ? 'success' : 'warning'}">
+                        <i th:class="${suscripcionActiva != null ? 'fas fa-check-circle' : 'fas fa-user-plus'}"></i>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon orange">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <div class="stat-details">
+                        <h3 th:text="${totalDiagnosticos != null ? totalDiagnosticos : 0}">0</h3>
+                        <p>Seguimientos</p>
+                    </div>
+                    <div class="stat-badge info">
+                        <i class="fas fa-info-circle"></i>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Mi Objetivo -->
+            <section th:if="${objetivoCliente != null}" class="objetivo-section">
+                <div class="section-card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-bullseye"></i> Mi Objetivo</h3>
+                    </div>
+                    <div class="objetivo-display">
+                        <div class="objetivo-icon">🎯</div>
+                        <div class="objetivo-text">
+                            <p class="objetivo-label">Tu meta principal:</p>
+                            <h2 th:text="${objetivoCliente}">Objetivo del cliente</h2>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Sin Objetivo -->
+            <section th:unless="${objetivoCliente != null}" class="alert-section warning">
+                <div class="alert-card">
+                    <div class="alert-icon">
+                        <i class="fas fa-exclamation-triangle"></i>
+                    </div>
+                    <div class="alert-content">
+                        <h3>No tienes un objetivo configurado</h3>
+                        <p>Define tu objetivo para que tu entrenador pueda crear un plan personalizado adaptado a tus metas.</p>
+                        <a th:href="@{/perfil}" class="btn btn-warning">
+                            <i class="fas fa-bullseye"></i> Configurar mi objetivo
+                        </a>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Diagnóstico y Rutina -->
+            <div class="grid-two-cols">
+                <!-- Diagnóstico -->
+                <section class="section-card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-clipboard-list"></i> Mi Diagnóstico</h3>
+                        <span class="badge" th:classappend="${diagnosticoActual != null ? 'badge-success' : 'badge-warning'}">
+                            <span th:text="${diagnosticoActual != null ? 'Completado' : 'Pendiente'}">Pendiente</span>
+                        </span>
+                    </div>
+                    <div class="card-body">
+                        <!-- Sin Diagnóstico -->
+                        <div th:if="${diagnosticoActual == null}" class="empty-state">
+                            <div class="empty-icon">📋</div>
+                            <h4>¡Completa tu diagnóstico inicial!</h4>
+                            <p>Es necesario para comenzar tu viaje hacia una vida más saludable.</p>
+                            <a th:href="@{/diagnostico/cliente}" class="btn btn-primary">
+                                <i class="fas fa-clipboard-list"></i> Hacer diagnóstico
+                            </a>
+                        </div>
+
+                        <!-- Con Diagnóstico -->
+                        <div th:if="${diagnosticoActual != null}" class="diagnostico-info">
+                            <div class="info-row">
+                                <span class="info-label">Fecha:</span>
+                                <span class="info-value" th:text="${#temporals.format(diagnosticoActual.fecha, 'dd/MM/yyyy')}">--</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">Peso:</span>
+                                <span class="info-value" th:text="${diagnosticoActual.peso} + ' kg'">-- kg</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">IMC:</span>
+                                <span class="info-value" th:text="${#numbers.formatDecimal(diagnosticoActual.imc, 1, 2)}">--</span>
+                            </div>
+                            <a th:href="@{/diagnostico/historial}" class="btn btn-outline">
+                                Ver historial completo
+                            </a>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Rutina Activa -->
+                <section class="section-card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-dumbbell"></i> Mi Rutina</h3>
+                        <span class="badge" th:classappend="${rutinaActiva != null ? 'badge-success' : 'badge-info'}">
+                            <span th:text="${rutinaActiva != null ? 'Activa' : 'Sin rutina'}">Sin rutina</span>
+                        </span>
+                    </div>
+                    <div class="card-body">
+                        <!-- Sin Rutina -->
+                        <div th:if="${rutinaActiva == null}" class="empty-state">
+                            <div class="empty-icon">💪</div>
+                            <h4>No tienes rutina activa</h4>
+                            <p>Tu entrenador te asignará una rutina personalizada pronto.</p>
+                            <a th:href="@{/cliente/rutinas}" class="btn btn-outline">
+                                Ver todas las rutinas
+                            </a>
+                        </div>
+
+                        <!-- Con Rutina -->
+                        <div th:if="${rutinaActiva != null}" class="rutina-info">
+                            <div class="rutina-header">
+                                <h4 th:text="${rutinaActiva.nombre}">Nombre de la rutina</h4>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">Descripción:</span>
+                                <span class="info-value" th:text="${rutinaActiva.descripcion}">--</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">Duración:</span>
+                                <span class="info-value" th:text="${rutinaActiva.duracion} + ' semanas'">-- semanas</span>
+                            </div>
+                            <a th:href="@{/cliente/rutinas}" class="btn btn-primary">
+                                <i class="fas fa-play"></i> Ver rutina
+                            </a>
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+            <!-- Suscripción -->
+            <section th:if="${suscripcionActiva != null}" class="section-card">
+                <div class="card-header">
+                    <h3><i class="fas fa-handshake"></i> Mi Entrenador</h3>
+                    <span class="badge badge-success">Activo</span>
+                </div>
+                <div class="card-body">
+                    <div class="entrenador-card">
+                        <div class="entrenador-avatar">
+                            <i class="fas fa-user-tie"></i>
+                        </div>
+                        <div class="entrenador-info">
+                            <h4 th:text="${suscripcionActiva.nombreEntrenador}">Nombre del Entrenador</h4>
+                            <p th:text="${suscripcionActiva.emailEntrenador}">email@entrenador.com</p>
+                            <div class="suscripcion-meta">
+                                <span><i class="fas fa-calendar"></i> Desde: <span th:text="${#temporals.format(suscripcionActiva.fechaInicio, 'dd/MM/yyyy')}">--</span></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Sin Entrenador -->
+            <section th:unless="${suscripcionActiva != null}" class="alert-section info">
+                <div class="alert-card">
+                    <div class="alert-icon">
+                        <i class="fas fa-user-plus"></i>
+                    </div>
+                    <div class="alert-content">
+                        <h3>Conéctate con un entrenador</h3>
+                        <p>Busca y solicita suscripción a entrenadores certificados para comenzar tu entrenamiento personalizado.</p>
+                        <a th:href="@{/entrenadores/ver}" class="btn btn-primary">
+                            <i class="fas fa-search"></i> Buscar entrenadores
+                        </a>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <script>
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const mainContent = document.querySelector('.main-content');
+            sidebar.classList.toggle('collapsed');
+            mainContent.classList.toggle('expanded');
+        }
+
+        // Auto-cerrar sidebar en móvil al hacer clic en un enlace
+        document.querySelectorAll('.nav-item').forEach(item => {
+            item.addEventListener('click', () => {
+                if (window.innerWidth <= 768) {
+                    toggleSidebar();
+                }
+            });
+        });
+
+        // Animar números al cargar
+        document.addEventListener('DOMContentLoaded', () => {
+            const statCards = document.querySelectorAll('.stat-card');
+            statCards.forEach((card, index) => {
+                setTimeout(() => {
+                    card.style.animation = 'fadeInUp 0.5s ease-out forwards';
+                }, index * 100);
+            });
+        });
+    </script>
+</body>
+</html>
+

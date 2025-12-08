@@ -148,6 +148,10 @@
                 <version>3.3.1</version>
                 <configuration>
                     <encoding>${project.build.sourceEncoding}</encoding>
+                    <!-- Avoid filtering .properties files to prevent MalformedInputException on non-UTF8 files -->
+                    <nonFilteredFileExtensions>
+                        <nonFilteredFileExtension>properties</nonFilteredFileExtension>
+                    </nonFilteredFileExtensions>
                 </configuration>
             </plugin>
 			<plugin>

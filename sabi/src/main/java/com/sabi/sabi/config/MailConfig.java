@@ -16,25 +16,46 @@ public class MailConfig {
     @Value("${spring.mail.port:587}")
     private int port;
 
-    @Value("${spring.mail.username:Sabi.geas5@gmail.com}")
+    @Value("${spring.mail.username:}")
     private String username;
 
     @Value("${spring.mail.password:}")
     private String password;
+
+    @Value("${spring.mail.properties.mail.smtp.starttls.enable:true}")
+    private boolean starttls;
 
     @Bean
     public JavaMailSender javaMailSender() {
         JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
         mailSender.setHost(host);
         mailSender.setPort(port);
-        mailSender.setUsername(username);
-        mailSender.setPassword(password);
+
+        // don't set username/password if empty - allow app to start without mail configured
+        if (username != null && !username.isBlank()) {
+            mailSender.setUsername(username);
+        }
+        if (password != null && !password.isBlank()) {
+            mailSender.setPassword(password);
+        }
 
         Properties props = mailSender.getJavaMailProperties();
         props.put("mail.transport.protocol", "smtp");
-        props.put("mail.smtp.auth", "true");
-        props.put("mail.smtp.starttls.enable", "true");
-        props.put("mail.debug", "true");
+        props.put("mail.smtp.auth", (username != null && !username.isBlank()) ? "true" : "false");
+        props.put("mail.smtp.starttls.enable", String.valueOf(starttls));
+        // timeouts to fail fast in environments where SMTP is blocked
+        props.put("mail.smtp.connectiontimeout", "5000");
+        props.put("mail.smtp.timeout", "5000");
+        props.put("mail.smtp.writetimeout", "5000");
+        // trust github's smtp host if using gmail
+        props.put("mail.smtp.ssl.trust", host);
+        props.put("mail.debug", "false");
+
+        if (username == null || username.isBlank() || password == null || password.isBlank()) {
+            System.out.println("⚠️ Mail sender not fully configured - MAIL_USERNAME or MAIL_PASSWORD missing. Email sending will be disabled until configured.");
+        } else {
+            System.out.println("✅ Mail sender configured for host: " + host + " port: " + port + " user: " + username);
+        }
 
         return mailSender;
     }
