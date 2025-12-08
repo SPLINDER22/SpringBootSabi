@@ -89,94 +89,81 @@ public class EmailService {
 
     @Async
     public void sendEmail(String asunto, String mensaje, java.util.List<String> destinatarios) {
-        try {
-            MimeMessage message = mailSender.createMimeMessage();
-            MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
-
-            helper.setFrom(fromEmail);
-            helper.setTo(destinatarios.toArray(new String[0]));
-            helper.setSubject(asunto);
-
-            // Crear un HTML básico para el mensaje
-            String htmlTemplate = """
-                <!DOCTYPE html>
-                <html>
-                <head>
-                    <meta charset="UTF-8">
-                    <style>
-                        body {
-                            font-family: 'Segoe UI', Arial, sans-serif;
-                            line-height: 1.6;
-                            color: #333;
-                            background-color: #f4f7fa;
-                            margin: 0;
-                            padding: 0;
-                        }
-                        .container {
-                            max-width: 600px;
-                            margin: 40px auto;
-                            background: white;
-                            border-radius: 12px;
-                            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-                            overflow: hidden;
-                        }
-                        .header {
-                            background: linear-gradient(135deg, #ff7043 0%, #d35400 100%);
-                            color: white;
-                            padding: 30px;
-                            text-align: center;
-                        }
-                        .header h1 {
-                            margin: 0;
-                            font-size: 28px;
-                        }
-                        .content {
-                            padding: 30px;
-                        }
-                        .message {
-                            white-space: pre-wrap;
-                            font-size: 15px;
-                            line-height: 1.8;
-                        }
-                        .footer {
-                            background: #f8fafc;
-                            padding: 20px;
-                            text-align: center;
-                            font-size: 13px;
-                            color: #6b7280;
-                            border-top: 1px solid #e5e7eb;
-                        }
-                    </style>
-                </head>
-                <body>
-                    <div class="container">
-                        <div class="header">
-                            <h1>SABI - Salud y Bienestar</h1>
-                        </div>
-                        <div class="content">
-                            <div class="message">{MENSAJE_CONTENIDO}</div>
-                        </div>
-                        <div class="footer">
-                            <p><strong>SABI</strong> - Mensaje de tu entrenador</p>
-                            <p style="margin-top: 10px; font-size: 12px; color: #9ca3af;">
-                                Este correo fue enviado por tu entrenador personal.
-                            </p>
-                        </div>
+        // Crear un HTML básico para el mensaje
+        String htmlTemplate = """
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <meta charset="UTF-8">
+                <style>
+                    body {
+                        font-family: 'Segoe UI', Arial, sans-serif;
+                        line-height: 1.6;
+                        color: #333;
+                        background-color: #f4f7fa;
+                        margin: 0;
+                        padding: 0;
+                    }
+                    .container {
+                        max-width: 600px;
+                        margin: 40px auto;
+                        background: white;
+                        border-radius: 12px;
+                        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+                        overflow: hidden;
+                    }
+                    .header {
+                        background: linear-gradient(135deg, #ff7043 0%, #d35400 100%);
+                        color: white;
+                        padding: 30px;
+                        text-align: center;
+                    }
+                    .header h1 {
+                        margin: 0;
+                        font-size: 28px;
+                    }
+                    .content {
+                        padding: 30px;
+                    }
+                    .message {
+                        white-space: pre-wrap;
+                        font-size: 15px;
+                        line-height: 1.8;
+                    }
+                    .footer {
+                        background: #f8fafc;
+                        padding: 20px;
+                        text-align: center;
+                        font-size: 13px;
+                        color: #6b7280;
+                        border-top: 1px solid #e5e7eb;
+                    }
+                </style>
+            </head>
+            <body>
+                <div class="container">
+                    <div class="header">
+                        <h1>SABI - Salud y Bienestar</h1>
                     </div>
-                </body>
-                </html>
-                """;
+                    <div class="content">
+                        <div class="message">{MENSAJE_CONTENIDO}</div>
+                    </div>
+                    <div class="footer">
+                        <p><strong>SABI</strong> - Mensaje de tu entrenador</p>
+                        <p style="margin-top: 10px; font-size: 12px; color: #9ca3af;">
+                            Este correo fue enviado por tu entrenador personal.
+                        </p>
+                    </div>
+                </div>
+            </body>
+            </html>
+            """;
 
-            String htmlMessage = htmlTemplate.replace("{MENSAJE_CONTENIDO}", mensaje.replace("\n", "<br>"));
+        String htmlMessage = htmlTemplate.replace("{MENSAJE_CONTENIDO}", mensaje.replace("\n", "<br>"));
 
-            helper.setText(htmlMessage, true);
-
-            mailSender.send(message);
-            logger.info("Correo enviado exitosamente a {} destinatarios: {}", destinatarios.size(), String.join(", ", destinatarios));
-
-        } catch (MessagingException e) {
-            logger.error("Error al enviar correo: {}", e.getMessage());
-            throw new RuntimeException("Error al enviar correo: " + e.getMessage());
+        // Enviar a cada destinatario
+        for (String email : destinatarios) {
+            enviarEmailInteligente(email, asunto, htmlMessage);
         }
     }
 
@@ -524,15 +511,8 @@ public class EmailService {
      */
     @Async
     public void enviarNotificacionSolicitudSuscripcion(String emailEntrenador, String nombreEntrenador, String nombreCliente) {
-        try {
-            MimeMessage message = mailSender.createMimeMessage();
-            MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
-
-            helper.setFrom("Sabi.geas5@gmail.com");
-            helper.setTo(emailEntrenador);
-            helper.setSubject("🔔 Nueva solicitud de entrenamiento - " + nombreCliente);
-
-            String htmlContent = """
+        String subject = "🔔 Nueva solicitud de entrenamiento - " + nombreCliente;
+        String htmlContent = """
                 <!DOCTYPE html>
                 <html>
                 <head>
@@ -648,13 +628,7 @@ public class EmailService {
             htmlContent = htmlContent.replace("{NOMBRE_ENTRENADOR}", nombreEntrenador)
                                      .replace("{NOMBRE_CLIENTE}", nombreCliente);
 
-            helper.setText(htmlContent, true);
-            mailSender.send(message);
-            logger.info("Notificación de solicitud de suscripción enviada a: {}", emailEntrenador);
-
-        } catch (MessagingException e) {
-            logger.error("Error al enviar notificación de solicitud al entrenador {}: {}", emailEntrenador, e.getMessage());
-        }
+            enviarEmailInteligente(emailEntrenador, subject, htmlContent);
     }
 
     /**
@@ -662,15 +636,8 @@ public class EmailService {
      */
     @Async
     public void enviarNotificacionCotizacionRecibida(String emailCliente, String nombreCliente, String nombreEntrenador, Double precio, Integer semanas) {
-        try {
-            MimeMessage message = mailSender.createMimeMessage();
-            MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
-
-            helper.setFrom("Sabi.geas5@gmail.com");
-            helper.setTo(emailCliente);
-            helper.setSubject("💰 Cotización recibida de " + nombreEntrenador);
-
-            String htmlContent = """
+        String subject = "💰 Cotización recibida de " + nombreEntrenador;
+        String htmlContent = """
                 <!DOCTYPE html>
                 <html>
                 <head>
@@ -803,13 +770,7 @@ public class EmailService {
                                      .replace("{PRECIO}", String.format("%.2f", precio))
                                      .replace("{SEMANAS}", semanas.toString());
 
-            helper.setText(htmlContent, true);
-            mailSender.send(message);
-            logger.info("Notificación de cotización enviada a: {}", emailCliente);
-
-        } catch (MessagingException e) {
-            logger.error("Error al enviar notificación de cotización al cliente {}: {}", emailCliente, e.getMessage());
-        }
+            enviarEmailInteligente(emailCliente, subject, htmlContent);
     }
 
     /**
@@ -817,15 +778,8 @@ public class EmailService {
      */
     @Async
     public void enviarNotificacionFinRutina(String emailCliente, String nombreCliente, String nombreEntrenador, String nombreRutina) {
-        try {
-            MimeMessage message = mailSender.createMimeMessage();
-            MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
-
-            helper.setFrom("Sabi.geas5@gmail.com");
-            helper.setTo(emailCliente);
-            helper.setSubject("🎉 ¡Felicitaciones! Has completado tu rutina - " + nombreRutina);
-
-            String htmlContent = """
+        String subject = "🎉 ¡Felicitaciones! Has completado tu rutina - " + nombreRutina;
+        String htmlContent = """
                 <!DOCTYPE html>
                 <html>
                 <head>
@@ -948,13 +902,7 @@ public class EmailService {
                                      .replace("{NOMBRE_ENTRENADOR}", nombreEntrenador)
                                      .replace("{NOMBRE_RUTINA}", nombreRutina);
 
-            helper.setText(htmlContent, true);
-            mailSender.send(message);
-            logger.info("Notificación de fin de rutina enviada a: {}", emailCliente);
-
-        } catch (MessagingException e) {
-            logger.error("Error al enviar notificación de fin de rutina al cliente {}: {}", emailCliente, e.getMessage());
-        }
+            enviarEmailInteligente(emailCliente, subject, htmlContent);
     }
 
     @Async
