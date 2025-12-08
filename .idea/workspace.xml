@@ -4,21 +4,15 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="0b88328c-1fbb-4843-a1f3-0a61ddac63ac" name="Changes" comment="Update proyecto">
-      <change afterPath="$PROJECT_DIR$/RESUMEN_EJECUTIVO.md" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/VISTAS_MODERNAS_IMPLEMENTADAS.md" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sabi/src/main/resources/static/css/dashboard-cliente-modern.css" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sabi/src/main/resources/static/css/registro-new.css" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sabi/src/main/resources/templates/auth/registro-new.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sabi/src/main/resources/templates/cliente/dashboard-modern.html" afterDir="false" />
+    <list default="true" id="0b88328c-1fbb-4843-a1f3-0a61ddac63ac" name="Changes" comment="error mio solucion appro">
+      <change afterPath="$PROJECT_DIR$/CAMBIOS_PERMANENTES_VISTAS.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/SOLUCION_DIALECTO_HIBERNATE.md" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sabi/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/sabi/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sabi/src/main/java/com/sabi/sabi/config/DataSourceConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/sabi/src/main/java/com/sabi/sabi/config/DataSourceConfig.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sabi/src/main/java/com/sabi/sabi/config/MailConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/sabi/src/main/java/com/sabi/sabi/config/MailConfig.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sabi/src/main/java/com/sabi/sabi/controller/CustomErrorController.java" beforeDir="false" afterPath="$PROJECT_DIR$/sabi/src/main/java/com/sabi/sabi/controller/CustomErrorController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sabi/src/main/resources/static/css/login.css" beforeDir="false" afterPath="$PROJECT_DIR$/sabi/src/main/resources/static/css/login.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sabi/src/main/resources/static/css/registro.css" beforeDir="false" afterPath="$PROJECT_DIR$/sabi/src/main/resources/static/css/registro.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sabi/src/main/resources/templates/auth/login.html" beforeDir="false" afterPath="$PROJECT_DIR$/sabi/src/main/resources/templates/auth/login.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/VISTAS_MODERNAS_IMPLEMENTADAS.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/sabi/src/main/resources/static/css/dashboard-cliente-modern.css" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/sabi/src/main/resources/static/css/registro-new.css" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/sabi/src/main/resources/templates/auth/registro-new.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/sabi/src/main/resources/templates/cliente/dashboard-modern.html" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -232,7 +226,23 @@
       <option name="project" value="LOCAL" />
       <updated>1765212157749</updated>
     </task>
-    <option name="localTasksCounter" value="19" />
+    <task id="LOCAL-00019" summary="Update proyecto">
+      <option name="closed" value="true" />
+      <created>1765213635028</created>
+      <option name="number" value="00019" />
+      <option name="presentableId" value="LOCAL-00019" />
+      <option name="project" value="LOCAL" />
+      <updated>1765213635028</updated>
+    </task>
+    <task id="LOCAL-00020" summary="error mio solucion appro">
+      <option name="closed" value="true" />
+      <created>1765214556248</created>
+      <option name="number" value="00020" />
+      <option name="presentableId" value="LOCAL-00020" />
+      <option name="project" value="LOCAL" />
+      <updated>1765214556248</updated>
+    </task>
+    <option name="localTasksCounter" value="21" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
@@ -253,7 +263,8 @@
     <MESSAGE value="Otra correcion mas para base de datos" />
     <MESSAGE value="imagenes correciones" />
     <MESSAGE value="Update proyecto" />
-    <option name="LAST_COMMIT_MESSAGE" value="Update proyecto" />
+    <MESSAGE value="error mio solucion appro" />
+    <option name="LAST_COMMIT_MESSAGE" value="error mio solucion appro" />
   </component>
   <component name="github-copilot-workspace">
     <instructionFileLocations>
